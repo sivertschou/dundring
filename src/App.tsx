@@ -33,18 +33,26 @@ export const App = () => {
         setData((data) => [
           ...data,
           {
-            heartRate: heartRate,
+            heartRate,
             power,
             timeStamp: new Date(),
           },
         ]);
-        if (startingTime) {
-          setSecondsElapsed(getSecondsSince(startingTime));
-        }
       }
     }, 500);
     return () => clearInterval(interval);
   }, [started, power, startingTime, heartRate, hrIsConnected]);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      if (started) {
+        if (startingTime) {
+          setSecondsElapsed(getSecondsSince(startingTime));
+        }
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [started, startingTime]);
 
   const getSecondsSince = (startTime: Date) => {
     const now = new Date();
