@@ -1,6 +1,7 @@
-import { Center, Stack, Text } from "@chakra-ui/layout";
+import { Center, Stack, Text, Flex } from "@chakra-ui/layout";
 import { ChakraProvider, Button } from "@chakra-ui/react";
 import * as React from "react";
+import { Graphs } from "./Graphs";
 import { useHeartRateMonitor } from "./hooks/useHeartRateMonitor";
 import { useSmartTrainer } from "./hooks/useSmartTrainer";
 import theme from "./theme";
@@ -25,11 +26,12 @@ export const App = () => {
 
   React.useEffect(() => {
     const interval = setInterval(() => {
-      if (hrIsConnected) {
+      if (hrIsConnected || smartTrainerIsConnected) {
         setData((data) => [
           ...data,
           {
-            heartRate: heartRate ? heartRate : undefined,
+            heartRate: heartRate,
+            power,
             timeStamp: new Date(),
           },
         ]);
@@ -41,7 +43,10 @@ export const App = () => {
   return (
     <ChakraProvider theme={theme}>
       <Center>
-        <Stack>
+        <Stack width="80%">
+          <Center>
+            <Graphs data={data} />
+          </Center>
           <Button
             onClick={() =>
               hrIsConnected ? disconnectHR() : requestHRPermission()
@@ -70,15 +75,6 @@ export const App = () => {
           {data.length > 0 ? (
             <Button onClick={() => utils.toTCX(data)}>Convert to TCX</Button>
           ) : null}
-          <Stack direction="column-reverse">
-            {data
-              .filter((d) => d.heartRate)
-              .map((d, i) => (
-                <Text key={i}>
-                  {d.timeStamp.toUTCString()} HR: {d.heartRate}
-                </Text>
-              ))}
-          </Stack>
         </Stack>
       </Center>
     </ChakraProvider>
