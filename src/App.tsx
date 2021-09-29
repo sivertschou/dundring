@@ -123,7 +123,7 @@ export const App = () => {
               </Button>
 
               {data.length > 0 ? (
-                <Button onClick={() => utils.toTCX(data, "Onsdagsdundring")}>
+                <Button onClick={() => utils.toTCX(data, "Dundring")}>
                   Download TCX
                 </Button>
               ) : null}

@@ -24,15 +24,23 @@ export const toTCX = (dataPoints: DataPoint[], filename: string) => {
         <Intensity>Active</Intensity>
         <TriggerMethod>Manual</TriggerMethod>
         <Track>
-        ${filtererdDataPoints.map(
-          (d) =>
+        ${filtererdDataPoints.reduce(
+          (output, d) =>
+            output +
             `<Trackpoint>
               <Time>${d.timeStamp.toISOString()}</Time>
               <HeartRateBpm>
                 <Value>${d.heartRate}</Value>
               </HeartRateBpm>
+              <Extensions>
+                <ns3:TPX>
+                    <ns3:Watts>${d.power}</ns3:Watts>
+                </ns3:TPX>
+                </Extensions>
               <SensorState>Present</SensorState>
-            </Trackpoint>`
+            </Trackpoint>
+            `,
+          ""
         )}
           </Track>
         </Lap>
