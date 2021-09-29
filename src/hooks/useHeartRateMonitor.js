@@ -11,10 +11,11 @@ const parseHeartRate = (value) => {
     return value.getUint8(1);
   }
 };
-export const useHeartRate = () => {
+export const useHeartRateMonitor = () => {
   const [heartRate, setHeartRate] = React.useState(0);
   const [isConnected, setIsConnected] = React.useState(false);
   const [characteristic, setCharacteristic] = React.useState(null);
+  const [device, setDevice] = React.useState(null);
 
   const handleHRUpdate = (event) => {
     const hr = parseHeartRate(event.target.value);
@@ -25,6 +26,7 @@ export const useHeartRate = () => {
     navigator.bluetooth
       .requestDevice({ filters: [{ services: ["heart_rate"] }] })
       .then((device) => {
+        setDevice(device);
         return device.gatt.connect();
       })
       .then((server) => {
@@ -60,6 +62,8 @@ export const useHeartRate = () => {
             handleHRUpdate
           );
           setCharacteristic(null);
+          device.gatt.disconnect();
+          setDevice(null);
           setIsConnected(false);
         })
         .catch((error) => {
