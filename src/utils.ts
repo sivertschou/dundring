@@ -1,4 +1,4 @@
-export const toTCX = (dataPoints: DataPoint[]) => {
+export const toTCX = (dataPoints: DataPoint[], filename: string) => {
   const filtererdDataPoints = dataPoints.filter((d) => d.heartRate);
   const startTime = filtererdDataPoints[0].timeStamp;
   const endTime = filtererdDataPoints[filtererdDataPoints.length - 1].timeStamp;
@@ -57,7 +57,7 @@ export const toTCX = (dataPoints: DataPoint[]) => {
   const url = window.URL.createObjectURL(new Blob([output]));
   const link = document.createElement("a");
   link.href = url;
-  link.setAttribute("download", `FileName.tcx`);
+  link.setAttribute("download", `${filename}.tcx`);
 
   // Append to html link element page
   document.body.appendChild(link);

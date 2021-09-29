@@ -18,7 +18,7 @@ const theme = extendTheme(
       },
     },
   },
-  withDefaultColorScheme({ colorScheme: "red" })
+  withDefaultColorScheme({ colorScheme: "gray" })
 );
 
 export default theme;

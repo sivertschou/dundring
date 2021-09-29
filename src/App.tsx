@@ -44,7 +44,7 @@ export const App = () => {
       }
     }, 500);
     return () => clearInterval(interval);
-  }, [started, heartRate, hrIsConnected]);
+  }, [started, power, startingTime, heartRate, hrIsConnected]);
 
   const getSecondsSince = (startTime: Date) => {
     const now = new Date();
@@ -68,13 +68,13 @@ export const App = () => {
   return (
     <ChakraProvider theme={theme}>
       <Center>
-        <Stack width="70%">
+        <Stack width="60%">
           <Grid templateColumns="repeat(3, 1fr)">
             <Center p="10" color="#ff4d4a">
               <Text fontSize="7xl" fontWeight="bold">
                 {heartRate}
               </Text>
-              <Text fontSize="2xl" fontWeight="bold">
+              <Text fontSize="4xl" fontWeight="bold">
                 bpm
               </Text>
             </Center>
@@ -90,7 +90,7 @@ export const App = () => {
               <Text fontSize="7xl" fontWeight="bold">
                 {power}
               </Text>
-              <Text fontSize="2xl" fontWeight="bold">
+              <Text fontSize="4xl" fontWeight="bold">
                 w
               </Text>
             </Center>
@@ -98,31 +98,37 @@ export const App = () => {
           <Center>
             <Graphs data={data} />
           </Center>
-          <Button onClick={() => (started ? stop() : start())}>
-            {started ? "Stop" : "Start"}
-          </Button>
-          <Button
-            onClick={() =>
-              hrIsConnected ? disconnectHR() : requestHRPermission()
-            }
-          >
-            {hrIsConnected ? "Disconnect HR" : "Connect HR"}{" "}
-          </Button>
-          <Button
-            onClick={() =>
-              smartTrainerIsConnected
-                ? disconnectSmartTrainer()
-                : requestSmartTrainerPermission()
-            }
-          >
-            {smartTrainerIsConnected
-              ? "Disconnect Smart Trainer"
-              : "Connect Smart Trainer"}{" "}
-          </Button>
+          <Center>
+            <Stack width="25%">
+              <Button onClick={() => (started ? stop() : start())}>
+                {started ? "Stop" : "Start"}
+              </Button>
+              <Button
+                onClick={() =>
+                  hrIsConnected ? disconnectHR() : requestHRPermission()
+                }
+              >
+                {hrIsConnected ? "Disconnect HR" : "Connect HR"}{" "}
+              </Button>
+              <Button
+                onClick={() =>
+                  smartTrainerIsConnected
+                    ? disconnectSmartTrainer()
+                    : requestSmartTrainerPermission()
+                }
+              >
+                {smartTrainerIsConnected
+                  ? "Disconnect Smart Trainer"
+                  : "Connect Smart Trainer"}{" "}
+              </Button>
 
-          {data.length > 0 ? (
-            <Button onClick={() => utils.toTCX(data)}>Convert to TCX</Button>
-          ) : null}
+              {data.length > 0 ? (
+                <Button onClick={() => utils.toTCX(data, "Onsdagsdundring")}>
+                  Download TCX
+                </Button>
+              ) : null}
+            </Stack>
+          </Center>
         </Stack>
       </Center>
     </ChakraProvider>
