@@ -1,7 +1,8 @@
-import { Center, Stack, Text, Grid } from "@chakra-ui/layout";
+import { Center, Stack, Text, Grid, Link } from "@chakra-ui/layout";
 import { ChakraProvider, Button } from "@chakra-ui/react";
 import * as React from "react";
 import { Graphs } from "./Graphs";
+import { useAvailability } from "./hooks/useAvailability";
 import { useHeartRateMonitor } from "./hooks/useHeartRateMonitor";
 import { useSmartTrainer } from "./hooks/useSmartTrainer";
 import theme from "./theme";
@@ -21,6 +22,8 @@ export const App = () => {
     isConnected: smartTrainerIsConnected,
     disconnect: disconnectSmartTrainer,
   } = useSmartTrainer();
+
+  const { available: bluetoothIsAvailable } = useAvailability();
 
   const [data, setData] = React.useState([] as DataPoint[]);
   const [secondsElapsed, setSecondsElapsed] = React.useState(0);
@@ -77,6 +80,17 @@ export const App = () => {
     <ChakraProvider theme={theme}>
       <Center>
         <Stack width="60%">
+          {!bluetoothIsAvailable ? (
+            <Center p="5" backgroundColor="red">
+              <Text fontSize="2xl">
+                Bluetooth is not available in this browser yet. Check{" "}
+                <Link href="https://developer.mozilla.org/en-US/docs/Web/API/Bluetooth#browser_compatibility">
+                  the docs for browsers supporting Bluetooth
+                </Link>
+                .
+              </Text>
+            </Center>
+          ) : null}
           <Grid templateColumns="repeat(3, 1fr)">
             <Center p="10" color="#ff4d4a">
               <Text fontSize="7xl" fontWeight="bold">
@@ -112,6 +126,7 @@ export const App = () => {
                 {started ? "Stop" : "Start"}
               </Button>
               <Button
+                disabled={!bluetoothIsAvailable}
                 onClick={() =>
                   hrIsConnected ? disconnectHR() : requestHRPermission()
                 }
@@ -119,6 +134,7 @@ export const App = () => {
                 {hrIsConnected ? "Disconnect HR" : "Connect HR"}{" "}
               </Button>
               <Button
+                disabled={!bluetoothIsAvailable}
                 onClick={() =>
                   smartTrainerIsConnected
                     ? disconnectSmartTrainer()
