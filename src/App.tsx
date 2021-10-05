@@ -33,11 +33,13 @@ export const App = () => {
   React.useEffect(() => {
     const interval = setInterval(() => {
       if (started) {
+        const heartRateToJoin = heartRate ? { heartRate } : {};
+        const powerToJoin = power ? { power } : {};
         setData((data) => [
           ...data,
           {
-            heartRate,
-            power,
+            ...heartRateToJoin,
+            ...powerToJoin,
             timeStamp: new Date(),
           },
         ]);
