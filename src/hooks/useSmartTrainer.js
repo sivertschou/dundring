@@ -3,7 +3,10 @@ import * as React from "react";
 export const useSmartTrainer = () => {
   const [power, setPower] = React.useState(0);
   const [isConnected, setIsConnected] = React.useState(false);
-  const [characteristic, setCharacteristic] = React.useState(null);
+  const [fitnessMachineCharacteristic, setFitnessMachineCharacteristic] =
+    React.useState(null);
+  const [cyclingPowerCharacteristic, setCyclingPowerCharacteristic] =
+    React.useState(null);
   const [device, setDevice] = React.useState(null);
 
   const parsePower = (value) => {
@@ -16,28 +19,6 @@ export const useSmartTrainer = () => {
     const power = buffer.getInt16(1);
     console.log("power:", power);
 
-    // console.log("flags & 0x01:", flags & 0x01);
-    // console.log("flags & 0x02:", flags & 0x02);
-    // console.log("flags & 0x04:", flags & 0x04);
-    // console.log("flags & 0x08:", flags & 0x08);
-    // console.log("flags & 0x10:", flags & 0x10);
-    // console.log("flags & 0x20:", flags & 0x20);
-
-    // const crankRevolutionDataPresent = (flags & 0x10) !== 0;
-    // console.log("crankRevolutionDataPresent:", crankRevolutionDataPresent);
-
-    // const wheelRevolutionDataPresent = (flags & 0x20) !== 0;
-    // console.log("wheelRevolutionDataPresent:", wheelRevolutionDataPresent);
-
-    // const accumulatedTorque = buffer.getInt16(2);
-    // console.log("accumulatedTorque:", accumulatedTorque);
-
-    // const cumWheelRev = buffer.getInt16(3);
-    // console.log("cumWheelRev:", cumWheelRev);
-
-    // const cumCrankRev = buffer.getInt16(6);
-    // console.log("cumCrankRev:", cumCrankRev);
-
     return power;
   };
   const handlePowerUpdate = (event) => {
@@ -46,54 +27,79 @@ export const useSmartTrainer = () => {
     setPower(power);
   };
   const requestSmartTrainerPermission = async () => {
-    navigator.bluetooth
-      .requestDevice({ filters: [{ services: ["cycling_power"] }] })
-      .then((device) => {
-        setDevice(device);
-        return device.gatt.connect();
-      })
-      .then((server) => {
-        setIsConnected(true);
-        return server.getPrimaryService("cycling_power");
-      })
-      .then((service) => {
-        return service.getCharacteristic("cycling_power_measurement");
-      })
-      .then((characteristic) => {
-        setCharacteristic(characteristic);
-        return characteristic.startNotifications().then((_) => {
-          console.log("> Notifications started");
-          characteristic.addEventListener(
-            "characteristicvaluechanged",
-            handlePowerUpdate
-          );
-        });
-      })
-      .catch((error) => {
-        console.log("Argh! " + error);
-      });
+    const device = await navigator.bluetooth.requestDevice({
+      // filters: [{ services: ["cycling_power"] }], // Cycling power 0x1818
+      filters: [{ services: ["fitness_machine"] }], // Fitness machine 0x1826
+    });
+
+    console.log("CONNECTED AS FITNESS MACHINE");
+    setDevice(device);
+    const server = await device.gatt.connect();
+    setIsConnected(true);
+
+    const fitnessMachineService = await server.getPrimaryService(
+      "fitness_machine"
+    );
+    console.log("fitnessMachineService:", fitnessMachineService);
+    const fitnessMachineCharacteristic =
+      await fitnessMachineService.getCharacteristic(
+        "fitness_machine_control_point"
+      );
+    console.log(
+      "connected to fitness_machine_control_point",
+      fitnessMachineCharacteristic
+    );
+    console.log("Send 0x00 (Request control)");
+    let res = await fitnessMachineCharacteristic.writeValue(
+      new Uint8Array([0x01])
+    );
+    console.log("0x00 sent. res:", res);
+
+    console.log("Send 0x01 (Reset)");
+    res = await fitnessMachineCharacteristic.writeValue(new Uint8Array([0x01]));
+    console.log("[0x04, 100] sent. res:", res);
+    console.log("fitnessMachineCharacteristic:", fitnessMachineCharacteristic);
+
+    setFitnessMachineCharacteristic(fitnessMachineCharacteristic);
+
+    const cyclingPowerService = await server.getPrimaryService("cycling_power");
+    console.log("Power service:", cyclingPowerService);
+    const cyclingPowerCharacteristic =
+      await cyclingPowerService.getCharacteristic("cycling_power_measurement");
+    console.log("powerCharacteristic:", cyclingPowerCharacteristic);
+    setCyclingPowerCharacteristic(cyclingPowerCharacteristic);
+
+    await cyclingPowerCharacteristic.startNotifications();
+    cyclingPowerCharacteristic.addEventListener(
+      "characteristicvaluechanged",
+      handlePowerUpdate
+    );
   };
-  const disconnect = () => {
-    console.log("characteristic:", characteristic);
-    if (characteristic) {
-      characteristic
-        .stopNotifications()
-        .then((_) => {
-          console.log("> Notifications stopped");
-          characteristic.removeEventListener(
-            "characteristicvaluechanged",
-            handlePowerUpdate
-          );
-          setCharacteristic(null);
-          device.gatt.disconnect();
-          setDevice(null);
-          setIsConnected(false);
-        })
-        .catch((error) => {
-          console.log("Argh! " + error);
-        });
+  const disconnect = async () => {
+    console.log("cyclingPowerCharacteristic:", cyclingPowerCharacteristic);
+    if (cyclingPowerCharacteristic) {
+      await cyclingPowerCharacteristic.stopNotifications();
+      console.log("> Cycling power notifications stopped");
+      cyclingPowerCharacteristic.removeEventListener(
+        "characteristicvaluechanged",
+        handlePowerUpdate
+      );
+      setCyclingPowerCharacteristic(null);
+      device.gatt.disconnect();
     }
+    setDevice(null);
+    setIsConnected(false);
   };
 
-  return { requestSmartTrainerPermission, disconnect, isConnected, power };
+  return {
+    requestSmartTrainerPermission,
+    disconnect,
+    isConnected,
+    power,
+    setResistance: async (resistance) =>
+      fitnessMachineCharacteristic &&
+      fitnessMachineCharacteristic.writeValue(
+        new Uint8Array([0x05, resistance])
+      ),
+  };
 };

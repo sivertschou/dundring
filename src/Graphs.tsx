@@ -8,14 +8,12 @@ interface Props {
 }
 export const Graphs = ({ data: rawData }: Props) => {
   const data = rawData.map((dp) => ({
-    name: ":)",
     hr: dp.heartRate,
     power: dp.power,
   }));
   const numPoints = 500;
   const filledData = [
     ...new Array(numPoints).fill({
-      name: ":)",
       hr: undefined,
       power: undefined,
     }),

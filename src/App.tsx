@@ -21,6 +21,7 @@ export const App = () => {
     power,
     isConnected: smartTrainerIsConnected,
     disconnect: disconnectSmartTrainer,
+    setResistance: setSmartTrainerResistance,
   } = useSmartTrainer();
 
   const { available: bluetoothIsAvailable } = useAvailability();
@@ -126,6 +127,19 @@ export const App = () => {
             <Stack width="25%">
               <Button onClick={() => (started ? stop() : start())}>
                 {started ? "Stop" : "Start"}
+              </Button>
+              <Button onClick={() => setSmartTrainerResistance(0)}>0 w</Button>
+              <Button onClick={() => setSmartTrainerResistance(50)}>
+                50 w
+              </Button>
+              <Button onClick={() => setSmartTrainerResistance(100)}>
+                100 w
+              </Button>
+              <Button onClick={() => setSmartTrainerResistance(150)}>
+                150 w
+              </Button>
+              <Button onClick={() => setSmartTrainerResistance(200)}>
+                200 w
               </Button>
               <Button
                 disabled={!bluetoothIsAvailable}
