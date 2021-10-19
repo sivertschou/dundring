@@ -1,3 +1,5 @@
+import { DataPoint } from "./types";
+
 export const toTCX = (dataPoints: DataPoint[], filename: string) => {
   const filtererdDataPoints = dataPoints.filter((d) => d.heartRate);
   const startTime = filtererdDataPoints[0].timeStamp;
@@ -25,9 +27,9 @@ export const toTCX = (dataPoints: DataPoint[], filename: string) => {
         <TriggerMethod>Manual</TriggerMethod>
         <Track>
         ${filtererdDataPoints.reduce(
-          (output, d) =>
-            output +
-            `<Trackpoint>
+    (output, d) =>
+      output +
+      `<Trackpoint>
               <Time>${d.timeStamp.toISOString()}</Time>
               <HeartRateBpm>
                 <Value>${d.heartRate}</Value>
@@ -40,8 +42,8 @@ export const toTCX = (dataPoints: DataPoint[], filename: string) => {
               <SensorState>Present</SensorState>
             </Trackpoint>
             `,
-          ""
-        )}
+    ""
+  )}
           </Track>
         </Lap>
     </Activity>
@@ -74,5 +76,5 @@ export const toTCX = (dataPoints: DataPoint[], filename: string) => {
   link.click();
 
   // Clean up and remove the link
-  link.parentNode.removeChild(link);
+  link.parentNode?.removeChild(link);
 };
