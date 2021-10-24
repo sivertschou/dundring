@@ -14,7 +14,7 @@ const parseHeartRate = (value: DataView | ArrayBuffer) => {
 export const useHeartRateMonitor = () => {
   const [heartRate, setHeartRate] = React.useState(0);
   const [isConnected, setIsConnected] = React.useState(false);
-  const [characteristic, setCharacteristic] = React.useState<BluetoothRemoteGATTCharacteristic | undefined>(undefined);
+  const [characteristic, setCharacteristic] = React.useState<BluetoothRemoteGATTCharacteristic | null>(null);
   const [device, setDevice] = React.useState<BluetoothDevice | null>(null);
 
   const handleHRUpdate = (event: any) => {
@@ -37,7 +37,7 @@ export const useHeartRateMonitor = () => {
         return service?.getCharacteristic("heart_rate_measurement");
       })
       .then((characteristic) => {
-        setCharacteristic(characteristic);
+        characteristic && setCharacteristic(characteristic);
         return characteristic?.startNotifications().then((_) => {
           console.log("> Notifications started");
           characteristic.addEventListener(
@@ -61,7 +61,7 @@ export const useHeartRateMonitor = () => {
             "characteristicvaluechanged",
             handleHRUpdate
           );
-          setCharacteristic(undefined);
+          setCharacteristic(null);
           device?.gatt?.disconnect();
           setDevice(null);
           setIsConnected(false);

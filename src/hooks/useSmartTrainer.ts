@@ -4,9 +4,9 @@ export const useSmartTrainer = () => {
   const [power, setPower] = React.useState(0);
   const [isConnected, setIsConnected] = React.useState(false);
   const [fitnessMachineCharacteristic, setFitnessMachineCharacteristic] =
-    React.useState<BluetoothRemoteGATTCharacteristic | undefined>(undefined);
+    React.useState<BluetoothRemoteGATTCharacteristic | null>(null);
   const [cyclingPowerCharacteristic, setCyclingPowerCharacteristic] =
-    React.useState<BluetoothRemoteGATTCharacteristic | undefined>(undefined);
+    React.useState<BluetoothRemoteGATTCharacteristic | null>(null);
   const [device, setDevice] = React.useState<BluetoothDevice | null>(null);
 
   const parsePower = (value: any) => {
@@ -60,14 +60,14 @@ export const useSmartTrainer = () => {
     console.log("[0x04, 100] sent. res:", res);
     console.log("fitnessMachineCharacteristic:", fitnessMachineCharacteristic);
 
-    setFitnessMachineCharacteristic(fitnessMachineCharacteristic);
+    fitnessMachineCharacteristic && setFitnessMachineCharacteristic(fitnessMachineCharacteristic);
 
     const cyclingPowerService = await server?.getPrimaryService("cycling_power");
     console.log("Power service:", cyclingPowerService);
     const cyclingPowerCharacteristic =
       await cyclingPowerService?.getCharacteristic("cycling_power_measurement");
     console.log("powerCharacteristic:", cyclingPowerCharacteristic);
-    setCyclingPowerCharacteristic(cyclingPowerCharacteristic);
+    cyclingPowerCharacteristic && setCyclingPowerCharacteristic(cyclingPowerCharacteristic);
 
     await cyclingPowerCharacteristic?.startNotifications();
     cyclingPowerCharacteristic?.addEventListener(
@@ -84,7 +84,7 @@ export const useSmartTrainer = () => {
         "characteristicvaluechanged",
         handlePowerUpdate
       );
-      setCyclingPowerCharacteristic(undefined);
+      setCyclingPowerCharacteristic(null);
       device?.gatt?.disconnect();
     }
     setDevice(null);
