@@ -103,10 +103,18 @@ export const useSmartTrainer = () => {
     disconnect,
     isConnected,
     power,
-    setResistance: async (resistance: number) =>
-      fitnessMachineCharacteristic &&
-      fitnessMachineCharacteristic.writeValue(
-        new Uint8Array([0x05, resistance])
-      ),
+    setResistance: async (resistance: number) => {
+      if (fitnessMachineCharacteristic) {
+        console.log("Set resistance", resistance);
+        if (!resistance) {
+          // Reset
+          fitnessMachineCharacteristic.writeValue(new Uint8Array([0x01]));
+        } else {
+          fitnessMachineCharacteristic.writeValue(
+            new Uint8Array([0x05, resistance])
+          );
+        }
+      }
+    },
   };
 };

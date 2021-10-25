@@ -25,7 +25,7 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
         onClick={() =>
           setWorkout((workout) => ({
             ...workout,
-            parts: [...workout.parts, { duration: 2, targetPower: 200 }],
+            parts: [...workout.parts, { duration: 10, targetPower: 200 }],
           }))
         }
       >
@@ -69,7 +69,7 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
                   ...workout,
                   parts: workout.parts.map((part, j) =>
                     i === j
-                      ? { ...part, power: parseInt(e.target.value) }
+                      ? { ...part, targetPower: parseInt(e.target.value) }
                       : part
                   ),
                 }))
@@ -78,7 +78,6 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
           </HStack>
         </Grid>
       ))}
-      
     </>
   );
 };

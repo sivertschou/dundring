@@ -60,7 +60,11 @@ export const App = () => {
   //   return () => clearInterval(interval);
   // }, [power, startingTime, heartRate, hrIsConnected]);
 
-  const workout = useWorkout();
+  const workout = useWorkout(
+    smartTrainerIsConnected,
+    power,
+    setSmartTrainerResistance
+  );
   const start = () => {
     startGlobalClock();
     addCallback({

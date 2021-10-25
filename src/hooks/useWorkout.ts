@@ -7,7 +7,11 @@ interface ActiveWorkout {
   partElapsedTimeMs: number;
   isDone: boolean;
 }
-export const useWorkout = () => {
+export const useWorkout = (
+  smartTrainerIsConnected: boolean,
+  power: number,
+  setResistance: (resistance: number) => void
+) => {
   const [activeWorkout, setActiveWorkout] = React.useState<ActiveWorkout>({
     workout: { name: "New workout", parts: [] },
     activePart: 0,
@@ -21,6 +25,19 @@ export const useWorkout = () => {
   // });
   // const [activePart, setActivePart] = React.useState(0);
   // const [isDone, setIsDone] = React.useState(false);
+  React.useEffect(() => {
+    console.log("active part changed");
+    if (!smartTrainerIsConnected) {
+      return;
+    }
+    if (activeWorkout.isDone) {
+      setResistance(0);
+    } else {
+      setResistance(
+        activeWorkout.workout.parts[activeWorkout.activePart].targetPower
+      );
+    }
+  }, [activeWorkout.activePart]);
 
   const updateElapsedTime = React.useCallback((diff: number) => {
     setActiveWorkout((prev) => {
