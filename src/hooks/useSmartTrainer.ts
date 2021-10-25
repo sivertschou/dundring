@@ -10,20 +10,20 @@ export const useSmartTrainer = () => {
   const [device, setDevice] = React.useState<BluetoothDevice | null>(null);
 
   const parsePower = (value: any) => {
-    console.log("value:", value);
+    // console.log("value:", value);
     const buffer = value.buffer ? value : new DataView(value);
 
     const flags = buffer.getUint8(0);
-    console.log("flags:", flags.toString(16));
+    // console.log("flags:", flags.toString(16));
 
     const power = buffer.getInt16(1);
-    console.log("power:", power);
+    // console.log("power:", power);
 
     return power;
   };
   const handlePowerUpdate = (event: any) => {
     const power = parsePower(event.target.value);
-    console.log("handlePowerUpdate");
+    // console.log("handlePowerUpdate");
     setPower(power);
   };
   const requestSmartTrainerPermission = async () => {
@@ -36,7 +36,6 @@ export const useSmartTrainer = () => {
     console.log("CONNECTED AS FITNESS MACHINE");
     setDevice(device);
     const server = await device?.gatt?.connect();
-    setIsConnected(true);
 
     const fitnessMachineService = await server?.getPrimaryService(
       "fitness_machine"
@@ -81,6 +80,7 @@ export const useSmartTrainer = () => {
       "characteristicvaluechanged",
       handlePowerUpdate
     );
+    setIsConnected(true);
   };
   const disconnect = async () => {
     console.log("cyclingPowerCharacteristic:", cyclingPowerCharacteristic);

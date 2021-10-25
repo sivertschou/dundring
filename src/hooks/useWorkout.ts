@@ -18,6 +18,8 @@ export const useWorkout = (
     partElapsedTimeMs: 0,
     isDone: false,
   });
+
+  const validWorkout = activeWorkout.workout.parts.length > 0;
   // const [partElapsedTimeMs, setPartElapsedTimeMs] = React.useState(0);
   // const [workout, setWorkout] = React.useState<Workout>({
   //   name: "",
@@ -25,19 +27,30 @@ export const useWorkout = (
   // });
   // const [activePart, setActivePart] = React.useState(0);
   // const [isDone, setIsDone] = React.useState(false);
+  const [previousActivePart, setPreviousActivePart] = React.useState(0);
   React.useEffect(() => {
-    console.log("active part changed");
-    if (!smartTrainerIsConnected) {
+    if (
+      !smartTrainerIsConnected ||
+      previousActivePart === activeWorkout.activePart
+    ) {
       return;
     }
-    if (activeWorkout.isDone) {
+    setPreviousActivePart(activeWorkout.activePart);
+    console.log("active part changed");
+    if (activeWorkout.isDone || !validWorkout) {
       setResistance(0);
     } else {
       setResistance(
         activeWorkout.workout.parts[activeWorkout.activePart].targetPower
       );
     }
-  }, [activeWorkout.activePart]);
+  }, [
+    activeWorkout.activePart,
+    activeWorkout.isDone,
+    activeWorkout.workout.parts,
+    setResistance,
+    smartTrainerIsConnected,
+  ]);
 
   const updateElapsedTime = React.useCallback((diff: number) => {
     setActiveWorkout((prev) => {
@@ -72,6 +85,20 @@ export const useWorkout = (
     });
   }, []);
 
+  const startWorkout = React.useCallback(() => {
+    if (activeWorkout.isDone) {
+      return;
+    }
+    setResistance(
+      activeWorkout.workout.parts[activeWorkout.activePart].targetPower
+    );
+  }, [
+    activeWorkout.isDone,
+    activeWorkout.activePart,
+    activeWorkout.workout.parts,
+    setResistance,
+  ]);
+
   return {
     workout: activeWorkout.workout,
     setWorkout: (workout: Workout) => {
@@ -83,5 +110,6 @@ export const useWorkout = (
       updateElapsedTime(diff);
     },
     isDone: activeWorkout.isDone,
+    start: () => startWorkout(),
   };
 };

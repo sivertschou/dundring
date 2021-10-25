@@ -42,23 +42,23 @@ export const App = () => {
     stop: stopGlobalClock,
   } = useGlobalClock();
 
-  // React.useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     if (running) {
-  //       const heartRateToInclude = heartRate ? { heartRate } : {};
-  //       const powerToInclude = power ? { power } : {};
-  //       setData((data) => [
-  //         ...data,
-  //         {
-  //           ...heartRateToInclude,
-  //           ...powerToInclude,
-  //           timeStamp: new Date(),
-  //         },
-  //       ]);
-  //     }
-  //   }, 500);
-  //   return () => clearInterval(interval);
-  // }, [power, startingTime, heartRate, hrIsConnected]);
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      if (running) {
+        const heartRateToInclude = heartRate ? { heartRate } : {};
+        const powerToInclude = power ? { power } : {};
+        setData((data) => [
+          ...data,
+          {
+            ...heartRateToInclude,
+            ...powerToInclude,
+            timeStamp: new Date(),
+          },
+        ]);
+      }
+    }, 500);
+    return () => clearInterval(interval);
+  }, [power, startingTime, heartRate, hrIsConnected]);
 
   const workout = useWorkout(
     smartTrainerIsConnected,
@@ -71,7 +71,9 @@ export const App = () => {
       name: "Basic",
       callback: (timeSinceLast) => {
         setTimeElapsed((prev) => prev + timeSinceLast);
-        workout.increaseElapsedTime(timeSinceLast);
+        if (workout.workout.parts.length > 0) {
+          workout.increaseElapsedTime(timeSinceLast);
+        }
       },
     });
     if (!startingTime) {
