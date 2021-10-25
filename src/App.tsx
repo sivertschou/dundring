@@ -65,8 +65,10 @@ export const App = () => {
     startGlobalClock();
     addCallback({
       name: "Basic",
-      callback: (timeSinceLast) =>
-        setTimeElapsed((prev) => prev + timeSinceLast),
+      callback: (timeSinceLast) => {
+        setTimeElapsed((prev) => prev + timeSinceLast);
+        workout.increaseElapsedTime(timeSinceLast);
+      },
     });
     if (!startingTime) {
       setStartingTime(new Date());
@@ -77,7 +79,7 @@ export const App = () => {
     removeCallback("Basic");
     stopGlobalClock();
   };
-  const secondsElapsed = Math.round(timeElapsed / 1000);
+  const secondsElapsed = Math.floor(timeElapsed / 1000);
   const hours = Math.floor((secondsElapsed / 60 / 60) % 24);
   const minutes = Math.floor((secondsElapsed / 60) % 60);
   const seconds = Math.floor(secondsElapsed % 60);
@@ -89,6 +91,7 @@ export const App = () => {
           workout: workout.workout,
           activePart: workout.activePart,
           partElapsedTime: workout.partElapsedTime,
+          isDone: workout.isDone,
         }}
       >
         <Center>
@@ -131,7 +134,7 @@ export const App = () => {
               </Center>
             </Grid>
             <Center>
-              <WorkoutDisplay />
+              {workout.workout.parts.length > 0 ? <WorkoutDisplay /> : null}
               <Graphs data={data} />
             </Center>
             <Center>

@@ -1,44 +1,70 @@
 import * as React from "react";
 import { Workout } from "../types";
 
+interface ActiveWorkout {
+  workout: Workout;
+  activePart: number;
+  partElapsedTimeMs: number;
+  isDone: boolean;
+}
 export const useWorkout = () => {
-  const [partElapsedTime, setPartElapsedTime] = React.useState(0);
-  const [workout, setWorkout] = React.useState<Workout>({
-    name: "",
-    parts: [],
+  const [activeWorkout, setActiveWorkout] = React.useState<ActiveWorkout>({
+    workout: { name: "New workout", parts: [] },
+    activePart: 0,
+    partElapsedTimeMs: 0,
+    isDone: false,
   });
-  const [activePart, setActivePart] = React.useState(0);
-  const [isDone, setIsDone] = React.useState(false);
+  // const [partElapsedTimeMs, setPartElapsedTimeMs] = React.useState(0);
+  // const [workout, setWorkout] = React.useState<Workout>({
+  //   name: "",
+  //   parts: [],
+  // });
+  // const [activePart, setActivePart] = React.useState(0);
+  // const [isDone, setIsDone] = React.useState(false);
 
-  //   const remainingTime = workout?.parts[activePart].duration - activePart
-  return {
-    workout,
-    setWorkout: (workout: Workout) => {
-      setWorkout(workout);
-      setPartElapsedTime(0);
-    },
-    activePart,
-    partElapsedTime,
-    increaseElapsedTime: (diff: number) => {
-      if (!isDone) {
-        setPartElapsedTime((prev) => {
-          const newElapsed = diff + prev;
-          const currentPartDuration = workout.parts[activePart].duration;
+  const updateElapsedTime = React.useCallback((diff: number) => {
+    setActiveWorkout((prev) => {
+      if (!prev.isDone) {
+        const { activePart: prevActivePart, workout: prevWorkout } = prev;
+        const newElapsed = diff + prev.partElapsedTimeMs;
+        const elapsedSeconds = Math.floor(newElapsed / 1000);
+        const currentPartDuration = prevWorkout.parts[prevActivePart].duration;
 
-          if (currentPartDuration < newElapsed) {
-            // Done with current part
-            if (activePart === workout.parts.length - 1) {
-              // Done with every party
-              setIsDone(true);
-            }
-
-            setActivePart(activePart + 1);
-            return newElapsed - currentPartDuration;
+        if (currentPartDuration < elapsedSeconds) {
+          // Done with current part
+          if (prevActivePart === prevWorkout.parts.length - 1) {
+            // Done with every party
+            return {
+              ...prev,
+              partElapsedTimeMs: 0,
+              activePart: 0,
+              isDone: true,
+            };
           }
 
-          return newElapsed;
-        });
+          return {
+            ...prev,
+            partElapsedTimeMs: newElapsed - currentPartDuration * 1000,
+            activePart: prevActivePart + 1,
+          } as ActiveWorkout;
+        }
+
+        return { ...prev, partElapsedTimeMs: newElapsed };
       }
+      return prev;
+    });
+  }, []);
+
+  return {
+    workout: activeWorkout.workout,
+    setWorkout: (workout: Workout) => {
+      setActiveWorkout((prev) => ({ ...prev, workout, partElapsedTimeMs: 0 }));
     },
+    activePart: activeWorkout.activePart,
+    partElapsedTime: Math.floor(activeWorkout.partElapsedTimeMs / 1000),
+    increaseElapsedTime: (diff: number) => {
+      updateElapsedTime(diff);
+    },
+    isDone: activeWorkout.isDone,
   };
 };

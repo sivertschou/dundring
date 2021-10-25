@@ -18,4 +18,5 @@ export interface WorkoutContextType {
   workout: Workout;
   partElapsedTime: number;
   activePart: number;
+  isDone: boolean;
 }

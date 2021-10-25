@@ -21,6 +21,23 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
           setWorkout((workout) => ({ ...workout, name: e.target.value }))
         }
       />
+      <Button
+        onClick={() =>
+          setWorkout((workout) => ({
+            ...workout,
+            parts: [...workout.parts, { duration: 2, targetPower: 200 }],
+          }))
+        }
+      >
+        Add part
+      </Button>
+      <Button
+        onClick={() => {
+          setGlobalWorkout(workout);
+        }}
+      >
+        Use workout
+      </Button>
       <Text>{workout.name}</Text>
       {workout.parts.map((part, i) => (
         <Grid key={i} templateColumns="1fr 1fr" gap="2">
@@ -61,23 +78,7 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
           </HStack>
         </Grid>
       ))}
-      <Button
-        onClick={() =>
-          setWorkout((workout) => ({
-            ...workout,
-            parts: [...workout.parts, { duration: 300, targetPower: 200 }],
-          }))
-        }
-      >
-        Add part
-      </Button>
-      <Button
-        onClick={() => {
-          setGlobalWorkout(workout);
-        }}
-      >
-        Use workout
-      </Button>
+      
     </>
   );
 };
