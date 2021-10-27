@@ -25,7 +25,7 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
         onClick={() =>
           setWorkout((workout) => ({
             ...workout,
-            parts: [...workout.parts, { duration: 10, targetPower: 200 }],
+            parts: [...workout.parts, { duration: 300, targetPower: 200 }],
           }))
         }
       >
