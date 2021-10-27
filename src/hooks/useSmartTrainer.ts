@@ -10,14 +10,11 @@ export const useSmartTrainer = () => {
   const [device, setDevice] = React.useState<BluetoothDevice | null>(null);
 
   const parsePower = (value: any) => {
-    // console.log("value:", value);
     const buffer = value.buffer ? value : new DataView(value);
 
-    const flags = buffer.getUint8(0);
-    // console.log("flags:", flags.toString(16));
-
-    const power = buffer.getInt16(1);
-    // console.log("power:", power);
+    const powerLSB = buffer.getUint8(2);
+    const powerMSB = buffer.getUint8(3);
+    const power = powerLSB + powerMSB * 256;
 
     return power;
   };
@@ -110,9 +107,12 @@ export const useSmartTrainer = () => {
           // Reset
           fitnessMachineCharacteristic.writeValue(new Uint8Array([0x01]));
         } else {
-          fitnessMachineCharacteristic.writeValue(
-            new Uint8Array([0x05, resistance])
-          );
+          const resBuf = new Uint8Array(new Uint16Array([resistance]).buffer);
+          const cmdBuf = new Uint8Array([0x05]);
+          const combined = new Uint8Array(cmdBuf.length + resBuf.length);
+          combined.set(cmdBuf);
+          combined.set(resBuf, cmdBuf.length);
+          fitnessMachineCharacteristic.writeValue(combined);
         }
       }
     },
