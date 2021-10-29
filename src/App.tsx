@@ -13,6 +13,7 @@ import { DataPoint } from "./types";
 import * as utils from "./utils";
 import { WorkoutDisplay } from "./WorkoutDisplay";
 import { WorkoutEditor } from "./WorkoutEditor";
+
 export const App = () => {
   const {
     requestHRPermission,
@@ -149,7 +150,7 @@ export const App = () => {
                 <Button onClick={() => (running ? stop() : start())}>
                   {running ? "Stop" : "Start"}
                 </Button>
-                {/* <Button onClick={() => setSmartTrainerResistance(0)}>
+                <Button onClick={() => setSmartTrainerResistance(0)}>
                   0 w
                 </Button>
                 <Button onClick={() => setSmartTrainerResistance(50)}>
@@ -163,7 +164,13 @@ export const App = () => {
                 </Button>
                 <Button onClick={() => setSmartTrainerResistance(200)}>
                   200 w
-                </Button> */}
+                </Button>
+                <Button onClick={() => setSmartTrainerResistance(250)}>
+                  250 w
+                </Button>
+                <Button onClick={() => setSmartTrainerResistance(300)}>
+                  300 w
+                </Button>
                 <Button
                   disabled={!bluetoothIsAvailable}
                   onClick={() =>
