@@ -80,11 +80,18 @@ export const App = () => {
     if (!startingTime) {
       setStartingTime(new Date());
     }
+    const validWorkoutSelected = workout.workout.parts.length > 0;
+    if (validWorkoutSelected) {
+      workout.start();
+    }
   };
 
   const stop = () => {
     removeCallback("Basic");
     stopGlobalClock();
+    if (smartTrainerIsConnected) {
+      setSmartTrainerResistance(0);
+    }
   };
   const secondsElapsed = Math.floor(timeElapsed / 1000);
   const hours = Math.floor((secondsElapsed / 60 / 60) % 24);

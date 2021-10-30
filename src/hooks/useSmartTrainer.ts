@@ -105,7 +105,8 @@ export const useSmartTrainer = () => {
         console.log("Set resistance", resistance);
         if (!resistance) {
           // Reset
-          fitnessMachineCharacteristic.writeValue(new Uint8Array([0x01]));
+          await fitnessMachineCharacteristic.writeValue(new Uint8Array([0x01]));
+          fitnessMachineCharacteristic.writeValue(new Uint8Array([0x05, 0]));
         } else {
           const resBuf = new Uint8Array(new Uint16Array([resistance]).buffer);
           const cmdBuf = new Uint8Array([0x05]);
