@@ -1,5 +1,9 @@
 import { DataPoint } from "./types";
 
+export function randomIntFromInterval(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
 export const toTCX = (dataPoints: DataPoint[], filename: string) => {
   const filtererdDataPoints = dataPoints.filter((d) => d.heartRate);
   const startTime = filtererdDataPoints[0].timeStamp;
@@ -95,7 +99,6 @@ export const formatHoursMinutesAndSecondsAsString = ({
   minutes,
   seconds,
 }: HoursMinutesAndSeconds) => {
-  return `${hours > 0 ? hours + ":" : ""}${
-    minutes < 10 ? "0" + minutes : minutes
-  }:${seconds < 10 ? "0" + seconds : seconds}`;
+  return `${hours > 0 ? hours + ":" : ""}${minutes < 10 ? "0" + minutes : minutes
+    }:${seconds < 10 ? "0" + seconds : seconds}`;
 };
