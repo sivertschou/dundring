@@ -59,7 +59,7 @@ export const App = () => {
       }
     }, 500);
     return () => clearInterval(interval);
-  }, [power, startingTime, heartRate, hrIsConnected]);
+  }, [power, startingTime, heartRate, hrIsConnected, running]);
 
   const workout = useWorkout(
     smartTrainerIsConnected,
