@@ -5,6 +5,12 @@ export interface LoginRequestBody {
   password: string;
 }
 
+export interface RegisterRequestBody {
+  username: string;
+  email: string;
+  password: string;
+}
+
 export enum ApiStatus {
   SUCCESS = "SUCCESS",
   FAILURE = "FAILURE",
@@ -29,6 +35,8 @@ export interface LoginErrorResponseBody extends ApiErrorResponseBody {}
 export type LoginResponseBody =
   | LoginSuccessResponseBody
   | LoginErrorResponseBody;
+
+export interface LoginErrorResponseBody extends ApiErrorResponseBody {}
 
 export interface WorkoutsSuccessBody extends ApiSuccessResponseBody {
   workouts: Workout[];

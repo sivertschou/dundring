@@ -1,15 +1,20 @@
 import * as userService from "./services/userService";
 import * as validationService from "./services/validationService";
 import * as express from "express";
-import * as types from "../../common/types/apiTypes";
-import { ApiStatus } from "../../common/types/apiTypes";
-// const express = require("express");
+import {
+  ApiStatus,
+  LoginRequestBody,
+  LoginResponseBody,
+  LoginSuccessResponseBody,
+  RegisterRequestBody,
+  WorkoutsSuccessBody,
+} from "../../common/types/apiTypes";
+import { UserRoles } from "../../common/types/userTypes";
+
 const http = require("http");
-const dotenv = require("dotenv");
+require("dotenv").config();
 
 // Create a new express app instance
-dotenv.config();
-// const app = express();
 const app = express.default();
 const cors = require("cors");
 
@@ -20,7 +25,7 @@ app.use(cors());
 
 const httpServer = http.createServer(app);
 
-app.get<null, types.WorkoutsSuccessBody>(
+app.get<null, WorkoutsSuccessBody>(
   "/me/workouts",
   validationService.authenticateToken,
   (req, res) => {
@@ -28,7 +33,7 @@ app.get<null, types.WorkoutsSuccessBody>(
   }
 );
 
-app.post<null, types.LoginSuccessResponseBody, types.LoginRequestBody>(
+app.post<null, LoginSuccessResponseBody, LoginRequestBody>(
   "/validate",
   (req, res) => {
     console.log("validater");
@@ -40,13 +45,69 @@ app.post<null, types.LoginSuccessResponseBody, types.LoginRequestBody>(
   }
 );
 
-app.post<null, types.LoginResponseBody, types.LoginRequestBody>(
+app.post<null, LoginResponseBody, LoginRequestBody>(
   "/login",
   async (req, res) => {
     const { username, password } = req.body;
 
     const hashedPassword = validationService.hash(password);
-    console.log("hashedPassword", hashedPassword);
+    if (userService.validateUser(username, hashedPassword)) {
+      const token = validationService.generateAccessToken(username);
+      const userRoles = userService.getUserRoles(username);
+      res.send({
+        status: ApiStatus.SUCCESS,
+        username,
+        token,
+        roles: userRoles,
+      });
+      return;
+    }
+
+    res.statusMessage = "Invalid username or password.";
+    res.statusCode = 401;
+    res.send({
+      status: ApiStatus.FAILURE,
+      message: "Invalid username or password",
+    });
+  }
+);
+
+app.post<null, LoginResponseBody, RegisterRequestBody>(
+  "/register",
+  async (req, res) => {
+    const { username, password, email } = req.body;
+
+    const hashedPassword = validationService.hash(password);
+
+    try {
+      userService.createUser({
+        username: username,
+        email: email,
+        password: hashedPassword,
+        roles: [UserRoles.DEFAULT],
+      });
+    } catch (e: any) {
+      const message = e.message;
+      let statusMessage = "Something went wrong;).";
+      let statusCode = 500;
+      switch (message) {
+        case "User already exists":
+          statusMessage = "User already exists";
+          statusCode = 400;
+          break;
+        case "File not found":
+        default:
+          break;
+      }
+      res.statusMessage = statusMessage;
+      res.statusCode = statusCode;
+      res.send({
+        status: ApiStatus.FAILURE,
+        message: statusMessage,
+      });
+      return;
+    }
+
     if (userService.validateUser(username, hashedPassword)) {
       const token = validationService.generateAccessToken(username);
       const userRoles = userService.getUserRoles(username);

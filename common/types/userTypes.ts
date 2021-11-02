@@ -4,6 +4,13 @@ export interface User {
   roles: UserRoles[];
 }
 
+export interface UserStore {
+  username: string;
+  email: string;
+  roles: UserRoles[];
+  password: string;
+}
+
 export enum UserRoles {
   DEFAULT = "DEFAULT",
   ADMIN = "ADMIN",
