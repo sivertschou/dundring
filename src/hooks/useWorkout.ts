@@ -9,7 +9,6 @@ interface ActiveWorkout {
 }
 export const useWorkout = (
   smartTrainerIsConnected: boolean,
-  power: number,
   setResistance: (resistance: number) => void
 ) => {
   const [activeWorkout, setActiveWorkout] = React.useState<ActiveWorkout>({

@@ -63,7 +63,6 @@ export const App = () => {
 
   const workout = useWorkout(
     smartTrainerIsConnected,
-    power,
     setSmartTrainerResistance
   );
   const start = () => {
