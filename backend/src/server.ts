@@ -1,3 +1,4 @@
+import * as messageService from "./services/messageService";
 import * as userService from "./services/userService";
 import * as validationService from "./services/validationService";
 import * as express from "express";
@@ -46,16 +47,14 @@ app.post<null, LoginSuccessResponseBody, LoginRequestBody>(
   }
 );
 
-app.post<null, MessagesResponseBody, LoginRequestBody>(
-  "/messages",
-  (req, res) => {
-    // TODO get messages
-    res.send({
-      status: ApiStatus.FAILURE,
-      message: "Invalid username or password",
-    });
-  }
-);
+app.get<null, MessagesResponseBody>("/messages", (req, res) => {
+  const messages = messageService.getMessages();
+
+  res.send({
+    status: ApiStatus.SUCCESS,
+    messages,
+  });
+});
 
 app.post<null, LoginResponseBody, LoginRequestBody>(
   "/login",
@@ -100,7 +99,7 @@ app.post<null, LoginResponseBody, RegisterRequestBody>(
 
     if (ret.status === "ERROR") {
       const message = ret.type;
-      let statusMessage = "Something went wrong;).";
+      let statusMessage = "Something went wrong.";
       let statusCode = 500;
 
       switch (message) {
