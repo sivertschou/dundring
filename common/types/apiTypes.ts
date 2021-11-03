@@ -1,5 +1,5 @@
 import { Workout } from "./workoutTypes";
-
+import { Message } from "./messageTypes";
 export interface LoginRequestBody {
   username: string;
   password: string;
@@ -38,6 +38,16 @@ export type LoginResponseBody =
 
 export interface LoginErrorResponseBody extends ApiErrorResponseBody {}
 
-export interface WorkoutsSuccessBody extends ApiSuccessResponseBody {
+export interface WorkoutsSuccessResponseBody extends ApiSuccessResponseBody {
   workouts: Workout[];
 }
+export type WorkoutsResponseBody =
+  | WorkoutsSuccessResponseBody
+  | ApiErrorResponseBody;
+
+export interface MessagesSuccessResponseBody extends ApiSuccessResponseBody {
+  messages: Message[];
+}
+export type MessagesResponseBody =
+  | MessagesSuccessResponseBody
+  | ApiErrorResponseBody;

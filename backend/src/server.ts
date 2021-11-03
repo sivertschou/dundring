@@ -6,8 +6,9 @@ import {
   LoginRequestBody,
   LoginResponseBody,
   LoginSuccessResponseBody,
+  MessagesResponseBody,
   RegisterRequestBody,
-  WorkoutsSuccessBody,
+  WorkoutsSuccessResponseBody,
 } from "../../common/types/apiTypes";
 import { UserRoles } from "../../common/types/userTypes";
 
@@ -25,7 +26,7 @@ app.use(cors());
 
 const httpServer = http.createServer(app);
 
-app.get<null, WorkoutsSuccessBody>(
+app.get<null, WorkoutsSuccessResponseBody>(
   "/me/workouts",
   validationService.authenticateToken,
   (req, res) => {
@@ -42,6 +43,17 @@ app.post<null, LoginSuccessResponseBody, LoginRequestBody>(
     //   username: req.body.username,
     //   role: userService.getUserRoles(req.body.username),
     // });
+  }
+);
+
+app.post<null, MessagesResponseBody, LoginRequestBody>(
+  "/messages",
+  (req, res) => {
+    // TODO get messages
+    res.send({
+      status: ApiStatus.FAILURE,
+      message: "Invalid username or password",
+    });
   }
 );
 
@@ -79,17 +91,18 @@ app.post<null, LoginResponseBody, RegisterRequestBody>(
 
     const hashedPassword = validationService.hash(password);
 
-    try {
-      userService.createUser({
-        username: username,
-        email: email,
-        password: hashedPassword,
-        roles: [UserRoles.DEFAULT],
-      });
-    } catch (e: any) {
-      const message = e.message;
+    const ret = userService.createUser({
+      username: username,
+      email: email,
+      password: hashedPassword,
+      roles: [UserRoles.DEFAULT],
+    });
+
+    if (ret.status === "ERROR") {
+      const message = ret.type;
       let statusMessage = "Something went wrong;).";
       let statusCode = 500;
+
       switch (message) {
         case "User already exists":
           statusMessage = "User already exists";

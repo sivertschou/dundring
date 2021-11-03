@@ -2,11 +2,11 @@ import { UserStore } from "../../../common/types/userTypes";
 require("dotenv").config();
 const fs = require("fs");
 
-const usersFilename = process.env.USERS_FILENAME;
+const usersPath = `${process.env.DATA_PATH}/users.json`;
 
 export const getUsers = () => {
-  if (fs.existsSync(usersFilename)) {
-    const rawdata = fs.readFileSync(usersFilename);
+  if (fs.existsSync(usersPath)) {
+    const rawdata = fs.readFileSync(usersPath);
     const parsedData = JSON.parse(rawdata);
 
     return [...parsedData];
@@ -39,19 +39,32 @@ export const getUserRoles = (username: string): string[] => {
   }
   return user && user.roles;
 };
+interface SuccessStatus<T> {
+  status: "SUCCESS";
+  data: T;
+}
+interface ErrorStatus<E> {
+  status: "ERROR";
+  type: E;
+}
 
-export const createUser = (user: UserStore) => {
+type Status<T, E> = SuccessStatus<T> | ErrorStatus<E>;
+
+export const createUser = (
+  user: UserStore
+): Status<UserStore, "User already exists" | "File not found"> => {
   if (getUser(user.username)) {
-    throw new Error("User already exists");
+    return { status: "ERROR", type: "User already exists" };
   }
 
-  if (fs.existsSync(usersFilename)) {
-    const rawdata = fs.readFileSync(usersFilename);
+  if (fs.existsSync(usersPath)) {
+    const rawdata = fs.readFileSync(usersPath);
     const parsedData = JSON.parse(rawdata);
 
-    fs.writeFileSync(usersFilename, JSON.stringify([...parsedData, user]));
+    fs.writeFileSync(usersPath, JSON.stringify([...parsedData, user]));
+    return { status: "SUCCESS", data: user };
   } else {
-    console.error("File not found", usersFilename);
-    throw new Error("File not found");
+    console.error("File not found", usersPath);
+    return { status: "ERROR", type: "File not found" };
   }
 };
