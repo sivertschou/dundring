@@ -1,10 +1,13 @@
-import { NextFunction, Request, Response } from "express";
 import { User } from "../../../common/types/userTypes";
 
 const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
+import crypto from "crypto";
+import { NextFunction } from "express";
+import { Request, Response } from "express-serve-static-core";
+import { WorkoutsSuccessResponseBody } from "../../../common/types/apiTypes";
 
-const validateLogin = (username: string, password: string) => {};
+
+const validateLogin = (username: string, password: string) => { };
 
 export const hash = (message: string) => {
   return crypto.createHash("md5").update(message).digest("hex");
@@ -20,12 +23,22 @@ declare module "express" {
     user?: User; // adding our custom declaration.
   }
 }
-// TODO: Fix param types
-export const authenticateToken = (req: any, res: any, next: any) => {
+
+
+type RequestBody = {
+  headers: Record<string, any>,
+  user?: User
+}
+
+export const authenticateToken = (
+  req: Request<null, WorkoutsSuccessResponseBody> & RequestBody,
+  res: Response<WorkoutsSuccessResponseBody>,
+  next: NextFunction
+) => {
   console.log("headers:", req.headers);
   const authHeader = req.headers["authorization"];
   console.log("authHeader:", authHeader);
-  const token = authHeader && authHeader.split(" ")[1];
+  const token = authHeader?.split(" ")[1];
 
   if (!token) {
     return res.sendStatus(401);
