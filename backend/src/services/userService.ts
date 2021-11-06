@@ -15,13 +15,8 @@ export const getUsers = () => {
   return [];
 };
 
-export const getUser = (username: string) => {
-  const users = getUsers();
-
-  const user = users.find((user) => user.username === username);
-
-  return user;
-};
+export const getUser = (username: string) =>
+  getUsers().find((user) => user.username === username);
 
 export const validateUser = (username: string, hashedPassword: string) => {
   const user = getUser(username);
