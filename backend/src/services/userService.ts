@@ -1,38 +1,33 @@
-import { UserStore } from "../../../common/types/userTypes";
+import { StoredUser } from "../../../common/types/userTypes";
 require("dotenv").config();
-const fs = require("fs");
+import * as fs from "fs";
 
 const usersPath = `${process.env.DATA_PATH}/users.json`;
 
-export const getUsers = () => {
+export const getUsers = (): StoredUser[] => {
   if (fs.existsSync(usersPath)) {
     const rawdata = fs.readFileSync(usersPath);
-    const parsedData = JSON.parse(rawdata);
-
-    return [...parsedData];
+    return JSON.parse(rawdata.toString()) as StoredUser[];
   }
 
   return [];
 };
 
-export const getUser = (username: string) =>
-  getUsers().find((user) => user.username === username);
+export const getUser = (username: string): StoredUser | null =>
+  getUsers().find((user) => user.username === username) || null;
 
-export const validateUser = (username: string, hashedPassword: string) => {
+export const validateUser = (
+  username: string,
+  hashedPassword: string
+): boolean => {
   const user = getUser(username);
 
-  if (user && user.password === hashedPassword) {
-    return true;
-  }
-
-  return false;
+  return user?.password === hashedPassword;
 };
 
 export const getUserRoles = (username: string): string[] => {
   const user = getUser(username);
-  if (!user) {
-  }
-  return user && user.roles;
+  return user ? user.roles : [];
 };
 interface SuccessStatus<T> {
   status: "SUCCESS";
@@ -46,15 +41,15 @@ interface ErrorStatus<E> {
 type Status<T, E> = SuccessStatus<T> | ErrorStatus<E>;
 
 export const createUser = (
-  user: UserStore
-): Status<UserStore, "User already exists" | "File not found"> => {
+  user: StoredUser
+): Status<StoredUser, "User already exists" | "File not found"> => {
   if (getUser(user.username)) {
     return { status: "ERROR", type: "User already exists" };
   }
 
   if (fs.existsSync(usersPath)) {
     const rawdata = fs.readFileSync(usersPath);
-    const parsedData = JSON.parse(rawdata);
+    const parsedData = JSON.parse(rawdata.toString()) as StoredUser[];
 
     fs.writeFileSync(usersPath, JSON.stringify([...parsedData, user]));
     return { status: "SUCCESS", data: user };

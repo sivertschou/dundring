@@ -4,7 +4,7 @@ export interface User {
   roles: UserRoles[];
 }
 
-export interface UserStore {
+export interface StoredUser {
   username: string;
   email: string;
   roles: UserRoles[];
