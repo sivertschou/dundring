@@ -2,7 +2,7 @@ import { Button } from "@chakra-ui/button";
 import { Input } from "@chakra-ui/input";
 import { HStack, Text, Grid } from "@chakra-ui/layout";
 import * as React from "react";
-import { Workout as WorkoutType } from "./types";
+import { Workout as WorkoutType } from "../types";
 
 interface Props {
   setWorkout: (workout: WorkoutType) => void;

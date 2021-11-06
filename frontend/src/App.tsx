@@ -2,7 +2,7 @@ import { Center, Stack, Text, Grid, Link } from "@chakra-ui/layout";
 import { ChakraProvider, Button } from "@chakra-ui/react";
 import * as React from "react";
 import { WorkoutContext } from "./context/WorkoutContext";
-import { Graphs } from "./Graphs";
+import { Graphs } from "./components/Graphs";
 import { useAvailability } from "./hooks/useAvailability";
 import { useGlobalClock } from "./hooks/useGlobalClock";
 import { useHeartRateMonitor } from "./hooks/useHeartRateMonitor";
@@ -11,8 +11,8 @@ import { useWorkout } from "./hooks/useWorkout";
 import theme from "./theme";
 import { DataPoint } from "./types";
 import * as utils from "./utils";
-import { WorkoutDisplay } from "./WorkoutDisplay";
-import { WorkoutEditor } from "./WorkoutEditor";
+import { WorkoutDisplay } from "./components/WorkoutDisplay";
+import { WorkoutEditor } from "./components/WorkoutEditor";
 
 export const App = () => {
   const {
