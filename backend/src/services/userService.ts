@@ -1,4 +1,4 @@
-import { StoredUser } from "../../../common/types/userTypes";
+import { StoredUser, UserRole } from "../../../common/types/userTypes";
 require("dotenv").config();
 import * as fs from "fs";
 
@@ -25,7 +25,7 @@ export const validateUser = (
   return user?.password === hashedPassword;
 };
 
-export const getUserRoles = (username: string): string[] => {
+export const getUserRoles = (username: string): UserRole[] => {
   const user = getUser(username);
   return user ? user.roles : [];
 };

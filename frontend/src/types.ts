@@ -1,3 +1,5 @@
+import { UserRole } from "../../common/types/userTypes";
+
 export interface DataPoint {
   heartRate?: number;
   power?: number;
@@ -20,3 +22,17 @@ export interface WorkoutContextType {
   activePart: number;
   isDone: boolean;
 }
+
+export interface LoggedInUser {
+  loggedIn: true;
+  token: string;
+  username: string;
+  roles: UserRole[];
+  workouts: Workout[];
+}
+
+export interface LoggedOutUser {
+  loggedIn: false;
+}
+
+export type UserContextType = LoggedInUser | LoggedOutUser;
