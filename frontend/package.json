@@ -24,6 +24,7 @@
     "web-vitals": "^0.2.2"
   },
   "scripts": {
+    "preinstall": "bash prepare.sh",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
