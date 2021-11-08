@@ -5,13 +5,10 @@ import { UserContextType } from "../types";
 export const defaultUser: UserContextType = {
   loggedIn: false,
 };
-const UserContext = React.createContext<
-  | {
-      user: UserContextType;
-      setUser: (user: UserContextType) => void;
-    }
-  | undefined
->(undefined);
+const UserContext = React.createContext<{
+  user: UserContextType;
+  setUser: (user: UserContextType) => void;
+} | null>(null);
 
 export const UserContextProvider = ({
   children,
@@ -53,7 +50,7 @@ export const UserContextProvider = ({
 
 export const useUser = () => {
   const context = React.useContext(UserContext);
-  if (context === undefined) {
+  if (context === null) {
     throw new Error("useUser must be used within a UserContextProvider");
   }
   return context;
