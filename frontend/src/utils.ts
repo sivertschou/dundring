@@ -1,11 +1,11 @@
 import { DataPoint } from "./types";
 
-export const randomIntFromInterval = (min: number, max: number): number  => {
+export const randomIntFromInterval = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
 export const toTCX = (dataPoints: DataPoint[], filename: string) => {
-  const filtererdDataPoints = dataPoints.filter((d) => d.heartRate);
+  const filtererdDataPoints = dataPoints.filter((d) => d.heartRate || d.power);
   const startTime = filtererdDataPoints[0].timeStamp;
   const endTime = filtererdDataPoints[filtererdDataPoints.length - 1].timeStamp;
 
