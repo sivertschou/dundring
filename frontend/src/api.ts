@@ -64,12 +64,9 @@ export const register = async (registerData: RegisterRequestBody) => {
 };
 
 export const validateToken = async (token: string) => {
-  if (token) {
-    return authPost<ApiResponseBody<LoginResponseBody>, {}>(
-      `${baseUrl}/validate`,
-      {},
-      token
-    );
-  }
-  return undefined;
+  return authPost<ApiResponseBody<LoginResponseBody>, {}>(
+    `${baseUrl}/validate`,
+    {},
+    token
+  );
 };

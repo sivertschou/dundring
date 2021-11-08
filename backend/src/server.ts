@@ -34,16 +34,24 @@ app.get<null, ApiResponseBody<WorkoutsResponseBody>>(
     res.send({ status: ApiStatus.SUCCESS, data: { workouts: [] } });
   }
 );
-
-app.post<null, ApiResponseBody<LoginResponseBody>, LoginRequestBody>(
+app.post<null, ApiResponseBody<LoginResponseBody>>(
   "/validate",
-  (req, res) => {
-    console.log("validater");
-    req;
-    // res.send({
-    //   username: req.body.username,
-    //   role: userService.getUserRoles(req.body.username),
-    // });
+  validationService.authenticateToken,
+  async (req: validationService.AuthenticatedRequest<null>, res) => {
+    const username = req.username;
+    const user = userService.getUser(username || "");
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+
+    if (!user) {
+      return;
+    }
+
+    res.send({
+      status: ApiStatus.SUCCESS,
+      data: { roles: user.roles, token: token || "", username: user.username },
+    });
+    return;
   }
 );
 

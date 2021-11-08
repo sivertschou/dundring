@@ -15,30 +15,32 @@ export const generateAccessToken = (username: string) => {
     expiresIn: "120d",
   });
 };
-declare module "express" {
-  export interface Request {
-    user?: User; // adding our custom declaration.
-  }
+export interface AuthenticatedRequest<T> extends Request<T> {
+  username?: string;
 }
-// TODO: Fix param types
-export const authenticateToken = (req: any, res: any, next: any) => {
-  console.log("headers:", req.headers);
+export const authenticateToken = <T, R>(
+  req: AuthenticatedRequest<T>,
+  res: Response<R>,
+  next: any
+) => {
   const authHeader = req.headers["authorization"];
-  console.log("authHeader:", authHeader);
   const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
+    res.statusMessage = "No token provided.";
     return res.sendStatus(401);
   }
 
-  jwt.verify(token, process.env.TOKEN_SECRET, (err: Error, user: User) => {
-    console.log("error:", err);
-
-    if (err) {
-      return res.sendStatus(401);
+  jwt.verify(
+    token,
+    process.env.TOKEN_SECRET,
+    (err: Error, user: { username: string }) => {
+      if (err) {
+        res.statusMessage = "Could not verify token.";
+        return res.sendStatus(401);
+      }
+      req.username = user.username;
+      next();
     }
-    console.log("user", user);
-    req.user = user;
-    next();
-  });
+  );
 };
