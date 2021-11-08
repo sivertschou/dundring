@@ -32,13 +32,19 @@ export const LoginModal = () => {
   const { setUser } = useUser();
 
   const login = async () => {
-    if (!username || !password) {
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedUsername || !trimmedPassword) {
       setErrorMessage("Enter username and password.");
       return;
     }
 
     setIsLoading(true);
-    const response = await api.login({ username, password });
+    const response = await api.login({
+      username: trimmedUsername,
+      password: trimmedPassword,
+    });
     setIsLoading(false);
 
     if (response.status === "FAILURE") {
@@ -51,11 +57,14 @@ export const LoginModal = () => {
   };
 
   const register = async () => {
-    if (!username || !password || !mail) {
+    const trimmedMail = mail.trim();
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedUsername || !trimmedPassword || !trimmedMail) {
       setErrorMessage("Enter mail, username and password.");
       return;
     }
-    const trimmedMail = mail.trim();
     // https://emailregex.com/
     const mailIsValid = /.+@.+\..+/.test(trimmedMail);
 
@@ -64,14 +73,24 @@ export const LoginModal = () => {
       return;
     }
     setIsLoading(true);
-    const response = await api.register({ username, password, mail });
+    const response = await api.register({
+      username: trimmedUsername,
+      password: trimmedPassword,
+      mail: trimmedMail,
+    });
     setIsLoading(false);
 
     if (response.status === "FAILURE") {
       setErrorMessage(response.message);
     } else if (response.status === "SUCCESS") {
       const { roles, token, username } = response.data;
-      setUser({ loggedIn: true, token, roles, username, workouts: [] });
+      setUser({
+        loggedIn: true,
+        token,
+        roles,
+        username,
+        workouts: [],
+      });
       onClose();
     }
   };
@@ -89,7 +108,12 @@ export const LoginModal = () => {
         <ModalOverlay />
         <ModalContent>
           {creatingUser ? (
-            <>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                register();
+              }}
+            >
               <ModalHeader>Register</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
@@ -106,6 +130,9 @@ export const LoginModal = () => {
                         setErrorMessage("");
                         setMail(e.target.value);
                       }}
+                      onBlur={(_e) => {
+                        setMail((mail) => mail.trim());
+                      }}
                     />
                   </FormControl>
 
@@ -119,6 +146,9 @@ export const LoginModal = () => {
                       onChange={(e) => {
                         setErrorMessage("");
                         setUsername(e.target.value);
+                      }}
+                      onBlur={(_e) => {
+                        setUsername((username) => username.trim());
                       }}
                     />
                   </FormControl>
@@ -134,6 +164,9 @@ export const LoginModal = () => {
                       onChange={(e) => {
                         setErrorMessage("");
                         setPassword(e.target.value);
+                      }}
+                      onBlur={(_e) => {
+                        setPassword((password) => password.trim());
                       }}
                     />
                   </FormControl>
@@ -158,9 +191,14 @@ export const LoginModal = () => {
                   <Spinner />
                 )}
               </ModalFooter>
-            </>
+            </form>
           ) : (
-            <>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                login();
+              }}
+            >
               <ModalHeader>Login</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
@@ -176,6 +214,9 @@ export const LoginModal = () => {
                         setErrorMessage("");
                         setUsername(e.target.value);
                       }}
+                      onBlur={(_e) => {
+                        setUsername((username) => username.trim());
+                      }}
                     />
                   </FormControl>
 
@@ -190,6 +231,9 @@ export const LoginModal = () => {
                       onChange={(e) => {
                         setErrorMessage("");
                         setPassword(e.target.value);
+                      }}
+                      onBlur={(_e) => {
+                        setPassword((password) => password.trim());
                       }}
                     />
                   </FormControl>
@@ -209,12 +253,14 @@ export const LoginModal = () => {
 
               <ModalFooter>
                 {!isLoading ? (
-                  <Button onClick={() => login()}>Login</Button>
+                  <Button onClick={() => login()} type="submit">
+                    Login
+                  </Button>
                 ) : (
                   <Spinner />
                 )}
               </ModalFooter>
-            </>
+            </form>
           )}
         </ModalContent>
       </Modal>
