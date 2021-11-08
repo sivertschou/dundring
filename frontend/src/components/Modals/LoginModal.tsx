@@ -32,6 +32,11 @@ export const LoginModal = () => {
   const { setUser } = useUser();
 
   const login = async () => {
+    if (!username || !password) {
+      setErrorMessage("Enter username and password.");
+      return;
+    }
+
     setIsLoading(true);
     const response = await api.login({ username, password });
     setIsLoading(false);
@@ -46,6 +51,18 @@ export const LoginModal = () => {
   };
 
   const register = async () => {
+    if (!username || !password || !mail) {
+      setErrorMessage("Enter mail, username and password.");
+      return;
+    }
+    const trimmedMail = mail.trim();
+    // https://emailregex.com/
+    const mailIsValid = /.+@.+\..+/.test(trimmedMail);
+
+    if (!mailIsValid) {
+      setErrorMessage("Please enter a valid email address.");
+      return;
+    }
     setIsLoading(true);
     const response = await api.register({ username, password, mail });
     setIsLoading(false);
@@ -85,7 +102,10 @@ export const LoginModal = () => {
                       name="email"
                       autoComplete="email"
                       value={mail}
-                      onChange={(e) => setMail(e.target.value)}
+                      onChange={(e) => {
+                        setErrorMessage("");
+                        setMail(e.target.value);
+                      }}
                     />
                   </FormControl>
 
@@ -96,7 +116,10 @@ export const LoginModal = () => {
                       name="username"
                       autoComplete="username"
                       value={username}
-                      onChange={(e) => setUsername(e.target.value)}
+                      onChange={(e) => {
+                        setErrorMessage("");
+                        setUsername(e.target.value);
+                      }}
                     />
                   </FormControl>
 
@@ -108,10 +131,18 @@ export const LoginModal = () => {
                       name="password"
                       autoComplete="password"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => {
+                        setErrorMessage("");
+                        setPassword(e.target.value);
+                      }}
                     />
                   </FormControl>
-                  <Link onClick={() => setCreatingUser(false)}>
+                  <Link
+                    onClick={() => {
+                      setErrorMessage("");
+                      setCreatingUser(false);
+                    }}
+                  >
                     Already have an account? Login
                   </Link>
                   {errorMessage ? (
@@ -141,7 +172,10 @@ export const LoginModal = () => {
                       name="username"
                       autoComplete="username"
                       value={username}
-                      onChange={(e) => setUsername(e.target.value)}
+                      onChange={(e) => {
+                        setErrorMessage("");
+                        setUsername(e.target.value);
+                      }}
                     />
                   </FormControl>
 
@@ -153,10 +187,20 @@ export const LoginModal = () => {
                       name="password"
                       autoComplete="password"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => {
+                        setErrorMessage("");
+                        setPassword(e.target.value);
+                      }}
                     />
                   </FormControl>
-                  <Link onClick={() => setCreatingUser(true)}>Create user</Link>
+                  <Link
+                    onClick={() => {
+                      setErrorMessage("");
+                      setCreatingUser(true);
+                    }}
+                  >
+                    Create user
+                  </Link>
                   {errorMessage ? (
                     <Text color="red.500">{errorMessage}</Text>
                   ) : null}
