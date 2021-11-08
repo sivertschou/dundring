@@ -19,6 +19,7 @@ import * as api from "../../api";
 import { useUser } from "../../context/UserContext";
 import { BsPerson } from "react-icons/bs";
 import { ActionBarItem } from "../ActionBarItem";
+import { useToast } from "@chakra-ui/react";
 
 export const LoginModal = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -30,6 +31,7 @@ export const LoginModal = () => {
 
   const [creatingUser, setCreatingUser] = React.useState(false);
   const { setUser } = useUser();
+  const toast = useToast();
 
   const login = async () => {
     const trimmedUsername = username.trim();
@@ -90,6 +92,12 @@ export const LoginModal = () => {
         roles,
         username,
         workouts: [],
+      });
+      toast({
+        title: `Created user '${username}'`,
+        isClosable: true,
+        duration: 5000,
+        status: "success",
       });
       onClose();
     }
@@ -186,7 +194,9 @@ export const LoginModal = () => {
 
               <ModalFooter>
                 {!isLoading ? (
-                  <Button onClick={() => register()}>Register</Button>
+                  <Button onClick={() => register()} type="submit">
+                    Register
+                  </Button>
                 ) : (
                   <Spinner />
                 )}
