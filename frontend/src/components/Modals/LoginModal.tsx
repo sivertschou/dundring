@@ -2,6 +2,7 @@ import { Button } from "@chakra-ui/button";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { useDisclosure } from "@chakra-ui/hooks";
 import { Input } from "@chakra-ui/input";
+import { Icon } from "@chakra-ui/icon";
 import { Link, Stack, Text } from "@chakra-ui/layout";
 import {
   Modal,
@@ -16,6 +17,8 @@ import { Spinner } from "@chakra-ui/react";
 import * as React from "react";
 import * as api from "../../api";
 import { useUser } from "../../context/UserContext";
+import { BsPerson } from "react-icons/bs";
+import { ActionBarItem } from "../ActionBarItem";
 
 export const LoginModal = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -58,7 +61,12 @@ export const LoginModal = () => {
 
   return (
     <>
-      <Button onClick={onOpen}>Login</Button>
+      <ActionBarItem
+        text="Login"
+        ariaLabel="login"
+        icon={<Icon as={BsPerson} boxSize="1.5rem" />}
+        onClick={onOpen}
+      />
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />

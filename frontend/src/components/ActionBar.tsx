@@ -1,7 +1,9 @@
-import { Button } from "@chakra-ui/button";
+import Icon from "@chakra-ui/icon";
 import { Stack } from "@chakra-ui/layout";
 import * as React from "react";
+import { BsPersonFill } from "react-icons/bs";
 import { useUser } from "../context/UserContext";
+import { ActionBarItem } from "./ActionBarItem";
 import { LoginModal } from "./Modals/LoginModal";
 
 export const ActionBar = () => {
@@ -9,9 +11,12 @@ export const ActionBar = () => {
   return (
     <Stack position="fixed" right="5" top="5">
       {user.loggedIn ? (
-        <Button onClick={() => setUser({ loggedIn: false })}>
-          {user.username}
-        </Button>
+        <ActionBarItem
+          text={user.username}
+          ariaLabel="profile"
+          icon={<Icon as={BsPersonFill} boxSize="1.5rem" />}
+          onClick={() => setUser({ loggedIn: false })}
+        />
       ) : (
         <LoginModal />
       )}
