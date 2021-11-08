@@ -1,7 +1,7 @@
 import { Text, Stack } from "@chakra-ui/layout";
 import * as React from "react";
-import { WorkoutContext } from "./context/WorkoutContext";
-import * as utils from "./utils";
+import { WorkoutContext } from "../context/WorkoutContext";
+import * as utils from "../utils";
 
 export const WorkoutDisplay = () => {
   const { workout, partElapsedTime, activePart, isDone } =

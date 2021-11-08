@@ -1,10 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { User } from "../../../common/types/userTypes";
+import { ApiResponseBody, ApiStatus } from "../../../common/types/apiTypes";
 
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-
-const validateLogin = (username: string, password: string) => {};
 
 export const hash = (message: string) => {
   return crypto.createHash("md5").update(message).digest("hex");
@@ -15,30 +13,44 @@ export const generateAccessToken = (username: string) => {
     expiresIn: "120d",
   });
 };
-declare module "express" {
-  export interface Request {
-    user?: User; // adding our custom declaration.
-  }
+export interface AuthenticatedRequest<T> extends Request<T> {
+  username?: string;
 }
-// TODO: Fix param types
-export const authenticateToken = (req: any, res: any, next: any) => {
-  console.log("headers:", req.headers);
+export const authenticateToken = <T, R>(
+  req: AuthenticatedRequest<T>,
+  res: Response<ApiResponseBody<R>>,
+  next: NextFunction
+) => {
   const authHeader = req.headers["authorization"];
-  console.log("authHeader:", authHeader);
   const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
-    return res.sendStatus(401);
+    const statusMessage = "No token provided.";
+    res.statusMessage = statusMessage;
+    res.statusCode = 401;
+    res.send({
+      status: ApiStatus.FAILURE,
+      message: statusMessage,
+    });
+    return;
   }
 
-  jwt.verify(token, process.env.TOKEN_SECRET, (err: Error, user: User) => {
-    console.log("error:", err);
-
-    if (err) {
-      return res.sendStatus(401);
+  jwt.verify(
+    token,
+    process.env.TOKEN_SECRET,
+    (err: Error, user: { username: string }) => {
+      if (err) {
+        const statusMessage = "Could not verify token.";
+        res.statusMessage = statusMessage;
+        res.statusCode = 401;
+        res.send({
+          status: ApiStatus.FAILURE,
+          message: statusMessage,
+        });
+        return;
+      }
+      req.username = user.username;
+      next();
     }
-    console.log("user", user);
-    req.user = user;
-    next();
-  });
+  );
 };

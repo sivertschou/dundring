@@ -1,17 +1,17 @@
 export interface User {
   username: string;
-  email: string;
-  roles: UserRoles[];
+  mail: string;
+  roles: UserRole[];
 }
 
 export interface StoredUser {
   username: string;
-  email: string;
-  roles: UserRoles[];
+  mail: string;
+  roles: UserRole[];
   password: string;
 }
 
-export enum UserRoles {
+export enum UserRole {
   DEFAULT = "DEFAULT",
   ADMIN = "ADMIN",
   SUPERADMIN = "SUPERADMIN",

@@ -3,15 +3,15 @@ import * as userService from "./services/userService";
 import * as validationService from "./services/validationService";
 import * as express from "express";
 import {
+  ApiResponseBody,
   ApiStatus,
   LoginRequestBody,
   LoginResponseBody,
-  LoginSuccessResponseBody,
   MessagesResponseBody,
   RegisterRequestBody,
-  WorkoutsSuccessResponseBody,
+  WorkoutsResponseBody,
 } from "../../common/types/apiTypes";
-import { UserRoles } from "../../common/types/userTypes";
+import { UserRole } from "../../common/types/userTypes";
 
 const http = require("http");
 require("dotenv").config();
@@ -27,36 +27,47 @@ app.use(cors());
 
 const httpServer = http.createServer(app);
 
-app.get<null, WorkoutsSuccessResponseBody>(
+app.get<null, ApiResponseBody<WorkoutsResponseBody>>(
   "/me/workouts",
   validationService.authenticateToken,
   (req, res) => {
-    res.send({ workouts: [], status: ApiStatus.SUCCESS });
+    res.send({ status: ApiStatus.SUCCESS, data: { workouts: [] } });
   }
 );
-
-app.post<null, LoginSuccessResponseBody, LoginRequestBody>(
+app.post<null, ApiResponseBody<LoginResponseBody>>(
   "/validate",
-  (req, res) => {
-    console.log("validater");
-    req;
-    // res.send({
-    //   username: req.body.username,
-    //   role: userService.getUserRoles(req.body.username),
-    // });
+  validationService.authenticateToken,
+  async (req: validationService.AuthenticatedRequest<null>, res) => {
+    const username = req.username;
+    const user = userService.getUser(username || "");
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+
+    if (!user) {
+      return;
+    }
+
+    res.send({
+      status: ApiStatus.SUCCESS,
+      data: { roles: user.roles, token: token || "", username: user.username },
+    });
+    return;
   }
 );
 
-app.get<null, MessagesResponseBody>("/messages", (req, res) => {
-  const messages = messageService.getMessages();
+app.get<null, ApiResponseBody<MessagesResponseBody>>(
+  "/messages",
+  (req, res) => {
+    const messages = messageService.getMessages();
 
-  res.send({
-    status: ApiStatus.SUCCESS,
-    messages,
-  });
-});
+    res.send({
+      status: ApiStatus.SUCCESS,
+      data: { messages },
+    });
+  }
+);
 
-app.post<null, LoginResponseBody, LoginRequestBody>(
+app.post<null, ApiResponseBody<LoginResponseBody>, LoginRequestBody>(
   "/login",
   async (req, res) => {
     const { username, password } = req.body;
@@ -64,12 +75,14 @@ app.post<null, LoginResponseBody, LoginRequestBody>(
     const hashedPassword = validationService.hash(password);
     if (userService.validateUser(username, hashedPassword)) {
       const token = validationService.generateAccessToken(username);
-      const userRoles = userService.getUserRoles(username);
+      const userRole = userService.getUserRoles(username);
       res.send({
         status: ApiStatus.SUCCESS,
-        username,
-        token,
-        roles: userRoles,
+        data: {
+          username,
+          token,
+          roles: userRole,
+        },
       });
       return;
     }
@@ -83,18 +96,18 @@ app.post<null, LoginResponseBody, LoginRequestBody>(
   }
 );
 
-app.post<null, LoginResponseBody, RegisterRequestBody>(
+app.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
   "/register",
   async (req, res) => {
-    const { username, password, email } = req.body;
+    const { username, password, mail } = req.body;
 
     const hashedPassword = validationService.hash(password);
 
     const ret = userService.createUser({
       username: username,
-      email: email,
+      mail: mail,
       password: hashedPassword,
-      roles: [UserRoles.DEFAULT],
+      roles: [UserRole.DEFAULT],
     });
 
     if (ret.status === "ERROR") {
@@ -122,12 +135,14 @@ app.post<null, LoginResponseBody, RegisterRequestBody>(
 
     if (userService.validateUser(username, hashedPassword)) {
       const token = validationService.generateAccessToken(username);
-      const userRoles = userService.getUserRoles(username);
+      const userRole = userService.getUserRoles(username);
       res.send({
         status: ApiStatus.SUCCESS,
-        username,
-        token,
-        roles: userRoles,
+        data: {
+          username,
+          token,
+          roles: userRole,
+        },
       });
       return;
     }

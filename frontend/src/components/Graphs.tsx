@@ -1,7 +1,7 @@
 import { AspectRatio } from "@chakra-ui/layout";
 import * as React from "react";
 import { Area, AreaChart, ResponsiveContainer, YAxis } from "recharts";
-import { DataPoint } from "./types";
+import { DataPoint } from "../types";
 
 interface Props {
   data: DataPoint[];
