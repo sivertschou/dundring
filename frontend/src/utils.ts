@@ -10,8 +10,6 @@ export const toTCX = (dataPoints: DataPoint[], filename: string) => {
   const endTime = filtererdDataPoints[filtererdDataPoints.length - 1].timeStamp;
 
   const duration = (endTime.getTime() - startTime.getTime()) / 1000;
-  const avgHR = 69; // TODO
-  const maxHR = 69; // TODO
 
   const output = `
 <?xml version="1.0" encoding="UTF-8"?>
@@ -21,12 +19,6 @@ export const toTCX = (dataPoints: DataPoint[], filename: string) => {
       <Id>${startTime.toISOString()}</Id>
       <Lap StartTime="${startTime.toISOString()}">
         <TotalTimeSeconds>${duration}</TotalTimeSeconds>
-        <AverageHeartRateBpm>
-          <Value>${avgHR}</Value>
-        </AverageHeartRateBpm>
-        <MaximumHeartRateBpm>
-          <Value>${maxHR}</Value>
-        </MaximumHeartRateBpm>
         <Intensity>Active</Intensity>
         <TriggerMethod>Manual</TriggerMethod>
         <Track>
