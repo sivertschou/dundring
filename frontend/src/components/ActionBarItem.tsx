@@ -17,7 +17,7 @@ export const ActionBarItem = ({ text, icon, ariaLabel, onClick }: Props) => {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onClick={onClick}
-      padding="2"
+      paddingY="1"
       _hover={{ textDecoration: "none" }}
     >
       <HStack spacing="0">
