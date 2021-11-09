@@ -1,5 +1,12 @@
 import * as React from "react";
 
+export interface HeartRateMonitor {
+  requestPermission: () => void;
+  heartRate: number;
+  isConnected: boolean;
+  disconnect: () => void;
+}
+
 const parseHeartRate = (value: DataView | ArrayBuffer) => {
   // In Chrome 50+, a DataView is returned instead of an ArrayBuffer.
   value = value instanceof DataView ? value : new DataView(value);
@@ -11,10 +18,11 @@ const parseHeartRate = (value: DataView | ArrayBuffer) => {
     return value.getUint8(1);
   }
 };
-export const useHeartRateMonitor = () => {
+export const useHeartRateMonitor = (): HeartRateMonitor => {
   const [heartRate, setHeartRate] = React.useState(0);
   const [isConnected, setIsConnected] = React.useState(false);
-  const [characteristic, setCharacteristic] = React.useState<BluetoothRemoteGATTCharacteristic | null>(null);
+  const [characteristic, setCharacteristic] =
+    React.useState<BluetoothRemoteGATTCharacteristic | null>(null);
   const [device, setDevice] = React.useState<BluetoothDevice | null>(null);
 
   const handleHRUpdate = (event: any) => {
@@ -22,7 +30,7 @@ export const useHeartRateMonitor = () => {
     console.log("handleHRUpdate");
     setHeartRate(hr);
   };
-  const requestHRPermission = async () => {
+  const requestPermission = async () => {
     navigator.bluetooth
       .requestDevice({ filters: [{ services: ["heart_rate"] }] })
       .then((device) => {
@@ -72,5 +80,10 @@ export const useHeartRateMonitor = () => {
     }
   };
 
-  return { requestHRPermission, disconnect, isConnected, heartRate };
+  return {
+    requestPermission,
+    disconnect,
+    isConnected,
+    heartRate,
+  };
 };
