@@ -184,14 +184,6 @@ export const App = () => {
                 <Button
                   disabled={!bluetoothIsAvailable}
                   onClick={() =>
-                    hrIsConnected ? disconnectHR() : requestHRPermission()
-                  }
-                >
-                  {hrIsConnected ? "Disconnect HR" : "Connect HR"}{" "}
-                </Button>
-                <Button
-                  disabled={!bluetoothIsAvailable}
-                  onClick={() =>
                     smartTrainerIsConnected
                       ? disconnectSmartTrainer()
                       : requestSmartTrainerPermission()
