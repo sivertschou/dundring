@@ -14,6 +14,7 @@ import { WorkoutDisplay } from "./components/WorkoutDisplay";
 import { WorkoutEditor } from "./components/WorkoutEditor";
 import { ActionBar } from "./components/ActionBar";
 import { useHeartRate } from "./context/HeartRateContext";
+import { hrColor, powerColor } from "./colors";
 
 export const App = () => {
   const {
@@ -124,7 +125,7 @@ export const App = () => {
               </Center>
             ) : null}
             <Grid templateColumns="repeat(3, 1fr)">
-              <Center p="10" color="red.500">
+              <Center p="10" color={hrColor}>
                 <Text fontSize="7xl" fontWeight="bold">
                   {heartRate}
                 </Text>
@@ -132,7 +133,7 @@ export const App = () => {
                   bpm
                 </Text>
               </Center>
-              <Center p="10" color="white">
+              <Center p="10">
                 <Text fontSize="7xl" fontWeight="bold">
                   {hours ? hours + ":" : null}
                   {minutes < 10 ? "0" + minutes : minutes}
@@ -140,7 +141,7 @@ export const App = () => {
                   {seconds < 10 ? "0" + seconds : seconds}
                 </Text>
               </Center>
-              <Center p="10" color="purple.500">
+              <Center p="10" color={powerColor}>
                 <Text fontSize="7xl" fontWeight="bold">
                   {power}
                 </Text>
