@@ -25,12 +25,7 @@ export const App = () => {
     setResistance: setSmartTrainerResistance,
   } = useSmartTrainer();
 
-  const {
-    disconnect: disconnectHR,
-    heartRate,
-    isConnected: hrIsConnected,
-    requestPermission: requestHRPermission,
-  } = useHeartRate();
+  const { heartRate, isConnected: hrIsConnected } = useHeartRate();
 
   const { available: bluetoothIsAvailable } = useAvailability();
 

@@ -25,6 +25,7 @@
   },
   "scripts": {
     "preinstall": "bash prepare.sh",
+    "mock": "bash mock.sh",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
