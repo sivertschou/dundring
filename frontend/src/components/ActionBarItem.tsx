@@ -24,7 +24,6 @@ export const ActionBarItem = ({
       <Center overflow="hidden" paddingRight="2">
         <Text
           fontSize="xl"
-          textDecor={"none"}
           transform={hover ? "translate(0,0)" : "translate(120%,0)"}
           opacity={hover ? "1" : "0"}
           overflow="hidden"
