@@ -1,8 +1,20 @@
 import { DataPoint } from "./types";
 
 export const randomIntFromInterval = (min: number, max: number): number => {
-  return Math.floor(Math.random() * (max - min + 1) + min)
-}
+  return Math.floor(Math.random() * (max - min + 1) + min);
+};
+
+export const randomIntFromIntervalBasedOnPrev = (
+  min: number,
+  max: number,
+  prev: number,
+  maxDiff: number
+): number => {
+  return Math.max(
+    Math.min(max, prev + Math.floor(Math.random() * maxDiff - maxDiff / 2)),
+    min
+  );
+};
 
 export const toTCX = (dataPoints: DataPoint[], filename: string) => {
   const filtererdDataPoints = dataPoints.filter((d) => d.heartRate || d.power);
@@ -23,9 +35,9 @@ export const toTCX = (dataPoints: DataPoint[], filename: string) => {
         <TriggerMethod>Manual</TriggerMethod>
         <Track>
         ${filtererdDataPoints.reduce(
-    (output, d) =>
-      output +
-      `<Trackpoint>
+          (output, d) =>
+            output +
+            `<Trackpoint>
               <Time>${d.timeStamp.toISOString()}</Time>
               <HeartRateBpm>
                 <Value>${d.heartRate}</Value>
@@ -38,8 +50,8 @@ export const toTCX = (dataPoints: DataPoint[], filename: string) => {
               <SensorState>Present</SensorState>
             </Trackpoint>
             `,
-    ""
-  )}
+          ""
+        )}
           </Track>
         </Lap>
     </Activity>
@@ -91,6 +103,7 @@ export const formatHoursMinutesAndSecondsAsString = ({
   minutes,
   seconds,
 }: HoursMinutesAndSeconds) => {
-  return `${hours > 0 ? hours + ":" : ""}${minutes < 10 ? "0" + minutes : minutes
-    }:${seconds < 10 ? "0" + seconds : seconds}`;
+  return `${hours > 0 ? hours + ":" : ""}${
+    minutes < 10 ? "0" + minutes : minutes
+  }:${seconds < 10 ? "0" + seconds : seconds}`;
 };

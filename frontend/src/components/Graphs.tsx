@@ -1,6 +1,7 @@
 import { AspectRatio } from "@chakra-ui/layout";
 import * as React from "react";
 import { Area, AreaChart, ResponsiveContainer, YAxis } from "recharts";
+import { hrColor, powerColor } from "../colors";
 import { DataPoint } from "../types";
 
 interface Props {
@@ -25,12 +26,12 @@ export const Graphs = ({ data: rawData }: Props) => {
         <AreaChart data={filledData}>
           <defs>
             <linearGradient id="colorHR" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#ff4d4a" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#ff4d4a" stopOpacity={0} />
+              <stop offset="5%" stopColor={hrColor} stopOpacity={0.8} />
+              <stop offset="95%" stopColor={hrColor} stopOpacity={0} />
             </linearGradient>
             <linearGradient id="colorPower" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#ae4aff" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#ae4aff" stopOpacity={0} />
+              <stop offset="5%" stopColor={powerColor} stopOpacity={0.8} />
+              <stop offset="95%" stopColor={powerColor} stopOpacity={0} />
             </linearGradient>
           </defs>
           <YAxis />

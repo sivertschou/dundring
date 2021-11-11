@@ -17,9 +17,9 @@ import { Spinner } from "@chakra-ui/react";
 import * as React from "react";
 import * as api from "../../api";
 import { useUser } from "../../context/UserContext";
-import { BsPerson } from "react-icons/bs";
 import { ActionBarItem } from "../ActionBarItem";
 import { useToast } from "@chakra-ui/react";
+import { Person } from "react-bootstrap-icons";
 
 export const LoginModal = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -107,8 +107,8 @@ export const LoginModal = () => {
     <>
       <ActionBarItem
         text="Login"
-        ariaLabel="login"
-        icon={<Icon as={BsPerson} boxSize="1.5rem" />}
+        ariaLabel="Login"
+        icon={<Icon as={Person} />}
         onClick={onOpen}
       />
 

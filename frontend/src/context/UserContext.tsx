@@ -5,6 +5,7 @@ import { UserContextType } from "../types";
 export const defaultUser: UserContextType = {
   loggedIn: false,
 };
+
 const UserContext = React.createContext<{
   user: UserContextType;
   setUser: (user: UserContextType) => void;
