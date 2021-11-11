@@ -5,7 +5,6 @@ import { WorkoutContext } from "./context/WorkoutContext";
 import { Graphs } from "./components/Graphs";
 import { useAvailability } from "./hooks/useAvailability";
 import { useGlobalClock } from "./hooks/useGlobalClock";
-import { useSmartTrainer } from "./hooks/useSmartTrainer";
 import { useWorkout } from "./hooks/useWorkout";
 import theme from "./theme";
 import { DataPoint } from "./types";
@@ -15,13 +14,12 @@ import { WorkoutEditor } from "./components/WorkoutEditor";
 import { ActionBar } from "./components/ActionBar";
 import { useHeartRate } from "./context/HeartRateContext";
 import { hrColor, powerColor } from "./colors";
+import { useSmartTrainer } from "./context/SmartTrainerContext";
 
 export const App = () => {
   const {
-    requestSmartTrainerPermission,
     power,
     isConnected: smartTrainerIsConnected,
-    disconnect: disconnectSmartTrainer,
     setResistance: setSmartTrainerResistance,
   } = useSmartTrainer();
 
@@ -175,18 +173,6 @@ export const App = () => {
                 </Button>
                 <Button onClick={() => setSmartTrainerResistance(300)}>
                   300 w
-                </Button>
-                <Button
-                  disabled={!bluetoothIsAvailable}
-                  onClick={() =>
-                    smartTrainerIsConnected
-                      ? disconnectSmartTrainer()
-                      : requestSmartTrainerPermission()
-                  }
-                >
-                  {smartTrainerIsConnected
-                    ? "Disconnect Smart Trainer"
-                    : "Connect Smart Trainer"}{" "}
                 </Button>
 
                 {data.length > 0 ? (

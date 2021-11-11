@@ -6,11 +6,14 @@ import {
   BoxArrowRight,
   Heart,
   HeartFill,
+  LightningCharge,
+  LightningChargeFill,
   Moon,
   Sun,
 } from "react-bootstrap-icons";
-import { hrColor } from "../colors";
+import { hrColor, powerColor } from "../colors";
 import { useHeartRate } from "../context/HeartRateContext";
+import { useSmartTrainer } from "../context/SmartTrainerContext";
 import { useUser } from "../context/UserContext";
 import { ActionBarItem } from "./ActionBarItem";
 import { LoginModal } from "./Modals/LoginModal";
@@ -22,6 +25,13 @@ export const ActionBar = () => {
     disconnect: disconnectHR,
     requestPermission: connectHR,
   } = useHeartRate();
+
+  const {
+    isConnected: smartTrainerIsConnected,
+    disconnect: disconnectSmartTrainer,
+    requestPermission: connectSmartTrainer,
+  } = useSmartTrainer();
+
   const { colorMode, setColorMode } = useColorMode();
   return (
     <Stack position="fixed" right="5" top="5" alignItems="end" spacing="1">
@@ -46,6 +56,22 @@ export const ActionBar = () => {
           ariaLabel="Connect HR"
           icon={<Icon as={Heart} mt="1" />}
           onClick={connectHR}
+        />
+      )}
+      {smartTrainerIsConnected ? (
+        <ActionBarItem
+          text="Disconnect Smart Trainer"
+          ariaLabel="Disconnect Smart Trainer"
+          icon={<Icon as={LightningChargeFill} />}
+          onClick={disconnectSmartTrainer}
+          iconColor={powerColor}
+        />
+      ) : (
+        <ActionBarItem
+          text="Connect Smart Trainer"
+          ariaLabel="Connect Smart Trainer"
+          icon={<Icon as={LightningCharge} />}
+          onClick={connectSmartTrainer}
         />
       )}
 
