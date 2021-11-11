@@ -12,7 +12,7 @@ import * as utils from "./utils";
 import { WorkoutDisplay } from "./components/WorkoutDisplay";
 import { WorkoutEditor } from "./components/WorkoutEditor";
 import { ActionBar } from "./components/ActionBar";
-import { useHeartRate } from "./context/HeartRateContext";
+import { useHeartRateMonitor } from "./context/HeartRateContext";
 import { hrColor, powerColor } from "./colors";
 import { useSmartTrainer } from "./context/SmartTrainerContext";
 
@@ -23,7 +23,7 @@ export const App = () => {
     setResistance: setSmartTrainerResistance,
   } = useSmartTrainer();
 
-  const { heartRate, isConnected: hrIsConnected } = useHeartRate();
+  const { heartRate, isConnected: hrIsConnected } = useHeartRateMonitor();
 
   const { available: bluetoothIsAvailable } = useAvailability();
 

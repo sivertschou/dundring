@@ -12,7 +12,7 @@ import {
   Sun,
 } from "react-bootstrap-icons";
 import { hrColor, powerColor } from "../colors";
-import { useHeartRate } from "../context/HeartRateContext";
+import { useHeartRateMonitor } from "../context/HeartRateContext";
 import { useSmartTrainer } from "../context/SmartTrainerContext";
 import { useUser } from "../context/UserContext";
 import { ActionBarItem } from "./ActionBarItem";
@@ -24,7 +24,7 @@ export const ActionBar = () => {
     isConnected: hrIsConnected,
     disconnect: disconnectHR,
     requestPermission: connectHR,
-  } = useHeartRate();
+  } = useHeartRateMonitor();
 
   const {
     isConnected: smartTrainerIsConnected,

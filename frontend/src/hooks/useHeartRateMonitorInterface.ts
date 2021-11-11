@@ -18,7 +18,7 @@ const parseHeartRate = (value: DataView | ArrayBuffer) => {
     return value.getUint8(1);
   }
 };
-export const useHeartRateMonitor = (): HeartRateMonitor => {
+export const useHeartRateMonitorInterface = (): HeartRateMonitor => {
   const [heartRate, setHeartRate] = React.useState(0);
   const [isConnected, setIsConnected] = React.useState(false);
   const [characteristic, setCharacteristic] =

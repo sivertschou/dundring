@@ -1,6 +1,6 @@
 import * as React from "react";
 import { randomIntFromIntervalBasedOnPrev } from "../utils";
-import { SmartTrainer } from "./useSmartTrainer";
+import { SmartTrainer } from "./useSmartTrainerInterface";
 
 export const useSmartTrainerMock = (): SmartTrainer => {
   const [power, setPower] = React.useState(0);

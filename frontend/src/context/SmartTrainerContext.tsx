@@ -2,7 +2,7 @@ import * as React from "react";
 import {
   SmartTrainer,
   useSmartTrainerInterface,
-} from "../hooks/useSmartTrainer";
+} from "../hooks/useSmartTrainerInterface";
 import { useSmartTrainerMock } from "../hooks/useSmartTrainerMock";
 
 const SmartTrainerContext = React.createContext<SmartTrainer | null>(null);
