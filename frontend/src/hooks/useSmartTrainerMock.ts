@@ -1,25 +1,27 @@
 import * as React from "react";
-import { randomIntFromInterval } from "../utils";
+import { randomIntFromIntervalBasedOnPrev } from "../utils";
+import { SmartTrainer } from "./useSmartTrainerInterface";
 
-export const useSmartTrainer = () => {
+export const useSmartTrainerMock = (): SmartTrainer => {
   const [power, setPower] = React.useState(0);
+  const [isConnected, setIsConnected] = React.useState(false);
 
   React.useEffect(() => {
     const interval = setInterval(() => {
-      console.log('This will run every second!');
-      setPower(randomIntFromInterval(100, 400))
+      if (isConnected) {
+        setPower((prev) =>
+          randomIntFromIntervalBasedOnPrev(100, 400, prev, 50)
+        );
+      }
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
-
-
+  }, [isConnected]);
 
   return {
-    requestSmartTrainerPermission: () => { },
-    disconnect: () => { },
-    isConnected: true,
+    requestPermission: () => setIsConnected(true),
+    disconnect: () => setIsConnected(false),
+    isConnected,
     power,
-    setResistance: (x: number) => { }
-  }
-}
-
+    setResistance: (_resistance: number) => {},
+  };
+};

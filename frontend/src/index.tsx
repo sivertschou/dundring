@@ -6,13 +6,16 @@ import { UserContextProvider } from "./context/UserContext";
 import { HeartRateContextProvider } from "./context/HeartRateContext";
 import reportWebVitals from "./reportWebVitals";
 import * as serviceWorker from "./serviceWorker";
+import { SmartTrainerContextProvider } from "./context/SmartTrainerContext";
 
 ReactDOM.render(
   <React.StrictMode>
     <UserContextProvider>
       <HeartRateContextProvider>
-        <ColorModeScript />
-        <App />
+        <SmartTrainerContextProvider>
+          <ColorModeScript />
+          <App />
+        </SmartTrainerContextProvider>
       </HeartRateContextProvider>
     </UserContextProvider>
   </React.StrictMode>,

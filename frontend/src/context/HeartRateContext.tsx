@@ -1,8 +1,8 @@
 import * as React from "react";
 import {
   HeartRateMonitor,
-  useHeartRateMonitor,
-} from "../hooks/useHeartRateMonitor";
+  useHeartRateMonitorInterface,
+} from "../hooks/useHeartRateMonitorInterface";
 import { useHeartRateMonitorMock } from "../hooks/useHeartRateMonitorMock";
 
 const HeartRateContext = React.createContext<HeartRateMonitor | null>(null);
@@ -12,7 +12,7 @@ export const HeartRateRealContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const heartRateMonitor = useHeartRateMonitor();
+  const heartRateMonitor = useHeartRateMonitorInterface();
 
   return (
     <HeartRateContext.Provider value={heartRateMonitor}>
@@ -53,7 +53,7 @@ export const HeartRateContextProvider = ({
   }
 };
 
-export const useHeartRate = () => {
+export const useHeartRateMonitor = () => {
   const context = React.useContext(HeartRateContext);
   if (context === null) {
     throw new Error(
