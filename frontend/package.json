@@ -25,7 +25,7 @@
   },
   "scripts": {
     "preinstall": "bash prepare.sh",
-    "mock": "bash mock.sh",
+    "mock": "export REACT_APP_USE_MOCK_DATA=true ; react-scripts start",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
