@@ -27,9 +27,10 @@ export const App = () => {
 
   const { available: bluetoothIsAvailable } = useAvailability();
 
-  const [data, setData] = React.useState([] as DataPoint[]);
+  const [data, setData] = React.useState<DataPoint[]>([]);
   const [timeElapsed, setTimeElapsed] = React.useState(0);
-  const [startingTime, setStartingTime] = React.useState(null as Date | null);
+  const [startingTime, setStartingTime] = React.useState<Date | null>(null);
+  const [wakeLock, setWakeLock] = React.useState<WakeLockSentinel | null>(null);
   const {
     running,
     addCallback,
@@ -37,6 +38,21 @@ export const App = () => {
     start: startGlobalClock,
     stop: stopGlobalClock,
   } = useGlobalClock();
+
+  React.useEffect(() => {
+    if(!running) {
+      wakeLock?.release()
+      setWakeLock(null)
+      return
+    }
+    if(wakeLock != null) {
+      return
+    }
+    navigator.wakeLock
+        .request('screen')
+        .then(setWakeLock)
+
+  },[running, wakeLock]);
 
   React.useEffect(() => {
     const interval = setInterval(() => {
