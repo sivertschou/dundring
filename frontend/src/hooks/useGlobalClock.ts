@@ -10,6 +10,8 @@ export const useGlobalClock = () => {
   const [callbacks, setCallbacks] = React.useState([] as Callback[]);
   const [lastCallbackTime, setLastCallbackTime] = React.useState(new Date());
 
+  const [wakeLock, setWakeLock] = React.useState<WakeLockSentinel | null>(null);
+
   React.useEffect(() => {
     const interval = setInterval(() => {
       if (running) {
@@ -37,9 +39,14 @@ export const useGlobalClock = () => {
 
   return {
     stop: () => {
+      wakeLock?.release()
+      setWakeLock(null);
       setRunning(false);
     },
     start: () => {
+      navigator.wakeLock
+        .request('screen')
+        .then(setWakeLock)
       setLastCallbackTime(new Date());
       setRunning(true);
     },
