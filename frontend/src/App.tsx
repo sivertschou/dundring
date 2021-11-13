@@ -39,6 +39,11 @@ export const App = () => {
   } = useGlobalClock();
 
   React.useEffect(() => {
+    let wakeLock = (navigator as any)?.wakeLock?.request('screen')
+    console.log(wakeLock)
+  });
+
+  React.useEffect(() => {
     const interval = setInterval(() => {
       if (running) {
         const heartRateToInclude = heartRate ? { heartRate } : {};
