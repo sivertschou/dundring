@@ -42,7 +42,6 @@ export const App = () => {
   React.useEffect(() => {
     if(!running) {
       wakeLock?.release()
-      console.log(wakeLock)
       setWakeLock(null)
       return
     }
