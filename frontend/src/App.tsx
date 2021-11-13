@@ -39,7 +39,7 @@ export const App = () => {
   } = useGlobalClock();
 
   React.useEffect(() => {
-    let wakeLock = (navigator as any)?.wakeLock?.request('screen')
+    let wakeLock = navigator.wakeLock.request('screen')
     console.log(wakeLock)
   });
 
