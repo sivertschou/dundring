@@ -1,6 +1,7 @@
 import { StoredUser, UserRole } from "../../../common/types/userTypes";
 require("dotenv").config();
 import * as fs from "fs";
+import { Workout } from "../../../common/types/workoutTypes";
 
 const usersPath = `${process.env.DATA_PATH}/users.json`;
 
@@ -28,6 +29,11 @@ export const validateUser = (
 export const getUserRoles = (username: string): UserRole[] => {
   const user = getUser(username);
   return user ? user.roles : [];
+};
+export const getUserWorkouts = (username: string): Workout[] => {
+  console.log("getUserWorkouts:", username);
+  const user = getUser(username);
+  return user ? user.workouts : [];
 };
 interface SuccessStatus<T> {
   status: "SUCCESS";

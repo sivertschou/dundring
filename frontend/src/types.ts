@@ -16,7 +16,7 @@ export interface WorkoutPart {
   targetPower: number;
 }
 
-export interface WorkoutContextType {
+export interface ActiveWorkout {
   workout: Workout;
   partElapsedTime: number;
   activePart: number;

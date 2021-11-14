@@ -3,6 +3,7 @@ import {
   LoginRequestBody,
   LoginResponseBody,
   RegisterRequestBody,
+  WorkoutsResponseBody,
 } from "../../common/types/apiTypes";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -26,6 +27,19 @@ const post = async <T, U>(url: string, body: U, token?: string): Promise<T> => {
       Accept: "application/json",
     },
     body: JSON.stringify(body),
+  });
+
+  return response.json();
+};
+
+const authGet = async <T>(url: string, token: string): Promise<T> => {
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      authorization: `Bearer ${token}`,
+    },
   });
 
   return response.json();
@@ -67,6 +81,13 @@ export const validateToken = async (token: string) => {
   return authPost<ApiResponseBody<LoginResponseBody>, {}>(
     `${baseUrl}/validate`,
     {},
+    token
+  );
+};
+
+export const fetchMyWorkouts = async (token: string) => {
+  return authGet<ApiResponseBody<WorkoutsResponseBody>>(
+    `${baseUrl}/me/workouts`,
     token
   );
 };

@@ -7,14 +7,17 @@ import { HeartRateContextProvider } from "./context/HeartRateContext";
 import reportWebVitals from "./reportWebVitals";
 import * as serviceWorker from "./serviceWorker";
 import { SmartTrainerContextProvider } from "./context/SmartTrainerContext";
+import { ActiveWorkoutContextProvider } from "./context/WorkoutContext";
 
 ReactDOM.render(
   <React.StrictMode>
     <UserContextProvider>
       <HeartRateContextProvider>
         <SmartTrainerContextProvider>
-          <ColorModeScript />
-          <App />
+          <ActiveWorkoutContextProvider>
+            <ColorModeScript />
+            <App />
+          </ActiveWorkoutContextProvider>
         </SmartTrainerContextProvider>
       </HeartRateContextProvider>
     </UserContextProvider>

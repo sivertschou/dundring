@@ -1,12 +1,19 @@
 import { Text, Stack } from "@chakra-ui/layout";
 import * as React from "react";
-import { WorkoutContext } from "../context/WorkoutContext";
+import { useActiveWorkout } from "../context/WorkoutContext";
 import * as utils from "../utils";
 
 export const WorkoutDisplay = () => {
-  const { workout, partElapsedTime, activePart, isDone } =
-    React.useContext(WorkoutContext);
+  // const { workout, partElapsedTime, activePart, isDone } =
+  //   React.useContext(WorkoutContext);
 
+  const { activeWorkout } = useActiveWorkout();
+  console.log("ACTIVE_WORKOUT:", activeWorkout);
+  if (!activeWorkout) {
+    return null;
+  }
+
+  const { activePart, isDone, partElapsedTime, workout } = activeWorkout;
   return (
     <Stack>
       <Text>{workout.name}</Text>

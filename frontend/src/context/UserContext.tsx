@@ -1,6 +1,7 @@
 import * as React from "react";
-import { validateToken } from "../api";
-import { UserContextType } from "../types";
+import useSWR from "swr";
+import { fetchMyWorkouts, validateToken } from "../api";
+import { UserContextType, Workout } from "../types";
 
 export const defaultUser: UserContextType = {
   loggedIn: false,
@@ -8,6 +9,7 @@ export const defaultUser: UserContextType = {
 
 const UserContext = React.createContext<{
   user: UserContextType;
+  workouts: Workout[];
   setUser: (user: UserContextType) => void;
 } | null>(null);
 
@@ -40,13 +42,26 @@ export const UserContextProvider = ({
   }, []);
 
   const [user, setUser] = React.useState<UserContextType>(defaultUser);
+  const { data: userWorkouts } = useSWR(["/me/workouts", user.loggedIn], () =>
+    user.loggedIn ? fetchMyWorkouts(user.token) : null
+  );
 
   const setUserExternal = (user: UserContextType) => {
     localStorage["usertoken"] = user.loggedIn ? user.token : "";
     setUser(user);
   };
-  const value = { user, setUser: setUserExternal };
-  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
+
+  const workouts =
+    (userWorkouts &&
+      userWorkouts.status === "SUCCESS" &&
+      userWorkouts.data.workouts) ||
+    [];
+  console.log("workouts:", workouts);
+  return (
+    <UserContext.Provider value={{ user, setUser: setUserExternal, workouts }}>
+      {children}
+    </UserContext.Provider>
+  );
 };
 
 export const useUser = () => {

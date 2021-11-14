@@ -30,8 +30,12 @@ const httpServer = http.createServer(app);
 app.get<null, ApiResponseBody<WorkoutsResponseBody>>(
   "/me/workouts",
   validationService.authenticateToken,
-  (req, res) => {
-    res.send({ status: ApiStatus.SUCCESS, data: { workouts: [] } });
+  (req: validationService.AuthenticatedRequest<null>, res) => {
+    const workouts = userService.getUserWorkouts(req.username || "");
+    res.send({
+      status: ApiStatus.SUCCESS,
+      data: { workouts },
+    });
   }
 );
 app.post<null, ApiResponseBody<LoginResponseBody>>(
@@ -108,6 +112,7 @@ app.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
       mail: mail,
       password: hashedPassword,
       roles: [UserRole.DEFAULT],
+      workouts: [],
     });
 
     if (ret.status === "ERROR") {
