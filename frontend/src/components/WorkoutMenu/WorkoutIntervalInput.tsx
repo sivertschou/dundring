@@ -67,7 +67,7 @@ export const WorkoutIntervalInput = ({
     setSecondsInput(seconds.toString());
   };
   return (
-    <Grid templateColumns="1fr repeat(3, 5fr) 1fr 5fr 1fr" gap="1">
+    <Grid templateColumns="1fr repeat(3, 5fr) 1fr 5fr 1fr" gap="1" mb="2">
       <Center>
         <Icon as={List} />
       </Center>

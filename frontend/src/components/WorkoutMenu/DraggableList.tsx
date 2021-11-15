@@ -15,8 +15,13 @@ export const DraggableList = ({ onDragEnd, children }: Props) => {
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppable">
         {(provided) => (
-          <Stack ref={provided.innerRef} {...provided.droppableProps}>
+          <Stack
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            spacing="0"
+          >
             {children}
+            {provided.placeholder}
           </Stack>
         )}
       </Droppable>

@@ -29,13 +29,23 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
   });
 
   function onDragEnd(result: DropResult) {
-    if (!result.destination) {
+    const { destination, source, draggableId } = result;
+    // reorderedParts
+    if (!destination) {
       return;
     }
-    // const newItems = [...items];
-    // const [removed] = newItems.splice(result.source.index, 1);
-    // newItems.splice(result.destination.index, 0, removed);
-    // setItems(newItems)
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    ) {
+      return;
+    }
+
+    const updatedArray = [...workout.parts];
+    updatedArray.splice(source.index, 1);
+    updatedArray.splice(destination.index, 0, workout.parts[source.index]);
+    setWorkout((workout) => ({ ...workout, parts: updatedArray }));
+    console.log(result);
   }
 
   return (
@@ -60,7 +70,7 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
       </Button>
       <DraggableList onDragEnd={onDragEnd}>
         {workout.parts.map((part, i) => (
-          <DraggableItem id={part.id + ""} index={i}>
+          <DraggableItem id={part.id + ""} index={i} key={part.id}>
             <WorkoutIntervalInput
               id={`${part.id}`}
               index={i}
