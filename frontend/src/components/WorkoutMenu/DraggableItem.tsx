@@ -1,10 +1,5 @@
-import { Center, HStack, Stack } from "@chakra-ui/layout";
-import {
-  DragDropContext,
-  Droppable,
-  DropResult,
-  Draggable,
-} from "react-beautiful-dnd";
+import { Center } from "@chakra-ui/layout";
+import { Draggable } from "react-beautiful-dnd";
 
 interface Props {
   children: React.ReactNode;
@@ -14,7 +9,7 @@ interface Props {
 export const DraggableItem = ({ id, index, children }: Props) => {
   return (
     <Draggable draggableId={id} index={index}>
-      {(provided, snapshot) => (
+      {(provided, _snapshot) => (
         <Center
           ref={provided.innerRef}
           {...provided.draggableProps}

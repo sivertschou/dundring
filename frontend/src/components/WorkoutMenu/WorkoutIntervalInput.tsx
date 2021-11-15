@@ -1,18 +1,11 @@
 import { IconButton } from "@chakra-ui/button";
 import Icon from "@chakra-ui/icon";
 import { Input, InputGroup, InputRightAddon } from "@chakra-ui/input";
-import { HStack, Text, Grid, Center } from "@chakra-ui/layout";
+import { Text, Grid, Center } from "@chakra-ui/layout";
 import * as React from "react";
 import { List, X } from "react-bootstrap-icons";
 import { WorkoutPart } from "../../types";
 import { secondsToHoursMinutesAndSeconds } from "../../utils";
-import {
-  DragDropContext,
-  Droppable,
-  DropResult,
-  Draggable,
-} from "react-beautiful-dnd";
-import { DraggableItem } from "./DraggableItem";
 
 interface Props {
   workoutPart: WorkoutPart;

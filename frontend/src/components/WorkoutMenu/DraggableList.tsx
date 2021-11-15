@@ -1,10 +1,5 @@
 import { Stack } from "@chakra-ui/layout";
-import {
-  DragDropContext,
-  Droppable,
-  DropResult,
-  Draggable,
-} from "react-beautiful-dnd";
+import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 
 interface Props {
   onDragEnd: (e: DropResult) => void;

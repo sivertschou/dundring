@@ -29,7 +29,7 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
   });
 
   function onDragEnd(result: DropResult) {
-    const { destination, source, draggableId } = result;
+    const { destination, source } = result;
     // reorderedParts
     if (!destination) {
       return;
@@ -45,7 +45,6 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
     updatedArray.splice(source.index, 1);
     updatedArray.splice(destination.index, 0, workout.parts[source.index]);
     setWorkout((workout) => ({ ...workout, parts: updatedArray }));
-    console.log(result);
   }
 
   return (
@@ -62,7 +61,6 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
       </FormControl>
       <Button
         onClick={() => {
-          console.log("SET ACTIVE WORKOUT:", workout);
           setActiveWorkout(workout);
         }}
       >
