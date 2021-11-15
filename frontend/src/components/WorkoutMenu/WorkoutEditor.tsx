@@ -6,7 +6,9 @@ import * as React from "react";
 import { useActiveWorkout } from "../../context/WorkoutContext";
 import { Workout, WorkoutPart } from "../../types";
 import { WorkoutIntervalInput } from "./WorkoutIntervalInput";
-
+import { DropResult } from "react-beautiful-dnd";
+import { DraggableList } from "./DraggableList";
+import { DraggableItem } from "./DraggableItem";
 interface Props {
   setWorkout: (workout: Workout) => void;
 }
@@ -25,6 +27,16 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
     name: "New workout",
     parts: [],
   });
+
+  function onDragEnd(result: DropResult) {
+    if (!result.destination) {
+      return;
+    }
+    // const newItems = [...items];
+    // const [removed] = newItems.splice(result.source.index, 1);
+    // newItems.splice(result.destination.index, 0, removed);
+    // setItems(newItems)
+  }
 
   return (
     <Stack p="5">
@@ -46,19 +58,25 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
       >
         Use workout
       </Button>
-      {workout.parts.map((part, i) => (
-        <WorkoutIntervalInput
-          key={part.id}
-          removeWorkoutPart={() =>
-            setWorkout((workout) => ({
-              ...workout,
-              parts: workout.parts.filter((_part, x) => i !== x),
-            }))
-          }
-          setWorkoutPart={(workoutPart: WorkoutPart) => {}}
-          workoutPart={part}
-        />
-      ))}
+      <DraggableList onDragEnd={onDragEnd}>
+        {workout.parts.map((part, i) => (
+          <DraggableItem id={part.id + ""} index={i}>
+            <WorkoutIntervalInput
+              id={`${part.id}`}
+              index={i}
+              key={part.id}
+              removeWorkoutPart={() =>
+                setWorkout((workout) => ({
+                  ...workout,
+                  parts: workout.parts.filter((_part, x) => i !== x),
+                }))
+              }
+              setWorkoutPart={(workoutPart: WorkoutPart) => {}}
+              workoutPart={part}
+            />
+          </DraggableItem>
+        ))}
+      </DraggableList>
 
       <Button
         onClick={() =>

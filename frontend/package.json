@@ -16,6 +16,7 @@
     "@types/web-bluetooth": "^0.0.11",
     "framer-motion": "^4.0.0",
     "react": "^17.0.2",
+    "react-beautiful-dnd": "^13.1.0",
     "react-bootstrap-icons": "^1.6.1",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
@@ -48,6 +49,7 @@
     ]
   },
   "devDependencies": {
+    "@types/react-beautiful-dnd": "^13.1.2",
     "@types/recharts": "^1.8.21"
   }
 }
