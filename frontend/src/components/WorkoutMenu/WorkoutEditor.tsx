@@ -1,7 +1,7 @@
 import { Button } from "@chakra-ui/button";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
-import { Stack } from "@chakra-ui/layout";
+import { Divider, Grid, Stack, Text } from "@chakra-ui/layout";
 import * as React from "react";
 import { useActiveWorkout } from "../../context/WorkoutContext";
 import { Workout, WorkoutPart } from "../../types";
@@ -9,6 +9,10 @@ import { WorkoutIntervalInput } from "./WorkoutIntervalInput";
 import { DropResult } from "react-beautiful-dnd";
 import { DraggableList } from "./DraggableList";
 import { DraggableItem } from "./DraggableItem";
+import {
+  formatHoursMinutesAndSecondsAsString,
+  secondsToHoursMinutesAndSeconds,
+} from "../../utils";
 interface Props {
   setWorkout: (workout: Workout) => void;
 }
@@ -27,6 +31,14 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
     name: "New workout",
     parts: [],
   });
+
+  const totalDuration = workout.parts.reduce(
+    (sum, part) => sum + part.duration,
+    0
+  );
+  const totalDurationFormatted = formatHoursMinutesAndSecondsAsString(
+    secondsToHoursMinutesAndSeconds(totalDuration)
+  );
 
   function onDragEnd(result: DropResult) {
     const { destination, source } = result;
@@ -59,13 +71,17 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
           placeholder="Workout name"
         />
       </FormControl>
-      <Button
-        onClick={() => {
-          setActiveWorkout(workout);
-        }}
-      >
-        Use workout
-      </Button>
+
+      {workout.parts.length > 0 ? (
+        <Grid templateColumns="1fr repeat(3, 3fr) 1fr 5fr 1fr" gap="1" mb="2">
+          <Text />
+          <Text>Hours</Text>
+          <Text>Minutes</Text>
+          <Text>Seconds</Text>
+          <Text />
+          <Text>Power</Text>
+        </Grid>
+      ) : null}
       <DraggableList onDragEnd={onDragEnd}>
         {workout.parts.map((part, i) => (
           <DraggableItem id={part.id + ""} index={i} key={part.id}>
@@ -107,6 +123,7 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
       >
         Add part
       </Button>
+      <Text>Total duration: {totalDurationFormatted}</Text>
     </Stack>
   );
 };
