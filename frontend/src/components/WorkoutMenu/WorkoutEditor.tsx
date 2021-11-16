@@ -15,6 +15,8 @@ import {
 } from "../../utils";
 interface Props {
   setWorkout: (workout: Workout) => void;
+  workout?: Workout;
+  cancel: () => void;
 }
 
 interface EditableWorkoutPart extends WorkoutPart {
@@ -24,13 +26,24 @@ interface EditableWorkout extends Workout {
   parts: EditableWorkoutPart[];
 }
 
-export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
+export const WorkoutEditor = ({
+  setWorkout: setGlobalWorkout,
+  workout: loadedWorkout,
+  cancel,
+}: Props) => {
   const { setActiveWorkout } = useActiveWorkout();
 
-  const [workout, setWorkout] = React.useState<EditableWorkout>({
-    name: "New workout",
-    parts: [],
-  });
+  const [workout, setWorkout] = React.useState<EditableWorkout>(
+    loadedWorkout
+      ? {
+          ...loadedWorkout,
+          parts: loadedWorkout.parts.map((part, i) => ({ ...part, id: i })),
+        }
+      : {
+          name: "New workout",
+          parts: [],
+        }
+  );
   const checkValidation = true;
   const totalDuration = workout.parts.reduce(
     (sum, part) => sum + part.duration,
@@ -134,7 +147,7 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
       <Text>Total duration: {totalDurationFormatted}</Text>
       <HStack>
         <Button onClick={() => {}}>Save</Button>
-        <Button>Cancel</Button>
+        <Button onClick={cancel}>Cancel</Button>
       </HStack>
     </Stack>
   );

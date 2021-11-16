@@ -13,8 +13,13 @@ import {
 interface Props {
   workout: Workout;
   setActiveWorkout: (workout: Workout) => void;
+  onClickEdit: () => void;
 }
-export const WorkoutListItem = ({ workout, setActiveWorkout }: Props) => {
+export const WorkoutListItem = ({
+  workout,
+  setActiveWorkout,
+  onClickEdit,
+}: Props) => {
   const workoutDuration = getTotalWorkoutTime(workout);
   const formattedDuration = formatHoursMinutesAndSecondsAsString(
     secondsToHoursMinutesAndSeconds(workoutDuration)
@@ -36,6 +41,7 @@ export const WorkoutListItem = ({ workout, setActiveWorkout }: Props) => {
           aria-label="Edit workout"
           icon={<Icon as={Gear} />}
           isRound
+          onClick={() => onClickEdit()}
         />
       </HStack>
     </Grid>

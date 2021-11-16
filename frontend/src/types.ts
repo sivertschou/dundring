@@ -7,6 +7,7 @@ export interface DataPoint {
 }
 
 export interface Workout {
+  id?: string;
   name: string;
   parts: WorkoutPart[];
 }

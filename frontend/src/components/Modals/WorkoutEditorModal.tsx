@@ -54,7 +54,11 @@ export const WorkoutEditorModal = () => {
           </ModalHeader>
           <ModalCloseButton />
           {workoutToEdit ? (
-            <WorkoutEditor setWorkout={setActiveWorkout} />
+            <WorkoutEditor
+              setWorkout={setActiveWorkout}
+              workout={workoutToEdit}
+              cancel={() => setWorkoutToEdit(null)}
+            />
           ) : (
             <WorkoutOverview setWorkoutToEdit={setWorkoutToEdit} />
           )}

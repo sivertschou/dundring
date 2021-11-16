@@ -30,6 +30,9 @@ export const WorkoutOverview = ({ setWorkoutToEdit }: Props) => {
           key={`${i}-${workout.name}`}
           workout={workout}
           setActiveWorkout={setActiveWorkout}
+          onClickEdit={() => {
+            setWorkoutToEdit(workout);
+          }}
         />
       ))}
     </Stack>
