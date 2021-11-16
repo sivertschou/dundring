@@ -20,7 +20,9 @@ export const WorkoutOverview = ({ setWorkoutToEdit }: Props) => {
         fontSize="xl"
         mb="5"
         rightIcon={<Icon as={PencilSquare} />}
-        onClick={() => setWorkoutToEdit({ name: "New workout", parts: [] })}
+        onClick={() =>
+          setWorkoutToEdit({ name: "New workout", parts: [], id: "" })
+        }
       >
         Create new workout
       </Button>

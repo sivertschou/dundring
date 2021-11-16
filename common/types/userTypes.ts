@@ -1,4 +1,4 @@
-import { Workout } from "../../frontend/src/types";
+import { Workout } from "./workoutTypes";
 
 export interface User {
   username: string;

@@ -9,6 +9,7 @@ import {
   LoginResponseBody,
   MessagesResponseBody,
   RegisterRequestBody,
+  WorkoutRequestBody,
   WorkoutsResponseBody,
 } from "../../common/types/apiTypes";
 import { UserRole } from "../../common/types/userTypes";
@@ -36,6 +37,41 @@ app.get<null, ApiResponseBody<WorkoutsResponseBody>>(
       status: ApiStatus.SUCCESS,
       data: { workouts },
     });
+  }
+);
+app.post<WorkoutRequestBody, ApiResponseBody<WorkoutsResponseBody>>(
+  "/me/workout",
+  validationService.authenticateToken,
+  (req: validationService.AuthenticatedRequest<WorkoutRequestBody>, res) => {
+    const workout = req.body.workout;
+    console.log("request:", req.body);
+    if (!req.username) {
+      res.send({
+        status: ApiStatus.FAILURE,
+        message: "Unathorized",
+      });
+      return;
+    }
+
+    const ret = userService.saveWorkout(req.username, workout);
+
+    switch (ret.status) {
+      case "SUCCESS":
+        console.log("SUCCESS");
+        res.send({
+          status: ApiStatus.SUCCESS,
+          data: { workouts: ret.data },
+        });
+        return;
+      default:
+        console.log("FAILURE");
+
+        res.send({
+          status: ApiStatus.FAILURE,
+          message: ret.type,
+        });
+        return;
+    }
   }
 );
 app.post<null, ApiResponseBody<LoginResponseBody>>(

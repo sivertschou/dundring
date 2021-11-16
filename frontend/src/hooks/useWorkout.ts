@@ -13,7 +13,7 @@ export const useWorkout = (
   setResistance: (resistance: number) => void
 ) => {
   const [activeWorkout, setActiveWorkout] = React.useState<ActiveWorkout>({
-    workout: { name: "New workout", parts: [] },
+    workout: { name: "New workout", parts: [], id: "" },
     activePart: 0,
     partElapsedTimeMs: 0,
     isDone: false,

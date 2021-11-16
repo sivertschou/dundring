@@ -3,6 +3,7 @@ import {
   LoginRequestBody,
   LoginResponseBody,
   RegisterRequestBody,
+  WorkoutRequestBody,
   WorkoutsResponseBody,
 } from "../../common/types/apiTypes";
 
@@ -47,8 +48,8 @@ const authGet = async <T>(url: string, token: string): Promise<T> => {
 
 const authPost = async <T, U>(
   url: string,
-  body: U,
-  token: string
+  token: string,
+  body: U
 ): Promise<T> => {
   const response = await fetch(url, {
     method: "POST",
@@ -80,8 +81,8 @@ export const register = async (registerData: RegisterRequestBody) => {
 export const validateToken = async (token: string) => {
   return authPost<ApiResponseBody<LoginResponseBody>, {}>(
     `${baseUrl}/validate`,
-    {},
-    token
+    token,
+    {}
   );
 };
 
@@ -89,5 +90,16 @@ export const fetchMyWorkouts = async (token: string) => {
   return authGet<ApiResponseBody<WorkoutsResponseBody>>(
     `${baseUrl}/me/workouts`,
     token
+  );
+};
+
+export const saveWorkout = async (
+  token: string,
+  workout: WorkoutRequestBody
+) => {
+  return authPost<ApiResponseBody<WorkoutsResponseBody>, WorkoutRequestBody>(
+    `${baseUrl}/me/workout`,
+    token,
+    workout
   );
 };

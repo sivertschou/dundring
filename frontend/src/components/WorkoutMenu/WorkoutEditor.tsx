@@ -13,6 +13,8 @@ import {
   formatHoursMinutesAndSecondsAsString,
   secondsToHoursMinutesAndSeconds,
 } from "../../utils";
+import { useUser } from "../../context/UserContext";
+import { saveWorkout } from "../../api";
 interface Props {
   setWorkout: (workout: Workout) => void;
   workout?: Workout;
@@ -32,6 +34,8 @@ export const WorkoutEditor = ({
   cancel,
 }: Props) => {
   const { setActiveWorkout } = useActiveWorkout();
+  const { user } = useUser();
+  const token = user.loggedIn && user.token;
 
   const [workout, setWorkout] = React.useState<EditableWorkout>(
     loadedWorkout
@@ -42,6 +46,7 @@ export const WorkoutEditor = ({
       : {
           name: "New workout",
           parts: [],
+          id: "",
         }
   );
   const checkValidation = true;
@@ -146,7 +151,13 @@ export const WorkoutEditor = ({
       </Button>
       <Text>Total duration: {totalDurationFormatted}</Text>
       <HStack>
-        <Button onClick={() => {}}>Save</Button>
+        <Button
+          onClick={() => {
+            token && saveWorkout(token, { workout });
+          }}
+        >
+          Save
+        </Button>
         <Button onClick={cancel}>Cancel</Button>
       </HStack>
     </Stack>
