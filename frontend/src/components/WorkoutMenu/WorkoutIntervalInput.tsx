@@ -4,7 +4,7 @@ import { Input, InputGroup, InputRightAddon } from "@chakra-ui/input";
 import { Text, Grid, Center } from "@chakra-ui/layout";
 import { FormControl } from "@chakra-ui/react";
 import * as React from "react";
-import { List, X } from "react-bootstrap-icons";
+import { Files, List, X } from "react-bootstrap-icons";
 import { WorkoutPart } from "../../types";
 import { secondsToHoursMinutesAndSeconds } from "../../utils";
 
@@ -12,11 +12,15 @@ interface Props {
   workoutPart: WorkoutPart;
   setWorkoutPart: (workoutPart: WorkoutPart) => void;
   removeWorkoutPart: () => void;
+  duplicateWorkoutPart: () => void;
   checkValidation: boolean;
 }
+export const templateColumns = "1fr repeat(3, 3fr) 1fr 5fr 1fr 1fr";
+
 export const WorkoutIntervalInput = ({
   setWorkoutPart,
   removeWorkoutPart,
+  duplicateWorkoutPart,
   checkValidation,
   workoutPart,
 }: Props) => {
@@ -78,7 +82,7 @@ export const WorkoutIntervalInput = ({
   const powerAsNumber = parseInput(powerInput);
   const powerIsInvalid = powerAsNumber <= 0;
   return (
-    <Grid templateColumns="1fr repeat(3, 3fr) 1fr 5fr 1fr" gap="1" marginY="1">
+    <Grid templateColumns={templateColumns} gap="1" marginY="1">
       <Center>
         <Icon as={List} />
       </Center>
@@ -137,6 +141,14 @@ export const WorkoutIntervalInput = ({
           <InputRightAddon children="W" />
         </InputGroup>
       </FormControl>
+      <Center>
+        <IconButton
+          aria-label="Duplicate"
+          variant="ghost"
+          onClick={duplicateWorkoutPart}
+          icon={<Icon as={Files} />}
+        />
+      </Center>
       <Center>
         <IconButton
           aria-label="Remove interval"

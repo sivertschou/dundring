@@ -5,7 +5,7 @@ import { Divider, Grid, HStack, Stack, Text } from "@chakra-ui/layout";
 import * as React from "react";
 import { useActiveWorkout } from "../../context/WorkoutContext";
 import { Workout, WorkoutPart } from "../../types";
-import { WorkoutIntervalInput } from "./WorkoutIntervalInput";
+import { templateColumns, WorkoutIntervalInput } from "./WorkoutIntervalInput";
 import { DropResult } from "react-beautiful-dnd";
 import { DraggableList } from "./DraggableList";
 import { DraggableItem } from "./DraggableItem";
@@ -77,6 +77,9 @@ export const WorkoutEditor = ({
     setWorkout((workout) => ({ ...workout, parts: updatedArray }));
   }
 
+  const getNextWorkoutPartsId = (workoutParts: EditableWorkoutPart[]) =>
+    workoutParts.reduce((maxId, cur) => Math.max(maxId, cur.id), 0) + 1;
+
   return (
     <Stack p="5">
       <FormControl id="workoutName">
@@ -91,7 +94,7 @@ export const WorkoutEditor = ({
       </FormControl>
 
       {workout.parts.length > 0 ? (
-        <Grid templateColumns="1fr repeat(3, 3fr) 1fr 5fr 1fr" gap="1" mb="2">
+        <Grid templateColumns={templateColumns} gap="1" mb="2">
           <Text />
           <Text>Hours</Text>
           <Text>Minutes</Text>
@@ -111,6 +114,20 @@ export const WorkoutEditor = ({
                   ...workout,
                   parts: workout.parts.filter((_part, i) => index !== i),
                 }))
+              }
+              duplicateWorkoutPart={() =>
+                setWorkout((workout) => {
+                  const newParts = [...workout.parts];
+                  newParts.splice(index + 1, 0, {
+                    ...workout.parts[index],
+                    id: getNextWorkoutPartsId(workout.parts),
+                  });
+                  console.log("newWorkoutsParts:", newParts);
+                  return {
+                    ...workout,
+                    parts: newParts,
+                  };
+                })
               }
               setWorkoutPart={(workoutPart: WorkoutPart) => {
                 setWorkout((workout) => {
@@ -137,11 +154,7 @@ export const WorkoutEditor = ({
               {
                 duration: 300,
                 targetPower: 200,
-                id:
-                  workout.parts.reduce(
-                    (maxId, cur) => Math.max(maxId, cur.id),
-                    0
-                  ) + 1,
+                id: getNextWorkoutPartsId(workout.parts),
               },
             ],
           }))
