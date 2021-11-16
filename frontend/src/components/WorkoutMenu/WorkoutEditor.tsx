@@ -1,7 +1,7 @@
 import { Button } from "@chakra-ui/button";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
-import { Divider, Grid, Stack, Text } from "@chakra-ui/layout";
+import { Divider, Grid, HStack, Stack, Text } from "@chakra-ui/layout";
 import * as React from "react";
 import { useActiveWorkout } from "../../context/WorkoutContext";
 import { Workout, WorkoutPart } from "../../types";
@@ -31,7 +31,7 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
     name: "New workout",
     parts: [],
   });
-
+  const checkValidation = true;
   const totalDuration = workout.parts.reduce(
     (sum, part) => sum + part.duration,
     0
@@ -83,19 +83,27 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
         </Grid>
       ) : null}
       <DraggableList onDragEnd={onDragEnd}>
-        {workout.parts.map((part, i) => (
-          <DraggableItem id={part.id + ""} index={i} key={part.id}>
+        {workout.parts.map((part, index) => (
+          <DraggableItem id={part.id + ""} index={index} key={part.id}>
             <WorkoutIntervalInput
-              id={`${part.id}`}
-              index={i}
               key={part.id}
+              checkValidation={checkValidation}
               removeWorkoutPart={() =>
                 setWorkout((workout) => ({
                   ...workout,
-                  parts: workout.parts.filter((_part, x) => i !== x),
+                  parts: workout.parts.filter((_part, i) => index !== i),
                 }))
               }
-              setWorkoutPart={(workoutPart: WorkoutPart) => {}}
+              setWorkoutPart={(workoutPart: WorkoutPart) => {
+                setWorkout((workout) => {
+                  return {
+                    ...workout,
+                    parts: workout.parts.map((part, i) =>
+                      index === i ? { ...part, ...workoutPart } : part
+                    ),
+                  };
+                });
+              }}
               workoutPart={part}
             />
           </DraggableItem>
@@ -124,6 +132,10 @@ export const WorkoutEditor = ({ setWorkout: setGlobalWorkout }: Props) => {
         Add part
       </Button>
       <Text>Total duration: {totalDurationFormatted}</Text>
+      <HStack>
+        <Button onClick={() => {}}>Save</Button>
+        <Button>Cancel</Button>
+      </HStack>
     </Stack>
   );
 };
