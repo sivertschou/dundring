@@ -78,7 +78,7 @@ export const WorkoutIntervalInput = ({
   const powerAsNumber = parseInput(powerInput);
   const powerIsInvalid = powerAsNumber <= 0;
   return (
-    <Grid templateColumns="1fr repeat(3, 3fr) 1fr 5fr 1fr" gap="1" mb="2">
+    <Grid templateColumns="1fr repeat(3, 3fr) 1fr 5fr 1fr" gap="1" marginY="1">
       <Center>
         <Icon as={List} />
       </Center>

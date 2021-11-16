@@ -1,3 +1,4 @@
+import { useColorModeValue } from "@chakra-ui/color-mode";
 import { Center } from "@chakra-ui/layout";
 import { Draggable } from "react-beautiful-dnd";
 
@@ -7,10 +8,13 @@ interface Props {
   index: number;
 }
 export const DraggableItem = ({ id, index, children }: Props) => {
+  const bgColor = useColorModeValue("white", "gray.700");
   return (
     <Draggable draggableId={id} index={index}>
       {(provided, _snapshot) => (
         <Center
+          backgroundColor={bgColor}
+          borderRadius="10"
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
