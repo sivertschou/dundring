@@ -1,4 +1,5 @@
 import { IconButton } from "@chakra-ui/button";
+import { Tooltip } from "@chakra-ui/tooltip";
 import Icon from "@chakra-ui/icon";
 import { Input, InputGroup, InputRightAddon } from "@chakra-ui/input";
 import { Text, Grid, Center } from "@chakra-ui/layout";
@@ -141,22 +142,26 @@ export const WorkoutIntervalInput = ({
           <InputRightAddon children="W" />
         </InputGroup>
       </FormControl>
-      <Center>
-        <IconButton
-          aria-label="Duplicate"
-          variant="ghost"
-          onClick={duplicateWorkoutPart}
-          icon={<Icon as={Files} />}
-        />
-      </Center>
-      <Center>
-        <IconButton
-          aria-label="Remove interval"
-          variant="ghost"
-          onClick={removeWorkoutPart}
-          icon={<Icon as={X} />}
-        />
-      </Center>
+      <Tooltip label="Duplicate" placement="left">
+        <Center>
+          <IconButton
+            aria-label="Duplicate interval"
+            variant="ghost"
+            onClick={duplicateWorkoutPart}
+            icon={<Icon as={Files} />}
+          />
+        </Center>
+      </Tooltip>
+      <Tooltip label="Remove" placement="right">
+        <Center>
+          <IconButton
+            aria-label="Remove interval"
+            variant="ghost"
+            onClick={removeWorkoutPart}
+            icon={<Icon as={X} />}
+          />
+        </Center>
+      </Tooltip>
     </Grid>
   );
 };
