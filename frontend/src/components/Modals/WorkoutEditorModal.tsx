@@ -15,10 +15,11 @@ import { WorkoutOverview } from "../WorkoutMenu/WorkoutOverview";
 import { Workout } from "../../types";
 import { WorkoutEditor } from "../WorkoutMenu/WorkoutEditor";
 import { useActiveWorkout } from "../../context/WorkoutContext";
+import { useUser } from "../../context/UserContext";
 
 export const WorkoutEditorModal = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const { refetchData: refetchUserData } = useUser();
   const [workoutToEdit, setWorkoutToEdit] = React.useState<Workout | null>(
     null
   );
@@ -57,7 +58,10 @@ export const WorkoutEditorModal = () => {
             <WorkoutEditor
               setWorkout={setActiveWorkout}
               workout={workoutToEdit}
-              cancel={() => setWorkoutToEdit(null)}
+              cancel={() => {
+                refetchUserData();
+                setWorkoutToEdit(null);
+              }}
             />
           ) : (
             <WorkoutOverview setWorkoutToEdit={setWorkoutToEdit} />

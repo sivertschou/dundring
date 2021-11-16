@@ -154,6 +154,7 @@ export const WorkoutEditor = ({
         <Button
           onClick={() => {
             token && saveWorkout(token, { workout });
+            cancel();
           }}
         >
           Save

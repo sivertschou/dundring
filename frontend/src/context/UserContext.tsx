@@ -11,6 +11,7 @@ const UserContext = React.createContext<{
   user: UserContextType;
   workouts: Workout[];
   setUser: (user: UserContextType) => void;
+  refetchData: () => void;
 } | null>(null);
 
 export const UserContextProvider = ({
@@ -42,8 +43,9 @@ export const UserContextProvider = ({
   }, []);
 
   const [user, setUser] = React.useState<UserContextType>(defaultUser);
-  const { data: userWorkouts } = useSWR(["/me/workouts", user.loggedIn], () =>
-    user.loggedIn ? fetchMyWorkouts(user.token) : null
+  const { data: userWorkouts, mutate: refetchWorkouts } = useSWR(
+    ["/me/workouts", user.loggedIn],
+    () => (user.loggedIn ? fetchMyWorkouts(user.token) : null)
   );
 
   const setUserExternal = (user: UserContextType) => {
@@ -58,7 +60,16 @@ export const UserContextProvider = ({
     [];
   console.log("workouts:", workouts);
   return (
-    <UserContext.Provider value={{ user, setUser: setUserExternal, workouts }}>
+    <UserContext.Provider
+      value={{
+        user,
+        setUser: setUserExternal,
+        workouts,
+        refetchData: () => {
+          refetchWorkouts();
+        },
+      }}
+    >
       {children}
     </UserContext.Provider>
   );
