@@ -80,6 +80,7 @@ export const WorkoutEditor = ({
       <FormControl id="workoutName">
         <FormLabel>Workout name</FormLabel>
         <Input
+          autoFocus={loadedWorkout.type === "new"}
           value={workout.name}
           onChange={(e) =>
             setWorkout((workout) => ({ ...workout, name: e.target.value }))
