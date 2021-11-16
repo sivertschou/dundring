@@ -16,8 +16,9 @@ import { useUser } from "../../context/UserContext";
 import { saveWorkout } from "../../api";
 import { CloudUpload, Hdd } from "react-bootstrap-icons";
 import Icon from "@chakra-ui/icon";
+import { WorkoutToEdit } from "../Modals/WorkoutEditorModal";
 interface Props {
-  workout?: Workout;
+  workout: WorkoutToEdit;
   closeEditor: () => void;
 }
 
@@ -34,19 +35,15 @@ export const WorkoutEditor = ({
 }: Props) => {
   const { user, saveLocalWorkout } = useUser();
   const token = user.loggedIn && user.token;
+  const canSaveLocally =
+    loadedWorkout.type === "new" || loadedWorkout.type === "local";
+  const canSaveRemotely =
+    token && (loadedWorkout.type === "new" || loadedWorkout.type === "remote");
 
-  const [workout, setWorkout] = React.useState<EditableWorkout>(
-    loadedWorkout
-      ? {
-          ...loadedWorkout,
-          parts: loadedWorkout.parts.map((part, i) => ({ ...part, id: i })),
-        }
-      : {
-          name: "New workout",
-          parts: [],
-          id: "",
-        }
-  );
+  const [workout, setWorkout] = React.useState<EditableWorkout>({
+    ...loadedWorkout,
+    parts: loadedWorkout.parts.map((part, i) => ({ ...part, id: i })),
+  });
   const checkValidation = true;
   const totalDuration = workout.parts.reduce(
     (sum, part) => sum + part.duration,
@@ -162,7 +159,7 @@ export const WorkoutEditor = ({
       </Button>
       <Text>Total duration: {totalDurationFormatted}</Text>
       <HStack>
-        {token ? (
+        {canSaveRemotely ? (
           <Button
             onClick={() => {
               saveWorkout(token, { workout });
@@ -173,15 +170,17 @@ export const WorkoutEditor = ({
             Save
           </Button>
         ) : null}
-        <Button
-          onClick={() => {
-            saveLocalWorkout(workout);
-            closeEditor();
-          }}
-          leftIcon={<Icon as={Hdd} />}
-        >
-          Save locally
-        </Button>
+        {canSaveLocally ? (
+          <Button
+            onClick={() => {
+              saveLocalWorkout(workout);
+              closeEditor();
+            }}
+            leftIcon={<Icon as={Hdd} />}
+          >
+            Save locally
+          </Button>
+        ) : null}
         <Button onClick={closeEditor}>Cancel</Button>
       </HStack>
     </Stack>

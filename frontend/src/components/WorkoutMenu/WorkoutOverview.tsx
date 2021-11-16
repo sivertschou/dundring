@@ -5,11 +5,12 @@ import * as React from "react";
 import { PencilSquare } from "react-bootstrap-icons";
 import { useUser } from "../../context/UserContext";
 import { Workout } from "../../types";
+import { WorkoutToEdit } from "../Modals/WorkoutEditorModal";
 import { WorkoutListItem } from "./WorkoutListItem";
 
 interface Props {
   setActiveWorkout: (workout: Workout) => void;
-  setWorkoutToEdit: (workout: Workout) => void;
+  setWorkoutToEdit: (workout: WorkoutToEdit) => void;
 }
 export const WorkoutOverview = ({
   setWorkoutToEdit,
@@ -23,7 +24,12 @@ export const WorkoutOverview = ({
         mb="5"
         rightIcon={<Icon as={PencilSquare} />}
         onClick={() =>
-          setWorkoutToEdit({ name: "New workout", parts: [], id: "" })
+          setWorkoutToEdit({
+            name: "New workout",
+            parts: [],
+            id: "",
+            type: "new",
+          })
         }
       >
         Create new workout
@@ -36,7 +42,7 @@ export const WorkoutOverview = ({
           workout={workout}
           setActiveWorkout={setActiveWorkout}
           onClickEdit={() => {
-            setWorkoutToEdit(workout);
+            setWorkoutToEdit({ ...workout, type: "remote" });
           }}
         />
       ))}
@@ -47,7 +53,7 @@ export const WorkoutOverview = ({
           workout={workout}
           setActiveWorkout={setActiveWorkout}
           onClickEdit={() => {
-            setWorkoutToEdit(workout);
+            setWorkoutToEdit({ ...workout, type: "local" });
           }}
         />
       ))}

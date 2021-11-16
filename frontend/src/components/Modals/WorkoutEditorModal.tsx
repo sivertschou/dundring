@@ -17,12 +17,14 @@ import { WorkoutEditor } from "../WorkoutMenu/WorkoutEditor";
 import { useActiveWorkout } from "../../context/WorkoutContext";
 import { useUser } from "../../context/UserContext";
 
+export interface WorkoutToEdit extends Workout {
+  type: "local" | "remote" | "new";
+}
 export const WorkoutEditorModal = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { refetchData: refetchUserData } = useUser();
-  const [workoutToEdit, setWorkoutToEdit] = React.useState<Workout | null>(
-    null
-  );
+  const [workoutToEdit, setWorkoutToEdit] =
+    React.useState<WorkoutToEdit | null>(null);
 
   const { setActiveWorkout } = useActiveWorkout();
   return (
