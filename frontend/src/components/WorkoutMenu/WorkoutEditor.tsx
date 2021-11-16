@@ -14,6 +14,8 @@ import {
 } from "../../utils";
 import { useUser } from "../../context/UserContext";
 import { saveWorkout } from "../../api";
+import { CloudUpload, Hdd } from "react-bootstrap-icons";
+import Icon from "@chakra-ui/icon";
 interface Props {
   workout?: Workout;
   closeEditor: () => void;
@@ -160,18 +162,25 @@ export const WorkoutEditor = ({
       </Button>
       <Text>Total duration: {totalDurationFormatted}</Text>
       <HStack>
+        {token ? (
+          <Button
+            onClick={() => {
+              saveWorkout(token, { workout });
+              closeEditor();
+            }}
+            leftIcon={<Icon as={CloudUpload} />}
+          >
+            Save
+          </Button>
+        ) : null}
         <Button
           onClick={() => {
-            if (token) {
-              saveWorkout(token, { workout });
-            } else {
-              saveLocalWorkout(workout);
-            }
-
+            saveLocalWorkout(workout);
             closeEditor();
           }}
+          leftIcon={<Icon as={Hdd} />}
         >
-          {token ? "Save" : "Save locally"}
+          Save locally
         </Button>
         <Button onClick={closeEditor}>Cancel</Button>
       </HStack>
