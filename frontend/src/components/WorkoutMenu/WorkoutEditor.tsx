@@ -16,7 +16,6 @@ import {
 import { useUser } from "../../context/UserContext";
 import { saveWorkout } from "../../api";
 interface Props {
-  setWorkout: (workout: Workout) => void;
   workout?: Workout;
   cancel: () => void;
 }
@@ -28,12 +27,7 @@ interface EditableWorkout extends Workout {
   parts: EditableWorkoutPart[];
 }
 
-export const WorkoutEditor = ({
-  setWorkout: setGlobalWorkout,
-  workout: loadedWorkout,
-  cancel,
-}: Props) => {
-  const { setActiveWorkout } = useActiveWorkout();
+export const WorkoutEditor = ({ workout: loadedWorkout, cancel }: Props) => {
   const { user } = useUser();
   const token = user.loggedIn && user.token;
 

@@ -56,7 +56,6 @@ export const WorkoutEditorModal = () => {
           <ModalCloseButton />
           {workoutToEdit ? (
             <WorkoutEditor
-              setWorkout={setActiveWorkout}
               workout={workoutToEdit}
               cancel={() => {
                 refetchUserData();
@@ -64,15 +63,14 @@ export const WorkoutEditorModal = () => {
               }}
             />
           ) : (
-            <WorkoutOverview setWorkoutToEdit={setWorkoutToEdit} />
+            <WorkoutOverview
+              setActiveWorkout={(workout: Workout) => {
+                setActiveWorkout(workout);
+                onClose();
+              }}
+              setWorkoutToEdit={setWorkoutToEdit}
+            />
           )}
-          {/* <ModalFooter>
-            {!isLoading ? (
-              <Button onClick={() => {}}>Save</Button>
-            ) : (
-              <Spinner />
-            )}
-          </ModalFooter> */}
         </ModalContent>
       </Modal>
     </>

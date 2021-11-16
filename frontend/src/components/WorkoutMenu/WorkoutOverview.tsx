@@ -4,16 +4,18 @@ import { Divider, Stack } from "@chakra-ui/layout";
 import * as React from "react";
 import { PencilSquare } from "react-bootstrap-icons";
 import { useUser } from "../../context/UserContext";
-import { useActiveWorkout } from "../../context/WorkoutContext";
 import { Workout } from "../../types";
 import { WorkoutListItem } from "./WorkoutListItem";
 
 interface Props {
+  setActiveWorkout: (workout: Workout) => void;
   setWorkoutToEdit: (workout: Workout) => void;
 }
-export const WorkoutOverview = ({ setWorkoutToEdit }: Props) => {
+export const WorkoutOverview = ({
+  setWorkoutToEdit,
+  setActiveWorkout,
+}: Props) => {
   const { workouts } = useUser();
-  const { setActiveWorkout } = useActiveWorkout();
   return (
     <Stack p="5">
       <Button
