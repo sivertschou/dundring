@@ -57,7 +57,7 @@ export const WorkoutEditorModal = () => {
           {workoutToEdit ? (
             <WorkoutEditor
               workout={workoutToEdit}
-              cancel={() => {
+              closeEditor={() => {
                 refetchUserData();
                 setWorkoutToEdit(null);
               }}

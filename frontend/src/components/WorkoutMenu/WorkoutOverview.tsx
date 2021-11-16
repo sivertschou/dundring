@@ -15,7 +15,7 @@ export const WorkoutOverview = ({
   setWorkoutToEdit,
   setActiveWorkout,
 }: Props) => {
-  const { workouts } = useUser();
+  const { workouts, localWorkouts } = useUser();
   return (
     <Stack p="5">
       <Button
@@ -32,6 +32,18 @@ export const WorkoutOverview = ({
       {workouts.map((workout, i) => (
         <WorkoutListItem
           key={`${i}-${workout.name}`}
+          isLocallyStored={false}
+          workout={workout}
+          setActiveWorkout={setActiveWorkout}
+          onClickEdit={() => {
+            setWorkoutToEdit(workout);
+          }}
+        />
+      ))}
+      {localWorkouts.map((workout, i) => (
+        <WorkoutListItem
+          key={`${i}-${workout.name}`}
+          isLocallyStored={true}
           workout={workout}
           setActiveWorkout={setActiveWorkout}
           onClickEdit={() => {

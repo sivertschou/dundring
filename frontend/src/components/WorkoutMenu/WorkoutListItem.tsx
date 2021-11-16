@@ -1,8 +1,8 @@
 import { Button, IconButton } from "@chakra-ui/button";
 import Icon from "@chakra-ui/icon";
-import { Grid, Heading, HStack, Stack, Text } from "@chakra-ui/layout";
+import { Center, Grid, Heading, HStack, Stack, Text } from "@chakra-ui/layout";
 import * as React from "react";
-import { Gear } from "react-bootstrap-icons";
+import { Cloud, Gear, Hdd } from "react-bootstrap-icons";
 import { Workout } from "../../types";
 import {
   formatHoursMinutesAndSecondsAsString,
@@ -14,11 +14,13 @@ interface Props {
   workout: Workout;
   setActiveWorkout: (workout: Workout) => void;
   onClickEdit: () => void;
+  isLocallyStored: boolean;
 }
 export const WorkoutListItem = ({
   workout,
   setActiveWorkout,
   onClickEdit,
+  isLocallyStored,
 }: Props) => {
   const workoutDuration = getTotalWorkoutTime(workout);
   const formattedDuration = formatHoursMinutesAndSecondsAsString(
@@ -26,7 +28,10 @@ export const WorkoutListItem = ({
   );
 
   return (
-    <Grid templateColumns="3fr 1fr">
+    <Grid templateColumns="1fr 10fr 3fr">
+      <Center>
+        <Icon as={isLocallyStored ? Hdd : Cloud} />
+      </Center>
       <Stack spacing="0">
         <Heading as="h2" fontSize="2xl">
           {workout.name}

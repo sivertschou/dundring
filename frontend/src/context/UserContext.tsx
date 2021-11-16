@@ -10,6 +10,8 @@ export const defaultUser: UserContextType = {
 const UserContext = React.createContext<{
   user: UserContextType;
   workouts: Workout[];
+  localWorkouts: Workout[];
+  saveLocalWorkout: (workout: Workout) => void;
   setUser: (user: UserContextType) => void;
   refetchData: () => void;
 } | null>(null);
@@ -48,9 +50,39 @@ export const UserContextProvider = ({
     () => (user.loggedIn ? fetchMyWorkouts(user.token) : null)
   );
 
+  const [localWorkouts, setLocalWorkouts] = React.useState<Workout[]>(
+    localStorage["workouts"] ? JSON.parse(localStorage["workouts"]) : []
+  );
+
   const setUserExternal = (user: UserContextType) => {
     localStorage["usertoken"] = user.loggedIn ? user.token : "";
     setUser(user);
+  };
+
+  const saveLocalWorkout = (workout: Workout) => {
+    setLocalWorkouts((localWorkouts) => {
+      if (workout.id) {
+        const updatedWorkouts = [...localWorkouts].map((w) =>
+          workout.id === w.id ? workout : w
+        );
+        localStorage["workouts"] = JSON.stringify(updatedWorkouts);
+      } else {
+        const updatedWorkouts = [
+          ...localWorkouts,
+          {
+            ...workout,
+            id:
+              localWorkouts.reduce(
+                (maxId, cur) => Math.max(maxId, parseInt(cur.id)),
+                0
+              ) + 1,
+          },
+        ];
+
+        localStorage["workouts"] = JSON.stringify(updatedWorkouts);
+      }
+      return JSON.parse(localStorage["workouts"]);
+    });
   };
 
   const workouts =
@@ -68,6 +100,8 @@ export const UserContextProvider = ({
         refetchData: () => {
           refetchWorkouts();
         },
+        localWorkouts,
+        saveLocalWorkout,
       }}
     >
       {children}

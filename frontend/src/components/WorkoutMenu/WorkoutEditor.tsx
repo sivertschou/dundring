@@ -1,9 +1,8 @@
 import { Button } from "@chakra-ui/button";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
-import { Divider, Grid, HStack, Stack, Text } from "@chakra-ui/layout";
+import { Grid, HStack, Stack, Text } from "@chakra-ui/layout";
 import * as React from "react";
-import { useActiveWorkout } from "../../context/WorkoutContext";
 import { Workout, WorkoutPart } from "../../types";
 import { templateColumns, WorkoutIntervalInput } from "./WorkoutIntervalInput";
 import { DropResult } from "react-beautiful-dnd";
@@ -17,7 +16,7 @@ import { useUser } from "../../context/UserContext";
 import { saveWorkout } from "../../api";
 interface Props {
   workout?: Workout;
-  cancel: () => void;
+  closeEditor: () => void;
 }
 
 interface EditableWorkoutPart extends WorkoutPart {
@@ -27,8 +26,11 @@ interface EditableWorkout extends Workout {
   parts: EditableWorkoutPart[];
 }
 
-export const WorkoutEditor = ({ workout: loadedWorkout, cancel }: Props) => {
-  const { user } = useUser();
+export const WorkoutEditor = ({
+  workout: loadedWorkout,
+  closeEditor,
+}: Props) => {
+  const { user, saveLocalWorkout } = useUser();
   const token = user.loggedIn && user.token;
 
   const [workout, setWorkout] = React.useState<EditableWorkout>(
@@ -160,13 +162,18 @@ export const WorkoutEditor = ({ workout: loadedWorkout, cancel }: Props) => {
       <HStack>
         <Button
           onClick={() => {
-            token && saveWorkout(token, { workout });
-            cancel();
+            if (token) {
+              saveWorkout(token, { workout });
+            } else {
+              saveLocalWorkout(workout);
+            }
+
+            closeEditor();
           }}
         >
-          Save
+          {token ? "Save" : "Save locally"}
         </Button>
-        <Button onClick={cancel}>Cancel</Button>
+        <Button onClick={closeEditor}>Cancel</Button>
       </HStack>
     </Stack>
   );
