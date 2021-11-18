@@ -66,7 +66,9 @@ export const ActiveWorkoutContextProvider = ({
           partElapsedTime: 0,
         };
       case "INCREASE_PART_ELAPSED_TIME":
-        if (!activeWorkout.workout) return activeWorkout;
+        if (!activeWorkout.workout || !activeWorkout.isActive)
+          return activeWorkout;
+
         const newElapsed = action.millis + activeWorkout.partElapsedTime;
         const elapsedSeconds = Math.floor(newElapsed / 1000);
         const prevActivePart = activeWorkout.activePart;
