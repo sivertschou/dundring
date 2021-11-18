@@ -90,7 +90,7 @@ export const UserContextProvider = ({
       userWorkouts.status === "SUCCESS" &&
       userWorkouts.data.workouts) ||
     [];
-  console.log("workouts:", workouts);
+
   return (
     <UserContext.Provider
       value={{

@@ -28,7 +28,6 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
   };
   const handlePowerUpdate = (event: any) => {
     const power = parsePower(event.target.value);
-    // console.log("handlePowerUpdate");
     setPower(power);
   };
   const requestPermission = async () => {
