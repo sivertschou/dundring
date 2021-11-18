@@ -10,7 +10,11 @@ import {
 } from "@chakra-ui/modal";
 import * as React from "react";
 import { ActionBarItem } from "../ActionBarItem";
-import { ArrowLeft, BarChartLine } from "react-bootstrap-icons";
+import {
+  ArrowLeft,
+  BarChartLine,
+  BarChartLineFill,
+} from "react-bootstrap-icons";
 import { WorkoutOverview } from "../WorkoutMenu/WorkoutOverview";
 import { Workout } from "../../types";
 import { WorkoutEditor } from "../WorkoutMenu/WorkoutEditor";
@@ -26,13 +30,15 @@ export const WorkoutEditorModal = () => {
   const [workoutToEdit, setWorkoutToEdit] =
     React.useState<WorkoutToEdit | null>(null);
 
-  const { setActiveWorkout } = useActiveWorkout();
+  const { setActiveWorkout, activeWorkout } = useActiveWorkout();
   return (
     <>
       <ActionBarItem
         text="Open workout editor"
         ariaLabel="Open workout editor"
-        icon={<Icon as={BarChartLine} />}
+        icon={
+          <Icon as={activeWorkout.workout ? BarChartLineFill : BarChartLine} />
+        }
         onClick={onOpen}
       />
 
