@@ -1,6 +1,6 @@
 if [ ! -f .env ]; then
     echo ".env does not exist. Create it"
-    printf "TOKEN_SECRET=\nDATA_PATH=\n" > .env
+    printf "PORT=\nTOKEN_SECRET=\nDATA_PATH=\n" > .env
 fi
 
 if [ ! -d data ]; then
