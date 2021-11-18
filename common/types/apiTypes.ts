@@ -48,3 +48,7 @@ export interface WorkoutsResponseBody {
 export interface MessagesResponseBody {
   messages: Message[];
 }
+
+export interface WorkoutRequestBody {
+  workout: Workout;
+}

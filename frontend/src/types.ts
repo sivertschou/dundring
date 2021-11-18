@@ -7,6 +7,7 @@ export interface DataPoint {
 }
 
 export interface Workout {
+  id: string;
   name: string;
   parts: WorkoutPart[];
 }
@@ -16,11 +17,12 @@ export interface WorkoutPart {
   targetPower: number;
 }
 
-export interface WorkoutContextType {
-  workout: Workout;
+export interface ActiveWorkout {
+  workout: Workout | null;
   partElapsedTime: number;
   activePart: number;
   isDone: boolean;
+  isActive: boolean;
 }
 
 export interface LoggedInUser {

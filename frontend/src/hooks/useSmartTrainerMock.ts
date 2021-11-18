@@ -22,6 +22,8 @@ export const useSmartTrainerMock = (): SmartTrainer => {
     disconnect: () => setIsConnected(false),
     isConnected,
     power,
-    setResistance: (_resistance: number) => {},
+    setResistance: (resistance: number) => {
+      console.log("MOCK: set resistance: ", resistance);
+    },
   };
 };

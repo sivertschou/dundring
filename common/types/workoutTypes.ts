@@ -1,5 +1,6 @@
 export interface Workout {
   name: string;
+  id: string;
   parts: WorkoutPart[];
 }
 

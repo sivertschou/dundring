@@ -1,4 +1,4 @@
-import { DataPoint } from "./types";
+import { DataPoint, Workout } from "./types";
 
 export const randomIntFromIntervalBasedOnPrev = (
   min: number,
@@ -103,3 +103,6 @@ export const formatHoursMinutesAndSecondsAsString = ({
     minutes < 10 ? "0" + minutes : minutes
   }:${seconds < 10 ? "0" + seconds : seconds}`;
 };
+
+export const getTotalWorkoutTime = (workout: Workout) =>
+  workout.parts.reduce((sum, part) => sum + part.duration, 0);

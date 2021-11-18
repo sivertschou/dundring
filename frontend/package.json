@@ -9,18 +9,14 @@
     "@testing-library/jest-dom": "^5.9.0",
     "@testing-library/react": "^10.2.1",
     "@testing-library/user-event": "^12.0.2",
-    "@types/dom-screen-wake-lock": "^1.0.0",
-    "@types/jest": "^25.0.0",
-    "@types/node": "^12.0.0",
-    "@types/react": "^16.9.0",
-    "@types/react-dom": "^16.9.0",
-    "@types/web-bluetooth": "^0.0.11",
     "framer-motion": "^4.0.0",
     "react": "^17.0.2",
+    "react-beautiful-dnd": "^13.1.0",
     "react-bootstrap-icons": "^1.6.1",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
     "recharts": "^2.1.4",
+    "swr": "^1.0.1",
     "typescript": "^4.4.4",
     "web-vitals": "^0.2.2"
   },
@@ -29,6 +25,7 @@
     "mock": "export REACT_APP_USE_MOCK_DATA=true ; react-scripts start",
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build-mock": "export REACT_APP_USE_MOCK_DATA=true ; react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -48,6 +45,13 @@
     ]
   },
   "devDependencies": {
+    "@types/react-beautiful-dnd": "^13.1.2",
+    "@types/dom-screen-wake-lock": "^1.0.0",
+    "@types/jest": "^25.0.0",
+    "@types/node": "^12.0.0",
+    "@types/react": "^16.9.0",
+    "@types/react-dom": "^16.9.0",
+    "@types/web-bluetooth": "^0.0.11",
     "@types/recharts": "^1.8.21"
   }
 }

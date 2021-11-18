@@ -17,6 +17,7 @@ import { useSmartTrainer } from "../context/SmartTrainerContext";
 import { useUser } from "../context/UserContext";
 import { ActionBarItem } from "./ActionBarItem";
 import { LoginModal } from "./Modals/LoginModal";
+import { WorkoutEditorModal } from "./Modals/WorkoutEditorModal";
 
 export const ActionBar = () => {
   const { user, setUser } = useUser();
@@ -74,6 +75,7 @@ export const ActionBar = () => {
           onClick={connectSmartTrainer}
         />
       )}
+      <WorkoutEditorModal />
 
       {colorMode === "light" ? (
         <ActionBarItem
