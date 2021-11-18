@@ -18,10 +18,11 @@ export interface WorkoutPart {
 }
 
 export interface ActiveWorkout {
-  workout: Workout;
+  workout: Workout | null;
   partElapsedTime: number;
   activePart: number;
   isDone: boolean;
+  isActive: boolean;
 }
 
 export interface LoggedInUser {

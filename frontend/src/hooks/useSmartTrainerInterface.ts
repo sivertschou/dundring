@@ -48,13 +48,9 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
       await fitnessMachineService?.getCharacteristic(
         "fitness_machine_control_point"
       );
-    let res = await fitnessMachineCharacteristic?.writeValue(
-      new Uint8Array([0x01])
-    );
+    await fitnessMachineCharacteristic?.writeValue(new Uint8Array([0x01]));
 
-    res = await fitnessMachineCharacteristic?.writeValue(
-      new Uint8Array([0x01])
-    );
+    await fitnessMachineCharacteristic?.writeValue(new Uint8Array([0x01]));
 
     fitnessMachineCharacteristic &&
       setFitnessMachineCharacteristic(fitnessMachineCharacteristic);
@@ -95,19 +91,31 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
     isConnected,
     power,
     setResistance: async (resistance: number) => {
-      if (fitnessMachineCharacteristic) {
-        if (!resistance) {
-          // Reset
-          await fitnessMachineCharacteristic.writeValue(new Uint8Array([0x01]));
-          fitnessMachineCharacteristic.writeValue(new Uint8Array([0x05, 0]));
-        } else {
-          const resBuf = new Uint8Array(new Uint16Array([resistance]).buffer);
-          const cmdBuf = new Uint8Array([0x05]);
-          const combined = new Uint8Array(cmdBuf.length + resBuf.length);
-          combined.set(cmdBuf);
-          combined.set(resBuf, cmdBuf.length);
-          fitnessMachineCharacteristic.writeValue(combined);
+      if (!isConnected) {
+        return;
+      }
+      try {
+        if (fitnessMachineCharacteristic) {
+          if (!resistance) {
+            // Reset
+            await fitnessMachineCharacteristic.writeValue(
+              new Uint8Array([0x01])
+            );
+            await fitnessMachineCharacteristic.writeValue(
+              new Uint8Array([0x05, 0])
+            );
+          } else {
+            const resBuf = new Uint8Array(new Uint16Array([resistance]).buffer);
+            const cmdBuf = new Uint8Array([0x05]);
+            const combined = new Uint8Array(cmdBuf.length + resBuf.length);
+            combined.set(cmdBuf);
+            combined.set(resBuf, cmdBuf.length);
+            await fitnessMachineCharacteristic.writeValue(combined);
+          }
         }
+      } catch (error) {
+        if (error)
+          console.error(`Tried setting resistance, but got error:`, error);
       }
     },
   };

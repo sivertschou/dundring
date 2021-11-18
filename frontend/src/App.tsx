@@ -4,7 +4,6 @@ import * as React from "react";
 import { Graphs } from "./components/Graphs";
 import { useAvailability } from "./hooks/useAvailability";
 import { useGlobalClock } from "./hooks/useGlobalClock";
-import { useWorkout } from "./hooks/useWorkout";
 import theme from "./theme";
 import { DataPoint } from "./types";
 import * as utils from "./utils";
@@ -23,9 +22,12 @@ export const App = () => {
   } = useSmartTrainer();
 
   const { heartRate, isConnected: hrIsConnected } = useHeartRateMonitor();
-
   const { available: bluetoothIsAvailable } = useAvailability();
-  const { activeWorkout } = useActiveWorkout();
+  const {
+    activeWorkout,
+    increaseElapsedTime: increaseActiveWorkoutElapsedTime,
+    start: startActiveWorkout,
+  } = useActiveWorkout();
 
   const [data, setData] = React.useState([] as DataPoint[]);
   const [timeElapsed, setTimeElapsed] = React.useState(0);
@@ -56,29 +58,21 @@ export const App = () => {
     return () => clearInterval(interval);
   }, [power, startingTime, heartRate, hrIsConnected]);
 
-  const workout = useWorkout(
-    smartTrainerIsConnected,
-    power,
-    setSmartTrainerResistance
-  );
   const start = () => {
-    startGlobalClock();
     addCallback({
       name: "Basic",
       callback: (timeSinceLast) => {
         setTimeElapsed((prev) => prev + timeSinceLast);
-        if (workout.workout.parts.length > 0) {
-          workout.increaseElapsedTime(timeSinceLast);
+        if (activeWorkout && !activeWorkout.isDone) {
+          increaseActiveWorkoutElapsedTime(timeSinceLast);
         }
       },
     });
     if (!startingTime) {
       setStartingTime(new Date());
     }
-    const validWorkoutSelected = workout.workout.parts.length > 0;
-    if (validWorkoutSelected) {
-      workout.start();
-    }
+    startGlobalClock();
+    startActiveWorkout();
   };
 
   const stop = () => {

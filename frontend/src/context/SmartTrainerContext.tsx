@@ -15,9 +15,7 @@ export const SmartTrainerRealContextProvider = ({
   const smartTrainer = useSmartTrainerInterface();
 
   return (
-    <SmartTrainerContext.Provider value={smartTrainer}>
-      {children}
-    </SmartTrainerContext.Provider>
+    <SmartTrainerContext.Provider value={smartTrainer} children={children} />
   );
 };
 
@@ -29,9 +27,7 @@ export const SmartTrainerMockContextProvider = ({
   const smartTrainer = useSmartTrainerMock();
 
   return (
-    <SmartTrainerContext.Provider value={smartTrainer}>
-      {children}
-    </SmartTrainerContext.Provider>
+    <SmartTrainerContext.Provider value={smartTrainer} children={children} />
   );
 };
 
@@ -42,19 +38,9 @@ export const SmartTrainerContextProvider = ({
 }) => {
   const usingMockData = process.env.REACT_APP_USE_MOCK_DATA ? true : false;
 
-  if (usingMockData) {
-    return (
-      <SmartTrainerMockContextProvider>
-        {children}
-      </SmartTrainerMockContextProvider>
-    );
-  } else {
-    return (
-      <SmartTrainerRealContextProvider>
-        {children}
-      </SmartTrainerRealContextProvider>
-    );
-  }
+  if (usingMockData)
+    return <SmartTrainerMockContextProvider children={children} />;
+  return <SmartTrainerRealContextProvider children={children} />;
 };
 
 export const useSmartTrainer = () => {

@@ -118,7 +118,6 @@ export const WorkoutEditor = ({
                     ...workout.parts[index],
                     id: getNextWorkoutPartsId(workout.parts),
                   });
-                  console.log("newWorkoutsParts:", newParts);
                   return {
                     ...workout,
                     parts: newParts,

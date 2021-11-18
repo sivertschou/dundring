@@ -4,20 +4,19 @@ import { useActiveWorkout } from "../context/WorkoutContext";
 import * as utils from "../utils";
 
 export const WorkoutDisplay = () => {
-  // const { workout, partElapsedTime, activePart, isDone } =
-  //   React.useContext(WorkoutContext);
-
   const { activeWorkout } = useActiveWorkout();
-  console.log("ACTIVE_WORKOUT:", activeWorkout);
-  if (!activeWorkout) {
+  if (!activeWorkout.workout) {
     return null;
   }
 
   const { activePart, isDone, partElapsedTime, workout } = activeWorkout;
+  const formattedElapsedTime = utils.formatHoursMinutesAndSecondsAsString(
+    utils.secondsToHoursMinutesAndSeconds(partElapsedTime)
+  );
   return (
     <Stack>
       <Text>{workout.name}</Text>
-      <Text>Elapsed this part: {partElapsedTime}</Text>
+      <Text>{formattedElapsedTime}</Text>
       {workout.parts.map((part, i) => {
         return (
           <Text key={i} color={!isDone && i === activePart ? "orange" : ""}>
