@@ -29,9 +29,10 @@ export const App = () => {
     start: startActiveWorkout,
   } = useActiveWorkout();
 
-  const [data, setData] = React.useState([] as DataPoint[]);
+  const [data, setData] = React.useState<DataPoint[]>([]);
   const [timeElapsed, setTimeElapsed] = React.useState(0);
-  const [startingTime, setStartingTime] = React.useState(null as Date | null);
+  const [startingTime, setStartingTime] = React.useState<Date | null>(null);
+  
   const {
     running,
     addCallback,
