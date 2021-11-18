@@ -80,10 +80,9 @@ export const ActiveWorkoutContextProvider = ({
               ...activeWorkout,
               partElapsedTime: 0,
               activePart: 0,
-              isDone: false,
+              isDone: true,
               isActive: false,
             };
-            console.log("Elapsed syncResistance");
             syncResistance(nextState, action.setResistance);
 
             return nextState;
@@ -129,8 +128,7 @@ export const ActiveWorkoutContextProvider = ({
     }
   );
 
-  const { isConnected: smartTrainerIsConnected, setResistance } =
-    useSmartTrainer();
+  const { setResistance } = useSmartTrainer();
 
   const setWorkout = (workout: Workout) => {
     dispatchActiveWorkoutAction({ type: "SET_WORKOUT", workout });
