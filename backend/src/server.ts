@@ -1,5 +1,6 @@
 import * as messageService from "./services/messageService";
 import * as userService from "./services/userService";
+import * as groupSessionService from "./services/groupSessionService";
 import * as validationService from "./services/validationService";
 import * as express from "express";
 import {
@@ -13,6 +14,7 @@ import {
   WorkoutsResponseBody,
 } from "../../common/types/apiTypes";
 import { UserRole } from "../../common/types/userTypes";
+import { Socket } from "socket.io";
 
 const http = require("http");
 require("dotenv").config();
@@ -21,6 +23,7 @@ require("dotenv").config();
 const app = express.default();
 const cors = require("cors");
 const router = express.Router();
+const { Server } = require("socket.io");
 
 const httpPort = process.env.PORT;
 
@@ -30,7 +33,12 @@ app.use(cors());
 app.use("/api", router);
 
 const httpServer = http.createServer(app);
-
+const io = require("socket.io")(httpServer, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
 router.get<null, ApiResponseBody<WorkoutsResponseBody>>(
   "/me/workouts",
   validationService.authenticateToken,
@@ -199,6 +207,33 @@ router.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
     });
   }
 );
+const testRoom = "testroom";
+const newMessageEvent = "NEW_MESSAGE_EVENT";
+// io.on("connection", (socket: Socket) => {
+//   console.log(socket.id); // x8WIv7-mJelg7on_ALbx
+//   console.log(socket.data);
+//   console.log(socket.)
+// });
+
+io.on("connection", (socket: Socket) => {
+  console.log("a user connected");
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+
+  socket.on("chat message", (msg) => {
+    console.log("message: " + msg);
+    socket.emit("update", "AIIT");
+  });
+
+  socket.on("create_group_session", (msg) => {
+    console.log("message: " + msg);
+    const roomName = groupSessionService.generateRandomString(5);
+    console.log("roomName:", roomName);
+    socket.join(roomName);
+    socket.emit("group_session_created", roomName);
+  });
+});
 
 httpServer.listen(httpPort, () => {
   console.log(`App is listening on port ${httpPort}!:)`);

@@ -8,6 +8,7 @@ import reportWebVitals from "./reportWebVitals";
 import * as serviceWorker from "./serviceWorker";
 import { SmartTrainerContextProvider } from "./context/SmartTrainerContext";
 import { ActiveWorkoutContextProvider } from "./context/WorkoutContext";
+import { WebsocketContextProvider } from "./context/WebsocketContext";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -15,8 +16,10 @@ ReactDOM.render(
       <HeartRateContextProvider>
         <SmartTrainerContextProvider>
           <ActiveWorkoutContextProvider>
-            <ColorModeScript />
-            <App />
+            <WebsocketContextProvider>
+              <ColorModeScript />
+              <App />
+            </WebsocketContextProvider>
           </ActiveWorkoutContextProvider>
         </SmartTrainerContextProvider>
       </HeartRateContextProvider>

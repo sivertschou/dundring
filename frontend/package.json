@@ -16,6 +16,7 @@
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
     "recharts": "^2.1.4",
+    "socket.io-client": "^4.4.0",
     "swr": "^1.0.1",
     "typescript": "^4.4.4",
     "web-vitals": "^0.2.2"
@@ -45,13 +46,14 @@
     ]
   },
   "devDependencies": {
-    "@types/react-beautiful-dnd": "^13.1.2",
     "@types/dom-screen-wake-lock": "^1.0.0",
     "@types/jest": "^25.0.0",
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
+    "@types/react-beautiful-dnd": "^13.1.2",
     "@types/react-dom": "^16.9.0",
-    "@types/web-bluetooth": "^0.0.11",
-    "@types/recharts": "^1.8.21"
+    "@types/recharts": "^1.8.21",
+    "@types/socket.io-client": "^3.0.0",
+    "@types/web-bluetooth": "^0.0.11"
   }
 }
