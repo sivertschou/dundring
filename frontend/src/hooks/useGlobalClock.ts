@@ -1,13 +1,12 @@
 import * as React from "react";
 
 interface Callback {
-  name: string;
   callback: (timeSinceLast: number) => any;
 }
 
 export const useGlobalClock = () => {
   const [running, setRunning] = React.useState(false);
-  const [callbacks, setCallbacks] = React.useState([] as Callback[]);
+  const [callbacks, setCallbacks] = React.useState(null as Callback | null);
   const [lastCallbackTime, setLastCallbackTime] = React.useState(new Date());
 
   const [wakeLock, setWakeLock] = React.useState<WakeLockSentinel | null>(null);
@@ -17,9 +16,7 @@ export const useGlobalClock = () => {
       if (running) {
         const now = new Date();
         const diff = now.getTime() - lastCallbackTime.getTime();
-        callbacks.forEach((c) => {
-          c.callback(diff);
-        });
+        callbacks?.callback(diff);
         setLastCallbackTime(now);
       }
     }, 100);
@@ -28,14 +25,6 @@ export const useGlobalClock = () => {
     };
   }, [callbacks, lastCallbackTime, running]);
 
-  const addCallback = (callback: Callback) => {
-    setCallbacks((callbacks) => [...callbacks, callback]);
-  };
-  const removeCallback = (callbackName: string) => {
-    setCallbacks((callbacks) =>
-      callbacks.filter((callback) => callback.name !== callbackName)
-    );
-  };
 
   return {
     stop: () => {
@@ -50,8 +39,8 @@ export const useGlobalClock = () => {
       setLastCallbackTime(new Date());
       setRunning(true);
     },
-    addCallback,
-    removeCallback,
+    addCallback: (callback: Callback) => setCallbacks(callbacks),
+    removeCallback: () => setCallbacks(null),
     running,
   };
 };

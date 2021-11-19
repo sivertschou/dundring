@@ -61,7 +61,6 @@ export const App = () => {
 
   const start = () => {
     addCallback({
-      name: "Basic",
       callback: (timeSinceLast) => {
         setTimeElapsed((prev) => prev + timeSinceLast);
         if (activeWorkout && !activeWorkout.isDone) {
@@ -77,7 +76,7 @@ export const App = () => {
   };
 
   const stop = () => {
-    removeCallback("Basic");
+    removeCallback();
     stopGlobalClock();
     if (smartTrainerIsConnected) {
       setSmartTrainerResistance(0);
