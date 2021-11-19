@@ -1,19 +1,19 @@
 import * as React from "react";
 
-interface Callback {
-  callback: (timeSinceLast: number) => any;
+type Callback = (timeSinceLast: number) => void
+
+interface ClockState {
+  callback: Callback;
+  wakeLock: WakeLockSentinel,
 }
 
-export const useGlobalClock = () => {
-  const [running, setRunning] = React.useState(false);
-  const [callbacks, setCallbacks] = React.useState(null as Callback | null);
+export const useGlobalClock = (callback: Callback) => {
+  const [callbacks, setCallbacks] = React.useState<ClockState | null>(null);
   const [lastCallbackTime, setLastCallbackTime] = React.useState(new Date());
-
-  const [wakeLock, setWakeLock] = React.useState<WakeLockSentinel | null>(null);
 
   React.useEffect(() => {
     const interval = setInterval(() => {
-      if (running) {
+      if (callbacks) {
         const now = new Date();
         const diff = now.getTime() - lastCallbackTime.getTime();
         callbacks?.callback(diff);
@@ -23,24 +23,22 @@ export const useGlobalClock = () => {
     return () => {
       clearInterval(interval);
     };
-  }, [callbacks, lastCallbackTime, running]);
+  }, [callbacks, lastCallbackTime]);
 
 
   return {
     stop: () => {
-      wakeLock?.release()
-      setWakeLock(null);
-      setRunning(false);
+      callbacks?.wakeLock?.release()
+      setCallbacks(null);
     },
     start: () => {
       navigator.wakeLock
         .request('screen')
-        .then(setWakeLock)
+        .then(wakeLock =>
+          setCallbacks({ wakeLock, callback })
+        )
       setLastCallbackTime(new Date());
-      setRunning(true);
     },
-    addCallback: (callback: Callback) => setCallbacks(callbacks),
-    removeCallback: () => setCallbacks(null),
-    running,
+    running: callbacks != null,
   };
 };
