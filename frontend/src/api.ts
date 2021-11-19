@@ -7,7 +7,7 @@ import {
   WorkoutsResponseBody,
 } from "../../common/types/apiTypes";
 
-const baseUrl = process.env.REACT_APP_BASE_URL;
+const baseUrl = process.env.REACT_APP_BASE_URL + "/api";
 
 const get = async <T>(url: string): Promise<T> => {
   const response = await fetch(url, {

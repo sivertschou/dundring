@@ -20,15 +20,18 @@ require("dotenv").config();
 // Create a new express app instance
 const app = express.default();
 const cors = require("cors");
+const router = express.Router();
 
 const httpPort = process.env.PORT;
 
 app.use(express.json());
 app.use(cors());
 
+app.use("/api", router);
+
 const httpServer = http.createServer(app);
 
-app.get<null, ApiResponseBody<WorkoutsResponseBody>>(
+router.get<null, ApiResponseBody<WorkoutsResponseBody>>(
   "/me/workouts",
   validationService.authenticateToken,
   (req: validationService.AuthenticatedRequest<null>, res) => {
@@ -39,7 +42,7 @@ app.get<null, ApiResponseBody<WorkoutsResponseBody>>(
     });
   }
 );
-app.post<WorkoutRequestBody, ApiResponseBody<WorkoutsResponseBody>>(
+router.post<WorkoutRequestBody, ApiResponseBody<WorkoutsResponseBody>>(
   "/me/workout",
   validationService.authenticateToken,
   (req: validationService.AuthenticatedRequest<WorkoutRequestBody>, res) => {
@@ -74,7 +77,7 @@ app.post<WorkoutRequestBody, ApiResponseBody<WorkoutsResponseBody>>(
     }
   }
 );
-app.post<null, ApiResponseBody<LoginResponseBody>>(
+router.post<null, ApiResponseBody<LoginResponseBody>>(
   "/validate",
   validationService.authenticateToken,
   async (req: validationService.AuthenticatedRequest<null>, res) => {
@@ -95,7 +98,7 @@ app.post<null, ApiResponseBody<LoginResponseBody>>(
   }
 );
 
-app.get<null, ApiResponseBody<MessagesResponseBody>>(
+router.get<null, ApiResponseBody<MessagesResponseBody>>(
   "/messages",
   (req, res) => {
     const messages = messageService.getMessages();
@@ -107,7 +110,7 @@ app.get<null, ApiResponseBody<MessagesResponseBody>>(
   }
 );
 
-app.post<null, ApiResponseBody<LoginResponseBody>, LoginRequestBody>(
+router.post<null, ApiResponseBody<LoginResponseBody>, LoginRequestBody>(
   "/login",
   async (req, res) => {
     const { username, password } = req.body;
@@ -136,7 +139,7 @@ app.post<null, ApiResponseBody<LoginResponseBody>, LoginRequestBody>(
   }
 );
 
-app.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
+router.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
   "/register",
   async (req, res) => {
     const { username, password, mail } = req.body;
