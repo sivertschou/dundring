@@ -9,9 +9,17 @@ export const GroupSessionOverview = () => {
   return (
     <Stack p="5">
       <Text>Room: {activeGroupSession.id}</Text>
-      {activeGroupSession.members.map((member) => (
-        <Text key={member.username}>{member.username}</Text>
-      ))}
+      {activeGroupSession.members.map((member) => {
+        console.log("activeGroupSession:", activeGroupSession);
+        const workoutData = activeGroupSession.workoutData[member.username];
+        const heartRate = (workoutData && workoutData[0].heartRate) || "";
+        const power = (workoutData && workoutData[0].power) || "";
+        return (
+          <Text key={member.username}>
+            {member.username} {heartRate} {power}
+          </Text>
+        );
+      })}
       <Button
         onClick={() => {
           sendMessageToGroup("HAllais");

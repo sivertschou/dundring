@@ -1,6 +1,6 @@
 import * as React from "react";
 import { io, Socket } from "socket.io-client";
-import { UserContextType } from "../types";
+import { DataPoint, UserContextType } from "../types";
 import { useUser } from "./UserContext";
 
 export const defaultUser: UserContextType = {
@@ -12,19 +12,25 @@ interface Member {
   ftp: number;
   weight: number;
 }
+
 export interface Room {
   id: string;
   members: Member[];
   creator: string;
 }
 
+interface LocalRoom extends Room {
+  workoutData: { [username: string]: { heartRate: number; power: number }[] };
+}
+
 const WebsocketContext = React.createContext<{
   startGroupSession: (username: string) => void;
-  activeGroupSession: Room | null;
+  activeGroupSession: LocalRoom | null;
   sendMessage: (message: string) => void;
   sendMessageToGroup: (message: string) => void;
   joinGroupSession: (groupId: string, username: string) => void;
   joinStatus: "NOT_ASKED" | "LOADING" | "ROOM_NOT_FOUND";
+  sendData: (data: { heartRate?: number; power?: number }) => void;
 } | null>(null);
 
 export const WebsocketContextProvider = ({
@@ -34,7 +40,7 @@ export const WebsocketContextProvider = ({
 }) => {
   const [socket, setSocket] = React.useState<Socket | null>(null);
   const [activeGroupSession, setActiveGroupSession] =
-    React.useState<Room | null>(null);
+    React.useState<LocalRoom | null>(null);
   const [joinStatus, setJoinStatus] = React.useState<
     "NOT_ASKED" | "LOADING" | "ROOM_NOT_FOUND"
   >("NOT_ASKED");
@@ -51,14 +57,20 @@ export const WebsocketContextProvider = ({
       "member_joined",
       ({ newMember, room }: { newMember: Member; room: Room }) => {
         console.log("Member joined: ", newMember, " - members:", room.members);
-        setActiveGroupSession(room);
+        setActiveGroupSession({
+          ...room,
+          workoutData: activeGroupSession ? activeGroupSession.workoutData : {},
+        });
       }
     );
     socket.on(
       "member_left",
       ({ leaver, room }: { leaver: string; room: Room }) => {
-        console.log("Member joined: ", leaver, " - members:", room.members);
-        setActiveGroupSession(room);
+        console.log("Member left: ", leaver, " - members:", room.members);
+        setActiveGroupSession({
+          ...room,
+          workoutData: activeGroupSession ? activeGroupSession.workoutData : {},
+        });
       }
     );
 
@@ -66,6 +78,29 @@ export const WebsocketContextProvider = ({
       console.log("group_message", msg);
     });
 
+    socket.on(
+      "workout_data",
+      ({
+        data,
+        sender,
+      }: {
+        data: { heartRate: number; power: number };
+        sender: string;
+      }) => {
+        console.log("data from", sender, data);
+        setActiveGroupSession((activeGroupSession) => {
+          if (!activeGroupSession) {
+            return null;
+          }
+          const prevWorkoutValues =
+            activeGroupSession.workoutData[sender] || [];
+          return {
+            ...activeGroupSession,
+            workoutData: { [sender]: [data, ...prevWorkoutValues] },
+          };
+        });
+      }
+    );
     socket.on("update", (msg) => {
       console.log("msg", msg);
     });
@@ -73,7 +108,7 @@ export const WebsocketContextProvider = ({
     socket.on("group_session_joined", (room: Room) => {
       setJoinStatus("NOT_ASKED");
       console.log("group session with id joined:", room.id);
-      setActiveGroupSession(room);
+      setActiveGroupSession({ ...room, workoutData: {} });
     });
     socket.on("failed_to_join_group_session", (room: Room) => {
       setJoinStatus("ROOM_NOT_FOUND");
@@ -82,19 +117,10 @@ export const WebsocketContextProvider = ({
 
     socket.on("group_session_created", (room: Room) => {
       console.log("group session with id created:", room.id);
-      setActiveGroupSession(room);
+      setActiveGroupSession({ ...room, workoutData: {} });
     });
-  }, [setSocket]);
-  // const socket = io("ws://localhost:8092");
+  }, [setSocket, user]);
 
-  // socket.on("connect", () => {
-  //   // either with send()
-  //   socket.emit("chat message", "HALLA");
-  // });
-
-  // ws.onopen = () => {
-  //   console.log("WS connected");
-  // };
   return (
     <WebsocketContext.Provider
       value={{
@@ -124,6 +150,14 @@ export const WebsocketContextProvider = ({
         sendMessageToGroup: (message: string) => {
           if (!socket || !activeGroupSession) return;
           socket.emit("group_message", [username, message]);
+        },
+        sendData: (data: { heartRate?: number; power?: number }) => {
+          if (!data.heartRate && !data.power) {
+            console.log("no data to send..");
+            return;
+          }
+          console.log("should emit:", data);
+          socket?.emit("workout_data", data);
         },
         joinStatus,
       }}

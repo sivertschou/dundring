@@ -13,6 +13,7 @@ import { useHeartRateMonitor } from "./context/HeartRateContext";
 import { hrColor, powerColor } from "./colors";
 import { useSmartTrainer } from "./context/SmartTrainerContext";
 import { useActiveWorkout } from "./context/WorkoutContext";
+import { useWebsocket } from "./context/WebsocketContext";
 
 export const App = () => {
   const {
@@ -31,8 +32,8 @@ export const App = () => {
 
   const [data, setData] = React.useState<DataPoint[]>([]);
   const [timeElapsed, setTimeElapsed] = React.useState(0);
-  const [startingTime, setStartingTime] = React.useState<Date | null>(null);
-  
+  const [startingTime, setStartingTime] = React.useState<Date | null>(null);
+
   const {
     running,
     addCallback,
@@ -40,12 +41,12 @@ export const App = () => {
     start: startGlobalClock,
     stop: stopGlobalClock,
   } = useGlobalClock();
-
+  const { sendData } = useWebsocket();
   React.useEffect(() => {
     const interval = setInterval(() => {
+      const heartRateToInclude = heartRate ? { heartRate } : {};
+      const powerToInclude = power ? { power } : {};
       if (running) {
-        const heartRateToInclude = heartRate ? { heartRate } : {};
-        const powerToInclude = power ? { power } : {};
         setData((data) => [
           ...data,
           {
@@ -55,6 +56,7 @@ export const App = () => {
           },
         ]);
       }
+      sendData({ ...heartRateToInclude, ...powerToInclude });
     }, 500);
     return () => clearInterval(interval);
   }, [power, startingTime, heartRate, hrIsConnected]);

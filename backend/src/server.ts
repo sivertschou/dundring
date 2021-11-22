@@ -217,6 +217,10 @@ io.on("connection", (socket: Socket) => {
   socket.on("group_message", (message) => {
     groupSessionService.sendMessageToRoom(socket, io, message);
   });
+  socket.on("workout_data", (data: { heartRate?: number; power?: number }) => {
+    console.log("workout_data received!", data);
+    groupSessionService.sendWorkoutDataToRoom(socket, io, data);
+  });
 
   socket.on("create_group_session", (member: groupSessionService.Member) => {
     const room = groupSessionService.createRoom(socket, member);

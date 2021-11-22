@@ -24,6 +24,20 @@ export const sendMessageToRoom = (
     sender: socket.data.username,
   });
 };
+export const sendWorkoutDataToRoom = (
+  socket: Socket,
+  io: Server,
+  data: { heartRata?: number; power?: number }
+) => {
+  console.log("should send data");
+  console.log("from", socket.data.username);
+
+  const username = socket.data.username;
+  io.to(usersAndActiveRooms[username]).emit("workout_data", {
+    data,
+    sender: username,
+  });
+};
 
 const generateRoomId = (
   length: number,
