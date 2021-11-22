@@ -14,7 +14,7 @@ import {
   WorkoutsResponseBody,
 } from "../../common/types/apiTypes";
 import { UserRole } from "../../common/types/userTypes";
-import { Socket } from "socket.io";
+import { Socket, Server } from "socket.io";
 
 const http = require("http");
 require("dotenv").config();
@@ -23,7 +23,6 @@ require("dotenv").config();
 const app = express.default();
 const cors = require("cors");
 const router = express.Router();
-const { Server } = require("socket.io");
 
 const httpPort = process.env.PORT;
 
@@ -33,7 +32,7 @@ app.use(cors());
 app.use("/api", router);
 
 const httpServer = http.createServer(app);
-const io = require("socket.io")(httpServer, {
+const io: Server = require("socket.io")(httpServer, {
   cors: {
     origin: "http://localhost:3000",
     methods: ["GET", "POST"],
@@ -207,32 +206,43 @@ router.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
     });
   }
 );
-const testRoom = "testroom";
-const newMessageEvent = "NEW_MESSAGE_EVENT";
-// io.on("connection", (socket: Socket) => {
-//   console.log(socket.id); // x8WIv7-mJelg7on_ALbx
-//   console.log(socket.data);
-//   console.log(socket.)
-// });
 
 io.on("connection", (socket: Socket) => {
   console.log("a user connected");
   socket.on("disconnect", () => {
-    console.log("user disconnected");
+    console.log(socket.data.username, "disconnected");
+
+    groupSessionService.leaveRoom(socket.data.username, socket, io);
+  });
+  socket.on("group_message", (message) => {
+    groupSessionService.sendMessageToRoom(socket, io, message);
   });
 
-  socket.on("chat message", (msg) => {
-    console.log("message: " + msg);
-    socket.emit("update", "AIIT");
+  socket.on("create_group_session", (member: groupSessionService.Member) => {
+    const room = groupSessionService.createRoom(socket, member);
+    if (room === null) {
+      socket.emit("group_session_creation_failed");
+      return;
+    }
+    socket.data = { username: member.username };
+
+    console.log(`${member.username} created room with id: ${room.id}`);
+    socket.emit("group_session_created", room);
   });
 
-  socket.on("create_group_session", (msg) => {
-    console.log("message: " + msg);
-    const roomName = groupSessionService.generateRandomString(5);
-    console.log("roomName:", roomName);
-    socket.join(roomName);
-    socket.emit("group_session_created", roomName);
-  });
+  socket.on(
+    "join_group_session",
+    (body: { member: groupSessionService.Member; roomId: string }) => {
+      const { member, roomId } = body;
+      socket.data = { username: member.username };
+      const ret = groupSessionService.joinRoom(roomId, member, socket, io);
+      if (ret.status === "SUCCESS") {
+        socket.emit("group_session_joined", ret.data);
+      } else {
+        socket.emit("failed_to_join_group_session", ret.type);
+      }
+    }
+  );
 });
 
 httpServer.listen(httpPort, () => {

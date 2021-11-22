@@ -1,4 +1,5 @@
 import { StoredUser, UserRole } from "../../../common/types/userTypes";
+import { Status } from "../../../common/types/serviceTypes";
 require("dotenv").config();
 import * as fs from "fs";
 import { Workout } from "../../../common/types/workoutTypes";
@@ -77,17 +78,6 @@ export const saveWorkout = (
     return { status: "SUCCESS", data: workouts };
   }
 };
-
-interface SuccessStatus<T> {
-  status: "SUCCESS";
-  data: T;
-}
-interface ErrorStatus<E> {
-  status: "ERROR";
-  type: E;
-}
-
-type Status<T, E> = SuccessStatus<T> | ErrorStatus<E>;
 
 export const createUser = (
   user: StoredUser

@@ -5,18 +5,11 @@ import * as React from "react";
 interface Props {
   text: string;
   icon: React.ReactElement;
-  ariaLabel: string;
   onClick: () => void;
   iconColor?: string;
 }
 
-export const ActionBarItem = ({
-  text,
-  icon,
-  onClick,
-  iconColor,
-  ariaLabel,
-}: Props) => {
+export const ActionBarItem = ({ text, icon, onClick, iconColor }: Props) => {
   const [hover, setHover] = React.useState(false);
   const color = iconColor ? { color: iconColor } : {};
   return (
@@ -37,7 +30,7 @@ export const ActionBarItem = ({
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
         onClick={onClick}
-        aria-label={ariaLabel}
+        aria-label={text}
         icon={icon}
         fontSize="25"
         isRound

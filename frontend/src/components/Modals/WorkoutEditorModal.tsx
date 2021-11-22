@@ -35,7 +35,6 @@ export const WorkoutEditorModal = () => {
     <>
       <ActionBarItem
         text="Open workout editor"
-        ariaLabel="Open workout editor"
         icon={
           <Icon as={activeWorkout.workout ? BarChartLineFill : BarChartLine} />
         }

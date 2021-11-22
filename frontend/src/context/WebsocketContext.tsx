@@ -1,20 +1,30 @@
 import * as React from "react";
 import { io, Socket } from "socket.io-client";
-import { httpUrl, wsUrl } from "../api";
 import { UserContextType } from "../types";
+import { useUser } from "./UserContext";
 
 export const defaultUser: UserContextType = {
   loggedIn: false,
 };
 
-interface GroupSession {
+interface Member {
+  username: string;
+  ftp: number;
+  weight: number;
+}
+export interface Room {
   id: string;
+  members: Member[];
+  creator: string;
 }
 
 const WebsocketContext = React.createContext<{
-  startGroupSession: () => void;
-  activeGroupSession: GroupSession | null;
+  startGroupSession: (username: string) => void;
+  activeGroupSession: Room | null;
   sendMessage: (message: string) => void;
+  sendMessageToGroup: (message: string) => void;
+  joinGroupSession: (groupId: string, username: string) => void;
+  joinStatus: "NOT_ASKED" | "LOADING" | "ROOM_NOT_FOUND";
 } | null>(null);
 
 export const WebsocketContextProvider = ({
@@ -24,37 +34,55 @@ export const WebsocketContextProvider = ({
 }) => {
   const [socket, setSocket] = React.useState<Socket | null>(null);
   const [activeGroupSession, setActiveGroupSession] =
-    React.useState<GroupSession | null>(null);
-  // const socket = io(httpUrl);
-  // socket.on("connect", () => {
-  // console.log(socket.id); // x8WIv7-mJelg7on_ALbx
-  // // });
-  // const socket = new WebSocket("ws://localhost:8092");
+    React.useState<Room | null>(null);
+  const [joinStatus, setJoinStatus] = React.useState<
+    "NOT_ASKED" | "LOADING" | "ROOM_NOT_FOUND"
+  >("NOT_ASKED");
 
-  // socket.onopen = () => {
-  //   socket.send("Hello!");
-  // };
+  const { user } = useUser();
 
-  // socket.onmessage = (data) => {
-  //   console.log(data);
-  // };
+  const [username, setUsername] = React.useState("");
 
   React.useEffect(() => {
     const socket = io("ws://localhost:8092");
     setSocket(socket);
 
-    socket.on("connect", () => {
-      // either with send()
-      // socket.emit("chat message", "HALLA");
-      socket.emit("create_group_session");
+    socket.on(
+      "member_joined",
+      ({ newMember, room }: { newMember: Member; room: Room }) => {
+        console.log("Member joined: ", newMember, " - members:", room.members);
+        setActiveGroupSession(room);
+      }
+    );
+    socket.on(
+      "member_left",
+      ({ leaver, room }: { leaver: string; room: Room }) => {
+        console.log("Member joined: ", leaver, " - members:", room.members);
+        setActiveGroupSession(room);
+      }
+    );
+
+    socket.on("group_message", (msg) => {
+      console.log("group_message", msg);
     });
 
     socket.on("update", (msg) => {
       console.log("msg", msg);
     });
 
-    socket.on("group_session_created", (msg) => {
-      console.log("group session with id created:", msg);
+    socket.on("group_session_joined", (room: Room) => {
+      setJoinStatus("NOT_ASKED");
+      console.log("group session with id joined:", room.id);
+      setActiveGroupSession(room);
+    });
+    socket.on("failed_to_join_group_session", (room: Room) => {
+      setJoinStatus("ROOM_NOT_FOUND");
+      console.log("failed to join group session with id:", room.id);
+    });
+
+    socket.on("group_session_created", (room: Room) => {
+      console.log("group session with id created:", room.id);
+      setActiveGroupSession(room);
     });
   }, [setSocket]);
   // const socket = io("ws://localhost:8092");
@@ -72,11 +100,32 @@ export const WebsocketContextProvider = ({
       value={{
         sendMessage: (msg) => console.log("msg", msg),
         activeGroupSession,
-        startGroupSession: () => {
+        startGroupSession: (username: string) => {
+          console.log("startGroupSession", username);
           if (socket) {
-            socket.emit("create_group_session");
+            setUsername(username);
+            socket.emit("create_group_session", {
+              username,
+              ftp: 200,
+              weight: 85,
+            });
           }
         },
+        joinGroupSession: (roomId: string, username: string) => {
+          if (socket) {
+            setJoinStatus("LOADING");
+            setUsername(username);
+            socket.emit("join_group_session", {
+              member: { username, ftp: 200, weight: 85 },
+              roomId: roomId,
+            });
+          }
+        },
+        sendMessageToGroup: (message: string) => {
+          if (!socket || !activeGroupSession) return;
+          socket.emit("group_message", [username, message]);
+        },
+        joinStatus,
       }}
     >
       {children}

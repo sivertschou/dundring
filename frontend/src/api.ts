@@ -8,7 +8,6 @@ import {
 } from "../../common/types/apiTypes";
 
 export const httpUrl = process.env.REACT_APP_HTTP_URL + "/api";
-export const wsUrl = process.env.REACT_APP_WS_URL + "";
 
 const get = async <T>(url: string): Promise<T> => {
   const response = await fetch(url, {

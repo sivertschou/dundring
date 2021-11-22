@@ -107,7 +107,6 @@ export const LoginModal = () => {
     <>
       <ActionBarItem
         text="Login"
-        ariaLabel="Login"
         icon={<Icon as={Person} />}
         onClick={onOpen}
       />

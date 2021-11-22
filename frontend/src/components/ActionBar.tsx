@@ -15,12 +15,15 @@ import { hrColor, powerColor } from "../colors";
 import { useHeartRateMonitor } from "../context/HeartRateContext";
 import { useSmartTrainer } from "../context/SmartTrainerContext";
 import { useUser } from "../context/UserContext";
+import { useWebsocket } from "../context/WebsocketContext";
 import { ActionBarItem } from "./ActionBarItem";
+import { GroupSessionModal } from "./Modals/GroupSessionModal";
 import { LoginModal } from "./Modals/LoginModal";
 import { WorkoutEditorModal } from "./Modals/WorkoutEditorModal";
 
 export const ActionBar = () => {
   const { user, setUser } = useUser();
+  const { activeGroupSession } = useWebsocket();
   const {
     isConnected: hrIsConnected,
     disconnect: disconnectHR,
@@ -43,10 +46,14 @@ export const ActionBar = () => {
       ) : (
         <LoginModal />
       )}
+      {activeGroupSession ? (
+        <Text fontSize="lg" fontWeight="bold">
+          #{activeGroupSession.id}
+        </Text>
+      ) : null}
       {hrIsConnected ? (
         <ActionBarItem
           text="Disconnect HR"
-          ariaLabel="Disconnect HR"
           icon={<Icon as={HeartFill} mt="1" />}
           onClick={disconnectHR}
           iconColor={hrColor}
@@ -54,7 +61,6 @@ export const ActionBar = () => {
       ) : (
         <ActionBarItem
           text="Connect HR"
-          ariaLabel="Connect HR"
           icon={<Icon as={Heart} mt="1" />}
           onClick={connectHR}
         />
@@ -62,7 +68,6 @@ export const ActionBar = () => {
       {smartTrainerIsConnected ? (
         <ActionBarItem
           text="Disconnect Smart Trainer"
-          ariaLabel="Disconnect Smart Trainer"
           icon={<Icon as={LightningChargeFill} />}
           onClick={disconnectSmartTrainer}
           iconColor={powerColor}
@@ -70,24 +75,21 @@ export const ActionBar = () => {
       ) : (
         <ActionBarItem
           text="Connect Smart Trainer"
-          ariaLabel="Connect Smart Trainer"
           icon={<Icon as={LightningCharge} />}
           onClick={connectSmartTrainer}
         />
       )}
+      <GroupSessionModal />
       <WorkoutEditorModal />
-
       {colorMode === "light" ? (
         <ActionBarItem
           text="Enable darkmode"
-          ariaLabel="Enable darkmode"
           icon={<Icon as={Moon} />}
           onClick={() => setColorMode("dark")}
         />
       ) : (
         <ActionBarItem
           text="Enable lightmode"
-          ariaLabel="Enable lightmode"
           icon={<Icon as={Sun} />}
           onClick={() => setColorMode("light")}
         />
@@ -95,7 +97,6 @@ export const ActionBar = () => {
       {user.loggedIn ? (
         <ActionBarItem
           text="Logout"
-          ariaLabel="Logout"
           icon={<Icon as={BoxArrowRight} />}
           onClick={() => setUser({ loggedIn: false })}
         />
