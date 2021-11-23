@@ -66,8 +66,6 @@ export const toTCX = (dataPoints: DataPoint[], filename: string) => {
 </TrainingCenterDatabase>
  `;
 
-  console.log("output:", output);
-
   const url = window.URL.createObjectURL(new Blob([output]));
   const link = document.createElement("a");
   link.href = url;

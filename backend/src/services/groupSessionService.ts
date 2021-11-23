@@ -87,7 +87,6 @@ export const joinRoom = (
   io: Server
 ): Status<Room, "Room not found"> => {
   const room = rooms[roomId];
-  console.log(`rooms[${roomId}]: ${room} - username: ${member.username}`);
   if (room) {
     const updatedRoom = { ...room, members: [...room.members, member] };
     socket.join(roomId);
@@ -106,7 +105,6 @@ export const joinRoom = (
 export const leaveRoom = (username: string, socket: Socket, io: Server) => {
   const roomId = usersAndActiveRooms[username];
   const room = rooms[roomId];
-  console.log(`rooms[${roomId}]: ${room} - username: ${username}`);
   if (room) {
     const updatedRoom = {
       ...room,
@@ -117,7 +115,6 @@ export const leaveRoom = (username: string, socket: Socket, io: Server) => {
     socket.leave(roomId);
     rooms[roomId] = updatedRoom;
     delete usersAndActiveRooms[username];
-    console.log("usersAndActiveRooms:", usersAndActiveRooms);
     io.to(roomId).emit("member_left", {
       leaver: username,
       room: updatedRoom,

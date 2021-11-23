@@ -39,7 +39,6 @@ export const Graphs = ({ data: rawData }: Props) => {
     "Your HR": dp.heartRate,
     "Your Power": dp.power,
   }));
-  console.log("otherUsers:", otherUsers);
   const otherPeoplesData = otherUsers.map((user) => {
     const data = activeGroupSession?.workoutData[user.username];
     if (!data) return [];

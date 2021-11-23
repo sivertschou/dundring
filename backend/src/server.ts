@@ -54,7 +54,6 @@ router.post<WorkoutRequestBody, ApiResponseBody<WorkoutsResponseBody>>(
   validationService.authenticateToken,
   (req: validationService.AuthenticatedRequest<WorkoutRequestBody>, res) => {
     const workout = req.body.workout;
-    console.log("request:", req.body);
     if (!req.username) {
       res.send({
         status: ApiStatus.FAILURE,
@@ -67,15 +66,12 @@ router.post<WorkoutRequestBody, ApiResponseBody<WorkoutsResponseBody>>(
 
     switch (ret.status) {
       case "SUCCESS":
-        console.log("SUCCESS");
         res.send({
           status: ApiStatus.SUCCESS,
           data: { workouts: ret.data },
         });
         return;
       default:
-        console.log("FAILURE");
-
         res.send({
           status: ApiStatus.FAILURE,
           message: ret.type,
@@ -208,10 +204,7 @@ router.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
 );
 
 io.on("connection", (socket: Socket) => {
-  console.log("a user connected");
   socket.on("disconnect", () => {
-    console.log(socket.data.username, "disconnected");
-
     groupSessionService.leaveRoom(socket.data.username, socket, io);
   });
   socket.on("group_message", (message) => {

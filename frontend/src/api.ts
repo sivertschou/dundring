@@ -11,7 +11,6 @@ export const httpUrl =
   (process.env.REACT_APP_HTTP_URL || "http://localhost:8092") + "/api";
 export const wsUrl = process.env.REACT_APP_WS_URL || "ws://localhost:8092";
 
-console.log("process.env:", process.env);
 const get = async <T>(url: string): Promise<T> => {
   const response = await fetch(url, {
     headers: {
