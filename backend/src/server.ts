@@ -34,7 +34,7 @@ app.use("/api", router);
 const httpServer = http.createServer(app);
 const io: Server = require("socket.io")(httpServer, {
   cors: {
-    origin: "http://localhost:3000",
+    origins: ["http://localhost:3000", "https://dundring.com"],
     methods: ["GET", "POST"],
   },
 });
