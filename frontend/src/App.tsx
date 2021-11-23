@@ -35,11 +35,16 @@ export const App = () => {
   
   const {
     running,
-    addCallback,
-    removeCallback,
     start: startGlobalClock,
     stop: stopGlobalClock,
-  } = useGlobalClock();
+  } = useGlobalClock(
+      (timeSinceLast) => {
+        setTimeElapsed((prev) => prev + timeSinceLast);
+        if (activeWorkout && !activeWorkout.isDone) {
+          increaseActiveWorkoutElapsedTime(timeSinceLast);
+        }
+      
+    });
 
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -60,15 +65,6 @@ export const App = () => {
   }, [power, startingTime, heartRate, hrIsConnected]);
 
   const start = () => {
-    addCallback({
-      name: "Basic",
-      callback: (timeSinceLast) => {
-        setTimeElapsed((prev) => prev + timeSinceLast);
-        if (activeWorkout && !activeWorkout.isDone) {
-          increaseActiveWorkoutElapsedTime(timeSinceLast);
-        }
-      },
-    });
     if (!startingTime) {
       setStartingTime(new Date());
     }
@@ -77,7 +73,6 @@ export const App = () => {
   };
 
   const stop = () => {
-    removeCallback("Basic");
     stopGlobalClock();
     if (smartTrainerIsConnected) {
       setSmartTrainerResistance(0);
