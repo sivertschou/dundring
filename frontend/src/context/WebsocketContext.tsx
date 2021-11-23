@@ -31,6 +31,7 @@ const WebsocketContext = React.createContext<{
   joinGroupSession: (groupId: string, username: string) => void;
   joinStatus: "NOT_ASKED" | "LOADING" | "ROOM_NOT_FOUND";
   sendData: (data: { heartRate?: number; power?: number }) => void;
+  providedUsername: string;
 } | null>(null);
 
 export const WebsocketContextProvider = ({
@@ -87,7 +88,6 @@ export const WebsocketContextProvider = ({
         data: { heartRate: number; power: number };
         sender: string;
       }) => {
-        console.log("data from", sender, data);
         setActiveGroupSession((activeGroupSession) => {
           if (!activeGroupSession) {
             return null;
@@ -96,7 +96,10 @@ export const WebsocketContextProvider = ({
             activeGroupSession.workoutData[sender] || [];
           return {
             ...activeGroupSession,
-            workoutData: { [sender]: [data, ...prevWorkoutValues] },
+            workoutData: {
+              ...activeGroupSession.workoutData,
+              [sender]: [data, ...prevWorkoutValues],
+            },
           };
         });
       }
@@ -153,13 +156,14 @@ export const WebsocketContextProvider = ({
         },
         sendData: (data: { heartRate?: number; power?: number }) => {
           if (!data.heartRate && !data.power) {
-            console.log("no data to send..");
+            // console.log("no data to send..");
             return;
           }
-          console.log("should emit:", data);
+          // console.log("should emit:", data);
           socket?.emit("workout_data", data);
         },
         joinStatus,
+        providedUsername: username,
       }}
     >
       {children}

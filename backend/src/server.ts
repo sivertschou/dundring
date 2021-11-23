@@ -218,7 +218,6 @@ io.on("connection", (socket: Socket) => {
     groupSessionService.sendMessageToRoom(socket, io, message);
   });
   socket.on("workout_data", (data: { heartRate?: number; power?: number }) => {
-    console.log("workout_data received!", data);
     groupSessionService.sendWorkoutDataToRoom(socket, io, data);
   });
 
