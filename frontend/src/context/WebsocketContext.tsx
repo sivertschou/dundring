@@ -1,6 +1,7 @@
 import * as React from "react";
 import { io, Socket } from "socket.io-client";
-import { DataPoint, UserContextType } from "../types";
+import { wsUrl } from "../api";
+import { UserContextType } from "../types";
 import { useUser } from "./UserContext";
 
 export const defaultUser: UserContextType = {
@@ -51,7 +52,7 @@ export const WebsocketContextProvider = ({
   const [username, setUsername] = React.useState("");
 
   React.useEffect(() => {
-    const socket = io("ws://localhost:8092");
+    const socket = io(wsUrl);
     setSocket(socket);
 
     socket.on(
@@ -122,7 +123,7 @@ export const WebsocketContextProvider = ({
       console.log("group session with id created:", room.id);
       setActiveGroupSession({ ...room, workoutData: {} });
     });
-  }, [setSocket, user]);
+  }, [setSocket, user, setActiveGroupSession]);
 
   return (
     <WebsocketContext.Provider

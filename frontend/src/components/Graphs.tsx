@@ -1,14 +1,7 @@
 import { AspectRatio, Center, HStack, Stack } from "@chakra-ui/layout";
 import * as React from "react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, YAxis } from "recharts";
-import {
-  hrColor,
-  hrColors,
-  hrColorsAsStrings,
-  powerColor,
-  powerColors,
-} from "../colors";
-import { useUser } from "../context/UserContext";
+import { hrColors, powerColors } from "../colors";
 import { useWebsocket } from "../context/WebsocketContext";
 import { DataPoint } from "../types";
 import { GraphCheckboxes } from "./Graph/GraphCheckboxes";
