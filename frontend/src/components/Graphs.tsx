@@ -4,6 +4,7 @@ import { Area, AreaChart, ResponsiveContainer, Tooltip, YAxis } from "recharts";
 import { hrColors, powerColors } from "../colors";
 import { useWebsocket } from "../context/WebsocketContext";
 import { DataPoint } from "../types";
+import { CustomTooltip } from "./Graph/CustomTooltip";
 import { GraphCheckboxes } from "./Graph/GraphCheckboxes";
 
 interface Props {
@@ -36,8 +37,8 @@ export const Graphs = ({ data: rawData }: Props) => {
 
   const numPoints = 500;
   const data = rawData.map((dp) => ({
-    "Your HR": dp.heartRate,
-    "Your Power": dp.power,
+    "You HR": dp.heartRate,
+    "You Power": dp.power,
   }));
   const otherPeoplesData = otherUsers.map((user) => {
     const data = activeGroupSession?.workoutData[user.username];
@@ -67,8 +68,8 @@ export const Graphs = ({ data: rawData }: Props) => {
 
   const filledData = [
     ...new Array(numPoints).fill({
-      "Your HR": undefined,
-      "Your Power": undefined,
+      "You HR": undefined,
+      "You Power": undefined,
     }),
     ...data,
   ].splice(-numPoints);
@@ -122,7 +123,7 @@ export const Graphs = ({ data: rawData }: Props) => {
       <AspectRatio ratio={16 / 9} width="100%">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={allMerged}>
-            {fillAreaChart("Your", showUserData, 0)}
+            {fillAreaChart("You", showUserData, 0)}
             {otherUsers.map((user, i) =>
               fillAreaChart(
                 user.username,
@@ -131,7 +132,7 @@ export const Graphs = ({ data: rawData }: Props) => {
               )
             )}
             <YAxis />
-            <Tooltip />
+            <Tooltip content={<CustomTooltip />} />
           </AreaChart>
         </ResponsiveContainer>
       </AspectRatio>
