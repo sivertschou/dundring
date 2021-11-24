@@ -1,5 +1,9 @@
+import { IconButton } from "@chakra-ui/button";
+import Icon from "@chakra-ui/icon";
 import { AspectRatio, Center, HStack, Stack } from "@chakra-ui/layout";
+import { Tooltip as ChakraTooltip } from "@chakra-ui/tooltip";
 import * as React from "react";
+import { BarChartLine, BarChartLineFill } from "react-bootstrap-icons";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, YAxis } from "recharts";
 import { hrColors, powerColors } from "../colors";
 import { useWebsocket } from "../context/WebsocketContext";
@@ -22,6 +26,7 @@ const mergeArrays = (arr1: any[], arr2: any[]) => {
 
 export const Graphs = ({ data: rawData }: Props) => {
   const { activeGroupSession, providedUsername } = useWebsocket();
+  const [showFill, setShowFill] = React.useState(true);
   const otherUsers = activeGroupSession
     ? activeGroupSession.members.filter(
         (otherUser) => otherUser.username !== providedUsername
@@ -79,7 +84,8 @@ export const Graphs = ({ data: rawData }: Props) => {
   const fillAreaChart = (
     dataPrefix: string,
     checked: ShowData,
-    index: number
+    index: number,
+    showFill: boolean
   ) => {
     const hrColor = hrColors[index % hrColors.length];
     const powerColor = powerColors[index % powerColors.length];
@@ -87,16 +93,24 @@ export const Graphs = ({ data: rawData }: Props) => {
     const powerGradientId = dataPrefix + "colorPower";
     return (
       <React.Fragment key={index}>
-        <defs>
-          <linearGradient id={`${hrGradientId}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={hrColor} stopOpacity={0.8} />
-            <stop offset="95%" stopColor={hrColor} stopOpacity={0} />
-          </linearGradient>
-          <linearGradient id={`${powerGradientId}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={powerColor} stopOpacity={0.8} />
-            <stop offset="95%" stopColor={powerColor} stopOpacity={0} />
-          </linearGradient>
-        </defs>
+        {showFill ? (
+          <defs>
+            <linearGradient id={`${hrGradientId}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={hrColor} stopOpacity={0.8} />
+              <stop offset="95%" stopColor={hrColor} stopOpacity={0} />
+            </linearGradient>
+            <linearGradient
+              id={`${powerGradientId}`}
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop offset="5%" stopColor={powerColor} stopOpacity={0.8} />
+              <stop offset="95%" stopColor={powerColor} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+        ) : null}
 
         {checked.hr ? (
           <Area
@@ -118,17 +132,32 @@ export const Graphs = ({ data: rawData }: Props) => {
     );
   };
 
+  const toggleGraphFillButtonText = showFill
+    ? "Hide graph fill"
+    : "Show graph fill";
   return (
     <Stack width="100%">
+      <HStack flexDir="row-reverse">
+        <ChakraTooltip label={toggleGraphFillButtonText} placement="left">
+          <IconButton
+            variant="ghost"
+            icon={<Icon as={showFill ? BarChartLineFill : BarChartLine} />}
+            aria-label={toggleGraphFillButtonText}
+            isRound={true}
+            onClick={() => setShowFill((prev) => !prev)}
+          />
+        </ChakraTooltip>
+      </HStack>
       <AspectRatio ratio={16 / 9} width="100%">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer>
           <AreaChart data={allMerged}>
-            {fillAreaChart("You", showUserData, 0)}
+            {fillAreaChart("You", showUserData, 0, showFill)}
             {otherUsers.map((user, i) =>
               fillAreaChart(
                 user.username,
                 showOtherUsersData[user.username] || { hr: true, power: true },
-                i + 1
+                i + 1,
+                showFill
               )
             )}
             <YAxis />

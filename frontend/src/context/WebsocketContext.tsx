@@ -110,7 +110,7 @@ export const WebsocketContextProvider = ({
     socket.on("group_session_created", (room: Room) => {
       setActiveGroupSession({ ...room, workoutData: {} });
     });
-  }, [setSocket, user, setActiveGroupSession]);
+  }, [setSocket, user, activeGroupSession, setActiveGroupSession]);
 
   return (
     <WebsocketContext.Provider

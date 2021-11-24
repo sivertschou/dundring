@@ -1,5 +1,5 @@
 import { useColorModeValue } from "@chakra-ui/color-mode";
-import { Grid, SimpleGrid, Stack, Text } from "@chakra-ui/layout";
+import { Text } from "@chakra-ui/layout";
 import { Tbody } from "@chakra-ui/react";
 import { Table, Td, Tr } from "@chakra-ui/table";
 
