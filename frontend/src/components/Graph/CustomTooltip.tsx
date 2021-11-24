@@ -1,5 +1,6 @@
 import { useColorModeValue } from "@chakra-ui/color-mode";
 import { Grid, SimpleGrid, Stack, Text } from "@chakra-ui/layout";
+import { Tbody } from "@chakra-ui/react";
 import { Table, Td, Tr } from "@chakra-ui/table";
 
 interface Payload {
@@ -23,39 +24,40 @@ export const CustomTooltip = ({ active, payload, label }: Props) => {
   if (active && payload && payload.length) {
     return (
       <Table bgColor={bgColor} borderRadius="5" variant="unstyled">
-        {payload.map((dataPoint, i) => {
-          const [name, value, unit] = formatLine(
-            dataPoint.name,
-            dataPoint.value
-          );
-          return (
-            <Tr>
-              <Td p="0">
-                <Text color={dataPoint.color} align="right" p="1">
-                  {name}:
-                </Text>
-              </Td>
-              <Td p="0">
-                <Text
-                  color={dataPoint.color}
-                  align="right"
-                  fontWeight="bold"
-                  paddingY="1"
-                >
-                  {value}
-                </Text>
-              </Td>
-              <Td p="0">
-                <Text color={dataPoint.color} paddingY="1" pr="1">
-                  {" "}
-                  {unit}
-                </Text>
-              </Td>
-            </Tr>
-          );
-        })}
-        {/* <Text>{`${payload[0].value}`}</Text>
-        <Text>Anything you want can be displayed here.</Text> */}
+        <Tbody>
+          {payload.map((dataPoint, i) => {
+            const [name, value, unit] = formatLine(
+              dataPoint.name,
+              dataPoint.value
+            );
+
+            return (
+              <Tr key={i}>
+                <Td p="0">
+                  <Text color={dataPoint.color} align="right" p="1">
+                    {name}:
+                  </Text>
+                </Td>
+                <Td p="0">
+                  <Text
+                    color={dataPoint.color}
+                    align="right"
+                    fontWeight="bold"
+                    paddingY="1"
+                  >
+                    {value}
+                  </Text>
+                </Td>
+                <Td p="0">
+                  <Text color={dataPoint.color} paddingY="1" pr="1">
+                    {" "}
+                    {unit}
+                  </Text>
+                </Td>
+              </Tr>
+            );
+          })}
+        </Tbody>
       </Table>
     );
   }

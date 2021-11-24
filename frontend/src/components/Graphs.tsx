@@ -86,7 +86,7 @@ export const Graphs = ({ data: rawData }: Props) => {
     const hrGradientId = dataPrefix + "colorHR";
     const powerGradientId = dataPrefix + "colorPower";
     return (
-      <>
+      <React.Fragment key={index}>
         <defs>
           <linearGradient id={`${hrGradientId}`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor={hrColor} stopOpacity={0.8} />
@@ -114,7 +114,7 @@ export const Graphs = ({ data: rawData }: Props) => {
             animationDuration={0}
           />
         ) : null}
-      </>
+      </React.Fragment>
     );
   };
 
