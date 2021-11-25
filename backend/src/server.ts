@@ -210,9 +210,13 @@ io.on("connection", (socket: Socket) => {
   socket.on("group_message", (message) => {
     groupSessionService.sendMessageToRoom(socket, io, message);
   });
-  socket.on("workout_data", (data: { heartRate?: number; power?: number }) => {
-    groupSessionService.sendWorkoutDataToRoom(socket, io, data);
-  });
+  socket.on(
+    "workout_data",
+    (data: { heartRate?: number; power?: number; username: string }) => {
+      console.log("received workoutdata", data.username);
+      groupSessionService.sendWorkoutDataToRoom(socket, io, data);
+    }
+  );
 
   socket.on("create_group_session", (member: groupSessionService.Member) => {
     const room = groupSessionService.createRoom(socket, member);
@@ -232,6 +236,8 @@ io.on("connection", (socket: Socket) => {
       const { member, roomId } = body;
       socket.data = { username: member.username };
       const ret = groupSessionService.joinRoom(roomId, member, socket, io);
+      console.log(`${member.username} joined room with id: ${roomId}`);
+
       if (ret.status === "SUCCESS") {
         socket.emit("group_session_joined", ret.data);
       } else {

@@ -19,7 +19,7 @@ const formatLine = (name: string, value: number) => {
   const unit = name.split(" ")[1] === "HR" ? " bpm" : " W";
   return [`${name.split(" ")[0]}`, value, unit];
 };
-export const CustomTooltip = ({ active, payload, label }: Props) => {
+export const CustomGraphTooltip = ({ active, payload, label }: Props) => {
   const bgColor = useColorModeValue("white", "gray.800");
   if (active && payload && payload.length) {
     return (

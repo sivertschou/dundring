@@ -56,10 +56,11 @@ export const App = () => {
           },
         ]);
       }
+      // console.log("running  - should send data tbh");
       sendData({ ...heartRateToInclude, ...powerToInclude });
     }, 500);
     return () => clearInterval(interval);
-  }, [power, startingTime, heartRate, hrIsConnected]);
+  }, [power, startingTime, heartRate, hrIsConnected, running, sendData]);
 
   const start = () => {
     addCallback({

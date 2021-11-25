@@ -82,6 +82,7 @@ export const WebsocketContextProvider = ({
         data: { heartRate: number; power: number };
         sender: string;
       }) => {
+        console.log("workout_data received");
         setActiveGroupSession((activeGroupSession) => {
           if (!activeGroupSession) {
             return null;
@@ -141,10 +142,11 @@ export const WebsocketContextProvider = ({
           socket.emit("group_message", [username, message]);
         },
         sendData: (data: { heartRate?: number; power?: number }) => {
+          if (!activeGroupSession) return;
           if (!data.heartRate && !data.power) {
             return;
           }
-          socket?.emit("workout_data", data);
+          socket?.emit("workout_data", { ...data, username });
         },
         joinStatus,
         providedUsername: username,

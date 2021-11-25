@@ -1,14 +1,24 @@
 import { IconButton } from "@chakra-ui/button";
 import Icon from "@chakra-ui/icon";
-import { AspectRatio, Center, HStack, Stack } from "@chakra-ui/layout";
+import { AspectRatio, Center, Grid, HStack, Stack } from "@chakra-ui/layout";
 import { Tooltip as ChakraTooltip } from "@chakra-ui/tooltip";
 import * as React from "react";
 import { BarChartLine, BarChartLineFill } from "react-bootstrap-icons";
-import { Area, AreaChart, ResponsiveContainer, Tooltip, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { hrColors, powerColors } from "../colors";
 import { useWebsocket } from "../context/WebsocketContext";
 import { DataPoint } from "../types";
-import { CustomTooltip } from "./Graph/CustomTooltip";
+import { CustomChartTooltip } from "./Graph/CustomChartTooltip";
+import { CustomGraphTooltip } from "./Graph/CustomGraphTooltip";
 import { GraphCheckboxes } from "./Graph/GraphCheckboxes";
 
 interface Props {
@@ -79,6 +89,22 @@ export const Graphs = ({ data: rawData }: Props) => {
     ...data,
   ].splice(-numPoints);
 
+  const otherPeoplesAvgPower = otherUsers.map((user) => {
+    const data = activeGroupSession?.workoutData[user.username];
+    if (!data) return null;
+    const avgPower = Math.floor(
+      ((data[0]?.power || 0) + (data[1]?.power || 0) + (data[1]?.power || 0)) /
+        3
+    );
+    const name = `${user.username} Power`;
+    return { name, [name]: avgPower };
+  });
+  console.log("otherPeoplesAvgPower:", otherPeoplesAvgPower);
+  const myAvgPower = Math.floor(
+    [...rawData].splice(-3).reduce((sum, data) => sum + (data.power || 0), 0) /
+      3
+  );
+
   const allMerged = mergeArrays(filledData, otherPeoplesDataMerged);
 
   const fillAreaChart = (
@@ -132,6 +158,37 @@ export const Graphs = ({ data: rawData }: Props) => {
     );
   };
 
+  const fillBarChart = (dataPrefix: string, show: boolean, index: number) => {
+    const powerColor = powerColors[index % powerColors.length];
+    const powerGradientId = dataPrefix + "colorPower";
+    return (
+      <React.Fragment key={index}>
+        {showFill ? (
+          <defs>
+            <linearGradient
+              id={`${powerGradientId}`}
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop offset="5%" stopColor={powerColor} stopOpacity={0.8} />
+              <stop offset="95%" stopColor={powerColor} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+        ) : null}
+
+        {show ? (
+          <Bar
+            dataKey={`${dataPrefix} Power`}
+            stroke={powerColor}
+            fill={`url(#${powerGradientId})`}
+          />
+        ) : null}
+      </React.Fragment>
+    );
+  };
+
   const toggleGraphFillButtonText = showFill
     ? "Hide graph fill"
     : "Show graph fill";
@@ -148,23 +205,47 @@ export const Graphs = ({ data: rawData }: Props) => {
           />
         </ChakraTooltip>
       </HStack>
-      <AspectRatio ratio={16 / 9} width="100%">
-        <ResponsiveContainer>
-          <AreaChart data={allMerged}>
-            {fillAreaChart("You", showUserData, 0, showFill)}
-            {otherUsers.map((user, i) =>
-              fillAreaChart(
-                user.username,
-                showOtherUsersData[user.username] || { hr: true, power: true },
-                i + 1,
-                showFill
-              )
-            )}
-            <YAxis />
-            <Tooltip content={<CustomTooltip />} />
-          </AreaChart>
-        </ResponsiveContainer>
-      </AspectRatio>
+      <Grid templateColumns="5fr 1fr">
+        <AspectRatio ratio={16 / 9} width="100%">
+          <ResponsiveContainer>
+            <AreaChart data={allMerged}>
+              {fillAreaChart("You", showUserData, 0, showFill)}
+              {otherUsers.map((user, i) =>
+                fillAreaChart(
+                  user.username,
+                  showOtherUsersData[user.username] || {
+                    hr: true,
+                    power: true,
+                  },
+                  i + 1,
+                  showFill
+                )
+              )}
+              <YAxis />
+              <Tooltip content={<CustomGraphTooltip />} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </AspectRatio>
+        <AspectRatio ratio={1} width="100%">
+          <ResponsiveContainer>
+            <BarChart
+              data={[
+                [
+                  { name: "You Power", "You Power": myAvgPower },
+                  ...otherPeoplesAvgPower,
+                ].reduce((res, cur) => ({ ...res, ...cur }), {}),
+              ]}
+            >
+              {fillBarChart("You", true, 0)}
+              {otherUsers.map((user, i) =>
+                fillBarChart(user.username, true, i + 1)
+              )}
+              <YAxis />
+              <Tooltip content={<CustomChartTooltip />} cursor={false} />
+            </BarChart>
+          </ResponsiveContainer>
+        </AspectRatio>
+      </Grid>
       <Stack>
         <Center>
           <HStack>

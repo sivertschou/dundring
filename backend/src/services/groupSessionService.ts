@@ -27,12 +27,11 @@ export const sendMessageToRoom = (
 export const sendWorkoutDataToRoom = (
   socket: Socket,
   io: Server,
-  data: { heartRata?: number; power?: number }
+  data: { heartRata?: number; power?: number; username: string }
 ) => {
-  const username = socket.data.username;
-  io.to(usersAndActiveRooms[username]).emit("workout_data", {
+  io.to(usersAndActiveRooms[data.username]).emit("workout_data", {
     data,
-    sender: username,
+    sender: data.username,
   });
 };
 
