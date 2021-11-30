@@ -7,9 +7,10 @@ import {
   WorkoutsResponseBody,
 } from "../../common/types/apiTypes";
 
-export const httpUrl =
-  (process.env.REACT_APP_HTTP_URL || "http://localhost:8092") + "/api";
-export const wsUrl = process.env.REACT_APP_WS_URL || "ws://localhost:8092";
+export const baseUrl =
+  process.env.REACT_APP_BASE_URL || "http://localhost:8092";
+export const httpUrl = baseUrl + "/api";
+export const wsUrl = baseUrl;
 
 // const get = async <T>(url: string): Promise<T> => {
 //   const response = await fetch(url, {

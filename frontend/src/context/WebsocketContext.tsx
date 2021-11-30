@@ -54,6 +54,10 @@ export const WebsocketContextProvider = ({
     const socket = io(wsUrl);
     setSocket(socket);
 
+    socket.on("connect_error", (err) => {
+      console.error(`connect_error due to ${err.message}`);
+    });
+
     socket.on(
       "member_joined",
       ({ newMember, room }: { newMember: Member; room: Room }) => {
@@ -118,7 +122,9 @@ export const WebsocketContextProvider = ({
       value={{
         activeGroupSession,
         startGroupSession: (username: string) => {
+          console.log("start group session as user", username);
           if (socket) {
+            console.log("inside if");
             setUsername(username);
             socket.emit("create_group_session", {
               username,
@@ -146,6 +152,7 @@ export const WebsocketContextProvider = ({
           if (!data.heartRate && !data.power) {
             return;
           }
+          console.log("send data");
           socket?.emit("workout_data", { ...data, username });
         },
         joinStatus,
