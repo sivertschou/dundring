@@ -239,7 +239,6 @@ wss.on("connection", (ws) => {
         groupSessionService.sendWorkoutDataToRoom(username, req.data);
       }
     }
-    console.log("message:", req);
   });
   ws.on("close", () => {
     console.log("connection closed", username);

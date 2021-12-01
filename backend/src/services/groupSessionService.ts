@@ -88,7 +88,6 @@ export const createRoom = (
     };
   } else {
     console.log(`${creator.username} created room #${roomId}`);
-    // socket.join(roomId);
     const room: ServerRoom = {
       id: roomId,
       creator: creator.username,
@@ -134,7 +133,6 @@ export const joinRoom = (
           room: toRoom(updatedRoom),
           username: member.username,
         };
-        console.log("send ", message, "to ", m.username);
         m.socket.send(JSON.stringify(message));
       });
   } else {
@@ -171,7 +169,6 @@ export const leaveRoom = (username: string) => {
             room: toRoom(updatedRoom),
             username,
           };
-          console.log("send ", message, "to ", m.username);
           m.socket.send(JSON.stringify(message));
         });
     }
