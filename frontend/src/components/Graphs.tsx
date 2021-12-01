@@ -37,11 +37,15 @@ const mergeArrays = (arr1: any[], arr2: any[]) => {
 export const Graphs = ({ data: rawData }: Props) => {
   const { activeGroupSession, providedUsername } = useWebsocket();
   const [showFill, setShowFill] = React.useState(true);
-  const otherUsers = activeGroupSession
-    ? activeGroupSession.members.filter(
-        (otherUser) => otherUser.username !== providedUsername
-      )
-    : [];
+  const otherUsers = React.useMemo(
+    () =>
+      activeGroupSession
+        ? activeGroupSession.members.filter(
+            (otherUser) => otherUser.username !== providedUsername
+          )
+        : [],
+    [activeGroupSession, providedUsername]
+  );
   const [showUserData, setShowUserData] = React.useState<ShowData>({
     hr: true,
     power: true,
@@ -51,61 +55,69 @@ export const Graphs = ({ data: rawData }: Props) => {
   }>({});
 
   const numPoints = 500;
-  const data = rawData.map((dp) => ({
-    "You HR": dp.heartRate,
-    "You Power": dp.power,
-  }));
-  const otherPeoplesData = otherUsers.map((user) => {
-    const data = activeGroupSession?.workoutData[user.username];
-    if (!data) return [];
-    const baseData = [
-      ...new Array(numPoints).fill({
-        [user.username + " HR"]: undefined,
-        [user.username + " Power"]: undefined,
-      }),
-    ];
+  const [allMerged, myAvgPower, otherPeoplesAvgPower] = React.useMemo(() => {
+    const data = rawData.map((dp) => ({
+      "You HR": dp.heartRate,
+      "You Power": dp.power,
+    }));
+    const otherPeoplesDataMerged = otherUsers
+      .map((user) => {
+        const data = activeGroupSession?.workoutData[user.username];
+        if (!data) return [];
+        const baseData = [
+          ...new Array(numPoints).fill({
+            [user.username + " HR"]: undefined,
+            [user.username + " Power"]: undefined,
+          }),
+        ];
 
-    const reversed = [...data].reverse();
+        const reversed = [...data].reverse();
+
+        return [
+          ...baseData,
+          ...reversed.map((data) => ({
+            [user.username + " HR"]: data.heartRate,
+            [user.username + " Power"]: data.power,
+          })),
+        ].splice(-numPoints);
+      })
+      .reduce(
+        (merged, data) => mergeArrays(merged, data),
+        [...Array(numPoints)]
+      );
+
+    const filledData = [
+      ...new Array(numPoints).fill({
+        "You HR": undefined,
+        "You Power": undefined,
+      }),
+      ...data,
+    ].splice(-numPoints);
+
+    const otherPeoplesAvgPower = otherUsers.map((user) => {
+      const data = activeGroupSession?.workoutData[user.username];
+      if (!data) return null;
+      const avgPower = Math.floor(
+        ((data[0]?.power || 0) +
+          (data[1]?.power || 0) +
+          (data[1]?.power || 0)) /
+          3
+      );
+      const name = `${user.username} Power`;
+      return { name, [name]: avgPower };
+    });
+    const myAvgPower = Math.floor(
+      [...rawData]
+        .splice(-3)
+        .reduce((sum, data) => sum + (data.power || 0), 0) / 3
+    );
 
     return [
-      ...baseData,
-      ...reversed.map((data) => ({
-        [user.username + " HR"]: data.heartRate,
-        [user.username + " Power"]: data.power,
-      })),
-    ].splice(-numPoints);
-  });
-
-  const otherPeoplesDataMerged = otherPeoplesData.reduce(
-    (merged, data) => mergeArrays(merged, data),
-    [...Array(numPoints)]
-  );
-
-  const filledData = [
-    ...new Array(numPoints).fill({
-      "You HR": undefined,
-      "You Power": undefined,
-    }),
-    ...data,
-  ].splice(-numPoints);
-
-  const otherPeoplesAvgPower = otherUsers.map((user) => {
-    const data = activeGroupSession?.workoutData[user.username];
-    if (!data) return null;
-    const avgPower = Math.floor(
-      ((data[0]?.power || 0) + (data[1]?.power || 0) + (data[1]?.power || 0)) /
-        3
-    );
-    const name = `${user.username} Power`;
-    return { name, [name]: avgPower };
-  });
-  console.log("otherPeoplesAvgPower:", otherPeoplesAvgPower);
-  const myAvgPower = Math.floor(
-    [...rawData].splice(-3).reduce((sum, data) => sum + (data.power || 0), 0) /
-      3
-  );
-
-  const allMerged = mergeArrays(filledData, otherPeoplesDataMerged);
+      mergeArrays(filledData, otherPeoplesDataMerged),
+      myAvgPower,
+      otherPeoplesAvgPower,
+    ];
+  }, [activeGroupSession?.workoutData, otherUsers, rawData]);
 
   const fillAreaChart = (
     dataPrefix: string,
@@ -188,6 +200,7 @@ export const Graphs = ({ data: rawData }: Props) => {
       </React.Fragment>
     );
   };
+  console.log("rerender graph");
 
   const toggleGraphFillButtonText = showFill
     ? "Hide graph fill"
