@@ -11,6 +11,7 @@ export interface Room {
 export enum WebSocketRequestType {
   createGroupSession,
   joinGroupSession,
+  sendData,
 }
 
 export enum WebSocketResponseType {
@@ -20,6 +21,7 @@ export enum WebSocketResponseType {
   failedToJoinGroupSession,
   memberJoinedGroupSession,
   memberLeftGroupSession,
+  dataReceived,
 }
 
 export interface Member {
@@ -37,7 +39,17 @@ export interface JoinGroupSession {
   roomId: string;
 }
 
-export type WebSocketRequest = CreateGroupSession | JoinGroupSession;
+// DATA RECEIVED FROM USER
+export interface SendDataRequest {
+  type: WebSocketRequestType.sendData;
+  data: { heartRate?: number; power?: number };
+  username: string;
+}
+
+export type WebSocketRequest =
+  | CreateGroupSession
+  | JoinGroupSession
+  | SendDataRequest;
 
 // CREATE GROUP SESSION
 export interface CreateGroupSessionSuccessResponse {
@@ -81,12 +93,20 @@ export interface MemberLeftResponse {
   username: string;
 }
 
+// DATA RECEIVED FROM USER
+export interface DataReceivedResponse {
+  type: WebSocketResponseType.dataReceived;
+  data: { heartRate?: number; power?: number };
+  username: string;
+}
+
 // RESPONSES
 export type WebSocketResponse =
   | CreateGroupSessionResponse
   | JoinGroupSessionResponse
   | MemberJoinedResponse
-  | MemberLeftResponse;
+  | MemberLeftResponse
+  | DataReceivedResponse;
 
 // export interface CreateGroupSession {
 //   type: "create_group_session";
@@ -111,7 +131,7 @@ export interface Room {
 }
 
 interface LocalRoom extends Room {
-  workoutData: { [username: string]: { heartRate: number; power: number }[] };
+  workoutData: { [username: string]: { heartRate?: number; power?: number }[] };
 }
 
 const WebsocketContext = React.createContext<{
@@ -193,6 +213,26 @@ export const WebsocketContextProvider = ({
           setActiveGroupSession({ ...activeGroupSession, ...message.room });
           break;
         }
+        case WebSocketResponseType.dataReceived: {
+          console.log("workout data received");
+          const sender = message.username;
+          const data = message.data;
+
+          setActiveGroupSession((activeGroupSession) => {
+            if (!activeGroupSession) {
+              return null;
+            }
+            const prevWorkoutValues =
+              activeGroupSession.workoutData[sender] || [];
+            return {
+              ...activeGroupSession,
+              workoutData: {
+                ...activeGroupSession.workoutData,
+                [sender]: [data, ...prevWorkoutValues],
+              },
+            };
+          });
+        }
       }
     };
     // setSocket(websocket);
@@ -220,33 +260,6 @@ export const WebsocketContextProvider = ({
   //     setActiveGroupSession({
   //       ...room,
   //       workoutData: activeGroupSession ? activeGroupSession.workoutData : {},
-  //     });
-  //   }
-  // );
-
-  // socket.on(
-  //   "workout_data",
-  //   ({
-  //     data,
-  //     sender,
-  //   }: {
-  //     data: { heartRate: number; power: number };
-  //     sender: string;
-  //   }) => {
-  //     console.log("workout_data received");
-  //     setActiveGroupSession((activeGroupSession) => {
-  //       if (!activeGroupSession) {
-  //         return null;
-  //       }
-  //       const prevWorkoutValues =
-  //         activeGroupSession.workoutData[sender] || [];
-  //       return {
-  //         ...activeGroupSession,
-  //         workoutData: {
-  //           ...activeGroupSession.workoutData,
-  //           [sender]: [data, ...prevWorkoutValues],
-  //         },
-  //       };
   //     });
   //   }
   // );
@@ -296,12 +309,18 @@ export const WebsocketContextProvider = ({
           // socket.emit("group_message", [username, message]);
         },
         sendData: (data: { heartRate?: number; power?: number }) => {
-          // if (!activeGroupSession) return;
-          // if (!data.heartRate && !data.power) {
-          //   return;
-          // }
-          // console.log("send data");
-          // socket?.emit("workout_data", { ...data, username });
+          console.log("sendData.activeGroupSession", activeGroupSession);
+          if (!activeGroupSession) return;
+          if (!data.heartRate && !data.power) {
+            return;
+          }
+          console.log("send data");
+          const request: SendDataRequest = {
+            type: WebSocketRequestType.sendData,
+            data,
+            username,
+          };
+          socket.send(JSON.stringify(request));
         },
         joinStatus,
         providedUsername: username,
