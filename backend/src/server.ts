@@ -36,7 +36,7 @@ app.use(cors());
 app.use("/api", router);
 
 const httpServer = http.createServer(app);
-const wss = new WebSocket.Server({ server: httpServer });
+const wss = new WebSocket.Server({ server: httpServer, path: "/ws" });
 
 router.get<null, ApiResponseBody<WorkoutsResponseBody>>(
   "/me/workouts",
