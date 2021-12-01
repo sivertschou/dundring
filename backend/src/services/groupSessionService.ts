@@ -1,38 +1,41 @@
 import { Status } from "../../../common/types/serviceTypes";
-import { Socket, Server } from "socket.io";
-interface Room {
-  id: string;
-  creator: string;
-  members: Member[];
-}
+import {
+  CreateGroupSessionResponse,
+  DataReceivedResponse,
+  JoinGroupSessionResponse,
+  Member,
+  MemberJoinedResponse,
+  MemberLeftResponse,
+  Room,
+  WebSocketResponse,
+  WebSocketResponseType,
+} from "../../../common/types/wsTypes";
 
-export interface Member {
+import { Server, WebSocket } from "ws";
+export interface ServerMember {
   username: string;
   ftp: number;
   weight: number;
+  socket: WebSocket;
 }
 
-const rooms: { [roomId: string]: Room } = {};
+interface ServerRoom extends Room {
+  members: ServerMember[];
+}
+
+const rooms: { [roomId: string]: ServerRoom } = {};
 const usersAndActiveRooms: { [username: string]: string } = {};
-export const sendMessageToRoom = (
-  socket: Socket,
-  io: Server,
-  message: string
-) => {
-  io.to(socket.data.room).emit("group_message", {
-    message,
-    sender: socket.data.username,
-  });
-};
+
 export const sendWorkoutDataToRoom = (
-  socket: Socket,
-  io: Server,
-  data: { heartRata?: number; power?: number; username: string }
+  username: string,
+  data: { heartRata?: number; power?: number }
 ) => {
-  io.to(usersAndActiveRooms[data.username]).emit("workout_data", {
+  const response: DataReceivedResponse = {
+    type: WebSocketResponseType.dataReceived,
     data,
-    sender: data.username,
-  });
+    username,
+  };
+  sendDataToRoom(username, response);
 };
 
 const generateRoomId = (
@@ -61,47 +64,86 @@ const generateRoomId = (
 const getAvailableRoomId = () => {
   return generateRoomId(4, 5, 20);
 };
+const sendDataToRoom = (fromUsername: string, data: WebSocketResponse) => {
+  const roomId = usersAndActiveRooms[fromUsername];
+  if (!roomId) return;
+  const room = rooms[roomId];
+  if (!room) return;
+  room.members
+    .filter((member) => member.username !== fromUsername)
+    .map((member) => {
+      member.socket.send(JSON.stringify(data));
+    });
+};
 
-export const createRoom = (socket: Socket, creator: Member) => {
+export const createRoom = (
+  creator: ServerMember
+): CreateGroupSessionResponse => {
   const roomId = getAvailableRoomId();
   if (roomId === null) {
-    return null;
+    console.log(`${creator.username} failed to create room.`);
+    return {
+      type: WebSocketResponseType.failedToCreateGroupSession,
+      message: "Failed to create room.",
+    };
   } else {
-    socket.join(roomId);
-    const room = {
+    console.log(`${creator.username} created room #${roomId}`);
+    const room: ServerRoom = {
       id: roomId,
       creator: creator.username,
       members: [creator],
     };
     rooms[roomId] = room;
     usersAndActiveRooms[creator.username] = room.id;
-    return room;
+    return { type: WebSocketResponseType.createdGroupSession, room };
   }
 };
-
+const toMember = (serverMember: ServerMember): Member => ({
+  username: serverMember.username,
+  ftp: serverMember.ftp,
+  weight: serverMember.weight,
+});
+const toRoom = (serverRoom: ServerRoom): Room => ({
+  id: serverRoom.id,
+  creator: serverRoom.creator,
+  members: serverRoom.members.map((serverMember) => toMember(serverMember)),
+});
 export const joinRoom = (
+  ws: WebSocket,
   roomId: string,
-  member: Member,
-  socket: Socket,
-  io: Server
-): Status<Room, "Room not found"> => {
+  member: ServerMember
+) => {
   const room = rooms[roomId];
   if (room) {
     const updatedRoom = { ...room, members: [...room.members, member] };
-    socket.join(roomId);
     rooms[roomId] = updatedRoom;
-    io.to(roomId).emit("member_joined", {
-      newMember: member,
-      room: updatedRoom,
-    });
     usersAndActiveRooms[member.username] = roomId;
 
-    return { status: "SUCCESS", data: updatedRoom };
+    const response: JoinGroupSessionResponse = {
+      type: WebSocketResponseType.joinedGroupSession,
+      room: toRoom(updatedRoom),
+    };
+    ws.send(JSON.stringify(response));
+
+    updatedRoom.members
+      .filter((m) => m.username !== member.username)
+      .map((m) => {
+        const message: MemberJoinedResponse = {
+          type: WebSocketResponseType.memberJoinedGroupSession,
+          room: toRoom(updatedRoom),
+          username: member.username,
+        };
+        m.socket.send(JSON.stringify(message));
+      });
   } else {
-    return { status: "ERROR", type: "Room not found" };
+    const response: JoinGroupSessionResponse = {
+      type: WebSocketResponseType.failedToJoinGroupSession,
+      message: "Failed to join room.",
+    };
+    ws.send(JSON.stringify(response));
   }
 };
-export const leaveRoom = (username: string, socket: Socket, io: Server) => {
+export const leaveRoom = (username: string) => {
   const roomId = usersAndActiveRooms[username];
   const room = rooms[roomId];
   if (room) {
@@ -111,13 +153,25 @@ export const leaveRoom = (username: string, socket: Socket, io: Server) => {
         (member) => member.username !== username
       ),
     };
-    socket.leave(roomId);
-    rooms[roomId] = updatedRoom;
-    delete usersAndActiveRooms[username];
-    io.to(roomId).emit("member_left", {
-      leaver: username,
-      room: updatedRoom,
-    });
+
+    if (updatedRoom.members.length === 0) {
+      delete rooms[roomId];
+    } else {
+      rooms[roomId] = updatedRoom;
+
+      delete usersAndActiveRooms[username];
+
+      updatedRoom.members
+        .filter((m) => m.username !== username)
+        .map((m) => {
+          const message: MemberLeftResponse = {
+            type: WebSocketResponseType.memberLeftGroupSession,
+            room: toRoom(updatedRoom),
+            username,
+          };
+          m.socket.send(JSON.stringify(message));
+        });
+    }
   }
 };
 

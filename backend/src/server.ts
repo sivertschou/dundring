@@ -14,7 +14,11 @@ import {
   WorkoutsResponseBody,
 } from "../../common/types/apiTypes";
 import { UserRole } from "../../common/types/userTypes";
-import { Socket, Server } from "socket.io";
+import {
+  WebSocketRequest,
+  WebSocketRequestType,
+} from "../../common/types/wsTypes";
+import * as WebSocket from "ws";
 
 const http = require("http");
 require("dotenv").config();
@@ -32,12 +36,8 @@ app.use(cors());
 app.use("/api", router);
 
 const httpServer = http.createServer(app);
-const io: Server = require("socket.io")(httpServer, {
-  cors: {
-    origins: ["http://localhost:3000", "https://dundring.com"],
-    methods: ["GET", "POST"],
-  },
-});
+const wss = new WebSocket.Server({ server: httpServer });
+
 router.get<null, ApiResponseBody<WorkoutsResponseBody>>(
   "/me/workouts",
   validationService.authenticateToken,
@@ -203,48 +203,50 @@ router.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
   }
 );
 
-io.on("connection", (socket: Socket) => {
-  socket.on("disconnect", () => {
-    groupSessionService.leaveRoom(socket.data.username, socket, io);
-  });
-  socket.on("group_message", (message) => {
-    groupSessionService.sendMessageToRoom(socket, io, message);
-  });
-  socket.on(
-    "workout_data",
-    (data: { heartRate?: number; power?: number; username: string }) => {
-      console.log("received workoutdata", data.username);
-      groupSessionService.sendWorkoutDataToRoom(socket, io, data);
-    }
-  );
+// TODO: figure out why a connect is triggered several times.
+//       This is probably due to some fishy rerender.
+wss.on("connection", (ws) => {
+  console.log("connection");
+  let username = "";
+  ws.on("message", (rawData) => {
+    const req = JSON.parse(rawData.toString()) as WebSocketRequest;
+    switch (req.type) {
+      case WebSocketRequestType.createGroupSession: {
+        const { member } = req;
+        username = member.username;
+        ws.send(
+          JSON.stringify(
+            groupSessionService.createRoom({ ...member, socket: ws })
+          )
+        );
+        break;
+      }
+      case WebSocketRequestType.joinGroupSession: {
+        const { roomId, member } = req;
+        username = member.username;
 
-  socket.on("create_group_session", (member: groupSessionService.Member) => {
-    const room = groupSessionService.createRoom(socket, member);
-    if (room === null) {
-      socket.emit("group_session_creation_failed");
-      return;
-    }
-    socket.data = { username: member.username };
-
-    console.log(`${member.username} created room with id: ${room.id}`);
-    socket.emit("group_session_created", room);
-  });
-
-  socket.on(
-    "join_group_session",
-    (body: { member: groupSessionService.Member; roomId: string }) => {
-      const { member, roomId } = body;
-      socket.data = { username: member.username };
-      const ret = groupSessionService.joinRoom(roomId, member, socket, io);
-      console.log(`${member.username} joined room with id: ${roomId}`);
-
-      if (ret.status === "SUCCESS") {
-        socket.emit("group_session_joined", ret.data);
-      } else {
-        socket.emit("failed_to_join_group_session", ret.type);
+        groupSessionService.joinRoom(ws, roomId, {
+          ...member,
+          socket: ws,
+        });
+        break;
+      }
+      case WebSocketRequestType.sendData: {
+        if (!username) {
+          console.log("unknown tried to share workoutdata");
+          return;
+        }
+        groupSessionService.sendWorkoutDataToRoom(username, req.data);
       }
     }
-  );
+  });
+  ws.on("close", () => {
+    console.log("connection closed", username);
+    if (username) {
+      groupSessionService.leaveRoom(username);
+      username = "";
+    }
+  });
 });
 
 httpServer.listen(httpPort, () => {

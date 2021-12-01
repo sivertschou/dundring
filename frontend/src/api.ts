@@ -8,20 +8,10 @@ import {
 } from "../../common/types/apiTypes";
 
 export const baseUrl =
-  process.env.REACT_APP_BASE_URL || "http://localhost:8092";
+  process.env.REACT_APP_HTTP_URL || "http://localhost:8092";
+
 export const httpUrl = baseUrl + "/api";
-export const wsUrl = baseUrl;
-
-// const get = async <T>(url: string): Promise<T> => {
-//   const response = await fetch(url, {
-//     headers: {
-//       "Content-Type": "application/json",
-//       Accept: "application/json",
-//     },
-//   });
-
-//   return response.json();
-// };
+export const wsUrl = process.env.REACT_APP_WS_URL || "ws://localhost:8092";
 
 const post = async <T, U>(url: string, body: U, token?: string): Promise<T> => {
   const response = await fetch(url, {

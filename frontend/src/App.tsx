@@ -1,7 +1,6 @@
 import { Center, Stack, Text, Grid, Link } from "@chakra-ui/layout";
 import { ChakraProvider, Button } from "@chakra-ui/react";
 import * as React from "react";
-import { Graphs } from "./components/Graphs";
 import { useAvailability } from "./hooks/useAvailability";
 import { useGlobalClock } from "./hooks/useGlobalClock";
 import theme from "./theme";
@@ -14,15 +13,18 @@ import { hrColor, powerColor } from "./colors";
 import { useSmartTrainer } from "./context/SmartTrainerContext";
 import { useActiveWorkout } from "./context/WorkoutContext";
 import { useWebsocket } from "./context/WebsocketContext";
-
-export const App = () => {
+import { GraphContainer } from "./components/Graph/GraphContainer";
+interface Props {
+  clockWorker: Worker;
+}
+export const App = ({ clockWorker }: Props) => {
   const {
     power,
     isConnected: smartTrainerIsConnected,
     setResistance: setSmartTrainerResistance,
   } = useSmartTrainer();
 
-  const { heartRate, isConnected: hrIsConnected } = useHeartRateMonitor();
+  const { heartRate } = useHeartRateMonitor();
   const { available: bluetoothIsAvailable } = useAvailability();
   const {
     activeWorkout,
@@ -42,25 +44,31 @@ export const App = () => {
     stop: stopGlobalClock,
   } = useGlobalClock();
   const { sendData } = useWebsocket();
+
+  const send = React.useCallback(() => {
+    const heartRateToInclude = heartRate ? { heartRate } : {};
+    const powerToInclude = power ? { power } : {};
+    if (running) {
+      setData((data) => [
+        ...data,
+        {
+          ...heartRateToInclude,
+          ...powerToInclude,
+          timeStamp: new Date(),
+        },
+      ]);
+    }
+
+    sendData({ ...heartRateToInclude, ...powerToInclude });
+  }, [heartRate, power, running, setData, sendData]);
   React.useEffect(() => {
-    const interval = setInterval(() => {
-      const heartRateToInclude = heartRate ? { heartRate } : {};
-      const powerToInclude = power ? { power } : {};
-      if (running) {
-        setData((data) => [
-          ...data,
-          {
-            ...heartRateToInclude,
-            ...powerToInclude,
-            timeStamp: new Date(),
-          },
-        ]);
-      }
-      // console.log("running  - should send data tbh");
-      sendData({ ...heartRateToInclude, ...powerToInclude });
-    }, 500);
-    return () => clearInterval(interval);
-  }, [power, startingTime, heartRate, hrIsConnected, running, sendData]);
+    if (clockWorker === null) return;
+
+    clockWorker.onmessage = (e) => {
+      send();
+    };
+    clockWorker.onerror = (e) => console.log("message recevied:", e);
+  }, [clockWorker, send]);
 
   const start = () => {
     addCallback({
@@ -77,6 +85,7 @@ export const App = () => {
     }
     startGlobalClock();
     startActiveWorkout();
+    clockWorker.postMessage("startTimer");
   };
 
   const stop = () => {
@@ -135,7 +144,7 @@ export const App = () => {
           </Grid>
           <Center>
             {activeWorkout ? <WorkoutDisplay /> : null}
-            <Graphs data={data} />
+            <GraphContainer data={data} />
           </Center>
           <Center>
             <Stack width={["100%", "80%"]}>

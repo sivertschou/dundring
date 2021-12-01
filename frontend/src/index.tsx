@@ -9,7 +9,11 @@ import * as serviceWorker from "./serviceWorker";
 import { SmartTrainerContextProvider } from "./context/SmartTrainerContext";
 import { ActiveWorkoutContextProvider } from "./context/WorkoutContext";
 import { WebsocketContextProvider } from "./context/WebsocketContext";
+import WorkerBuilder from "./workers/workerBuilder";
+import clockWorker from "./workers/clock.worker";
 
+const cw: Worker = new WorkerBuilder(clockWorker);
+cw && cw.postMessage("startTimer");
 ReactDOM.render(
   <React.StrictMode>
     <UserContextProvider>
@@ -18,7 +22,7 @@ ReactDOM.render(
           <ActiveWorkoutContextProvider>
             <WebsocketContextProvider>
               <ColorModeScript />
-              <App />
+              <App clockWorker={cw} />
             </WebsocketContextProvider>
           </ActiveWorkoutContextProvider>
         </SmartTrainerContextProvider>
@@ -27,7 +31,6 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById("root")
 );
-
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://cra.link/PWA

@@ -1,9 +1,5 @@
-import { IconButton } from "@chakra-ui/button";
-import Icon from "@chakra-ui/icon";
-import { AspectRatio, Center, Grid, HStack, Stack } from "@chakra-ui/layout";
-import { Tooltip as ChakraTooltip } from "@chakra-ui/tooltip";
+import { AspectRatio, Grid, Stack } from "@chakra-ui/layout";
 import * as React from "react";
-import { BarChartLine, BarChartLineFill } from "react-bootstrap-icons";
 import {
   Area,
   AreaChart,
@@ -11,22 +7,22 @@ import {
   BarChart,
   ResponsiveContainer,
   Tooltip,
-  XAxis,
   YAxis,
 } from "recharts";
 import { hrColors, powerColors } from "../colors";
-import { useWebsocket } from "../context/WebsocketContext";
+import { LocalRoom, Member } from "../context/WebsocketContext";
 import { DataPoint } from "../types";
 import { CustomChartTooltip } from "./Graph/CustomChartTooltip";
 import { CustomGraphTooltip } from "./Graph/CustomGraphTooltip";
-import { GraphCheckboxes } from "./Graph/GraphCheckboxes";
+import { ShowData } from "./Graph/GraphContainer";
 
 interface Props {
   data: DataPoint[];
-}
-export interface ShowData {
-  hr: boolean;
-  power: boolean;
+  otherUsers: Member[];
+  activeGroupSession: LocalRoom | null;
+  showFill: boolean;
+  showUserData: ShowData;
+  showOtherUsersData: { [username: string]: ShowData };
 }
 const mergeArrays = (arr1: any[], arr2: any[]) => {
   const a = arr1.length > arr2.length ? arr1 : arr2;
@@ -34,78 +30,79 @@ const mergeArrays = (arr1: any[], arr2: any[]) => {
   return a.map((a, i) => ({ ...a, ...b[i] }));
 };
 
-export const Graphs = ({ data: rawData }: Props) => {
-  const { activeGroupSession, providedUsername } = useWebsocket();
-  const [showFill, setShowFill] = React.useState(true);
-  const otherUsers = activeGroupSession
-    ? activeGroupSession.members.filter(
-        (otherUser) => otherUser.username !== providedUsername
-      )
-    : [];
-  const [showUserData, setShowUserData] = React.useState<ShowData>({
-    hr: true,
-    power: true,
-  });
-  const [showOtherUsersData, setShowOtherUsersData] = React.useState<{
-    [username: string]: ShowData;
-  }>({});
-
+export const Graphs = ({
+  data: rawData,
+  otherUsers,
+  showFill,
+  showUserData,
+  showOtherUsersData,
+  activeGroupSession,
+}: Props) => {
   const numPoints = 500;
-  const data = rawData.map((dp) => ({
-    "You HR": dp.heartRate,
-    "You Power": dp.power,
-  }));
-  const otherPeoplesData = otherUsers.map((user) => {
-    const data = activeGroupSession?.workoutData[user.username];
-    if (!data) return [];
-    const baseData = [
-      ...new Array(numPoints).fill({
-        [user.username + " HR"]: undefined,
-        [user.username + " Power"]: undefined,
-      }),
-    ];
+  const [allMerged, myAvgPower, otherPeoplesAvgPower] = React.useMemo(() => {
+    console.log("recalculate");
+    const data = rawData.map((dp) => ({
+      "You HR": dp.heartRate,
+      "You Power": dp.power,
+    }));
+    const otherPeoplesDataMerged = otherUsers
+      .map((user) => {
+        const data = activeGroupSession?.workoutData[user.username];
+        if (!data) return [];
+        const baseData = [
+          ...new Array(numPoints).fill({
+            [user.username + " HR"]: undefined,
+            [user.username + " Power"]: undefined,
+          }),
+        ];
 
-    const reversed = [...data].reverse();
+        const reversed = [...data].reverse();
+
+        return [
+          ...baseData,
+          ...reversed.map((data) => ({
+            [user.username + " HR"]: data.heartRate,
+            [user.username + " Power"]: data.power,
+          })),
+        ].splice(-numPoints);
+      })
+      .reduce(
+        (merged, data) => mergeArrays(merged, data),
+        [...Array(numPoints)]
+      );
+
+    const filledData = [
+      ...new Array(numPoints).fill({
+        "You HR": undefined,
+        "You Power": undefined,
+      }),
+      ...data,
+    ].splice(-numPoints);
+
+    const otherPeoplesAvgPower = otherUsers.map((user) => {
+      const data = activeGroupSession?.workoutData[user.username];
+      if (!data) return null;
+      const avgPower = Math.floor(
+        ((data[0]?.power || 0) +
+          (data[1]?.power || 0) +
+          (data[1]?.power || 0)) /
+          3
+      );
+      const name = `${user.username} Power`;
+      return { name, [name]: avgPower };
+    });
+    const myAvgPower = Math.floor(
+      [...rawData]
+        .splice(-3)
+        .reduce((sum, data) => sum + (data.power || 0), 0) / 3
+    );
 
     return [
-      ...baseData,
-      ...reversed.map((data) => ({
-        [user.username + " HR"]: data.heartRate,
-        [user.username + " Power"]: data.power,
-      })),
-    ].splice(-numPoints);
-  });
-
-  const otherPeoplesDataMerged = otherPeoplesData.reduce(
-    (merged, data) => mergeArrays(merged, data),
-    [...Array(numPoints)]
-  );
-
-  const filledData = [
-    ...new Array(numPoints).fill({
-      "You HR": undefined,
-      "You Power": undefined,
-    }),
-    ...data,
-  ].splice(-numPoints);
-
-  const otherPeoplesAvgPower = otherUsers.map((user) => {
-    const data = activeGroupSession?.workoutData[user.username];
-    if (!data) return null;
-    const avgPower = Math.floor(
-      ((data[0]?.power || 0) + (data[1]?.power || 0) + (data[1]?.power || 0)) /
-        3
-    );
-    const name = `${user.username} Power`;
-    return { name, [name]: avgPower };
-  });
-  console.log("otherPeoplesAvgPower:", otherPeoplesAvgPower);
-  const myAvgPower = Math.floor(
-    [...rawData].splice(-3).reduce((sum, data) => sum + (data.power || 0), 0) /
-      3
-  );
-
-  const allMerged = mergeArrays(filledData, otherPeoplesDataMerged);
+      mergeArrays(filledData, otherPeoplesDataMerged),
+      myAvgPower,
+      otherPeoplesAvgPower,
+    ];
+  }, [activeGroupSession?.workoutData, otherUsers, rawData]);
 
   const fillAreaChart = (
     dataPrefix: string,
@@ -188,23 +185,10 @@ export const Graphs = ({ data: rawData }: Props) => {
       </React.Fragment>
     );
   };
+  console.log("rerender graph");
 
-  const toggleGraphFillButtonText = showFill
-    ? "Hide graph fill"
-    : "Show graph fill";
   return (
     <Stack width="100%">
-      <HStack flexDir="row-reverse">
-        <ChakraTooltip label={toggleGraphFillButtonText} placement="left">
-          <IconButton
-            variant="ghost"
-            icon={<Icon as={showFill ? BarChartLineFill : BarChartLine} />}
-            aria-label={toggleGraphFillButtonText}
-            isRound={true}
-            onClick={() => setShowFill((prev) => !prev)}
-          />
-        </ChakraTooltip>
-      </HStack>
       <Grid templateColumns="5fr 1fr">
         <AspectRatio ratio={16 / 9} width="100%">
           <ResponsiveContainer>
@@ -246,33 +230,6 @@ export const Graphs = ({ data: rawData }: Props) => {
           </ResponsiveContainer>
         </AspectRatio>
       </Grid>
-      <Stack>
-        <Center>
-          <HStack>
-            <GraphCheckboxes
-              title={"You"}
-              setChecked={(checked) => setShowUserData(checked)}
-              checked={showUserData}
-            />
-            {otherUsers.map((user, i) => (
-              <GraphCheckboxes
-                key={user.username}
-                title={user.username}
-                index={i + 1}
-                setChecked={(checked) =>
-                  setShowOtherUsersData((prev) => ({
-                    ...prev,
-                    [user.username]: checked,
-                  }))
-                }
-                checked={
-                  showOtherUsersData[user.username] || { hr: true, power: true }
-                }
-              />
-            ))}
-          </HStack>
-        </Center>
-      </Stack>
     </Stack>
   );
 };
