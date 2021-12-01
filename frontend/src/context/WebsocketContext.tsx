@@ -310,7 +310,6 @@ export const WebsocketContextProvider = ({
           // socket.emit("group_message", [username, message]);
         },
         sendData: (data: { heartRate?: number; power?: number }) => {
-          console.log("sendData.activeGroupSession", activeGroupSession);
           if (!activeGroupSession) return;
           if (!data.heartRate && !data.power) {
             return;

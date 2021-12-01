@@ -14,8 +14,10 @@ import { useSmartTrainer } from "./context/SmartTrainerContext";
 import { useActiveWorkout } from "./context/WorkoutContext";
 import { useWebsocket } from "./context/WebsocketContext";
 import { GraphContainer } from "./components/Graph/GraphContainer";
-
-export const App = () => {
+interface Props {
+  clockWorker: Worker;
+}
+export const App = ({ clockWorker }: Props) => {
   const {
     power,
     isConnected: smartTrainerIsConnected,
@@ -42,25 +44,50 @@ export const App = () => {
     stop: stopGlobalClock,
   } = useGlobalClock();
   const { sendData } = useWebsocket();
+
+  const send = React.useCallback(() => {
+    const heartRateToInclude = heartRate ? { heartRate } : {};
+    const powerToInclude = power ? { power } : {};
+    if (running) {
+      setData((data) => [
+        ...data,
+        {
+          ...heartRateToInclude,
+          ...powerToInclude,
+          timeStamp: new Date(),
+        },
+      ]);
+    }
+    // console.log("running  - should send data tbh");
+    sendData({ ...heartRateToInclude, ...powerToInclude });
+  }, [heartRate, power, running, setData, sendData]);
   React.useEffect(() => {
-    const interval = setInterval(() => {
-      const heartRateToInclude = heartRate ? { heartRate } : {};
-      const powerToInclude = power ? { power } : {};
-      if (running) {
-        setData((data) => [
-          ...data,
-          {
-            ...heartRateToInclude,
-            ...powerToInclude,
-            timeStamp: new Date(),
-          },
-        ]);
-      }
-      // console.log("running  - should send data tbh");
-      sendData({ ...heartRateToInclude, ...powerToInclude });
-    }, 500);
-    return () => clearInterval(interval);
-  }, [power, startingTime, heartRate, hrIsConnected, running, sendData]);
+    if (clockWorker === null) return;
+
+    clockWorker.onmessage = (e) => {
+      send();
+    };
+    clockWorker.onerror = (e) => console.log("message recevied:", e);
+  }, [clockWorker, send]);
+  // React.useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     const heartRateToInclude = heartRate ? { heartRate } : {};
+  //     const powerToInclude = power ? { power } : {};
+  //     if (running) {
+  //       setData((data) => [
+  //         ...data,
+  //         {
+  //           ...heartRateToInclude,
+  //           ...powerToInclude,
+  //           timeStamp: new Date(),
+  //         },
+  //       ]);
+  //     }
+  //     // console.log("running  - should send data tbh");
+  //     sendData({ ...heartRateToInclude, ...powerToInclude });
+  //   }, 500);
+  //   return () => clearInterval(interval);
+  // }, [power, startingTime, heartRate, hrIsConnected, running, sendData]);
 
   const start = () => {
     addCallback({
@@ -77,6 +104,7 @@ export const App = () => {
     }
     startGlobalClock();
     startActiveWorkout();
+    clockWorker.postMessage("startTimer");
   };
 
   const stop = () => {
