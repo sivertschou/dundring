@@ -25,21 +25,11 @@ interface ServerRoom extends Room {
 
 const rooms: { [roomId: string]: ServerRoom } = {};
 const usersAndActiveRooms: { [username: string]: string } = {};
-// export const sendMessageToRoom = (
-//   socket: Socket,
-//   io: Server,
-//   message: string
-// ) => {
-//   io.to(socket.data.room).emit("group_message", {
-//     message,
-//     sender: socket.data.username,
-//   });
-// };
+
 export const sendWorkoutDataToRoom = (
   username: string,
   data: { heartRata?: number; power?: number }
 ) => {
-  // sendDataToRoom()
   const response: DataReceivedResponse = {
     type: WebSocketResponseType.dataReceived,
     data,
@@ -185,10 +175,6 @@ export const leaveRoom = (username: string) => {
           m.socket.send(JSON.stringify(message));
         });
     }
-    // io.to(roomId).emit("member_left", {
-    //   leaver: username,
-    //   room: updatedRoom,
-    // });
   }
 };
 

@@ -1,9 +1,5 @@
-import { IconButton } from "@chakra-ui/button";
-import Icon from "@chakra-ui/icon";
-import { AspectRatio, Center, Grid, HStack, Stack } from "@chakra-ui/layout";
-import { Tooltip as ChakraTooltip } from "@chakra-ui/tooltip";
+import { AspectRatio, Grid, Stack } from "@chakra-ui/layout";
 import * as React from "react";
-import { BarChartLine, BarChartLineFill } from "react-bootstrap-icons";
 import {
   Area,
   AreaChart,
@@ -11,11 +7,10 @@ import {
   BarChart,
   ResponsiveContainer,
   Tooltip,
-  XAxis,
   YAxis,
 } from "recharts";
 import { hrColors, powerColors } from "../colors";
-import { LocalRoom, Member, useWebsocket } from "../context/WebsocketContext";
+import { LocalRoom, Member } from "../context/WebsocketContext";
 import { DataPoint } from "../types";
 import { CustomChartTooltip } from "./Graph/CustomChartTooltip";
 import { CustomGraphTooltip } from "./Graph/CustomGraphTooltip";
@@ -29,10 +24,6 @@ interface Props {
   showUserData: ShowData;
   showOtherUsersData: { [username: string]: ShowData };
 }
-// export interface ShowData {
-//   hr: boolean;
-//   power: boolean;
-// }
 const mergeArrays = (arr1: any[], arr2: any[]) => {
   const a = arr1.length > arr2.length ? arr1 : arr2;
   const b = arr1.length > arr2.length ? arr2 : arr1;
@@ -47,10 +38,6 @@ export const Graphs = ({
   showOtherUsersData,
   activeGroupSession,
 }: Props) => {
-  // const [showOtherUsersData, setShowOtherUsersData] = React.useState<{
-  //   [username: string]: ShowData;
-  // }>({});
-
   const numPoints = 500;
   const [allMerged, myAvgPower, otherPeoplesAvgPower] = React.useMemo(() => {
     console.log("recalculate");

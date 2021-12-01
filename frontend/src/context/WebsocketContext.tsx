@@ -1,7 +1,6 @@
 import * as React from "react";
 import { wsUrl } from "../api";
 import { UserContextType } from "../types";
-import { useUser } from "./UserContext";
 export interface Room {
   id: string;
   creator: string;
@@ -108,18 +107,6 @@ export type WebSocketResponse =
   | MemberLeftResponse
   | DataReceivedResponse;
 
-// export interface CreateGroupSession {
-//   type: "create_group_session";
-//   username: string;
-// }
-// export interface JoinGroupSession {
-//   type: "join_group_session";
-//   username: string;
-//   id: string;
-// }
-
-// export type WebSocketRequest = CreateGroupSession | JoinGroupSession;
-
 export const defaultUser: UserContextType = {
   loggedIn: false,
 };
@@ -137,15 +124,11 @@ export interface LocalRoom extends Room {
 const WebsocketContext = React.createContext<{
   startGroupSession: (username: string) => void;
   activeGroupSession: LocalRoom | null;
-  sendMessageToGroup: (message: string) => void;
   joinGroupSession: (groupId: string, username: string) => void;
   joinStatus: "NOT_ASKED" | "LOADING" | "ROOM_NOT_FOUND";
   sendData: (data: { heartRate?: number; power?: number }) => void;
   providedUsername: string;
 } | null>(null);
-
-// const ws = new WebSocket(wsUrl);
-// let ws = new WebSocket("ws://localhost:8092");
 
 export const WebsocketContextProvider = ({
   children,
@@ -153,24 +136,19 @@ export const WebsocketContextProvider = ({
   children: React.ReactNode;
 }) => {
   console.log("wsUrl:", wsUrl);
-  const [socket, setSocket] = React.useState(
+  // TODO: Handle reconnect
+  const [socket] = React.useState(
     React.useCallback(() => new WebSocket(wsUrl), [])
   );
 
-  // const socket = React.useCallback(() => new WebSocket("ws://localhost:8092"), [])
-
-  // const [socket, setSocket] = React.useState<Socket | null>(null);
   const [activeGroupSession, setActiveGroupSession] =
     React.useState<LocalRoom | null>(null);
   const [joinStatus, setJoinStatus] = React.useState<
     "NOT_ASKED" | "LOADING" | "ROOM_NOT_FOUND"
   >("NOT_ASKED");
 
-  const { user } = useUser();
-
   const [username, setUsername] = React.useState("");
   React.useEffect(() => {
-    // const websocket = new WebSocket("ws://localhost:8092");
     socket.onopen = () => {
       console.log("connected");
     };
@@ -185,6 +163,7 @@ export const WebsocketContextProvider = ({
         }
         case WebSocketResponseType.failedToCreateGroupSession: {
           console.log("failed to create group session");
+          // TODO: Handle
           break;
         }
         case WebSocketResponseType.joinedGroupSession: {
@@ -194,6 +173,7 @@ export const WebsocketContextProvider = ({
         }
         case WebSocketResponseType.failedToJoinGroupSession: {
           console.log("failed to join group session");
+          // TODO: Handle
           break;
         }
         case WebSocketResponseType.memberJoinedGroupSession: {
@@ -236,47 +216,8 @@ export const WebsocketContextProvider = ({
         }
       }
     };
-    // setSocket(websocket);
-  }, [activeGroupSession]);
-  // React.useEffect(() => {
-  // const socket = io(wsUrl);
-  // setSocket(socket);
+  }, [activeGroupSession, socket]);
 
-  // socket.on("connect_error", (err) => {
-  //   console.error(`connect_error due to ${err.message}`);
-  // });
-
-  // socket.on(
-  //   "member_joined",
-  //   ({ newMember, room }: { newMember: Member; room: Room }) => {
-  //     setActiveGroupSession({
-  //       ...room,
-  //       workoutData: activeGroupSession ? activeGroupSession.workoutData : {},
-  //     });
-  //   }
-  // );
-  // socket.on(
-  //   "member_left",
-  //   ({ leaver, room }: { leaver: string; room: Room }) => {
-  //     setActiveGroupSession({
-  //       ...room,
-  //       workoutData: activeGroupSession ? activeGroupSession.workoutData : {},
-  //     });
-  //   }
-  // );
-
-  // socket.on("group_session_joined", (room: Room) => {
-  //   setJoinStatus("NOT_ASKED");
-  //   setActiveGroupSession({ ...room, workoutData: {} });
-  // });
-  // socket.on("failed_to_join_group_session", (room: Room) => {
-  //   setJoinStatus("ROOM_NOT_FOUND");
-  // });
-
-  // socket.on("group_session_created", (room: Room) => {
-  //   setActiveGroupSession({ ...room, workoutData: {} });
-  // });
-  // }, [setSocket, user, activeGroupSession, setActiveGroupSession]);
   return (
     <WebsocketContext.Provider
       value={{
@@ -305,10 +246,6 @@ export const WebsocketContextProvider = ({
             socket.send(JSON.stringify(data));
           }
         },
-        sendMessageToGroup: (message: string) => {
-          // if (!socket || !activeGroupSession) return;
-          // socket.emit("group_message", [username, message]);
-        },
         sendData: (data: { heartRate?: number; power?: number }) => {
           if (!activeGroupSession) return;
           if (!data.heartRate && !data.power) {
@@ -328,51 +265,6 @@ export const WebsocketContextProvider = ({
       children={children}
     />
   );
-  // return (
-  //   <WebsocketContext.Provider
-  //     value={{
-  //       activeGroupSession,
-  //       startGroupSession: (username: string) => {
-  //         console.log("start group session as user", username);
-  //         if (socket) {
-  //           console.log("inside if");
-  //           setUsername(username);
-  //           socket.emit("create_group_session", {
-  //             username,
-  //             ftp: 200,
-  //             weight: 85,
-  //           });
-  //         }
-  //       },
-  //       joinGroupSession: (roomId: string, username: string) => {
-  //         if (socket) {
-  //           setJoinStatus("LOADING");
-  //           setUsername(username);
-  //           socket.emit("join_group_session", {
-  //             member: { username, ftp: 200, weight: 85 },
-  //             roomId: roomId,
-  //           });
-  //         }
-  //       },
-  //       sendMessageToGroup: (message: string) => {
-  //         if (!socket || !activeGroupSession) return;
-  //         socket.emit("group_message", [username, message]);
-  //       },
-  //       sendData: (data: { heartRate?: number; power?: number }) => {
-  //         if (!activeGroupSession) return;
-  //         if (!data.heartRate && !data.power) {
-  //           return;
-  //         }
-  //         console.log("send data");
-  //         socket?.emit("workout_data", { ...data, username });
-  //       },
-  //       joinStatus,
-  //       providedUsername: username,
-  //     }}
-  //   >
-  //     {children}
-  //   </WebsocketContext.Provider>
-  // );
 };
 
 export const useWebsocket = () => {

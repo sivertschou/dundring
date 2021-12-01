@@ -24,7 +24,7 @@ export const App = ({ clockWorker }: Props) => {
     setResistance: setSmartTrainerResistance,
   } = useSmartTrainer();
 
-  const { heartRate, isConnected: hrIsConnected } = useHeartRateMonitor();
+  const { heartRate } = useHeartRateMonitor();
   const { available: bluetoothIsAvailable } = useAvailability();
   const {
     activeWorkout,
@@ -58,7 +58,7 @@ export const App = ({ clockWorker }: Props) => {
         },
       ]);
     }
-    // console.log("running  - should send data tbh");
+
     sendData({ ...heartRateToInclude, ...powerToInclude });
   }, [heartRate, power, running, setData, sendData]);
   React.useEffect(() => {
@@ -69,25 +69,6 @@ export const App = ({ clockWorker }: Props) => {
     };
     clockWorker.onerror = (e) => console.log("message recevied:", e);
   }, [clockWorker, send]);
-  // React.useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     const heartRateToInclude = heartRate ? { heartRate } : {};
-  //     const powerToInclude = power ? { power } : {};
-  //     if (running) {
-  //       setData((data) => [
-  //         ...data,
-  //         {
-  //           ...heartRateToInclude,
-  //           ...powerToInclude,
-  //           timeStamp: new Date(),
-  //         },
-  //       ]);
-  //     }
-  //     // console.log("running  - should send data tbh");
-  //     sendData({ ...heartRateToInclude, ...powerToInclude });
-  //   }, 500);
-  //   return () => clearInterval(interval);
-  // }, [power, startingTime, heartRate, hrIsConnected, running, sendData]);
 
   const start = () => {
     addCallback({
