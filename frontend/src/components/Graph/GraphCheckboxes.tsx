@@ -2,7 +2,7 @@ import * as React from "react";
 import { Checkbox } from "@chakra-ui/checkbox";
 import { Stack, Text } from "@chakra-ui/layout";
 import { hrColorsAsStrings, powerColorsAsStrings } from "../../colors";
-import { ShowData } from "../Graphs";
+import { ShowData } from "./GraphContainer";
 
 interface Props {
   title: string;

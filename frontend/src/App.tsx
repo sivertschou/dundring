@@ -1,7 +1,6 @@
 import { Center, Stack, Text, Grid, Link } from "@chakra-ui/layout";
 import { ChakraProvider, Button } from "@chakra-ui/react";
 import * as React from "react";
-import { Graphs } from "./components/Graphs";
 import { useAvailability } from "./hooks/useAvailability";
 import { useGlobalClock } from "./hooks/useGlobalClock";
 import theme from "./theme";
@@ -14,6 +13,7 @@ import { hrColor, powerColor } from "./colors";
 import { useSmartTrainer } from "./context/SmartTrainerContext";
 import { useActiveWorkout } from "./context/WorkoutContext";
 import { useWebsocket } from "./context/WebsocketContext";
+import { GraphContainer } from "./components/Graph/GraphContainer";
 
 export const App = () => {
   const {
@@ -135,7 +135,7 @@ export const App = () => {
           </Grid>
           <Center>
             {activeWorkout ? <WorkoutDisplay /> : null}
-            <Graphs data={data} />
+            <GraphContainer data={data} />
           </Center>
           <Center>
             <Stack width={["100%", "80%"]}>

@@ -130,7 +130,7 @@ export interface Room {
   creator: string;
 }
 
-interface LocalRoom extends Room {
+export interface LocalRoom extends Room {
   workoutData: { [username: string]: { heartRate?: number; power?: number }[] };
 }
 
@@ -152,8 +152,9 @@ export const WebsocketContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  console.log("wsUrl:", wsUrl);
   const [socket, setSocket] = React.useState(
-    React.useCallback(() => new WebSocket("ws://localhost:8092"), [])
+    React.useCallback(() => new WebSocket(wsUrl), [])
   );
 
   // const socket = React.useCallback(() => new WebSocket("ws://localhost:8092"), [])

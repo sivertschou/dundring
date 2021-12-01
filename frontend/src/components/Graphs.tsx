@@ -15,47 +15,45 @@ import {
   YAxis,
 } from "recharts";
 import { hrColors, powerColors } from "../colors";
-import { useWebsocket } from "../context/WebsocketContext";
+import { LocalRoom, Member, useWebsocket } from "../context/WebsocketContext";
 import { DataPoint } from "../types";
 import { CustomChartTooltip } from "./Graph/CustomChartTooltip";
 import { CustomGraphTooltip } from "./Graph/CustomGraphTooltip";
-import { GraphCheckboxes } from "./Graph/GraphCheckboxes";
+import { ShowData } from "./Graph/GraphContainer";
 
 interface Props {
   data: DataPoint[];
+  otherUsers: Member[];
+  activeGroupSession: LocalRoom | null;
+  showFill: boolean;
+  showUserData: ShowData;
+  showOtherUsersData: { [username: string]: ShowData };
 }
-export interface ShowData {
-  hr: boolean;
-  power: boolean;
-}
+// export interface ShowData {
+//   hr: boolean;
+//   power: boolean;
+// }
 const mergeArrays = (arr1: any[], arr2: any[]) => {
   const a = arr1.length > arr2.length ? arr1 : arr2;
   const b = arr1.length > arr2.length ? arr2 : arr1;
   return a.map((a, i) => ({ ...a, ...b[i] }));
 };
 
-export const Graphs = ({ data: rawData }: Props) => {
-  const { activeGroupSession, providedUsername } = useWebsocket();
-  const [showFill, setShowFill] = React.useState(true);
-  const otherUsers = React.useMemo(
-    () =>
-      activeGroupSession
-        ? activeGroupSession.members.filter(
-            (otherUser) => otherUser.username !== providedUsername
-          )
-        : [],
-    [activeGroupSession, providedUsername]
-  );
-  const [showUserData, setShowUserData] = React.useState<ShowData>({
-    hr: true,
-    power: true,
-  });
-  const [showOtherUsersData, setShowOtherUsersData] = React.useState<{
-    [username: string]: ShowData;
-  }>({});
+export const Graphs = ({
+  data: rawData,
+  otherUsers,
+  showFill,
+  showUserData,
+  showOtherUsersData,
+  activeGroupSession,
+}: Props) => {
+  // const [showOtherUsersData, setShowOtherUsersData] = React.useState<{
+  //   [username: string]: ShowData;
+  // }>({});
 
   const numPoints = 500;
   const [allMerged, myAvgPower, otherPeoplesAvgPower] = React.useMemo(() => {
+    console.log("recalculate");
     const data = rawData.map((dp) => ({
       "You HR": dp.heartRate,
       "You Power": dp.power,
@@ -202,22 +200,8 @@ export const Graphs = ({ data: rawData }: Props) => {
   };
   console.log("rerender graph");
 
-  const toggleGraphFillButtonText = showFill
-    ? "Hide graph fill"
-    : "Show graph fill";
   return (
     <Stack width="100%">
-      <HStack flexDir="row-reverse">
-        <ChakraTooltip label={toggleGraphFillButtonText} placement="left">
-          <IconButton
-            variant="ghost"
-            icon={<Icon as={showFill ? BarChartLineFill : BarChartLine} />}
-            aria-label={toggleGraphFillButtonText}
-            isRound={true}
-            onClick={() => setShowFill((prev) => !prev)}
-          />
-        </ChakraTooltip>
-      </HStack>
       <Grid templateColumns="5fr 1fr">
         <AspectRatio ratio={16 / 9} width="100%">
           <ResponsiveContainer>
@@ -259,33 +243,6 @@ export const Graphs = ({ data: rawData }: Props) => {
           </ResponsiveContainer>
         </AspectRatio>
       </Grid>
-      <Stack>
-        <Center>
-          <HStack>
-            <GraphCheckboxes
-              title={"You"}
-              setChecked={(checked) => setShowUserData(checked)}
-              checked={showUserData}
-            />
-            {otherUsers.map((user, i) => (
-              <GraphCheckboxes
-                key={user.username}
-                title={user.username}
-                index={i + 1}
-                setChecked={(checked) =>
-                  setShowOtherUsersData((prev) => ({
-                    ...prev,
-                    [user.username]: checked,
-                  }))
-                }
-                checked={
-                  showOtherUsersData[user.username] || { hr: true, power: true }
-                }
-              />
-            ))}
-          </HStack>
-        </Center>
-      </Stack>
     </Stack>
   );
 };
