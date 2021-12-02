@@ -12,7 +12,7 @@ export const randomIntFromIntervalBasedOnPrev = (
   );
 };
 
-export const toTCX = (dataPoints: DataPoint[], filename: string) => {
+export const toTCX = (dataPoints: DataPoint[]) => {
   const filtererdDataPoints = dataPoints.filter((d) => d.heartRate || d.power);
   const startTime = filtererdDataPoints[0].timeStamp;
   const endTime = filtererdDataPoints[filtererdDataPoints.length - 1].timeStamp;
@@ -70,6 +70,9 @@ export const toTCX = (dataPoints: DataPoint[], filename: string) => {
 
   const url = window.URL.createObjectURL(new Blob([output]));
   const link = document.createElement("a");
+
+  const filename = `dundring_${formatDateForFilename(startTime)}`;
+
   link.href = url;
   link.setAttribute("download", `${filename}.tcx`);
 
@@ -99,10 +102,17 @@ export const formatHoursMinutesAndSecondsAsString = ({
   minutes,
   seconds,
 }: HoursMinutesAndSeconds) => {
-  return `${hours > 0 ? hours + ":" : ""}${
-    minutes < 10 ? "0" + minutes : minutes
-  }:${seconds < 10 ? "0" + seconds : seconds}`;
+  return `${hours > 0 ? hours + ":" : ""}${padLeadingZero(minutes)}:${padLeadingZero(seconds)}`;
 };
 
 export const getTotalWorkoutTime = (workout: Workout) =>
   workout.parts.reduce((sum, part) => sum + part.duration, 0);
+
+const padLeadingZero = (nr: number) =>
+  nr < 10 ? "0" + nr : nr
+
+const formatDateForFilename = (date: Date): string => {
+  const yyyymmdd = date.toISOString().split("T")[0]
+  const hhmm = padLeadingZero(date.getHours()) + "" + padLeadingZero(date.getMinutes())
+  return yyyymmdd + "T" + hhmm
+}
