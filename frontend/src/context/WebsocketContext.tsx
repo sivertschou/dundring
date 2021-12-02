@@ -199,7 +199,6 @@ export const WebsocketContextProvider = ({
           break;
         }
         case WebSocketResponseType.dataReceived: {
-          console.log("workout data received");
           const sender = message.username;
           const data = message.data;
 
@@ -227,9 +226,8 @@ export const WebsocketContextProvider = ({
       value={{
         activeGroupSession,
         startGroupSession: (username: string) => {
-          console.log("start group session as user", username);
           if (socket) {
-            console.log("inside if");
+            setCreateStatus("LOADING");
             setUsername(username);
             const data: CreateGroupSession = {
               type: WebSocketRequestType.createGroupSession,
@@ -255,7 +253,6 @@ export const WebsocketContextProvider = ({
           if (!data.heartRate && !data.power) {
             return;
           }
-          console.log("send data");
           const request: SendDataRequest = {
             type: WebSocketRequestType.sendData,
             data,

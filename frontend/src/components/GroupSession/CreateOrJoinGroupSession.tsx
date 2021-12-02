@@ -15,7 +15,8 @@ import {
 } from "../../utils";
 
 export const CreateOrJoinGroupSession = () => {
-  const { startGroupSession, joinGroupSession, joinStatus } = useWebsocket();
+  const { startGroupSession, joinGroupSession, joinStatus, createStatus } =
+    useWebsocket();
 
   const { user } = useUser();
   const [groupSessionId, setGroupSessionId] = React.useState("");
@@ -63,14 +64,18 @@ export const CreateOrJoinGroupSession = () => {
           </FormErrorMessage>
         </FormControl>
       ) : null}
-      <Button
-        onClick={() =>
-          startGroupSession(user.loggedIn ? user.username : guestUsername)
-        }
-        isDisabled={!usernameAvailable || !usernameIsValid}
-      >
-        Start group session
-      </Button>
+
+      <FormControl isInvalid={createStatus === "ERROR"}>
+        <Button
+          onClick={() =>
+            startGroupSession(user.loggedIn ? user.username : guestUsername)
+          }
+          isDisabled={!usernameAvailable || !usernameIsValid}
+        >
+          Start group session
+        </Button>
+        <FormErrorMessage>Something went wrong.</FormErrorMessage>
+      </FormControl>
       <Divider />
 
       <FormControl>
