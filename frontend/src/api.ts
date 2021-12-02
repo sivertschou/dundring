@@ -7,18 +7,9 @@ import {
   WorkoutsResponseBody,
 } from "../../common/types/apiTypes";
 
-const baseUrl = process.env.REACT_APP_BASE_URL + "/api";
-
-const get = async <T>(url: string): Promise<T> => {
-  const response = await fetch(url, {
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-  });
-
-  return response.json();
-};
+export const httpUrl =
+  process.env.REACT_APP_HTTP_URL || "http://localhost:8092";
+export const wsUrl = process.env.REACT_APP_WS_URL || "ws://localhost:8092";
 
 const post = async <T, U>(url: string, body: U, token?: string): Promise<T> => {
   const response = await fetch(url, {
@@ -66,21 +57,21 @@ const authPost = async <T, U>(
 
 export const login = async (loginData: LoginRequestBody) => {
   return post<ApiResponseBody<LoginResponseBody>, LoginRequestBody>(
-    `${baseUrl}/login`,
+    `${httpUrl}/login`,
     loginData
   );
 };
 
 export const register = async (registerData: RegisterRequestBody) => {
   return post<ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
-    `${baseUrl}/register`,
+    `${httpUrl}/register`,
     registerData
   );
 };
 
 export const validateToken = async (token: string) => {
   return authPost<ApiResponseBody<LoginResponseBody>, {}>(
-    `${baseUrl}/validate`,
+    `${httpUrl}/validate`,
     token,
     {}
   );
@@ -88,7 +79,7 @@ export const validateToken = async (token: string) => {
 
 export const fetchMyWorkouts = async (token: string) => {
   return authGet<ApiResponseBody<WorkoutsResponseBody>>(
-    `${baseUrl}/me/workouts`,
+    `${httpUrl}/me/workouts`,
     token
   );
 };
@@ -98,7 +89,7 @@ export const saveWorkout = async (
   workout: WorkoutRequestBody
 ) => {
   return authPost<ApiResponseBody<WorkoutsResponseBody>, WorkoutRequestBody>(
-    `${baseUrl}/me/workout`,
+    `${httpUrl}/me/workout`,
     token,
     workout
   );

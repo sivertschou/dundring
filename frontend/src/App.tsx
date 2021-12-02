@@ -1,7 +1,6 @@
 import { Center, Stack, Text, Grid, Link } from "@chakra-ui/layout";
 import { ChakraProvider, Button } from "@chakra-ui/react";
 import * as React from "react";
-import { Graphs } from "./components/Graphs";
 import { useAvailability } from "./hooks/useAvailability";
 import { useGlobalClock } from "./hooks/useGlobalClock";
 import theme from "./theme";
@@ -13,15 +12,19 @@ import { useHeartRateMonitor } from "./context/HeartRateContext";
 import { hrColor, powerColor } from "./colors";
 import { useSmartTrainer } from "./context/SmartTrainerContext";
 import { useActiveWorkout } from "./context/WorkoutContext";
-
-export const App = () => {
+import { GraphContainer } from "./components/Graph/GraphContainer";
+import { useWebsocket } from "./context/WebsocketContext";
+interface Props {
+  clockWorker: Worker;
+}
+export const App = ({ clockWorker }: Props) => {
   const {
     power,
     isConnected: smartTrainerIsConnected,
     setResistance: setSmartTrainerResistance,
   } = useSmartTrainer();
 
-  const { heartRate, isConnected: hrIsConnected } = useHeartRateMonitor();
+  const { heartRate } = useHeartRateMonitor();
   const { available: bluetoothIsAvailable } = useAvailability();
   const {
     activeWorkout,
@@ -31,38 +34,44 @@ export const App = () => {
 
   const [data, setData] = React.useState<DataPoint[]>([]);
   const [timeElapsed, setTimeElapsed] = React.useState(0);
-  const [startingTime, setStartingTime] = React.useState<Date | null>(null);
-  
+  const [startingTime, setStartingTime] = React.useState<Date | null>(null);
+
+  const { sendData } = useWebsocket();
   const {
     running,
     start: startGlobalClock,
     stop: stopGlobalClock,
-  } = useGlobalClock(
-      (timeSinceLast) => {
-        setTimeElapsed((prev) => prev + timeSinceLast);
-        if (activeWorkout && !activeWorkout.isDone) {
-          increaseActiveWorkoutElapsedTime(timeSinceLast);
-        }
-      
-    });
+  } = useGlobalClock((timeSinceLast) => {
+    setTimeElapsed((prev) => prev + timeSinceLast);
+    if (activeWorkout && !activeWorkout.isDone) {
+      increaseActiveWorkoutElapsedTime(timeSinceLast);
+    }
+  });
 
+  const send = React.useCallback(() => {
+    const heartRateToInclude = heartRate ? { heartRate } : {};
+    const powerToInclude = power ? { power } : {};
+    if (running) {
+      setData((data) => [
+        ...data,
+        {
+          ...heartRateToInclude,
+          ...powerToInclude,
+          timeStamp: new Date(),
+        },
+      ]);
+    }
+
+    sendData({ ...heartRateToInclude, ...powerToInclude });
+  }, [heartRate, power, running, setData, sendData]);
   React.useEffect(() => {
-    const interval = setInterval(() => {
-      if (running) {
-        const heartRateToInclude = heartRate ? { heartRate } : {};
-        const powerToInclude = power ? { power } : {};
-        setData((data) => [
-          ...data,
-          {
-            ...heartRateToInclude,
-            ...powerToInclude,
-            timeStamp: new Date(),
-          },
-        ]);
-      }
-    }, 500);
-    return () => clearInterval(interval);
-  }, [power, startingTime, heartRate, hrIsConnected]);
+    if (clockWorker === null) return;
+
+    clockWorker.onmessage = (e) => {
+      send();
+    };
+    clockWorker.onerror = (e) => console.log("message recevied:", e);
+  }, [clockWorker, send]);
 
   const start = () => {
     if (!startingTime) {
@@ -70,6 +79,7 @@ export const App = () => {
     }
     startGlobalClock();
     startActiveWorkout();
+    clockWorker.postMessage("startTimer");
   };
 
   const stop = () => {
@@ -127,7 +137,7 @@ export const App = () => {
           </Grid>
           <Center>
             {activeWorkout ? <WorkoutDisplay /> : null}
-            <Graphs data={data} />
+            <GraphContainer data={data} />
           </Center>
           <Center>
             <Stack width={["100%", "80%"]}>
@@ -155,9 +165,7 @@ export const App = () => {
               </Button>
 
               {data.length > 0 ? (
-                <Button onClick={() => utils.toTCX(data)}>
-                  Download TCX
-                </Button>
+                <Button onClick={() => utils.toTCX(data)}>Download TCX</Button>
               ) : null}
             </Stack>
           </Center>

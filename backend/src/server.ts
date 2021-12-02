@@ -1,5 +1,6 @@
 import * as messageService from "./services/messageService";
 import * as userService from "./services/userService";
+import * as groupSessionService from "./services/groupSessionService";
 import * as validationService from "./services/validationService";
 import * as express from "express";
 import {
@@ -13,6 +14,11 @@ import {
   WorkoutsResponseBody,
 } from "../../common/types/apiTypes";
 import { UserRole } from "../../common/types/userTypes";
+import {
+  WebSocketRequest,
+  WebSocketRequestType,
+} from "../../common/types/wsTypes";
+import * as WebSocket from "ws";
 
 const http = require("http");
 require("dotenv").config();
@@ -30,6 +36,7 @@ app.use(cors());
 app.use("/api", router);
 
 const httpServer = http.createServer(app);
+const wss = new WebSocket.Server({ server: httpServer });
 
 router.get<null, ApiResponseBody<WorkoutsResponseBody>>(
   "/me/workouts",
@@ -47,7 +54,6 @@ router.post<WorkoutRequestBody, ApiResponseBody<WorkoutsResponseBody>>(
   validationService.authenticateToken,
   (req: validationService.AuthenticatedRequest<WorkoutRequestBody>, res) => {
     const workout = req.body.workout;
-    console.log("request:", req.body);
     if (!req.username) {
       res.send({
         status: ApiStatus.FAILURE,
@@ -60,15 +66,12 @@ router.post<WorkoutRequestBody, ApiResponseBody<WorkoutsResponseBody>>(
 
     switch (ret.status) {
       case "SUCCESS":
-        console.log("SUCCESS");
         res.send({
           status: ApiStatus.SUCCESS,
           data: { workouts: ret.data },
         });
         return;
       default:
-        console.log("FAILURE");
-
         res.send({
           status: ApiStatus.FAILURE,
           message: ret.type,
@@ -199,6 +202,58 @@ router.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
     });
   }
 );
+
+// TODO: figure out why a connect is triggered several times.
+//       This is probably due to some fishy rerender.
+wss.on("connection", (ws) => {
+  console.log("connection");
+  let username = "";
+  ws.on("message", (rawData) => {
+    const req = JSON.parse(rawData.toString()) as WebSocketRequest;
+    switch (req.type) {
+      case WebSocketRequestType.createGroupSession: {
+        const { member } = req;
+        username = member.username;
+        ws.send(
+          JSON.stringify(
+            groupSessionService.createRoom({ ...member, socket: ws })
+          )
+        );
+        break;
+      }
+      case WebSocketRequestType.joinGroupSession: {
+        const { roomId, member } = req;
+        username = member.username;
+
+        groupSessionService.joinRoom(ws, roomId, {
+          ...member,
+          socket: ws,
+        });
+        break;
+      }
+      case WebSocketRequestType.leaveGroupSession: {
+        const { username } = req;
+        groupSessionService.leaveRoom(username);
+        break;
+      }
+      case WebSocketRequestType.sendData: {
+        if (!username) {
+          console.log("unknown tried to share workoutdata");
+          return;
+        }
+        groupSessionService.sendWorkoutDataToRoom(username, req.data);
+        break;
+      }
+    }
+  });
+  ws.on("close", () => {
+    console.log("connection closed", username);
+    if (username) {
+      groupSessionService.leaveRoom(username);
+      username = "";
+    }
+  });
+});
 
 httpServer.listen(httpPort, () => {
   console.log(`App is listening on port ${httpPort}!:)`);

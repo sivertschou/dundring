@@ -1,4 +1,5 @@
 import { StoredUser, UserRole } from "../../../common/types/userTypes";
+import { Status } from "../../../common/types/serviceTypes";
 require("dotenv").config();
 import * as fs from "fs";
 import { Workout } from "../../../common/types/workoutTypes";
@@ -31,7 +32,6 @@ export const getUserRoles = (username: string): UserRole[] => {
   return user ? user.roles : [];
 };
 export const getUserWorkouts = (username: string): Workout[] => {
-  console.log("getUserWorkouts:", username);
   const user = getUser(username);
   return user ? user.workouts : [];
 };
@@ -53,7 +53,6 @@ export const saveWorkout = (
   username: string,
   workout: Workout
 ): Status<Workout[], "User not found" | "File not found"> => {
-  console.log("saveWorkout:", username, workout);
   const user = getUser(username);
   if (!user) {
     return { status: "ERROR", type: "User not found" };
@@ -78,17 +77,6 @@ export const saveWorkout = (
   }
 };
 
-interface SuccessStatus<T> {
-  status: "SUCCESS";
-  data: T;
-}
-interface ErrorStatus<E> {
-  status: "ERROR";
-  type: E;
-}
-
-type Status<T, E> = SuccessStatus<T> | ErrorStatus<E>;
-
 export const createUser = (
   user: StoredUser
 ): Status<StoredUser, "User already exists" | "File not found"> => {
@@ -111,7 +99,6 @@ export const createUser = (
 export const setUser = (
   updatedUser: StoredUser
 ): Status<StoredUser, "File not found"> => {
-  console.log("SETUSER: ", updatedUser);
   if (fs.existsSync(usersPath)) {
     const rawdata = fs.readFileSync(usersPath);
     const parsedData = JSON.parse(rawdata.toString()) as StoredUser[];
@@ -119,7 +106,6 @@ export const setUser = (
     const updatedUsers = parsedData.map((user) =>
       user.username === updatedUser.username ? updatedUser : user
     );
-    console.log("updatedUsers:", updatedUsers);
 
     fs.writeFileSync(usersPath, JSON.stringify([...updatedUsers]));
     return { status: "SUCCESS", data: updatedUser };

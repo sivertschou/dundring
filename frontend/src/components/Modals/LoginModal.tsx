@@ -1,5 +1,9 @@
 import { Button } from "@chakra-ui/button";
-import { FormControl, FormLabel } from "@chakra-ui/form-control";
+import {
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+} from "@chakra-ui/form-control";
 import { useDisclosure } from "@chakra-ui/hooks";
 import { Input } from "@chakra-ui/input";
 import { Icon } from "@chakra-ui/icon";
@@ -20,11 +24,13 @@ import { useUser } from "../../context/UserContext";
 import { ActionBarItem } from "../ActionBarItem";
 import { useToast } from "@chakra-ui/react";
 import { Person } from "react-bootstrap-icons";
+import * as utils from "../../utils";
 
 export const LoginModal = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [username, setUsername] = React.useState("");
   const [mail, setMail] = React.useState("");
+  const [mailIsTouched, setMailIsTouched] = React.useState(false);
   const [password, setPassword] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
@@ -33,6 +39,16 @@ export const LoginModal = () => {
   const { setUser } = useUser();
   const toast = useToast();
 
+  const illegalCharacters = utils.removeDuplicateWords(
+    utils.getIllegalUsernameCharacters(username)
+  );
+  const maxUsernameLength = 20;
+  const usernameContainsIllegalCharacters = illegalCharacters.length > 0;
+  const usernameIsTooLong = username.length > maxUsernameLength;
+  const usernameIsValid =
+    !usernameIsTooLong && !usernameContainsIllegalCharacters;
+  const mailIsValid = utils.mailIsValid(mail);
+  const passwordIsValid = password.length > 0;
   const login = async () => {
     const trimmedUsername = username.trim();
     const trimmedPassword = password.trim();
@@ -67,8 +83,7 @@ export const LoginModal = () => {
       setErrorMessage("Enter mail, username and password.");
       return;
     }
-    // https://emailregex.com/
-    const mailIsValid = /.+@.+\..+/.test(trimmedMail);
+    const mailIsValid = utils.mailIsValid(mail);
 
     if (!mailIsValid) {
       setErrorMessage("Please enter a valid email address.");
@@ -107,7 +122,6 @@ export const LoginModal = () => {
     <>
       <ActionBarItem
         text="Login"
-        ariaLabel="Login"
         icon={<Icon as={Person} />}
         onClick={onOpen}
       />
@@ -126,7 +140,7 @@ export const LoginModal = () => {
               <ModalCloseButton />
               <ModalBody>
                 <Stack>
-                  <FormControl>
+                  <FormControl isInvalid={!mailIsValid && mailIsTouched}>
                     <FormLabel>Mail</FormLabel>
                     <Input
                       placeholder="Mail"
@@ -135,16 +149,18 @@ export const LoginModal = () => {
                       autoComplete="email"
                       value={mail}
                       onChange={(e) => {
-                        setErrorMessage("");
                         setMail(e.target.value);
+                        setMailIsTouched(false);
+                        setErrorMessage("");
                       }}
                       onBlur={(_e) => {
-                        setMail((mail) => mail.trim());
+                        setMailIsTouched(true);
+                        setMail((mail) => mail.replace(" ", ""));
                       }}
                     />
                   </FormControl>
 
-                  <FormControl>
+                  <FormControl isInvalid={!usernameIsValid}>
                     <FormLabel>Username</FormLabel>
                     <Input
                       placeholder="Username"
@@ -153,12 +169,22 @@ export const LoginModal = () => {
                       value={username}
                       onChange={(e) => {
                         setErrorMessage("");
-                        setUsername(e.target.value);
-                      }}
-                      onBlur={(_e) => {
-                        setUsername((username) => username.trim());
+                        setUsername(e.target.value.replace(" ", ""));
                       }}
                     />
+                    <FormErrorMessage>
+                      The username can't
+                      {usernameIsTooLong
+                        ? ` be more than ${maxUsernameLength} characters long`
+                        : ""}
+                      {usernameIsTooLong && usernameContainsIllegalCharacters
+                        ? " or"
+                        : ""}
+                      {usernameContainsIllegalCharacters
+                        ? ` contain ${illegalCharacters.join(",")}`
+                        : ""}
+                      .
+                    </FormErrorMessage>
                   </FormControl>
 
                   <FormControl>
@@ -194,7 +220,13 @@ export const LoginModal = () => {
 
               <ModalFooter>
                 {!isLoading ? (
-                  <Button onClick={() => register()} type="submit">
+                  <Button
+                    onClick={() => register()}
+                    isDisabled={
+                      !usernameIsValid || !mailIsValid || !passwordIsValid
+                    }
+                    type="submit"
+                  >
                     Register
                   </Button>
                 ) : (

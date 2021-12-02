@@ -12,6 +12,39 @@ export const randomIntFromIntervalBasedOnPrev = (
   );
 };
 
+const legalUsernameCharacters = "abcdefghifjklmnopqrstuvwxyz0123456789".split(
+  ""
+);
+export const getIllegalUsernameCharacters = (username: string): string[] => {
+  return username
+    .split("")
+    .reduce(
+      (illegalCharacters, current) =>
+        legalUsernameCharacters.every((char) => char !== current.toLowerCase())
+          ? [...illegalCharacters, current]
+          : illegalCharacters,
+      [] as string[]
+    );
+};
+
+export const removeDuplicateWords = (words: string[]) =>
+  words.reduce(
+    (entries, curr) =>
+      entries.every((entry) => entry !== curr) ? [...entries, curr] : entries,
+    [] as string[]
+  );
+
+export const mailIsValid = (mail: string) => /.+@.+\..+/.test(mail.trim());
+
+console.log(
+  "illegalCharacters(asd@asdasd:!sadasd):",
+  getIllegalUsernameCharacters("asd@asdasd:!sadasd)")
+);
+console.log(
+  "illegalCharacters(!asdasjj9012b):",
+  getIllegalUsernameCharacters("!asdasjj9012b")
+);
+
 export const toTCX = (dataPoints: DataPoint[]) => {
   const filtererdDataPoints = dataPoints.filter((d) => d.heartRate || d.power);
   const startTime = filtererdDataPoints[0].timeStamp;
@@ -66,8 +99,6 @@ export const toTCX = (dataPoints: DataPoint[]) => {
 </TrainingCenterDatabase>
  `;
 
-  console.log("output:", output);
-
   const url = window.URL.createObjectURL(new Blob([output]));
   const link = document.createElement("a");
 
@@ -102,17 +133,19 @@ export const formatHoursMinutesAndSecondsAsString = ({
   minutes,
   seconds,
 }: HoursMinutesAndSeconds) => {
-  return `${hours > 0 ? hours + ":" : ""}${padLeadingZero(minutes)}:${padLeadingZero(seconds)}`;
+  return `${hours > 0 ? hours + ":" : ""}${padLeadingZero(
+    minutes
+  )}:${padLeadingZero(seconds)}`;
 };
 
 export const getTotalWorkoutTime = (workout: Workout) =>
   workout.parts.reduce((sum, part) => sum + part.duration, 0);
 
-const padLeadingZero = (nr: number) =>
-  nr < 10 ? "0" + nr : nr
+const padLeadingZero = (nr: number) => (nr < 10 ? "0" + nr : nr);
 
 const formatDateForFilename = (date: Date): string => {
-  const yyyymmdd = date.toISOString().split("T")[0]
-  const hhmm = padLeadingZero(date.getHours()) + "" + padLeadingZero(date.getMinutes())
-  return yyyymmdd + "T" + hhmm
-}
+  const yyyymmdd = date.toISOString().split("T")[0];
+  const hhmm =
+    padLeadingZero(date.getHours()) + "" + padLeadingZero(date.getMinutes());
+  return yyyymmdd + "T" + hhmm;
+};
