@@ -231,6 +231,11 @@ wss.on("connection", (ws) => {
         });
         break;
       }
+      case WebSocketRequestType.leaveGroupSession: {
+        const { username } = req;
+        groupSessionService.leaveRoom(username);
+        break;
+      }
       case WebSocketRequestType.sendData: {
         if (!username) {
           console.log("unknown tried to share workoutdata");

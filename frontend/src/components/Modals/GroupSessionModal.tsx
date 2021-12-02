@@ -18,7 +18,6 @@ export const GroupSessionModal = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { activeGroupSession } = useWebsocket();
-  // const { setActiveWorkout, activeWorkout } = useActiveWorkout();
   return (
     <>
       <ActionBarItem

@@ -7,6 +7,7 @@ export interface Room {
 export enum WebSocketRequestType {
   createGroupSession,
   joinGroupSession,
+  leaveGroupSession,
   sendData,
 }
 
@@ -34,6 +35,10 @@ export interface JoinGroupSession {
   member: Member;
   roomId: string;
 }
+export interface LeaveGroupSession {
+  type: WebSocketRequestType.leaveGroupSession;
+  username: string;
+}
 
 // DATA RECEIVED FROM USER
 export interface SendDataRequest {
@@ -45,6 +50,7 @@ export interface SendDataRequest {
 export type WebSocketRequest =
   | CreateGroupSession
   | JoinGroupSession
+  | LeaveGroupSession
   | SendDataRequest;
 
 // CREATE GROUP SESSION

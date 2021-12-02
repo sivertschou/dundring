@@ -10,6 +10,7 @@ export interface Room {
 export enum WebSocketRequestType {
   createGroupSession,
   joinGroupSession,
+  leaveGroupSession,
   sendData,
 }
 
@@ -37,6 +38,10 @@ export interface JoinGroupSession {
   member: Member;
   roomId: string;
 }
+export interface LeaveGroupSession {
+  type: WebSocketRequestType.leaveGroupSession;
+  username: string;
+}
 
 // DATA RECEIVED FROM USER
 export interface SendDataRequest {
@@ -48,6 +53,7 @@ export interface SendDataRequest {
 export type WebSocketRequest =
   | CreateGroupSession
   | JoinGroupSession
+  | LeaveGroupSession
   | SendDataRequest;
 
 // CREATE GROUP SESSION
@@ -122,11 +128,12 @@ export interface LocalRoom extends Room {
 }
 
 const WebsocketContext = React.createContext<{
-  startGroupSession: (username: string) => void;
   activeGroupSession: LocalRoom | null;
+  startGroupSession: (username: string) => void;
+  createStatus: "NOT_ASKED" | "LOADING" | "ERROR";
   joinGroupSession: (groupId: string, username: string) => void;
   joinStatus: "NOT_ASKED" | "LOADING" | "ROOM_NOT_FOUND";
-  createStatus: "NOT_ASKED" | "LOADING" | "ERROR";
+  leaveGroupSession: () => void;
   sendData: (data: { heartRate?: number; power?: number }) => void;
   providedUsername: string;
 } | null>(null);
@@ -163,6 +170,7 @@ export const WebsocketContextProvider = ({
         case WebSocketResponseType.createdGroupSession: {
           console.log("created group session with id:", message.room.id);
           setActiveGroupSession({ ...message.room, workoutData: {} });
+          setCreateStatus("NOT_ASKED");
           break;
         }
         case WebSocketResponseType.failedToCreateGroupSession: {
@@ -173,6 +181,7 @@ export const WebsocketContextProvider = ({
         case WebSocketResponseType.joinedGroupSession: {
           console.log("joined group session with id:", message.room.id);
           setActiveGroupSession({ ...message.room, workoutData: {} });
+          setJoinStatus("NOT_ASKED");
           break;
         }
         case WebSocketResponseType.failedToJoinGroupSession: {
@@ -246,6 +255,16 @@ export const WebsocketContextProvider = ({
               roomId,
             };
             socket.send(JSON.stringify(data));
+          }
+        },
+        leaveGroupSession: () => {
+          if (socket) {
+            const data: LeaveGroupSession = {
+              type: WebSocketRequestType.leaveGroupSession,
+              username,
+            };
+            socket.send(JSON.stringify(data));
+            setActiveGroupSession(null);
           }
         },
         sendData: (data: { heartRate?: number; power?: number }) => {
