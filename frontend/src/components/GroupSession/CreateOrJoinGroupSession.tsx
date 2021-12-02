@@ -9,6 +9,10 @@ import {
   FormLabel,
 } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
+import {
+  getIllegalUsernameCharacters,
+  removeDuplicateWords,
+} from "../../utils";
 
 export const CreateOrJoinGroupSession = () => {
   const { startGroupSession, joinGroupSession, joinStatus } = useWebsocket();
@@ -18,11 +22,19 @@ export const CreateOrJoinGroupSession = () => {
   const [guestUsername, setGuestUsername] = React.useState("");
 
   const usernameAvailable = user.loggedIn || guestUsername ? true : false;
+  const illegalCharacters = removeDuplicateWords(
+    getIllegalUsernameCharacters(guestUsername)
+  );
+  const maxUsernameLength = 20;
+  const usernameContainsIllegalCharacters = illegalCharacters.length > 0;
+  const usernameIsTooLong = guestUsername.length > maxUsernameLength;
+  const usernameIsValid =
+    !usernameIsTooLong && !usernameContainsIllegalCharacters;
 
   return (
     <Stack p="5">
       {!user.loggedIn ? (
-        <FormControl>
+        <FormControl isInvalid={!usernameIsValid}>
           <FormLabel>Enter guest username</FormLabel>
           <Input
             placeholder="Guest username"
@@ -36,13 +48,26 @@ export const CreateOrJoinGroupSession = () => {
               setGuestUsername((guestUsername) => guestUsername.trim());
             }}
           />
+          <FormErrorMessage>
+            The username can't
+            {usernameIsTooLong
+              ? ` be more than ${maxUsernameLength} characters long`
+              : ""}
+            {usernameIsTooLong && usernameContainsIllegalCharacters
+              ? " or"
+              : ""}
+            {usernameContainsIllegalCharacters
+              ? ` contain ${illegalCharacters.join(",")}`
+              : ""}
+            .
+          </FormErrorMessage>
         </FormControl>
       ) : null}
       <Button
         onClick={() =>
           startGroupSession(user.loggedIn ? user.username : guestUsername)
         }
-        isDisabled={!usernameAvailable}
+        isDisabled={!usernameAvailable || !usernameIsValid}
       >
         Start group session
       </Button>

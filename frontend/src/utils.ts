@@ -12,6 +12,37 @@ export const randomIntFromIntervalBasedOnPrev = (
   );
 };
 
+const legalUsernameCharacters = "abcdefghifjklmnopqrstuvwxyz0123456789".split(
+  ""
+);
+export const getIllegalUsernameCharacters = (username: string): string[] => {
+  return username
+    .split("")
+    .reduce(
+      (illegalCharacters, current) =>
+        legalUsernameCharacters.every((char) => char !== current.toLowerCase())
+          ? [...illegalCharacters, current]
+          : illegalCharacters,
+      [] as string[]
+    );
+};
+
+export const removeDuplicateWords = (words: string[]) =>
+  words.reduce(
+    (entries, curr) =>
+      entries.every((entry) => entry !== curr) ? [...entries, curr] : entries,
+    [] as string[]
+  );
+
+console.log(
+  "illegalCharacters(asd@asdasd:!sadasd):",
+  getIllegalUsernameCharacters("asd@asdasd:!sadasd)")
+);
+console.log(
+  "illegalCharacters(!asdasjj9012b):",
+  getIllegalUsernameCharacters("!asdasjj9012b")
+);
+
 export const toTCX = (dataPoints: DataPoint[], filename: string) => {
   const filtererdDataPoints = dataPoints.filter((d) => d.heartRate || d.power);
   const startTime = filtererdDataPoints[0].timeStamp;
