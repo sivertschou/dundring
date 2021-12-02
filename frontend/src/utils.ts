@@ -34,6 +34,8 @@ export const removeDuplicateWords = (words: string[]) =>
     [] as string[]
   );
 
+export const mailIsValid = (mail: string) => /.+@.+\..+/.test(mail.trim());
+
 console.log(
   "illegalCharacters(asd@asdasd:!sadasd):",
   getIllegalUsernameCharacters("asd@asdasd:!sadasd)")
