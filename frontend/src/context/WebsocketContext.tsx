@@ -126,6 +126,7 @@ const WebsocketContext = React.createContext<{
   activeGroupSession: LocalRoom | null;
   joinGroupSession: (groupId: string, username: string) => void;
   joinStatus: "NOT_ASKED" | "LOADING" | "ROOM_NOT_FOUND";
+  createStatus: "NOT_ASKED" | "LOADING" | "ERROR";
   sendData: (data: { heartRate?: number; power?: number }) => void;
   providedUsername: string;
 } | null>(null);
@@ -146,6 +147,9 @@ export const WebsocketContextProvider = ({
   const [joinStatus, setJoinStatus] = React.useState<
     "NOT_ASKED" | "LOADING" | "ROOM_NOT_FOUND"
   >("NOT_ASKED");
+  const [createStatus, setCreateStatus] = React.useState<
+    "NOT_ASKED" | "LOADING" | "ERROR"
+  >("NOT_ASKED");
 
   const [username, setUsername] = React.useState("");
   React.useEffect(() => {
@@ -163,7 +167,7 @@ export const WebsocketContextProvider = ({
         }
         case WebSocketResponseType.failedToCreateGroupSession: {
           console.log("failed to create group session");
-          // TODO: Handle
+          setCreateStatus("ERROR");
           break;
         }
         case WebSocketResponseType.joinedGroupSession: {
@@ -173,7 +177,7 @@ export const WebsocketContextProvider = ({
         }
         case WebSocketResponseType.failedToJoinGroupSession: {
           console.log("failed to join group session");
-          // TODO: Handle
+          setJoinStatus("ROOM_NOT_FOUND");
           break;
         }
         case WebSocketResponseType.memberJoinedGroupSession: {
@@ -260,6 +264,7 @@ export const WebsocketContextProvider = ({
           socket.send(JSON.stringify(request));
         },
         joinStatus,
+        createStatus,
         providedUsername: username,
       }}
       children={children}

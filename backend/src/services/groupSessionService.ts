@@ -114,6 +114,7 @@ export const joinRoom = (
   member: ServerMember
 ) => {
   const room = rooms[roomId];
+
   if (room) {
     const updatedRoom = { ...room, members: [...room.members, member] };
     rooms[roomId] = updatedRoom;
