@@ -12,8 +12,8 @@ import { useHeartRateMonitor } from "./context/HeartRateContext";
 import { hrColor, powerColor } from "./colors";
 import { useSmartTrainer } from "./context/SmartTrainerContext";
 import { useActiveWorkout } from "./context/WorkoutContext";
-import { useWebsocket } from "./context/WebsocketContext";
 import { GraphContainer } from "./components/Graph/GraphContainer";
+import { useWebsocket } from "./context/WebsocketContext";
 interface Props {
   clockWorker: Worker;
 }
@@ -36,14 +36,17 @@ export const App = ({ clockWorker }: Props) => {
   const [timeElapsed, setTimeElapsed] = React.useState(0);
   const [startingTime, setStartingTime] = React.useState<Date | null>(null);
 
+  const { sendData } = useWebsocket();
   const {
     running,
-    addCallback,
-    removeCallback,
     start: startGlobalClock,
     stop: stopGlobalClock,
-  } = useGlobalClock();
-  const { sendData } = useWebsocket();
+  } = useGlobalClock((timeSinceLast) => {
+    setTimeElapsed((prev) => prev + timeSinceLast);
+    if (activeWorkout && !activeWorkout.isDone) {
+      increaseActiveWorkoutElapsedTime(timeSinceLast);
+    }
+  });
 
   const send = React.useCallback(() => {
     const heartRateToInclude = heartRate ? { heartRate } : {};
@@ -71,15 +74,6 @@ export const App = ({ clockWorker }: Props) => {
   }, [clockWorker, send]);
 
   const start = () => {
-    addCallback({
-      name: "Basic",
-      callback: (timeSinceLast) => {
-        setTimeElapsed((prev) => prev + timeSinceLast);
-        if (activeWorkout && !activeWorkout.isDone) {
-          increaseActiveWorkoutElapsedTime(timeSinceLast);
-        }
-      },
-    });
     if (!startingTime) {
       setStartingTime(new Date());
     }
@@ -89,7 +83,6 @@ export const App = ({ clockWorker }: Props) => {
   };
 
   const stop = () => {
-    removeCallback("Basic");
     stopGlobalClock();
     if (smartTrainerIsConnected) {
       setSmartTrainerResistance(0);
@@ -172,9 +165,7 @@ export const App = ({ clockWorker }: Props) => {
               </Button>
 
               {data.length > 0 ? (
-                <Button onClick={() => utils.toTCX(data, "Dundring")}>
-                  Download TCX
-                </Button>
+                <Button onClick={() => utils.toTCX(data)}>Download TCX</Button>
               ) : null}
             </Stack>
           </Center>
