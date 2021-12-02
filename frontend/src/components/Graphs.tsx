@@ -107,34 +107,47 @@ export const Graphs = ({
     dataPrefix: string,
     checked: ShowData,
     index: number,
-    showFill: boolean
+    showFill: boolean,
+    type: "hr" | "power"
   ) => {
     const hrColor = hrColors[index % hrColors.length];
     const powerColor = powerColors[index % powerColors.length];
     const hrGradientId = dataPrefix + "colorHR";
     const powerGradientId = dataPrefix + "colorPower";
+    const showHr = type === "hr" && checked.hr;
+    const showPower = type === "power" && checked.power;
     return (
       <React.Fragment key={index}>
         {showFill ? (
           <defs>
-            <linearGradient id={`${hrGradientId}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={hrColor} stopOpacity={0.8} />
-              <stop offset="95%" stopColor={hrColor} stopOpacity={0} />
-            </linearGradient>
-            <linearGradient
-              id={`${powerGradientId}`}
-              x1="0"
-              y1="0"
-              x2="0"
-              y2="1"
-            >
-              <stop offset="5%" stopColor={powerColor} stopOpacity={0.8} />
-              <stop offset="95%" stopColor={powerColor} stopOpacity={0} />
-            </linearGradient>
+            {showHr ? (
+              <linearGradient
+                id={`${hrGradientId}`}
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop offset="5%" stopColor={hrColor} stopOpacity={0.4} />
+                <stop offset="95%" stopColor={hrColor} stopOpacity={0} />
+              </linearGradient>
+            ) : null}
+            {showPower ? (
+              <linearGradient
+                id={`${powerGradientId}`}
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop offset="5%" stopColor={powerColor} stopOpacity={0.4} />
+                <stop offset="95%" stopColor={powerColor} stopOpacity={0} />
+              </linearGradient>
+            ) : null}
           </defs>
         ) : null}
 
-        {checked.hr ? (
+        {showHr ? (
           <Area
             dataKey={`${dataPrefix} HR`}
             stroke={hrColor}
@@ -142,7 +155,7 @@ export const Graphs = ({
             animationDuration={0}
           />
         ) : null}
-        {checked.power ? (
+        {showPower ? (
           <Area
             dataKey={`${dataPrefix} Power`}
             stroke={powerColor}
@@ -191,7 +204,6 @@ export const Graphs = ({
         <AspectRatio ratio={16 / 9} width="100%">
           <ResponsiveContainer>
             <AreaChart data={allMerged}>
-              {fillAreaChart("You", showUserData, 0, showFill)}
               {otherUsers.map((user, i) =>
                 fillAreaChart(
                   user.username,
@@ -200,9 +212,25 @@ export const Graphs = ({
                     power: true,
                   },
                   i + 1,
-                  showFill
+                  showFill,
+                  "power"
                 )
               )}
+              {fillAreaChart("You", showUserData, 0, showFill, "power")}
+              {otherUsers.map((user, i) =>
+                fillAreaChart(
+                  user.username,
+                  showOtherUsersData[user.username] || {
+                    hr: true,
+                    power: true,
+                  },
+                  i + 1,
+                  showFill,
+                  "hr"
+                )
+              )}
+              {fillAreaChart("You", showUserData, 0, showFill, "hr")}
+
               <YAxis />
               <Tooltip content={<CustomGraphTooltip />} />
             </AreaChart>
