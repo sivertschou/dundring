@@ -144,7 +144,7 @@ export const WebsocketContextProvider = ({
   children: React.ReactNode;
 }) => {
   // TODO: Handle reconnect
-  const [socket, setSocket] = React.useState(
+  const [socket] = React.useState(
     React.useCallback(() => new WebSocket(wsUrl), [])
   );
 
@@ -235,14 +235,6 @@ export const WebsocketContextProvider = ({
         activeGroupSession,
         startGroupSession: (username: string) => {
           if (socket) {
-            console.log("socket:", socket);
-            if (socket.CLOSED) {
-              // socket.close();
-              // setSocket(new WebSocket(wsUrl));
-            }
-            // if(socket.CLOSING || socket.CLOSED){
-            //   setSocket(new WebSocket(wsUrl))
-            // }
             setCreateStatus("LOADING");
             setUsername(username);
             const data: CreateGroupSession = {
