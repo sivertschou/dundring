@@ -40,7 +40,6 @@ export const Graphs = ({
 }: Props) => {
   const numPoints = 500;
   const [allMerged, myAvgPower, otherPeoplesAvgPower] = React.useMemo(() => {
-    console.log("recalculate");
     const data = rawData.map((dp) => ({
       "You HR": dp.heartRate,
       "You Power": dp.power,
@@ -185,7 +184,6 @@ export const Graphs = ({
       </React.Fragment>
     );
   };
-  console.log("rerender graph");
 
   return (
     <Stack width="100%">

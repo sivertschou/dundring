@@ -33,17 +33,15 @@ export const GroupSessionOverview = () => {
           const heartRate = (workoutData && workoutData[0].heartRate) || "";
           const power = (workoutData && workoutData[0].power) || "";
           return (
-            <ListItem>
-              <Text key={member.username} fontSize="xl">
-                <HStack>
-                  <ListIcon as={i === 0 ? PersonFill : Person} />
-                  <Text fontWeight="bold">{member.username}</Text>
-                  <Text color={hrColors[i]}>
-                    {heartRate ? heartRate + "bpm" : ""}
-                  </Text>{" "}
-                  <Text color={powerColors[i]}>{power ? power + "W" : ""}</Text>
-                </HStack>
-              </Text>
+            <ListItem key={member.username}>
+              <HStack fontSize="xl">
+                <ListIcon as={i === 0 ? PersonFill : Person} />
+                <Text fontWeight="bold">{member.username}</Text>
+                <Text color={hrColors[i]}>
+                  {heartRate ? heartRate + "bpm" : ""}
+                </Text>{" "}
+                <Text color={powerColors[i]}>{power ? power + "W" : ""}</Text>
+              </HStack>
             </ListItem>
           );
         })}

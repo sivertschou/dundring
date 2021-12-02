@@ -143,9 +143,8 @@ export const WebsocketContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  console.log("wsUrl:", wsUrl);
   // TODO: Handle reconnect
-  const [socket] = React.useState(
+  const [socket, setSocket] = React.useState(
     React.useCallback(() => new WebSocket(wsUrl), [])
   );
 
@@ -163,9 +162,11 @@ export const WebsocketContextProvider = ({
     socket.onopen = () => {
       console.log("connected");
     };
+    socket.onclose = () => {
+      console.log("disconnected");
+    };
     socket.onmessage = (e) => {
       const message = JSON.parse(e.data) as WebSocketResponse;
-      console.log(message);
       switch (message.type) {
         case WebSocketResponseType.createdGroupSession: {
           console.log("created group session with id:", message.room.id);
@@ -190,7 +191,6 @@ export const WebsocketContextProvider = ({
           break;
         }
         case WebSocketResponseType.memberJoinedGroupSession: {
-          console.log("activeGroupSession:", activeGroupSession);
           if (!activeGroupSession) return;
           console.log(
             `${message.username} joined group session with id: ${message.room.id}`
@@ -199,7 +199,6 @@ export const WebsocketContextProvider = ({
           break;
         }
         case WebSocketResponseType.memberLeftGroupSession: {
-          console.log("activeGroupSession:", activeGroupSession);
           if (!activeGroupSession) return;
           console.log(
             `${message.username} left group session with id: ${message.room.id}`
@@ -236,6 +235,14 @@ export const WebsocketContextProvider = ({
         activeGroupSession,
         startGroupSession: (username: string) => {
           if (socket) {
+            console.log("socket:", socket);
+            if (socket.CLOSED) {
+              // socket.close();
+              // setSocket(new WebSocket(wsUrl));
+            }
+            // if(socket.CLOSING || socket.CLOSED){
+            //   setSocket(new WebSocket(wsUrl))
+            // }
             setCreateStatus("LOADING");
             setUsername(username);
             const data: CreateGroupSession = {
@@ -259,12 +266,12 @@ export const WebsocketContextProvider = ({
         },
         leaveGroupSession: () => {
           if (socket) {
+            setActiveGroupSession(null);
             const data: LeaveGroupSession = {
               type: WebSocketRequestType.leaveGroupSession,
               username,
             };
             socket.send(JSON.stringify(data));
-            setActiveGroupSession(null);
           }
         },
         sendData: (data: { heartRate?: number; power?: number }) => {

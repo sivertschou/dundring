@@ -244,9 +244,6 @@ wss.on("connection", (ws) => {
         groupSessionService.sendWorkoutDataToRoom(username, req.data);
         break;
       }
-      default:
-        console.log("did not match any case:/");
-        break;
     }
   });
   ws.on("close", () => {
