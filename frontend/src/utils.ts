@@ -36,15 +36,6 @@ export const removeDuplicateWords = (words: string[]) =>
 
 export const mailIsValid = (mail: string) => /.+@.+\..+/.test(mail.trim());
 
-console.log(
-  "illegalCharacters(asd@asdasd:!sadasd):",
-  getIllegalUsernameCharacters("asd@asdasd:!sadasd)")
-);
-console.log(
-  "illegalCharacters(!asdasjj9012b):",
-  getIllegalUsernameCharacters("!asdasjj9012b")
-);
-
 export const toTCX = (dataPoints: DataPoint[]) => {
   const filtererdDataPoints = dataPoints.filter((d) => d.heartRate || d.power);
   const startTime = filtererdDataPoints[0].timeStamp;
