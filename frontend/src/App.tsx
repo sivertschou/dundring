@@ -4,7 +4,7 @@ import * as React from "react";
 import { useAvailability } from "./hooks/useAvailability";
 import { useGlobalClock } from "./hooks/useGlobalClock";
 import theme from "./theme";
-import { DataPoint } from "./types";
+import { Lap } from "./types";
 import * as utils from "./utils";
 import { WorkoutDisplay } from "./components/WorkoutDisplay";
 import { ActionBar } from "./components/ActionBar";
@@ -32,7 +32,7 @@ export const App = ({ clockWorker }: Props) => {
     start: startActiveWorkout,
   } = useActiveWorkout();
 
-  const [data, setData] = React.useState<DataPoint[]>([]);
+  const [data, setData] = React.useState<Lap[]>([]);
   const [timeElapsed, setTimeElapsed] = React.useState(0);
   const [startingTime, setStartingTime] = React.useState<Date | null>(null);
 
@@ -52,18 +52,39 @@ export const App = ({ clockWorker }: Props) => {
     const heartRateToInclude = heartRate ? { heartRate } : {};
     const powerToInclude = power ? { power } : {};
     if (running) {
-      setData((data) => [
-        ...data,
-        {
+      setData((laps: Lap[]) => {
+        const newPoint = {
           ...heartRateToInclude,
           ...powerToInclude,
           timeStamp: new Date(),
-        },
-      ]);
+        }
+
+        if (laps.length === 0) {
+          return [
+            { dataPoints: [newPoint] }
+          ]
+        }
+
+        if (laps[activeWorkout.activePart] === undefined) {
+          return [
+            ...laps,
+            { dataPoints: [newPoint] }
+          ]
+        }
+        return [
+          ...laps.filter((_, i) => i !== laps.length - 1),
+          {
+            dataPoints:
+              [...laps[laps.length - 1].dataPoints,
+                newPoint
+              ]
+          }
+        ]
+      });
     }
 
     sendData({ ...heartRateToInclude, ...powerToInclude });
-  }, [heartRate, power, running, setData, sendData]);
+  }, [heartRate, power, running, setData, sendData, activeWorkout.activePart]);
   React.useEffect(() => {
     if (clockWorker === null) return;
 
@@ -137,7 +158,7 @@ export const App = ({ clockWorker }: Props) => {
           </Grid>
           <Center>
             {activeWorkout ? <WorkoutDisplay /> : null}
-            <GraphContainer data={data} />
+            <GraphContainer data={data.flatMap((x) => x.dataPoints)} />
           </Center>
           <Center>
             <Stack width={["100%", "80%"]}>
@@ -165,7 +186,7 @@ export const App = ({ clockWorker }: Props) => {
               </Button>
 
               {data.length > 0 ? (
-                <Button onClick={() => utils.toTCX(data)}>Download TCX</Button>
+                <Button onClick={() => utils.toTCX(data.flatMap((x) => x.dataPoints))}>Download TCX</Button>
               ) : null}
             </Stack>
           </Center>

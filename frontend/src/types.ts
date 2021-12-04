@@ -1,5 +1,8 @@
 import { UserRole } from "../../common/types/userTypes";
 
+export interface Lap {
+  dataPoints: DataPoint[]
+}
 export interface DataPoint {
   heartRate?: number;
   power?: number;
