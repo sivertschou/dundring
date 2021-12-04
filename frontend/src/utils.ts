@@ -15,16 +15,9 @@ export const randomIntFromIntervalBasedOnPrev = (
 const legalUsernameCharacters = "abcdefghifjklmnopqrstuvwxyz0123456789".split(
   ""
 );
+
 export const getIllegalUsernameCharacters = (username: string): string[] => {
-  return username
-    .split("")
-    .reduce(
-      (illegalCharacters, current) =>
-        legalUsernameCharacters.every((char) => char !== current.toLowerCase())
-          ? [...illegalCharacters, current]
-          : illegalCharacters,
-      [] as string[]
-    );
+  return username.split("").filter((x) => !legalUsernameCharacters.includes(x))
 };
 
 export const removeDuplicateWords = (words: string[]) =>
