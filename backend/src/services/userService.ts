@@ -3,6 +3,7 @@ import { Status } from "../../../common/types/serviceTypes";
 require("dotenv").config();
 import * as fs from "fs";
 import { Workout } from "../../../common/types/workoutTypes";
+import * as validationService from "./validationService";
 
 const usersPath = `${process.env.DATA_PATH}/users.json`;
 
@@ -20,9 +21,12 @@ export const getUser = (username: string): StoredUser | null =>
 
 export const validateUser = (
   username: string,
-  hashedPassword: string
+  password: string
 ): boolean => {
   const user = getUser(username);
+  if(!user) return false;
+
+  const hashedPassword = validationService.hash(user.salt + password);
 
   return user?.password === hashedPassword;
 };
@@ -62,13 +66,13 @@ export const saveWorkout = (
 
   const ret = workout.id
     ? setUser({
-        ...user,
-        workouts: updateWorkoutOrAppendIfNotFound(workouts, workout),
-      })
+      ...user,
+      workouts: updateWorkoutOrAppendIfNotFound(workouts, workout),
+    })
     : setUser({
-        ...user,
-        workouts: [...workouts, { ...workout, id: newId }],
-      });
+      ...user,
+      workouts: [...workouts, { ...workout, id: newId }],
+    });
 
   if (ret.status === "ERROR") {
     return ret;

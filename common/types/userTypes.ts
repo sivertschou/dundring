@@ -12,6 +12,7 @@ export interface StoredUser {
   roles: UserRole[];
   password: string;
   workouts: Workout[];
+  salt: string;
 }
 
 export enum UserRole {
