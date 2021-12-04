@@ -19,13 +19,13 @@ import {
   WebSocketRequestType,
 } from "../../common/types/wsTypes";
 import * as WebSocket from "ws";
+import cors from "cors";
+import http from "http";
 
-const http = require("http");
 require("dotenv").config();
 
 // Create a new express app instance
 const app = express.default();
-const cors = require("cors");
 const router = express.Router();
 
 const httpPort = process.env.PORT;
@@ -118,8 +118,7 @@ router.post<null, ApiResponseBody<LoginResponseBody>, LoginRequestBody>(
   async (req, res) => {
     const { username, password } = req.body;
 
-    const hashedPassword = validationService.hash(password);
-    if (userService.validateUser(username, hashedPassword)) {
+    if (userService.validateUser(username, password)) {
       const token = validationService.generateAccessToken(username);
       const userRole = userService.getUserRoles(username);
       res.send({
@@ -147,12 +146,15 @@ router.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
   async (req, res) => {
     const { username, password, mail } = req.body;
 
-    const hashedPassword = validationService.hash(password);
+    const salt = validationService.generateSalt();
+
+    const hashedPassword = validationService.hash(salt + password);
 
     const ret = userService.createUser({
       username: username,
       mail: mail,
       password: hashedPassword,
+      salt,
       roles: [UserRole.DEFAULT],
       workouts: [],
     });
@@ -161,7 +163,6 @@ router.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
       const message = ret.type;
       let statusMessage = "Something went wrong.";
       let statusCode = 500;
-
       switch (message) {
         case "User already exists":
           statusMessage = "User already exists";

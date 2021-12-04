@@ -8,6 +8,9 @@ export const hash = (message: string) => {
   return crypto.createHash("md5").update(message).digest("hex");
 };
 
+export const generateSalt = () => 
+  new Array(10).fill(0).map(_ => Math.floor(Math.random()*10)).join("")
+
 export const generateAccessToken = (username: string) => {
   return jwt.sign({ username }, process.env.TOKEN_SECRET, {
     expiresIn: "120d",
