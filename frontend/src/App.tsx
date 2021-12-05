@@ -178,11 +178,7 @@ export const App = ({ clockWorker }: Props) => {
               </Button>
 
               {data.length > 0 ? (
-                <Button
-                  onClick={() => utils.toGPX(data.flatMap((x) => x.dataPoints))}
-                >
-                  Download GPX
-                </Button>
+                <Button onClick={() => utils.toTCX(data)}>Download TCX</Button>
               ) : null}
             </Stack>
           </Center>
