@@ -5,7 +5,7 @@ import { useSmartTrainer } from "./SmartTrainerContext";
 export const WorkoutContext = React.createContext<{
   activeWorkout: ActiveWorkout;
   setActiveWorkout: (workout: Workout) => void;
-  increaseElapsedTime: (millis: number) => void;
+  increaseElapsedTime: (millis: number, addLap: () => void) => void;
   start: () => void;
   pause: () => void;
 } | null>(null);
@@ -14,6 +14,7 @@ interface IncreasePartElapsedTimeAction {
   type: "INCREASE_PART_ELAPSED_TIME";
   millis: number;
   setResistance: (resistance: number) => void;
+  addLap: () => void;
 }
 
 interface SetWorkoutAction {
@@ -86,7 +87,7 @@ export const ActiveWorkoutContextProvider = ({
               isActive: false,
             };
             syncResistance(nextState, action.setResistance);
-
+            action.addLap();
             return nextState;
           }
           const nextState = {
@@ -98,7 +99,7 @@ export const ActiveWorkoutContextProvider = ({
           };
 
           syncResistance(nextState, action.setResistance);
-
+          action.addLap();
           return nextState;
         }
 
@@ -143,11 +144,12 @@ export const ActiveWorkoutContextProvider = ({
     dispatchActiveWorkoutAction({ type: "PAUSE", setResistance });
   };
 
-  const increaseElapsedTime = (millis: number) => {
+  const increaseElapsedTime = (millis: number, addLap: () => void) => {
     dispatchActiveWorkoutAction({
       type: "INCREASE_PART_ELAPSED_TIME",
       millis,
       setResistance,
+      addLap,
     });
   };
 

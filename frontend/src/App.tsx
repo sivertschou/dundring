@@ -44,7 +44,7 @@ export const App = ({ clockWorker }: Props) => {
   } = useGlobalClock((timeSinceLast) => {
     setTimeElapsed((prev) => prev + timeSinceLast);
     if (activeWorkout && !activeWorkout.isDone) {
-      increaseActiveWorkoutElapsedTime(timeSinceLast);
+      increaseActiveWorkoutElapsedTime(timeSinceLast, () => { console.log("addLap"); return setData(data => [...data, {dataPoints: []}])});
     }
   });
 
@@ -52,6 +52,7 @@ export const App = ({ clockWorker }: Props) => {
     const heartRateToInclude = heartRate ? { heartRate } : {};
     const powerToInclude = power ? { power } : {};
     if (running) {
+    console.log("laps:", data)
       setData((laps: Lap[]) => {
         const newPoint = {
           ...heartRateToInclude,
@@ -59,13 +60,13 @@ export const App = ({ clockWorker }: Props) => {
           timeStamp: new Date(),
         };
 
-        if (laps.length === 0) {
-          return [{ dataPoints: [newPoint] }];
-        }
+        // if (laps.length === 0) {
+        //   return [{ dataPoints: [newPoint] }];
+        // }
 
-        if (laps[activeWorkout.activePart] === undefined) {
-          return [...laps, { dataPoints: [newPoint] }];
-        }
+        // if (laps[activeWorkout.activePart] === undefined) {
+        //   return [...laps, { dataPoints: [newPoint] }];
+        // }
         return [
           ...laps.filter((_, i) => i !== laps.length - 1),
           {
@@ -76,11 +77,11 @@ export const App = ({ clockWorker }: Props) => {
     }
 
     sendData({ ...heartRateToInclude, ...powerToInclude });
-  }, [heartRate, power, running, setData, sendData, activeWorkout.activePart]);
+  }, [heartRate, power, running, setData, data, sendData ]);
   React.useEffect(() => {
     if (clockWorker === null) return;
 
-    clockWorker.onmessage = (e) => {
+    clockWorker.onmessage = (_e) => {
       send();
     };
     clockWorker.onerror = (e) => console.log("message recevied:", e);
@@ -89,6 +90,7 @@ export const App = ({ clockWorker }: Props) => {
   const start = () => {
     if (!startingTime) {
       setStartingTime(new Date());
+      setData([{dataPoints: []}])
     }
     startGlobalClock();
     startActiveWorkout();
