@@ -44,7 +44,9 @@ export const App = ({ clockWorker }: Props) => {
   } = useGlobalClock((timeSinceLast) => {
     setTimeElapsed((prev) => prev + timeSinceLast);
     if (activeWorkout && !activeWorkout.isDone) {
-      increaseActiveWorkoutElapsedTime(timeSinceLast, () => { console.log("addLap"); return setData(data => [...data, {dataPoints: []}])});
+      increaseActiveWorkoutElapsedTime(timeSinceLast, () => {
+        return setData(data => [...data, { dataPoints: [] }])
+      });
     }
   });
 
@@ -52,7 +54,6 @@ export const App = ({ clockWorker }: Props) => {
     const heartRateToInclude = heartRate ? { heartRate } : {};
     const powerToInclude = power ? { power } : {};
     if (running) {
-    console.log("laps:", data)
       setData((laps: Lap[]) => {
         const newPoint = {
           ...heartRateToInclude,
@@ -60,13 +61,6 @@ export const App = ({ clockWorker }: Props) => {
           timeStamp: new Date(),
         };
 
-        // if (laps.length === 0) {
-        //   return [{ dataPoints: [newPoint] }];
-        // }
-
-        // if (laps[activeWorkout.activePart] === undefined) {
-        //   return [...laps, { dataPoints: [newPoint] }];
-        // }
         return [
           ...laps.filter((_, i) => i !== laps.length - 1),
           {
@@ -77,7 +71,7 @@ export const App = ({ clockWorker }: Props) => {
     }
 
     sendData({ ...heartRateToInclude, ...powerToInclude });
-  }, [heartRate, power, running, setData, data, sendData ]);
+  }, [heartRate, power, running, setData, sendData]);
   React.useEffect(() => {
     if (clockWorker === null) return;
 
@@ -90,7 +84,7 @@ export const App = ({ clockWorker }: Props) => {
   const start = () => {
     if (!startingTime) {
       setStartingTime(new Date());
-      setData([{dataPoints: []}])
+      setData([{ dataPoints: [] }])
     }
     startGlobalClock();
     startActiveWorkout();
