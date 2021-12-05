@@ -1,4 +1,4 @@
-import { DataPoint, Workout } from "./types";
+import { Lap, Workout } from "./types";
 
 export const randomIntFromIntervalBasedOnPrev = (
   min: number,
@@ -17,7 +17,7 @@ const legalUsernameCharacters = "abcdefghifjklmnopqrstuvwxyz0123456789".split(
 );
 
 export const getIllegalUsernameCharacters = (username: string): string[] => {
-  return username.split("").filter((x) => !legalUsernameCharacters.includes(x))
+  return username.split("").filter((x) => !legalUsernameCharacters.includes(x));
 };
 
 export const removeDuplicateWords = (words: string[]) =>
@@ -29,59 +29,71 @@ export const removeDuplicateWords = (words: string[]) =>
 
 export const mailIsValid = (mail: string) => /.+@.+\..+/.test(mail.trim());
 
-export const toTCX = (dataPoints: DataPoint[]) => {
-  const filtererdDataPoints = dataPoints.filter((d) => d.heartRate || d.power);
-  const startTime = filtererdDataPoints[0].timeStamp;
-  const endTime = filtererdDataPoints[filtererdDataPoints.length - 1].timeStamp;
+const lapToTCX = (lap: Lap) => {
+  const filtererdDataPoints = lap.dataPoints.filter(
+    (d) => d.heartRate || d.power
+  );
+  return [
+    `<Lap StartTime="${filtererdDataPoints[0].timeStamp.toISOString()}">`,
+    `  <Track>`,
+    `${filtererdDataPoints.reduce(
+      (output, d) =>
+        output +
+        [
+          `    <Trackpoint>`,
+          `      <Time>${d.timeStamp.toISOString()}</Time>`,
+          d.heartRate !== undefined
+            ? [
+                `      <HeartRateBpm>`,
+                `        <Value>${d.heartRate}</Value>`,
+                `      </HeartRateBpm>`,
+              ].join("\n")
+            : "",
+          d.power !== undefined
+            ? [
+                `      <Extensions>`,
+                `        <ns3:TPX>`,
+                `          <ns3:Watts>${d.power}</ns3:Watts>`,
+                `        </ns3:TPX>`,
+                `      </Extensions>`,
+              ].join("\n")
+            : "",
+          `      <SensorState>Present</SensorState>`,
+          `    </Trackpoint>`,
+        ]
+          .filter((line) => line)
+          .join("\n"),
+      ""
+    )}`,
+    `  </Track>`,
+    `</Lap>`,
+  ].join("\n");
+};
 
-  const duration = (endTime.getTime() - startTime.getTime()) / 1000;
-
-  const output = `
-<?xml version="1.0" encoding="UTF-8"?>
-<TrainingCenterDatabase xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2">
-  <Activities>
-    <Activity Sport="Biking">
-      <Id>${startTime.toISOString()}</Id>
-      <Lap StartTime="${startTime.toISOString()}">
-        <TotalTimeSeconds>${duration}</TotalTimeSeconds>
-        <Intensity>Active</Intensity>
-        <TriggerMethod>Manual</TriggerMethod>
-        <Track>
-        ${filtererdDataPoints.reduce(
-          (output, d) =>
-            output +
-            `<Trackpoint>
-              <Time>${d.timeStamp.toISOString()}</Time>
-              <HeartRateBpm>
-                <Value>${d.heartRate}</Value>
-              </HeartRateBpm>
-              <Extensions>
-                <ns3:TPX>
-                    <ns3:Watts>${d.power}</ns3:Watts>
-                </ns3:TPX>
-                </Extensions>
-              <SensorState>Present</SensorState>
-            </Trackpoint>
-            `,
-          ""
-        )}
-          </Track>
-        </Lap>
-    </Activity>
-  </Activities>
-  <Author xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="Application_t">
-    <Name>Dundring</Name>
-    <Build>
-      <Version>
-        <VersionMajor>0</VersionMajor>
-        <VersionMinor>0</VersionMinor>
-      </Version>
-    </Build>
-    <LangID>EN</LangID>
-    <PartNumber>XXX-XXXXX-XX</PartNumber>
-  </Author>
-</TrainingCenterDatabase>
- `;
+export const toTCX = (laps: Lap[]) => {
+  const startTime = laps[0].dataPoints[0].timeStamp;
+  const output = [
+    `<?xml version="1.0" encoding="UTF-8"?>`,
+    `<TrainingCenterDatabase xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2"> `,
+    `  <Activities>`,
+    `    <Activity Sport="Biking">`,
+    `      <Id>${startTime.toISOString()}</Id>`,
+    laps.map((lap) => lapToTCX(lap)).join("\n"),
+    `    </Activity>`,
+    `  </Activities>`,
+    `  <Author xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="Application_t">`,
+    `    <Name>Polar Flow Mobile Viewer</Name>`,
+    `    <Build>`,
+    `      <Version>`,
+    `        <VersionMajor>0</VersionMajor>`,
+    `        <VersionMinor>0</VersionMinor>`,
+    `      </Version>`,
+    `    </Build>`,
+    `    <LangID>EN</LangID>`,
+    `    <PartNumber>XXX-XXXXX-XX</PartNumber>`,
+    `  </Author>`,
+    `</TrainingCenterDatabase>`,
+  ].join("\n");
 
   const url = window.URL.createObjectURL(new Blob([output]));
   const link = document.createElement("a");
