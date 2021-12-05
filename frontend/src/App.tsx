@@ -57,29 +57,21 @@ export const App = ({ clockWorker }: Props) => {
           ...heartRateToInclude,
           ...powerToInclude,
           timeStamp: new Date(),
-        }
+        };
 
         if (laps.length === 0) {
-          return [
-            { dataPoints: [newPoint] }
-          ]
+          return [{ dataPoints: [newPoint] }];
         }
 
         if (laps[activeWorkout.activePart] === undefined) {
-          return [
-            ...laps,
-            { dataPoints: [newPoint] }
-          ]
+          return [...laps, { dataPoints: [newPoint] }];
         }
         return [
           ...laps.filter((_, i) => i !== laps.length - 1),
           {
-            dataPoints:
-              [...laps[laps.length - 1].dataPoints,
-                newPoint
-              ]
-          }
-        ]
+            dataPoints: [...laps[laps.length - 1].dataPoints, newPoint],
+          },
+        ];
       });
     }
 
@@ -186,7 +178,11 @@ export const App = ({ clockWorker }: Props) => {
               </Button>
 
               {data.length > 0 ? (
-                <Button onClick={() => utils.toTCX(data.flatMap((x) => x.dataPoints))}>Download TCX</Button>
+                <Button
+                  onClick={() => utils.toGPX(data.flatMap((x) => x.dataPoints))}
+                >
+                  Download GPX
+                </Button>
               ) : null}
             </Stack>
           </Center>
