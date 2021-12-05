@@ -34,39 +34,39 @@ const lapToTCX = (lap: Lap) => {
     (d) => d.heartRate || d.power
   );
   return [
-    `<Lap StartTime="${filtererdDataPoints[0].timeStamp.toISOString()}">`,
-    `  <Track>`,
+    `      <Lap StartTime="${filtererdDataPoints[0].timeStamp.toISOString()}">`,
+    `        <Track>`,
     `${filtererdDataPoints.reduce(
       (output, d) =>
-        output +
+        (output ? output + "\n" : output) +
         [
-          `    <Trackpoint>`,
-          `      <Time>${d.timeStamp.toISOString()}</Time>`,
+          `          <Trackpoint>`,
+          `            <Time>${d.timeStamp.toISOString()}</Time>`,
           d.heartRate !== undefined
             ? [
-                `      <HeartRateBpm>`,
-                `        <Value>${d.heartRate}</Value>`,
-                `      </HeartRateBpm>`,
+                `            <HeartRateBpm>`,
+                `              <Value>${d.heartRate}</Value>`,
+                `            </HeartRateBpm>`,
               ].join("\n")
             : "",
           d.power !== undefined
             ? [
-                `      <Extensions>`,
-                `        <ns3:TPX>`,
-                `          <ns3:Watts>${d.power}</ns3:Watts>`,
-                `        </ns3:TPX>`,
-                `      </Extensions>`,
+                `            <Extensions>`,
+                `              <ns3:TPX>`,
+                `                <ns3:Watts>${d.power}</ns3:Watts>`,
+                `              </ns3:TPX>`,
+                `            </Extensions>`,
               ].join("\n")
             : "",
-          `      <SensorState>Present</SensorState>`,
-          `    </Trackpoint>`,
+          `            <SensorState>Present</SensorState>`,
+          `          </Trackpoint>`,
         ]
           .filter((line) => line)
           .join("\n"),
       ""
     )}`,
-    `  </Track>`,
-    `</Lap>`,
+    `        </Track>`,
+    `      </Lap>`,
   ].join("\n");
 };
 
@@ -82,7 +82,7 @@ export const toTCX = (laps: Lap[]) => {
     `    </Activity>`,
     `  </Activities>`,
     `  <Author xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="Application_t">`,
-    `    <Name>Polar Flow Mobile Viewer</Name>`,
+    `    <Name>Dundring</Name>`,
     `    <Build>`,
     `      <Version>`,
     `        <VersionMajor>0</VersionMajor>`,
