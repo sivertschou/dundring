@@ -44,7 +44,9 @@ export const App = ({ clockWorker }: Props) => {
   } = useGlobalClock((timeSinceLast) => {
     setTimeElapsed((prev) => prev + timeSinceLast);
     if (activeWorkout && !activeWorkout.isDone) {
-      increaseActiveWorkoutElapsedTime(timeSinceLast);
+      increaseActiveWorkoutElapsedTime(timeSinceLast, () => {
+        return setData(data => [...data, { dataPoints: [] }])
+      });
     }
   });
 
@@ -57,38 +59,23 @@ export const App = ({ clockWorker }: Props) => {
           ...heartRateToInclude,
           ...powerToInclude,
           timeStamp: new Date(),
-        }
+        };
 
-        if (laps.length === 0) {
-          return [
-            { dataPoints: [newPoint] }
-          ]
-        }
-
-        if (laps[activeWorkout.activePart] === undefined) {
-          return [
-            ...laps,
-            { dataPoints: [newPoint] }
-          ]
-        }
         return [
           ...laps.filter((_, i) => i !== laps.length - 1),
           {
-            dataPoints:
-              [...laps[laps.length - 1].dataPoints,
-                newPoint
-              ]
-          }
-        ]
+            dataPoints: [...laps[laps.length - 1].dataPoints, newPoint],
+          },
+        ];
       });
     }
 
     sendData({ ...heartRateToInclude, ...powerToInclude });
-  }, [heartRate, power, running, setData, sendData, activeWorkout.activePart]);
+  }, [heartRate, power, running, setData, sendData]);
   React.useEffect(() => {
     if (clockWorker === null) return;
 
-    clockWorker.onmessage = (e) => {
+    clockWorker.onmessage = (_e) => {
       send();
     };
     clockWorker.onerror = (e) => console.log("message recevied:", e);
@@ -97,6 +84,7 @@ export const App = ({ clockWorker }: Props) => {
   const start = () => {
     if (!startingTime) {
       setStartingTime(new Date());
+      setData([{ dataPoints: [] }])
     }
     startGlobalClock();
     startActiveWorkout();
@@ -186,7 +174,7 @@ export const App = ({ clockWorker }: Props) => {
               </Button>
 
               {data.length > 0 ? (
-                <Button onClick={() => utils.toTCX(data.flatMap((x) => x.dataPoints))}>Download TCX</Button>
+                <Button onClick={() => utils.toTCX(data)}>Download TCX</Button>
               ) : null}
             </Stack>
           </Center>
