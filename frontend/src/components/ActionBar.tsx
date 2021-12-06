@@ -38,7 +38,7 @@ export const ActionBar = () => {
 
   const { colorMode, setColorMode } = useColorMode();
   return (
-    <Stack position="fixed" right="5" top="5" alignItems="end" spacing="1">
+    <Stack position="fixed" right="5" top="5" alignItems="flex-end" spacing="1">
       {user.loggedIn ? (
         <Text fontSize="xl" fontWeight="bold">
           {user.loggedIn ? user.username : null}
