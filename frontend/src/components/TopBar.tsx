@@ -21,13 +21,13 @@ export const TopBar = ({ timeElapsed }: Props) => {
   const minutes = Math.floor((secondsElapsed / 60) % 60);
   const seconds = Math.floor(secondsElapsed % 60);
 
-  const mainFontSize = ["3xl", "5xl", "7xl"]
-  const unitFontSize = ["xl", "2xl", "4xl"]
+  const mainFontSize = ["xl", "3xl", "7xl"]
+  const unitFontSize = ["l", "2xl", "4xl"]
   const bgColor = useColorModeValue(theme.colors.white, theme.colors.gray[800]);
   const textShadow = `0px 0px 1vh ${bgColor}`
   return (
     <Center width="100%" position="fixed" top="0">
-      <Stack width="100%">
+      <Stack width={["70%", "80%", "100%"]}>
         <Center width="100%">
           <Grid width="90%" templateColumns="repeat(3, 1fr)">
             <Center color={hrColor} textShadow={textShadow}>
