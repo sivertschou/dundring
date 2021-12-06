@@ -100,7 +100,7 @@ export const App = ({ clockWorker }: Props) => {
   return (
     <ChakraProvider theme={theme}>
       <Center>
-        <Stack width="100%" pt={["0", "50", "100"]}>
+        <Stack width="100%" pt={["30", "50", "100"]}>
           <Center width="100%">
             <Center width={["60%", "70%", "80%", "90%"]} >
               {activeWorkout ? <WorkoutDisplay /> : null}
