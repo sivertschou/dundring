@@ -13,6 +13,7 @@ import { useActiveWorkout } from "./context/WorkoutContext";
 import { GraphContainer } from "./components/Graph/GraphContainer";
 import { useWebsocket } from "./context/WebsocketContext";
 import { TopBar } from "./components/TopBar";
+import { BottomBar } from "./components/BottomBar";
 interface Props {
   clockWorker: Worker;
 }
@@ -140,6 +141,7 @@ export const App = ({ clockWorker }: Props) => {
       </Center>
       <TopBar timeElapsed={timeElapsed} />
       <ActionBar />
+      <BottomBar />
     </ChakraProvider>
   );
 };

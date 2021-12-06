@@ -5,7 +5,6 @@ import { useSmartTrainer } from "../context/SmartTrainerContext";
 import { useHeartRateMonitor } from "../context/HeartRateContext";
 import { useColorModeValue } from "@chakra-ui/color-mode";
 import theme from "../theme";
-import { useAvailability } from "../hooks/useAvailability";
 
 interface Props {
   timeElapsed: number;
@@ -15,7 +14,6 @@ export const TopBar = ({ timeElapsed }: Props) => {
     power,
   } = useSmartTrainer();
 
-  const { available: bluetoothIsAvailable } = useAvailability();
   const { heartRate } = useHeartRateMonitor();
 
   const secondsElapsed = Math.floor(timeElapsed / 1000);
@@ -30,17 +28,6 @@ export const TopBar = ({ timeElapsed }: Props) => {
   return (
     <Center width="100%" position="fixed" top="0">
       <Stack width="100%">
-          {!bluetoothIsAvailable ? (
-            <Center p="2" backgroundColor="red">
-              <Text fontSize="xl">
-                Bluetooth is not available in this browser yet. Check{" "}
-                <Link textDecor="underline" href="https://developer.mozilla.org/en-US/docs/Web/API/Bluetooth#browser_compatibility">
-                  the docs for browsers supporting Bluetooth
-                </Link>
-                .
-              </Text>
-            </Center>
-          ) : null}
       <Grid width="90%" templateColumns="repeat(3, 1fr)">
         <Center color={hrColor} textShadow={textShadow}>
           <Text fontSize={mainFontSize} fontWeight="bold">
