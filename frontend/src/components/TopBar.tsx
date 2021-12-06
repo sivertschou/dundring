@@ -34,7 +34,7 @@ export const TopBar = ({ timeElapsed }: Props) => {
             <Center p="2" backgroundColor="red">
               <Text fontSize="xl">
                 Bluetooth is not available in this browser yet. Check{" "}
-                <Link href="https://developer.mozilla.org/en-US/docs/Web/API/Bluetooth#browser_compatibility">
+                <Link textDecor="underline" href="https://developer.mozilla.org/en-US/docs/Web/API/Bluetooth#browser_compatibility">
                   the docs for browsers supporting Bluetooth
                 </Link>
                 .
