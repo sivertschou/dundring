@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Center, Grid, Link, Stack, Text } from "@chakra-ui/layout"
+import { Center, Grid, Stack, Text } from "@chakra-ui/layout"
 import { hrColor, powerColor } from "../colors";
 import { useSmartTrainer } from "../context/SmartTrainerContext";
 import { useHeartRateMonitor } from "../context/HeartRateContext";
@@ -28,32 +28,34 @@ export const TopBar = ({ timeElapsed }: Props) => {
   return (
     <Center width="100%" position="fixed" top="0">
       <Stack width="100%">
-      <Grid width="90%" templateColumns="repeat(3, 1fr)">
-        <Center color={hrColor} textShadow={textShadow}>
-          <Text fontSize={mainFontSize} fontWeight="bold">
-            {heartRate}
-          </Text>
-          <Text fontSize={unitFontSize} fontWeight="bold">
-            bpm
-          </Text>
+        <Center width="100%">
+          <Grid width="90%" templateColumns="repeat(3, 1fr)">
+            <Center color={hrColor} textShadow={textShadow}>
+              <Text fontSize={mainFontSize} fontWeight="bold">
+                {heartRate}
+              </Text>
+              <Text fontSize={unitFontSize} fontWeight="bold">
+                bpm
+              </Text>
+            </Center>
+            <Center textShadow={textShadow}>
+              <Text fontSize={mainFontSize} fontWeight="bold">
+                {hours ? hours + ":" : null}
+                {minutes < 10 ? "0" + minutes : minutes}
+                {":"}
+                {seconds < 10 ? "0" + seconds : seconds}
+              </Text>
+            </Center>
+            <Center color={powerColor} textShadow={textShadow} >
+              <Text fontSize={mainFontSize} fontWeight="bold">
+                {power}
+              </Text>
+              <Text fontSize={unitFontSize} fontWeight="bold">
+                w
+              </Text>
+            </Center>
+          </Grid>
         </Center>
-        <Center textShadow={textShadow}>
-          <Text fontSize={mainFontSize} fontWeight="bold">
-            {hours ? hours + ":" : null}
-            {minutes < 10 ? "0" + minutes : minutes}
-            {":"}
-            {seconds < 10 ? "0" + seconds : seconds}
-          </Text>
-        </Center>
-        <Center color={powerColor} textShadow={textShadow} >
-          <Text fontSize={mainFontSize} fontWeight="bold">
-            {power}
-          </Text>
-          <Text fontSize={unitFontSize} fontWeight="bold">
-            w
-          </Text>
-        </Center>
-      </Grid>
       </Stack>
     </Center>
   );
