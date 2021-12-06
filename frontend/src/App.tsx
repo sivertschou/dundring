@@ -102,13 +102,13 @@ export const App = ({ clockWorker }: Props) => {
       <Center>
         <Stack width="100%" pt={["30", "50", "100"]}>
           <Center width="100%">
-            <Center width={["60%", "70%", "80%", "90%"]} >
+            <Center width="90%" >
               {activeWorkout ? <WorkoutDisplay /> : null}
               <GraphContainer data={data.flatMap((x) => x.dataPoints)} />
             </Center>
           </Center>
           <Center>
-            <Stack width={["100%", "80%"]}>
+            <Stack width={["70%", "50%"]}>
               <Button onClick={() => (running ? stop() : start())}>
                 {running ? "Stop" : "Start"}
               </Button>

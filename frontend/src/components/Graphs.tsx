@@ -1,4 +1,5 @@
 import { AspectRatio, Grid, Stack } from "@chakra-ui/layout";
+import { useBreakpointValue } from "@chakra-ui/media-query";
 import * as React from "react";
 import {
   Area,
@@ -198,9 +199,10 @@ export const Graphs = ({
     );
   };
 
+  const showPowerBar = useBreakpointValue({base: false, md: true})
   return (
     <Stack width="100%">
-      <Grid templateColumns="5fr 1fr">
+      <Grid templateColumns={showPowerBar ? "5fr 1fr" : "1fr"}>
         <AspectRatio ratio={16 / 9} width="100%">
           <ResponsiveContainer>
             <AreaChart data={allMerged}>
@@ -236,7 +238,7 @@ export const Graphs = ({
             </AreaChart>
           </ResponsiveContainer>
         </AspectRatio>
-        <AspectRatio ratio={1} width="100%">
+        {showPowerBar ? <AspectRatio ratio={1} width="100%">
           <ResponsiveContainer>
             <BarChart
               data={[
@@ -254,7 +256,7 @@ export const Graphs = ({
               <Tooltip content={<CustomChartTooltip />} cursor={false} />
             </BarChart>
           </ResponsiveContainer>
-        </AspectRatio>
+        </AspectRatio> : null}
       </Grid>
     </Stack>
   );
