@@ -1,7 +1,6 @@
-import { Center, Stack, Text, Grid, Link } from "@chakra-ui/layout";
+import { Center, Stack } from "@chakra-ui/layout";
 import { ChakraProvider, Button } from "@chakra-ui/react";
 import * as React from "react";
-import { useAvailability } from "./hooks/useAvailability";
 import { useGlobalClock } from "./hooks/useGlobalClock";
 import theme from "./theme";
 import { Lap } from "./types";
@@ -9,11 +8,11 @@ import * as utils from "./utils";
 import { WorkoutDisplay } from "./components/WorkoutDisplay";
 import { ActionBar } from "./components/ActionBar";
 import { useHeartRateMonitor } from "./context/HeartRateContext";
-import { hrColor, powerColor } from "./colors";
 import { useSmartTrainer } from "./context/SmartTrainerContext";
 import { useActiveWorkout } from "./context/WorkoutContext";
 import { GraphContainer } from "./components/Graph/GraphContainer";
 import { useWebsocket } from "./context/WebsocketContext";
+import { TopBar } from "./components/TopBar";
 interface Props {
   clockWorker: Worker;
 }
@@ -25,7 +24,6 @@ export const App = ({ clockWorker }: Props) => {
   } = useSmartTrainer();
 
   const { heartRate } = useHeartRateMonitor();
-  const { available: bluetoothIsAvailable } = useAvailability();
   const {
     activeWorkout,
     increaseElapsedTime: increaseActiveWorkoutElapsedTime,
@@ -97,56 +95,16 @@ export const App = ({ clockWorker }: Props) => {
       setSmartTrainerResistance(0);
     }
   };
-  const secondsElapsed = Math.floor(timeElapsed / 1000);
-  const hours = Math.floor((secondsElapsed / 60 / 60) % 24);
-  const minutes = Math.floor((secondsElapsed / 60) % 60);
-  const seconds = Math.floor(secondsElapsed % 60);
 
   return (
     <ChakraProvider theme={theme}>
-      <ActionBar />
       <Center>
-        <Stack width="80%">
-          {!bluetoothIsAvailable ? (
-            <Center p="5" backgroundColor="red">
-              <Text fontSize="2xl">
-                Bluetooth is not available in this browser yet. Check{" "}
-                <Link href="https://developer.mozilla.org/en-US/docs/Web/API/Bluetooth#browser_compatibility">
-                  the docs for browsers supporting Bluetooth
-                </Link>
-                .
-              </Text>
+        <Stack width="100%" pt={["0", "50", "100"]}>
+          <Center width="100%">
+            <Center width={["60%", "70%", "80%", "90%"]} >
+              {activeWorkout ? <WorkoutDisplay /> : null}
+              <GraphContainer data={data.flatMap((x) => x.dataPoints)} />
             </Center>
-          ) : null}
-          <Grid templateColumns="repeat(3, 1fr)">
-            <Center p="10" color={hrColor}>
-              <Text fontSize="7xl" fontWeight="bold">
-                {heartRate}
-              </Text>
-              <Text fontSize="4xl" fontWeight="bold">
-                bpm
-              </Text>
-            </Center>
-            <Center p="10">
-              <Text fontSize="7xl" fontWeight="bold">
-                {hours ? hours + ":" : null}
-                {minutes < 10 ? "0" + minutes : minutes}
-                {":"}
-                {seconds < 10 ? "0" + seconds : seconds}
-              </Text>
-            </Center>
-            <Center p="10" color={powerColor}>
-              <Text fontSize="7xl" fontWeight="bold">
-                {power}
-              </Text>
-              <Text fontSize="4xl" fontWeight="bold">
-                w
-              </Text>
-            </Center>
-          </Grid>
-          <Center>
-            {activeWorkout ? <WorkoutDisplay /> : null}
-            <GraphContainer data={data.flatMap((x) => x.dataPoints)} />
           </Center>
           <Center>
             <Stack width={["100%", "80%"]}>
@@ -180,6 +138,8 @@ export const App = ({ clockWorker }: Props) => {
           </Center>
         </Stack>
       </Center>
+      <TopBar timeElapsed={timeElapsed} />
+      <ActionBar />
     </ChakraProvider>
   );
 };
