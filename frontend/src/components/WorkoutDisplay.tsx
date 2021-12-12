@@ -28,8 +28,7 @@ export const WorkoutDisplay = () => {
           </Text>
         );
       })}
-      <Text>{getTimeLeft(workout, partElapsedTime, activePart)}</Text>
-      {isDone ? <Text>DONE!</Text> : null}
+      {isDone ? <Text>DONE!</Text> : <Text>{getTimeLeft(workout, partElapsedTime, activePart)}</Text>}
     </Stack>
   );
 };
