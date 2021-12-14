@@ -1,6 +1,6 @@
-import * as React from "react";
-import { wsUrl } from "../api";
-import { UserContextType } from "../types";
+import * as React from 'react';
+import { wsUrl } from '../api';
+import { UserContextType } from '../types';
 export interface Room {
   id: string;
   creator: string;
@@ -63,7 +63,7 @@ export interface CreateGroupSessionSuccessResponse {
 }
 export interface CreateGroupSessionErrorResponse {
   type: WebSocketResponseType.failedToCreateGroupSession;
-  message: "Failed to create room.";
+  message: 'Failed to create room.';
 }
 
 export type CreateGroupSessionResponse =
@@ -77,7 +77,7 @@ export interface JoinGroupSessionSuccessResponse {
 }
 export interface JoinGroupSessionErrorResponse {
   type: WebSocketResponseType.failedToJoinGroupSession;
-  message: "Failed to join room.";
+  message: 'Failed to join room.';
 }
 
 export type JoinGroupSessionResponse =
@@ -130,9 +130,9 @@ export interface LocalRoom extends Room {
 const WebsocketContext = React.createContext<{
   activeGroupSession: LocalRoom | null;
   startGroupSession: (username: string) => void;
-  createStatus: "NOT_ASKED" | "LOADING" | "ERROR";
+  createStatus: 'NOT_ASKED' | 'LOADING' | 'ERROR';
   joinGroupSession: (groupId: string, username: string) => void;
-  joinStatus: "NOT_ASKED" | "LOADING" | "ROOM_NOT_FOUND";
+  joinStatus: 'NOT_ASKED' | 'LOADING' | 'ROOM_NOT_FOUND';
   leaveGroupSession: () => void;
   sendData: (data: { heartRate?: number; power?: number }) => void;
   providedUsername: string;
@@ -151,43 +151,43 @@ export const WebsocketContextProvider = ({
   const [activeGroupSession, setActiveGroupSession] =
     React.useState<LocalRoom | null>(null);
   const [joinStatus, setJoinStatus] = React.useState<
-    "NOT_ASKED" | "LOADING" | "ROOM_NOT_FOUND"
-  >("NOT_ASKED");
+    'NOT_ASKED' | 'LOADING' | 'ROOM_NOT_FOUND'
+  >('NOT_ASKED');
   const [createStatus, setCreateStatus] = React.useState<
-    "NOT_ASKED" | "LOADING" | "ERROR"
-  >("NOT_ASKED");
+    'NOT_ASKED' | 'LOADING' | 'ERROR'
+  >('NOT_ASKED');
 
-  const [username, setUsername] = React.useState("");
+  const [username, setUsername] = React.useState('');
   React.useEffect(() => {
     socket.onopen = () => {
-      console.log("connected");
+      console.log('connected');
     };
     socket.onclose = () => {
-      console.log("disconnected");
+      console.log('disconnected');
     };
     socket.onmessage = (e) => {
       const message = JSON.parse(e.data) as WebSocketResponse;
       switch (message.type) {
         case WebSocketResponseType.createdGroupSession: {
-          console.log("created group session with id:", message.room.id);
+          console.log('created group session with id:', message.room.id);
           setActiveGroupSession({ ...message.room, workoutData: {} });
-          setCreateStatus("NOT_ASKED");
+          setCreateStatus('NOT_ASKED');
           break;
         }
         case WebSocketResponseType.failedToCreateGroupSession: {
-          console.log("failed to create group session");
-          setCreateStatus("ERROR");
+          console.log('failed to create group session');
+          setCreateStatus('ERROR');
           break;
         }
         case WebSocketResponseType.joinedGroupSession: {
-          console.log("joined group session with id:", message.room.id);
+          console.log('joined group session with id:', message.room.id);
           setActiveGroupSession({ ...message.room, workoutData: {} });
-          setJoinStatus("NOT_ASKED");
+          setJoinStatus('NOT_ASKED');
           break;
         }
         case WebSocketResponseType.failedToJoinGroupSession: {
-          console.log("failed to join group session");
-          setJoinStatus("ROOM_NOT_FOUND");
+          console.log('failed to join group session');
+          setJoinStatus('ROOM_NOT_FOUND');
           break;
         }
         case WebSocketResponseType.memberJoinedGroupSession: {
@@ -235,7 +235,7 @@ export const WebsocketContextProvider = ({
         activeGroupSession,
         startGroupSession: (username: string) => {
           if (socket) {
-            setCreateStatus("LOADING");
+            setCreateStatus('LOADING');
             setUsername(username);
             const data: CreateGroupSession = {
               type: WebSocketRequestType.createGroupSession,
@@ -246,7 +246,7 @@ export const WebsocketContextProvider = ({
         },
         joinGroupSession: (roomId: string, username: string) => {
           if (socket) {
-            setJoinStatus("LOADING");
+            setJoinStatus('LOADING');
             setUsername(username);
             const data: JoinGroupSession = {
               type: WebSocketRequestType.joinGroupSession,
@@ -291,7 +291,7 @@ export const useWebsocket = () => {
   const context = React.useContext(WebsocketContext);
   if (context === null) {
     throw new Error(
-      "useWebsocket must be used within a WebsocketContextProvider"
+      'useWebsocket must be used within a WebsocketContextProvider'
     );
   }
   return context;

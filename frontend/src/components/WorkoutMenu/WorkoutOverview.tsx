@@ -1,12 +1,12 @@
-import { Button } from "@chakra-ui/button";
-import Icon from "@chakra-ui/icon";
-import { Divider, Stack } from "@chakra-ui/layout";
-import * as React from "react";
-import { PencilSquare } from "react-bootstrap-icons";
-import { useUser } from "../../context/UserContext";
-import { Workout } from "../../types";
-import { WorkoutToEdit } from "../Modals/WorkoutEditorModal";
-import { WorkoutListItem } from "./WorkoutListItem";
+import { Button } from '@chakra-ui/button';
+import Icon from '@chakra-ui/icon';
+import { Divider, Stack } from '@chakra-ui/layout';
+import * as React from 'react';
+import { PencilSquare } from 'react-bootstrap-icons';
+import { useUser } from '../../context/UserContext';
+import { Workout } from '../../types';
+import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
+import { WorkoutListItem } from './WorkoutListItem';
 
 interface Props {
   setActiveWorkout: (workout: Workout) => void;
@@ -25,10 +25,10 @@ export const WorkoutOverview = ({
         rightIcon={<Icon as={PencilSquare} />}
         onClick={() =>
           setWorkoutToEdit({
-            name: "New workout",
+            name: 'New workout',
             parts: [],
-            id: "",
-            type: "new",
+            id: '',
+            type: 'new',
           })
         }
       >
@@ -42,7 +42,7 @@ export const WorkoutOverview = ({
           workout={workout}
           setActiveWorkout={setActiveWorkout}
           onClickEdit={() => {
-            setWorkoutToEdit({ ...workout, type: "remote" });
+            setWorkoutToEdit({ ...workout, type: 'remote' });
           }}
         />
       ))}
@@ -53,7 +53,7 @@ export const WorkoutOverview = ({
           workout={workout}
           setActiveWorkout={setActiveWorkout}
           onClickEdit={() => {
-            setWorkoutToEdit({ ...workout, type: "local" });
+            setWorkoutToEdit({ ...workout, type: 'local' });
           }}
         />
       ))}

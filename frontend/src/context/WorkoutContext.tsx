@@ -1,6 +1,6 @@
-import * as React from "react";
-import { ActiveWorkout, Workout } from "../types";
-import { useSmartTrainer } from "./SmartTrainerContext";
+import * as React from 'react';
+import { ActiveWorkout, Workout } from '../types';
+import { useSmartTrainer } from './SmartTrainerContext';
 
 export const WorkoutContext = React.createContext<{
   activeWorkout: ActiveWorkout;
@@ -11,23 +11,23 @@ export const WorkoutContext = React.createContext<{
 } | null>(null);
 
 interface IncreasePartElapsedTimeAction {
-  type: "INCREASE_PART_ELAPSED_TIME";
+  type: 'INCREASE_PART_ELAPSED_TIME';
   millis: number;
   setResistance: (resistance: number) => void;
   addLap: () => void;
 }
 
 interface SetWorkoutAction {
-  type: "SET_WORKOUT";
+  type: 'SET_WORKOUT';
   workout: Workout;
 }
 
 interface StartAction {
-  type: "START";
+  type: 'START';
   setResistance: (resistance: number) => void;
 }
 interface PauseAction {
-  type: "PAUSE";
+  type: 'PAUSE';
   setResistance: (resistance: number) => void;
 }
 
@@ -58,7 +58,7 @@ export const ActiveWorkoutContextProvider = ({
       }
     };
     switch (action.type) {
-      case "SET_WORKOUT":
+      case 'SET_WORKOUT':
         return {
           workout: action.workout,
           activePart: 0,
@@ -66,7 +66,7 @@ export const ActiveWorkoutContextProvider = ({
           isDone: false,
           partElapsedTime: 0,
         };
-      case "INCREASE_PART_ELAPSED_TIME":
+      case 'INCREASE_PART_ELAPSED_TIME':
         if (!activeWorkout.workout || !activeWorkout.isActive)
           return activeWorkout;
 
@@ -104,12 +104,12 @@ export const ActiveWorkoutContextProvider = ({
         }
 
         return { ...activeWorkout, partElapsedTime: newElapsed };
-      case "START": {
+      case 'START': {
         const nextState = { ...activeWorkout, isActive: true };
         syncResistance(nextState, action.setResistance);
         return nextState;
       }
-      case "PAUSE": {
+      case 'PAUSE': {
         const nextState = { ...activeWorkout, isActive: false };
         syncResistance(nextState, action.setResistance);
         return nextState;
@@ -134,19 +134,19 @@ export const ActiveWorkoutContextProvider = ({
   const { setResistance } = useSmartTrainer();
 
   const setWorkout = (workout: Workout) => {
-    dispatchActiveWorkoutAction({ type: "SET_WORKOUT", workout });
+    dispatchActiveWorkoutAction({ type: 'SET_WORKOUT', workout });
   };
 
   const start = () => {
-    dispatchActiveWorkoutAction({ type: "START", setResistance });
+    dispatchActiveWorkoutAction({ type: 'START', setResistance });
   };
   const pause = () => {
-    dispatchActiveWorkoutAction({ type: "PAUSE", setResistance });
+    dispatchActiveWorkoutAction({ type: 'PAUSE', setResistance });
   };
 
   const increaseElapsedTime = (millis: number, addLap: () => void) => {
     dispatchActiveWorkoutAction({
-      type: "INCREASE_PART_ELAPSED_TIME",
+      type: 'INCREASE_PART_ELAPSED_TIME',
       millis,
       setResistance,
       addLap,
@@ -178,7 +178,7 @@ export const useActiveWorkout = () => {
   const context = React.useContext(WorkoutContext);
   if (context === null) {
     throw new Error(
-      "useActiveWorkout must be used within a WorkoutContextProvider"
+      'useActiveWorkout must be used within a WorkoutContextProvider'
     );
   }
   return context;

@@ -1,15 +1,15 @@
-import { Button, IconButton } from "@chakra-ui/button";
-import Icon from "@chakra-ui/icon";
-import { Center, Grid, Heading, HStack, Stack, Text } from "@chakra-ui/layout";
-import { Tooltip } from "@chakra-ui/tooltip";
-import * as React from "react";
-import { Cloud, Gear, Hdd } from "react-bootstrap-icons";
-import { Workout } from "../../types";
+import { Button, IconButton } from '@chakra-ui/button';
+import Icon from '@chakra-ui/icon';
+import { Center, Grid, Heading, HStack, Stack, Text } from '@chakra-ui/layout';
+import { Tooltip } from '@chakra-ui/tooltip';
+import * as React from 'react';
+import { Cloud, Gear, Hdd } from 'react-bootstrap-icons';
+import { Workout } from '../../types';
 import {
   formatHoursMinutesAndSecondsAsString,
   getTotalWorkoutTime,
   secondsToHoursMinutesAndSeconds,
-} from "../../utils";
+} from '../../utils';
 
 interface Props {
   workout: Workout;
@@ -32,7 +32,7 @@ export const WorkoutListItem = ({
     <Grid templateColumns="1fr 10fr 3fr">
       <Tooltip
         label={`Workout is stored ${
-          isLocallyStored ? "in the browser" : "remotely"
+          isLocallyStored ? 'in the browser' : 'remotely'
         }`}
         placement="left"
       >

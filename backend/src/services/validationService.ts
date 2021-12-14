@@ -1,19 +1,22 @@
-import { NextFunction, Request, Response } from "express";
-import { ApiResponseBody, ApiStatus } from "../../../common/types/apiTypes";
+import { NextFunction, Request, Response } from 'express';
+import { ApiResponseBody, ApiStatus } from '../../../common/types/apiTypes';
 
-const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 export const hash = (message: string) => {
-  return crypto.createHash("md5").update(message).digest("hex");
+  return crypto.createHash('md5').update(message).digest('hex');
 };
 
-export const generateSalt = () => 
-  new Array(10).fill(0).map(_ => Math.floor(Math.random()*10)).join("")
+export const generateSalt = () =>
+  new Array(10)
+    .fill(0)
+    .map((_) => Math.floor(Math.random() * 10))
+    .join('');
 
 export const generateAccessToken = (username: string) => {
   return jwt.sign({ username }, process.env.TOKEN_SECRET, {
-    expiresIn: "120d",
+    expiresIn: '120d',
   });
 };
 export interface AuthenticatedRequest<T> extends Request<T> {
@@ -24,11 +27,11 @@ export const authenticateToken = <T, R>(
   res: Response<ApiResponseBody<R>>,
   next: NextFunction
 ) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
-    const statusMessage = "No token provided.";
+    const statusMessage = 'No token provided.';
     res.statusMessage = statusMessage;
     res.statusCode = 401;
     res.send({
@@ -43,7 +46,7 @@ export const authenticateToken = <T, R>(
     process.env.TOKEN_SECRET,
     (err: Error, user: { username: string }) => {
       if (err) {
-        const statusMessage = "Could not verify token.";
+        const statusMessage = 'Could not verify token.';
         res.statusMessage = statusMessage;
         res.statusCode = 401;
         res.send({

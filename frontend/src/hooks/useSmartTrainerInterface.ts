@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 
 export interface SmartTrainer {
   requestPermission: () => void;
@@ -33,19 +33,19 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
   const requestPermission = async () => {
     const device = await navigator.bluetooth.requestDevice({
       // filters: [{ services: ["cycling_power"] }], // Cycling power 0x1818
-      filters: [{ services: ["fitness_machine"] }], // Fitness machine 0x1826
-      optionalServices: ["cycling_power"],
+      filters: [{ services: ['fitness_machine'] }], // Fitness machine 0x1826
+      optionalServices: ['cycling_power'],
     });
 
     setDevice(device);
     const server = await device?.gatt?.connect();
 
     const fitnessMachineService = await server?.getPrimaryService(
-      "fitness_machine"
+      'fitness_machine'
     );
     const fitnessMachineCharacteristic =
       await fitnessMachineService?.getCharacteristic(
-        "fitness_machine_control_point"
+        'fitness_machine_control_point'
       );
     await fitnessMachineCharacteristic?.writeValue(new Uint8Array([0x01]));
 
@@ -55,16 +55,16 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
       setFitnessMachineCharacteristic(fitnessMachineCharacteristic);
 
     const cyclingPowerService = await server?.getPrimaryService(
-      "cycling_power"
+      'cycling_power'
     );
     const cyclingPowerCharacteristic =
-      await cyclingPowerService?.getCharacteristic("cycling_power_measurement");
+      await cyclingPowerService?.getCharacteristic('cycling_power_measurement');
     cyclingPowerCharacteristic &&
       setCyclingPowerCharacteristic(cyclingPowerCharacteristic);
 
     await cyclingPowerCharacteristic?.startNotifications();
     cyclingPowerCharacteristic?.addEventListener(
-      "characteristicvaluechanged",
+      'characteristicvaluechanged',
       handlePowerUpdate
     );
     setIsConnected(true);
@@ -72,9 +72,9 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
   const disconnect = async () => {
     if (cyclingPowerCharacteristic) {
       await cyclingPowerCharacteristic.stopNotifications();
-      console.log("> Cycling power notifications stopped");
+      console.log('> Cycling power notifications stopped');
       cyclingPowerCharacteristic.removeEventListener(
-        "characteristicvaluechanged",
+        'characteristicvaluechanged',
         handlePowerUpdate
       );
       setCyclingPowerCharacteristic(null);

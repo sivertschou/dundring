@@ -1,4 +1,4 @@
-import { Workout } from "./workoutTypes";
+import { Workout } from './workoutTypes';
 
 export interface User {
   username: string;
@@ -16,7 +16,7 @@ export interface StoredUser {
 }
 
 export enum UserRole {
-  DEFAULT = "DEFAULT",
-  ADMIN = "ADMIN",
-  SUPERADMIN = "SUPERADMIN",
+  DEFAULT = 'DEFAULT',
+  ADMIN = 'ADMIN',
+  SUPERADMIN = 'SUPERADMIN',
 }

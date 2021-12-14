@@ -1,4 +1,4 @@
-import { Status } from "../../../common/types/serviceTypes";
+import { Status } from '../../../common/types/serviceTypes';
 import {
   CreateGroupSessionResponse,
   DataReceivedResponse,
@@ -9,9 +9,9 @@ import {
   Room,
   WebSocketResponse,
   WebSocketResponseType,
-} from "../../../common/types/wsTypes";
+} from '../../../common/types/wsTypes';
 
-import { Server, WebSocket } from "ws";
+import { Server, WebSocket } from 'ws';
 export interface ServerMember {
   username: string;
   ftp: number;
@@ -84,7 +84,7 @@ export const createRoom = (
     console.log(`${creator.username} failed to create room.`);
     return {
       type: WebSocketResponseType.failedToCreateGroupSession,
-      message: "Failed to create room.",
+      message: 'Failed to create room.',
     };
   } else {
     console.log(`${creator.username} created room #${roomId}`);
@@ -139,7 +139,7 @@ export const joinRoom = (
   } else {
     const response: JoinGroupSessionResponse = {
       type: WebSocketResponseType.failedToJoinGroupSession,
-      message: "Failed to join room.",
+      message: 'Failed to join room.',
     };
     ws.send(JSON.stringify(response));
   }
@@ -177,10 +177,10 @@ export const leaveRoom = (username: string) => {
 };
 
 export const generateRandomString = (length: number) => {
-  const alphabet = "0123456789";
+  const alphabet = '0123456789';
   const generatedString = new Array(length).fill(0).reduce((result) => {
     return result + alphabet.substr(Math.random() * alphabet.length, 1);
-  }, "") as string;
+  }, '') as string;
 
   return generatedString;
 };

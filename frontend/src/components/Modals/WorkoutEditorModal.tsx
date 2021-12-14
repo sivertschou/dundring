@@ -1,28 +1,28 @@
-import { IconButton } from "@chakra-ui/button";
-import { useDisclosure } from "@chakra-ui/hooks";
-import { Icon } from "@chakra-ui/icon";
+import { IconButton } from '@chakra-ui/button';
+import { useDisclosure } from '@chakra-ui/hooks';
+import { Icon } from '@chakra-ui/icon';
 import {
   Modal,
   ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
-} from "@chakra-ui/modal";
-import * as React from "react";
-import { ActionBarItem } from "../ActionBarItem";
+} from '@chakra-ui/modal';
+import * as React from 'react';
+import { ActionBarItem } from '../ActionBarItem';
 import {
   ArrowLeft,
   BarChartLine,
   BarChartLineFill,
-} from "react-bootstrap-icons";
-import { WorkoutOverview } from "../WorkoutMenu/WorkoutOverview";
-import { Workout } from "../../types";
-import { WorkoutEditor } from "../WorkoutMenu/WorkoutEditor";
-import { useActiveWorkout } from "../../context/WorkoutContext";
-import { useUser } from "../../context/UserContext";
+} from 'react-bootstrap-icons';
+import { WorkoutOverview } from '../WorkoutMenu/WorkoutOverview';
+import { Workout } from '../../types';
+import { WorkoutEditor } from '../WorkoutMenu/WorkoutEditor';
+import { useActiveWorkout } from '../../context/WorkoutContext';
+import { useUser } from '../../context/UserContext';
 
 export interface WorkoutToEdit extends Workout {
-  type: "local" | "remote" | "new";
+  type: 'local' | 'remote' | 'new';
 }
 export const WorkoutEditorModal = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();

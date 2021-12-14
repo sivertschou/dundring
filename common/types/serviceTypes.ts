@@ -1,9 +1,9 @@
 interface SuccessStatus<T> {
-  status: "SUCCESS";
+  status: 'SUCCESS';
   data: T;
 }
 interface ErrorStatus<E> {
-  status: "ERROR";
+  status: 'ERROR';
   type: E;
 }
 

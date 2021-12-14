@@ -1,9 +1,9 @@
-import * as React from "react";
+import * as React from 'react';
 import {
   HeartRateMonitor,
   useHeartRateMonitorInterface,
-} from "../hooks/useHeartRateMonitorInterface";
-import { useHeartRateMonitorMock } from "../hooks/useHeartRateMonitorMock";
+} from '../hooks/useHeartRateMonitorInterface';
+import { useHeartRateMonitorMock } from '../hooks/useHeartRateMonitorMock';
 
 const HeartRateContext = React.createContext<HeartRateMonitor | null>(null);
 
@@ -57,7 +57,7 @@ export const useHeartRateMonitor = () => {
   const context = React.useContext(HeartRateContext);
   if (context === null) {
     throw new Error(
-      "useHeartRate must be used within a HeartRateContextProvider"
+      'useHeartRate must be used within a HeartRateContextProvider'
     );
   }
   return context;

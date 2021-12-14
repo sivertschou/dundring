@@ -1,19 +1,19 @@
-import { ColorModeScript } from "@chakra-ui/react";
-import * as React from "react";
-import ReactDOM from "react-dom";
-import { App } from "./App";
-import { UserContextProvider } from "./context/UserContext";
-import { HeartRateContextProvider } from "./context/HeartRateContext";
-import reportWebVitals from "./reportWebVitals";
-import * as serviceWorker from "./serviceWorker";
-import { SmartTrainerContextProvider } from "./context/SmartTrainerContext";
-import { ActiveWorkoutContextProvider } from "./context/WorkoutContext";
-import { WebsocketContextProvider } from "./context/WebsocketContext";
-import WorkerBuilder from "./workers/workerBuilder";
-import clockWorker from "./workers/clock.worker";
+import { ColorModeScript } from '@chakra-ui/react';
+import * as React from 'react';
+import ReactDOM from 'react-dom';
+import { App } from './App';
+import { UserContextProvider } from './context/UserContext';
+import { HeartRateContextProvider } from './context/HeartRateContext';
+import reportWebVitals from './reportWebVitals';
+import * as serviceWorker from './serviceWorker';
+import { SmartTrainerContextProvider } from './context/SmartTrainerContext';
+import { ActiveWorkoutContextProvider } from './context/WorkoutContext';
+import { WebsocketContextProvider } from './context/WebsocketContext';
+import WorkerBuilder from './workers/workerBuilder';
+import clockWorker from './workers/clock.worker';
 
 const cw: Worker = new WorkerBuilder(clockWorker);
-cw && cw.postMessage("startTimer");
+cw && cw.postMessage('startTimer');
 ReactDOM.render(
   <React.StrictMode>
     <UserContextProvider>
@@ -29,7 +29,7 @@ ReactDOM.render(
       </HeartRateContextProvider>
     </UserContextProvider>
   </React.StrictMode>,
-  document.getElementById("root")
+  document.getElementById('root')
 );
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
