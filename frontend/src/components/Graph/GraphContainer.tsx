@@ -1,13 +1,13 @@
-import { DataPoint } from "../../types";
-import * as React from "react";
-import { Graphs } from "../Graphs";
-import { Center, HStack, Stack } from "@chakra-ui/layout";
-import { Tooltip } from "@chakra-ui/tooltip";
-import { IconButton } from "@chakra-ui/button";
-import Icon from "@chakra-ui/icon";
-import { BarChartLine, BarChartLineFill } from "react-bootstrap-icons";
-import { GraphCheckboxes } from "./GraphCheckboxes";
-import { useWebsocket } from "../../context/WebsocketContext";
+import { DataPoint } from '../../types';
+import * as React from 'react';
+import { Graphs } from '../Graphs';
+import { Center, HStack, Stack } from '@chakra-ui/layout';
+import { Tooltip } from '@chakra-ui/tooltip';
+import { IconButton } from '@chakra-ui/button';
+import Icon from '@chakra-ui/icon';
+import { BarChartLine, BarChartLineFill } from 'react-bootstrap-icons';
+import { GraphCheckboxes } from './GraphCheckboxes';
+import { useWebsocket } from '../../context/WebsocketContext';
 
 export interface ShowData {
   hr: boolean;
@@ -20,8 +20,8 @@ interface Props {
 export const GraphContainer = ({ data }: Props) => {
   const [showFill, setShowFill] = React.useState(true);
   const toggleGraphFillButtonText = showFill
-    ? "Hide graph fill"
-    : "Show graph fill";
+    ? 'Hide graph fill'
+    : 'Show graph fill';
   const { activeGroupSession, providedUsername } = useWebsocket();
   const otherUsers = React.useMemo(
     () =>
@@ -78,7 +78,7 @@ export const GraphContainer = ({ data }: Props) => {
         <Center>
           <HStack>
             <GraphCheckboxes
-              title={"You"}
+              title={'You'}
               setChecked={(checked) => setShowUserData(checked)}
               checked={showUserData}
             />

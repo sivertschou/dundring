@@ -1,22 +1,22 @@
-import { Button } from "@chakra-ui/button";
-import { FormControl, FormLabel } from "@chakra-ui/form-control";
-import { Input } from "@chakra-ui/input";
-import { Grid, HStack, Stack, Text } from "@chakra-ui/layout";
-import * as React from "react";
-import { Workout, WorkoutPart } from "../../types";
-import { templateColumns, WorkoutIntervalInput } from "./WorkoutIntervalInput";
-import { DropResult } from "react-beautiful-dnd";
-import { DraggableList } from "./DraggableList";
-import { DraggableItem } from "./DraggableItem";
+import { Button } from '@chakra-ui/button';
+import { FormControl, FormLabel } from '@chakra-ui/form-control';
+import { Input } from '@chakra-ui/input';
+import { Grid, HStack, Stack, Text } from '@chakra-ui/layout';
+import * as React from 'react';
+import { Workout, WorkoutPart } from '../../types';
+import { templateColumns, WorkoutIntervalInput } from './WorkoutIntervalInput';
+import { DropResult } from 'react-beautiful-dnd';
+import { DraggableList } from './DraggableList';
+import { DraggableItem } from './DraggableItem';
 import {
   formatHoursMinutesAndSecondsAsString,
   secondsToHoursMinutesAndSeconds,
-} from "../../utils";
-import { useUser } from "../../context/UserContext";
-import { saveWorkout } from "../../api";
-import { CloudUpload, Hdd } from "react-bootstrap-icons";
-import Icon from "@chakra-ui/icon";
-import { WorkoutToEdit } from "../Modals/WorkoutEditorModal";
+} from '../../utils';
+import { useUser } from '../../context/UserContext';
+import { saveWorkout } from '../../api';
+import { CloudUpload, Hdd } from 'react-bootstrap-icons';
+import Icon from '@chakra-ui/icon';
+import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
 interface Props {
   workout: WorkoutToEdit;
   closeEditor: () => void;
@@ -36,9 +36,9 @@ export const WorkoutEditor = ({
   const { user, saveLocalWorkout } = useUser();
   const token = user.loggedIn && user.token;
   const canSaveLocally =
-    loadedWorkout.type === "new" || loadedWorkout.type === "local";
+    loadedWorkout.type === 'new' || loadedWorkout.type === 'local';
   const canSaveRemotely =
-    token && (loadedWorkout.type === "new" || loadedWorkout.type === "remote");
+    token && (loadedWorkout.type === 'new' || loadedWorkout.type === 'remote');
 
   const [workout, setWorkout] = React.useState<EditableWorkout>({
     ...loadedWorkout,
@@ -80,7 +80,7 @@ export const WorkoutEditor = ({
       <FormControl id="workoutName">
         <FormLabel>Workout name</FormLabel>
         <Input
-          autoFocus={loadedWorkout.type === "new"}
+          autoFocus={loadedWorkout.type === 'new'}
           value={workout.name}
           onChange={(e) =>
             setWorkout((workout) => ({ ...workout, name: e.target.value }))
@@ -101,7 +101,7 @@ export const WorkoutEditor = ({
       ) : null}
       <DraggableList onDragEnd={onDragEnd}>
         {workout.parts.map((part, index) => (
-          <DraggableItem id={part.id + ""} index={index} key={part.id}>
+          <DraggableItem id={part.id + ''} index={index} key={part.id}>
             <WorkoutIntervalInput
               key={part.id}
               checkValidation={checkValidation}

@@ -1,13 +1,13 @@
-import { IconButton } from "@chakra-ui/button";
-import { Tooltip } from "@chakra-ui/tooltip";
-import Icon from "@chakra-ui/icon";
-import { Input, InputGroup, InputRightAddon } from "@chakra-ui/input";
-import { Text, Grid, Center } from "@chakra-ui/layout";
-import { FormControl } from "@chakra-ui/react";
-import * as React from "react";
-import { Files, List, X } from "react-bootstrap-icons";
-import { WorkoutPart } from "../../types";
-import { secondsToHoursMinutesAndSeconds } from "../../utils";
+import { IconButton } from '@chakra-ui/button';
+import { Tooltip } from '@chakra-ui/tooltip';
+import Icon from '@chakra-ui/icon';
+import { Input, InputGroup, InputRightAddon } from '@chakra-ui/input';
+import { Text, Grid, Center } from '@chakra-ui/layout';
+import { FormControl } from '@chakra-ui/react';
+import * as React from 'react';
+import { Files, List, X } from 'react-bootstrap-icons';
+import { WorkoutPart } from '../../types';
+import { secondsToHoursMinutesAndSeconds } from '../../utils';
 
 interface Props {
   workoutPart: WorkoutPart;
@@ -16,7 +16,7 @@ interface Props {
   duplicateWorkoutPart: () => void;
   checkValidation: boolean;
 }
-export const templateColumns = "1fr repeat(3, 3fr) 1fr 5fr 1fr 1fr";
+export const templateColumns = '1fr repeat(3, 3fr) 1fr 5fr 1fr 1fr';
 
 export const WorkoutIntervalInput = ({
   setWorkoutPart,
@@ -26,15 +26,15 @@ export const WorkoutIntervalInput = ({
   workoutPart,
 }: Props) => {
   const [powerInput, setPowerInput] = React.useState(
-    "" + workoutPart.targetPower
+    '' + workoutPart.targetPower
   );
 
   const { hours, minutes, seconds } = secondsToHoursMinutesAndSeconds(
     workoutPart.duration
   );
-  const [hoursInput, setHoursInput] = React.useState("" + hours);
-  const [minutesInput, setMinutesInput] = React.useState("" + minutes);
-  const [secondsInput, setSecondsInput] = React.useState("" + seconds);
+  const [hoursInput, setHoursInput] = React.useState('' + hours);
+  const [minutesInput, setMinutesInput] = React.useState('' + minutes);
+  const [secondsInput, setSecondsInput] = React.useState('' + seconds);
 
   const parseInput = (input: string) => {
     const parsed = parseInt(input);

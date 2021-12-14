@@ -1,6 +1,6 @@
-import * as React from "react";
-import { randomIntFromIntervalBasedOnPrev } from "../utils";
-import { SmartTrainer } from "./useSmartTrainerInterface";
+import * as React from 'react';
+import { randomIntFromIntervalBasedOnPrev } from '../utils';
+import { SmartTrainer } from './useSmartTrainerInterface';
 
 export const useSmartTrainerMock = (): SmartTrainer => {
   const [power, setPower] = React.useState(0);
@@ -23,7 +23,7 @@ export const useSmartTrainerMock = (): SmartTrainer => {
     isConnected,
     power,
     setResistance: (resistance: number) => {
-      console.log("MOCK: set resistance: ", resistance);
+      console.log('MOCK: set resistance: ', resistance);
     },
   };
 };

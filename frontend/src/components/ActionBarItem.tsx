@@ -1,6 +1,6 @@
-import { IconButton } from "@chakra-ui/button";
-import { Center, HStack, Text } from "@chakra-ui/layout";
-import * as React from "react";
+import { IconButton } from '@chakra-ui/button';
+import { Center, HStack, Text } from '@chakra-ui/layout';
+import * as React from 'react';
 
 interface Props {
   text: string;
@@ -17,8 +17,8 @@ export const ActionBarItem = ({ text, icon, onClick, iconColor }: Props) => {
       <Center overflow="hidden" paddingRight="2">
         <Text
           fontSize="xl"
-          transform={hover ? "translate(0,0)" : "translate(120%,0)"}
-          opacity={hover ? "1" : "0"}
+          transform={hover ? 'translate(0,0)' : 'translate(120%,0)'}
+          opacity={hover ? '1' : '0'}
           overflow="hidden"
           transition="transform 0.2s ease, opacity 0.2s ease"
         >

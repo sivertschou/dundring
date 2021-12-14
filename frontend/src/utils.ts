@@ -1,4 +1,4 @@
-import { Lap, Workout } from "./types";
+import { Lap, Workout } from './types';
 
 export const randomIntFromIntervalBasedOnPrev = (
   min: number,
@@ -12,12 +12,12 @@ export const randomIntFromIntervalBasedOnPrev = (
   );
 };
 
-const legalUsernameCharacters = "abcdefghifjklmnopqrstuvwxyz0123456789".split(
-  ""
+const legalUsernameCharacters = 'abcdefghifjklmnopqrstuvwxyz0123456789'.split(
+  ''
 );
 
 export const getIllegalUsernameCharacters = (username: string): string[] => {
-  return username.split("").filter((x) => !legalUsernameCharacters.includes(x));
+  return username.split('').filter((x) => !legalUsernameCharacters.includes(x));
 };
 
 export const removeDuplicateWords = (words: string[]) =>
@@ -38,7 +38,7 @@ const lapToTCX = (lap: Lap) => {
     `        <Track>`,
     `${filtererdDataPoints.reduce(
       (output, d) =>
-        (output ? output + "\n" : output) +
+        (output ? output + '\n' : output) +
         [
           `          <Trackpoint>`,
           `            <Time>${d.timeStamp.toISOString()}</Time>`,
@@ -47,8 +47,8 @@ const lapToTCX = (lap: Lap) => {
                 `            <HeartRateBpm>`,
                 `              <Value>${d.heartRate}</Value>`,
                 `            </HeartRateBpm>`,
-              ].join("\n")
-            : "",
+              ].join('\n')
+            : '',
           d.power !== undefined
             ? [
                 `            <Extensions>`,
@@ -56,18 +56,18 @@ const lapToTCX = (lap: Lap) => {
                 `                <ns3:Watts>${d.power}</ns3:Watts>`,
                 `              </ns3:TPX>`,
                 `            </Extensions>`,
-              ].join("\n")
-            : "",
+              ].join('\n')
+            : '',
           `            <SensorState>Present</SensorState>`,
           `          </Trackpoint>`,
         ]
           .filter((line) => line)
-          .join("\n"),
-      ""
+          .join('\n'),
+      ''
     )}`,
     `        </Track>`,
     `      </Lap>`,
-  ].join("\n");
+  ].join('\n');
 };
 
 export const toTCX = (laps: Lap[]) => {
@@ -78,7 +78,7 @@ export const toTCX = (laps: Lap[]) => {
     `  <Activities>`,
     `    <Activity Sport="Biking">`,
     `      <Id>${startTime.toISOString()}</Id>`,
-    laps.map((lap) => lapToTCX(lap)).join("\n"),
+    laps.map((lap) => lapToTCX(lap)).join('\n'),
     `    </Activity>`,
     `  </Activities>`,
     `  <Author xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="Application_t">`,
@@ -93,15 +93,15 @@ export const toTCX = (laps: Lap[]) => {
     `    <PartNumber>XXX-XXXXX-XX</PartNumber>`,
     `  </Author>`,
     `</TrainingCenterDatabase>`,
-  ].join("\n");
+  ].join('\n');
 
   const url = window.URL.createObjectURL(new Blob([output]));
-  const link = document.createElement("a");
+  const link = document.createElement('a');
 
   const filename = `dundring_${formatDateForFilename(startTime)}`;
 
   link.href = url;
-  link.setAttribute("download", `${filename}.tcx`);
+  link.setAttribute('download', `${filename}.tcx`);
 
   // Append to html link element page
   document.body.appendChild(link);
@@ -129,7 +129,7 @@ export const formatHoursMinutesAndSecondsAsString = ({
   minutes,
   seconds,
 }: HoursMinutesAndSeconds) => {
-  return `${hours > 0 ? hours + ":" : ""}${padLeadingZero(
+  return `${hours > 0 ? hours + ':' : ''}${padLeadingZero(
     minutes
   )}:${padLeadingZero(seconds)}`;
 };
@@ -137,11 +137,11 @@ export const formatHoursMinutesAndSecondsAsString = ({
 export const getTotalWorkoutTime = (workout: Workout) =>
   workout.parts.reduce((sum, part) => sum + part.duration, 0);
 
-const padLeadingZero = (nr: number) => (nr < 10 ? "0" + nr : nr);
+const padLeadingZero = (nr: number) => (nr < 10 ? '0' + nr : nr);
 
 const formatDateForFilename = (date: Date): string => {
-  const yyyymmdd = date.toISOString().split("T")[0];
+  const yyyymmdd = date.toISOString().split('T')[0];
   const hhmm =
-    padLeadingZero(date.getHours()) + "" + padLeadingZero(date.getMinutes());
-  return yyyymmdd + "T" + hhmm;
+    padLeadingZero(date.getHours()) + '' + padLeadingZero(date.getMinutes());
+  return yyyymmdd + 'T' + hhmm;
 };

@@ -1,11 +1,11 @@
-import { Workout } from "./workoutTypes";
-import { Message } from "./messageTypes";
-import { UserRole } from "./userTypes";
+import { Workout } from './workoutTypes';
+import { Message } from './messageTypes';
+import { UserRole } from './userTypes';
 
 export enum ApiStatus {
-  SUCCESS = "SUCCESS",
-  FAILURE = "FAILURE",
-  LOADING = "LOADING",
+  SUCCESS = 'SUCCESS',
+  FAILURE = 'FAILURE',
+  LOADING = 'LOADING',
 }
 export interface ApiSuccessResponseBody<T> {
   status: ApiStatus.SUCCESS;

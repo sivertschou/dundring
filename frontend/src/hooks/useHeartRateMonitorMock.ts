@@ -1,6 +1,6 @@
-import * as React from "react";
-import { randomIntFromIntervalBasedOnPrev } from "../utils";
-import { HeartRateMonitor } from "./useHeartRateMonitorInterface";
+import * as React from 'react';
+import { randomIntFromIntervalBasedOnPrev } from '../utils';
+import { HeartRateMonitor } from './useHeartRateMonitorInterface';
 
 export const useHeartRateMonitorMock = (): HeartRateMonitor => {
   const [heartRate, setHeartRate] = React.useState(0);

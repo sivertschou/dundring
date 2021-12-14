@@ -1,10 +1,10 @@
-import * as React from "react";
+import * as React from 'react';
 
-type Callback = (timeSinceLast: number) => void
+type Callback = (timeSinceLast: number) => void;
 
 interface ClockState {
   callback: Callback;
-  wakeLock: WakeLockSentinel,
+  wakeLock: WakeLockSentinel;
 }
 
 export const useGlobalClock = (callback: Callback) => {
@@ -25,18 +25,15 @@ export const useGlobalClock = (callback: Callback) => {
     };
   }, [callbacks, lastCallbackTime]);
 
-
   return {
     stop: () => {
-      callbacks?.wakeLock?.release()
+      callbacks?.wakeLock?.release();
       setCallbacks(null);
     },
     start: () => {
       navigator.wakeLock
         .request('screen')
-        .then(wakeLock =>
-          setCallbacks({ wakeLock, callback })
-        )
+        .then((wakeLock) => setCallbacks({ wakeLock, callback }));
       setLastCallbackTime(new Date());
     },
     running: callbacks != null,

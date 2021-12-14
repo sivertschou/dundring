@@ -1,8 +1,8 @@
-import { useColorModeValue } from "@chakra-ui/color-mode";
-import { Text } from "@chakra-ui/layout";
-import { Tbody } from "@chakra-ui/react";
-import { Table, Td, Tr } from "@chakra-ui/table";
-import { powerColors } from "../../colors";
+import { useColorModeValue } from '@chakra-ui/color-mode';
+import { Text } from '@chakra-ui/layout';
+import { Tbody } from '@chakra-ui/react';
+import { Table, Td, Tr } from '@chakra-ui/table';
+import { powerColors } from '../../colors';
 
 interface Payload {
   name: string;
@@ -15,11 +15,11 @@ interface Props {
 }
 
 const formatLine = (name: string, value: number) => {
-  const unit = name.split(" ")[1] === "HR" ? " bpm" : " W";
-  return [`${name.split(" ")[0]}`, value, unit];
+  const unit = name.split(' ')[1] === 'HR' ? ' bpm' : ' W';
+  return [`${name.split(' ')[0]}`, value, unit];
 };
 export const CustomChartTooltip = ({ active, payload }: Props) => {
-  const bgColor = useColorModeValue("white", "gray.800");
+  const bgColor = useColorModeValue('white', 'gray.800');
   if (active && payload && payload.length) {
     return (
       <Table bgColor={bgColor} borderRadius="5" variant="unstyled">
@@ -57,7 +57,7 @@ export const CustomChartTooltip = ({ active, payload }: Props) => {
                     paddingY="1"
                     pr="1"
                   >
-                    {" "}
+                    {' '}
                     {unit}
                   </Text>
                 </Td>
