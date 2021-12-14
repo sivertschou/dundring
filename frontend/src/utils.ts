@@ -6,10 +6,10 @@ export const randomIntFromIntervalBasedOnPrev = (
   prev: number,
   maxDiff: number
 ): number => {
-  return Math.max(
-    Math.min(max, prev + Math.floor(Math.random() * maxDiff - maxDiff / 2)),
-    min
-  );
+        return Math.max(
+          Math.min(max, prev + Math.floor(Math.random() * maxDiff - maxDiff / 2)),
+          min
+        );
 };
 
 const legalUsernameCharacters = 'abcdefghifjklmnopqrstuvwxyz0123456789'.split(
