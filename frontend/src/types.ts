@@ -1,7 +1,7 @@
-import { UserRole } from "../../common/types/userTypes";
+import { UserRole } from '../../common/types/userTypes';
 
 export interface Lap {
-  dataPoints: DataPoint[]
+  dataPoints: DataPoint[];
 }
 export interface DataPoint {
   heartRate?: number;

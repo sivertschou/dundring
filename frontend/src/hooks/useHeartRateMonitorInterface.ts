@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 
 export interface HeartRateMonitor {
   requestPermission: () => void;
@@ -27,46 +27,46 @@ export const useHeartRateMonitorInterface = (): HeartRateMonitor => {
 
   const handleHRUpdate = (event: any) => {
     const hr = parseHeartRate(event.target.value);
-    console.log("handleHRUpdate");
+    console.log('handleHRUpdate');
     setHeartRate(hr);
   };
   const requestPermission = async () => {
     navigator.bluetooth
-      .requestDevice({ filters: [{ services: ["heart_rate"] }] })
+      .requestDevice({ filters: [{ services: ['heart_rate'] }] })
       .then((device) => {
         setDevice(device);
         return device?.gatt?.connect();
       })
       .then((server) => {
         setIsConnected(true);
-        return server?.getPrimaryService("heart_rate");
+        return server?.getPrimaryService('heart_rate');
       })
       .then((service) => {
-        return service?.getCharacteristic("heart_rate_measurement");
+        return service?.getCharacteristic('heart_rate_measurement');
       })
       .then((characteristic) => {
         characteristic && setCharacteristic(characteristic);
         return characteristic?.startNotifications().then((_) => {
-          console.log("> Notifications started");
+          console.log('> Notifications started');
           characteristic.addEventListener(
-            "characteristicvaluechanged",
+            'characteristicvaluechanged',
             handleHRUpdate
           );
         });
       })
       .catch((error) => {
-        console.log("Argh! " + error);
+        console.log('Argh! ' + error);
       });
   };
   const disconnect = () => {
-    console.log("characteristic:", characteristic);
+    console.log('characteristic:', characteristic);
     if (characteristic) {
       characteristic
         .stopNotifications()
         .then((_) => {
-          console.log("> Notifications stopped");
+          console.log('> Notifications stopped');
           characteristic.removeEventListener(
-            "characteristicvaluechanged",
+            'characteristicvaluechanged',
             handleHRUpdate
           );
           setCharacteristic(null);
@@ -75,7 +75,7 @@ export const useHeartRateMonitorInterface = (): HeartRateMonitor => {
           setIsConnected(false);
         })
         .catch((error) => {
-          console.log("Argh! " + error);
+          console.log('Argh! ' + error);
         });
     }
   };

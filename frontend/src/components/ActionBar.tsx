@@ -1,7 +1,7 @@
-import { useColorMode } from "@chakra-ui/color-mode";
-import Icon from "@chakra-ui/icon";
-import { Stack, Text } from "@chakra-ui/layout";
-import * as React from "react";
+import { useColorMode } from '@chakra-ui/color-mode';
+import Icon from '@chakra-ui/icon';
+import { Stack, Text } from '@chakra-ui/layout';
+import * as React from 'react';
 import {
   BoxArrowRight,
   Heart,
@@ -10,16 +10,16 @@ import {
   LightningChargeFill,
   Moon,
   Sun,
-} from "react-bootstrap-icons";
-import { hrColor, powerColor } from "../colors";
-import { useHeartRateMonitor } from "../context/HeartRateContext";
-import { useSmartTrainer } from "../context/SmartTrainerContext";
-import { useUser } from "../context/UserContext";
-import { useWebsocket } from "../context/WebsocketContext";
-import { ActionBarItem } from "./ActionBarItem";
-import { GroupSessionModal } from "./Modals/GroupSessionModal";
-import { LoginModal } from "./Modals/LoginModal";
-import { WorkoutEditorModal } from "./Modals/WorkoutEditorModal";
+} from 'react-bootstrap-icons';
+import { hrColor, powerColor } from '../colors';
+import { useHeartRateMonitor } from '../context/HeartRateContext';
+import { useSmartTrainer } from '../context/SmartTrainerContext';
+import { useUser } from '../context/UserContext';
+import { useWebsocket } from '../context/WebsocketContext';
+import { ActionBarItem } from './ActionBarItem';
+import { GroupSessionModal } from './Modals/GroupSessionModal';
+import { LoginModal } from './Modals/LoginModal';
+import { WorkoutEditorModal } from './Modals/WorkoutEditorModal';
 
 export const ActionBar = () => {
   const { user, setUser } = useUser();
@@ -81,17 +81,17 @@ export const ActionBar = () => {
       )}
       <GroupSessionModal />
       <WorkoutEditorModal />
-      {colorMode === "light" ? (
+      {colorMode === 'light' ? (
         <ActionBarItem
           text="Enable darkmode"
           icon={<Icon as={Moon} />}
-          onClick={() => setColorMode("dark")}
+          onClick={() => setColorMode('dark')}
         />
       ) : (
         <ActionBarItem
           text="Enable lightmode"
           icon={<Icon as={Sun} />}
-          onClick={() => setColorMode("light")}
+          onClick={() => setColorMode('light')}
         />
       )}
       {user.loggedIn ? (

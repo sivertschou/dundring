@@ -1,18 +1,18 @@
-import { useDisclosure } from "@chakra-ui/hooks";
-import { Icon } from "@chakra-ui/icon";
+import { useDisclosure } from '@chakra-ui/hooks';
+import { Icon } from '@chakra-ui/icon';
 import {
   Modal,
   ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
-} from "@chakra-ui/modal";
-import * as React from "react";
-import { ActionBarItem } from "../ActionBarItem";
-import { People, PeopleFill } from "react-bootstrap-icons";
-import { useWebsocket } from "../../context/WebsocketContext";
-import { GroupSessionOverview } from "../GroupSession/GroupSessionOverview";
-import { CreateOrJoinGroupSession } from "../GroupSession/CreateOrJoinGroupSession";
+} from '@chakra-ui/modal';
+import * as React from 'react';
+import { ActionBarItem } from '../ActionBarItem';
+import { People, PeopleFill } from 'react-bootstrap-icons';
+import { useWebsocket } from '../../context/WebsocketContext';
+import { GroupSessionOverview } from '../GroupSession/GroupSessionOverview';
+import { CreateOrJoinGroupSession } from '../GroupSession/CreateOrJoinGroupSession';
 
 export const GroupSessionModal = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();

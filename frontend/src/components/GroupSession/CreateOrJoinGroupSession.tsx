@@ -1,26 +1,26 @@
-import * as React from "react";
-import { useUser } from "../../context/UserContext";
-import { useWebsocket } from "../../context/WebsocketContext";
-import { Divider, Stack } from "@chakra-ui/layout";
-import { Button } from "@chakra-ui/button";
+import * as React from 'react';
+import { useUser } from '../../context/UserContext';
+import { useWebsocket } from '../../context/WebsocketContext';
+import { Divider, Stack } from '@chakra-ui/layout';
+import { Button } from '@chakra-ui/button';
 import {
   FormControl,
   FormErrorMessage,
   FormLabel,
-} from "@chakra-ui/form-control";
-import { Input } from "@chakra-ui/input";
+} from '@chakra-ui/form-control';
+import { Input } from '@chakra-ui/input';
 import {
   getIllegalUsernameCharacters,
   removeDuplicateWords,
-} from "../../utils";
+} from '../../utils';
 
 export const CreateOrJoinGroupSession = () => {
   const { startGroupSession, joinGroupSession, joinStatus, createStatus } =
     useWebsocket();
 
   const { user } = useUser();
-  const [groupSessionId, setGroupSessionId] = React.useState("");
-  const [guestUsername, setGuestUsername] = React.useState("");
+  const [groupSessionId, setGroupSessionId] = React.useState('');
+  const [guestUsername, setGuestUsername] = React.useState('');
 
   const username = user.loggedIn ? user.username : guestUsername;
   const usernameAvailable = user.loggedIn || guestUsername ? true : false;
@@ -52,7 +52,7 @@ export const CreateOrJoinGroupSession = () => {
               name="guest-username"
               value={guestUsername}
               onChange={(e) => {
-                setGuestUsername(e.target.value.replace(" ", ""));
+                setGuestUsername(e.target.value.replace(' ', ''));
               }}
               onBlur={(_e) => {
                 setGuestUsername((guestUsername) => guestUsername.trim());
@@ -62,19 +62,19 @@ export const CreateOrJoinGroupSession = () => {
               The username can't
               {usernameIsTooLong
                 ? ` be more than ${maxUsernameLength} characters long`
-                : ""}
+                : ''}
               {usernameIsTooLong && usernameContainsIllegalCharacters
-                ? " or"
-                : ""}
+                ? ' or'
+                : ''}
               {usernameContainsIllegalCharacters
-                ? ` contain ${illegalCharacters.join(",")}`
-                : ""}
+                ? ` contain ${illegalCharacters.join(',')}`
+                : ''}
               .
             </FormErrorMessage>
           </FormControl>
         ) : null}
 
-        <FormControl isInvalid={createStatus === "ERROR"}>
+        <FormControl isInvalid={createStatus === 'ERROR'}>
           <Button
             type="submit"
             isDisabled={!usernameAvailable || !usernameIsValid}
@@ -110,19 +110,19 @@ export const CreateOrJoinGroupSession = () => {
           />
         </FormControl>
         <FormControl
-          isInvalid={!(joinStatus === "NOT_ASKED" || joinStatus === "LOADING")}
+          isInvalid={!(joinStatus === 'NOT_ASKED' || joinStatus === 'LOADING')}
         >
           <Button
             type="submit"
             disabled={!groupSessionId || !usernameAvailable || !usernameIsValid}
-            isLoading={joinStatus === "LOADING"}
+            isLoading={joinStatus === 'LOADING'}
           >
             Join group session
           </Button>
           <FormErrorMessage>
-            {joinStatus === "ROOM_NOT_FOUND"
-              ? "Room not found."
-              : "Something went wrong."}
+            {joinStatus === 'ROOM_NOT_FOUND'
+              ? 'Room not found.'
+              : 'Something went wrong.'}
           </FormErrorMessage>
         </FormControl>
       </form>

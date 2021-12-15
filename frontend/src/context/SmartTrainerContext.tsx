@@ -1,9 +1,9 @@
-import * as React from "react";
+import * as React from 'react';
 import {
   SmartTrainer,
   useSmartTrainerInterface,
-} from "../hooks/useSmartTrainerInterface";
-import { useSmartTrainerMock } from "../hooks/useSmartTrainerMock";
+} from '../hooks/useSmartTrainerInterface';
+import { useSmartTrainerMock } from '../hooks/useSmartTrainerMock';
 
 const SmartTrainerContext = React.createContext<SmartTrainer | null>(null);
 
@@ -47,7 +47,7 @@ export const useSmartTrainer = () => {
   const context = React.useContext(SmartTrainerContext);
   if (context === null) {
     throw new Error(
-      "useSmartTrainer must be used within a SmartTrainerContextProvider"
+      'useSmartTrainer must be used within a SmartTrainerContextProvider'
     );
   }
   return context;

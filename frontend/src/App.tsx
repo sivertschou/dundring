@@ -1,19 +1,19 @@
-import { Center, Stack } from "@chakra-ui/layout";
-import { ChakraProvider, Button } from "@chakra-ui/react";
-import * as React from "react";
-import { useGlobalClock } from "./hooks/useGlobalClock";
-import theme from "./theme";
-import { Lap } from "./types";
-import * as utils from "./utils";
-import { WorkoutDisplay } from "./components/WorkoutDisplay";
-import { ActionBar } from "./components/ActionBar";
-import { useHeartRateMonitor } from "./context/HeartRateContext";
-import { useSmartTrainer } from "./context/SmartTrainerContext";
-import { useActiveWorkout } from "./context/WorkoutContext";
-import { GraphContainer } from "./components/Graph/GraphContainer";
-import { useWebsocket } from "./context/WebsocketContext";
-import { TopBar } from "./components/TopBar";
-import { BottomBar } from "./components/BottomBar";
+import { Center, Stack } from '@chakra-ui/layout';
+import { ChakraProvider, Button } from '@chakra-ui/react';
+import * as React from 'react';
+import { useGlobalClock } from './hooks/useGlobalClock';
+import theme from './theme';
+import { Lap } from './types';
+import * as utils from './utils';
+import { WorkoutDisplay } from './components/WorkoutDisplay';
+import { ActionBar } from './components/ActionBar';
+import { useHeartRateMonitor } from './context/HeartRateContext';
+import { useSmartTrainer } from './context/SmartTrainerContext';
+import { useActiveWorkout } from './context/WorkoutContext';
+import { GraphContainer } from './components/Graph/GraphContainer';
+import { useWebsocket } from './context/WebsocketContext';
+import { TopBar } from './components/TopBar';
+import { BottomBar } from './components/BottomBar';
 interface Props {
   clockWorker: Worker;
 }
@@ -44,7 +44,7 @@ export const App = ({ clockWorker }: Props) => {
     setTimeElapsed((prev) => prev + timeSinceLast);
     if (activeWorkout && !activeWorkout.isDone) {
       increaseActiveWorkoutElapsedTime(timeSinceLast, () => {
-        return setData(data => [...data, { dataPoints: [] }])
+        return setData((data) => [...data, { dataPoints: [] }]);
       });
     }
   });
@@ -77,17 +77,17 @@ export const App = ({ clockWorker }: Props) => {
     clockWorker.onmessage = (_e) => {
       send();
     };
-    clockWorker.onerror = (e) => console.log("message recevied:", e);
+    clockWorker.onerror = (e) => console.log('message recevied:', e);
   }, [clockWorker, send]);
 
   const start = () => {
     if (!startingTime) {
       setStartingTime(new Date());
-      setData([{ dataPoints: [] }])
+      setData([{ dataPoints: [] }]);
     }
     startGlobalClock();
     startActiveWorkout();
-    clockWorker.postMessage("startTimer");
+    clockWorker.postMessage('startTimer');
   };
 
   const stop = () => {
@@ -100,17 +100,17 @@ export const App = ({ clockWorker }: Props) => {
   return (
     <ChakraProvider theme={theme}>
       <Center>
-        <Stack width="100%" pt={["30", "50", "100"]}>
+        <Stack width="100%" pt={['30', '50', '100']}>
           <Center width="100%">
-            <Center width="90%" >
+            <Center width="90%">
               {activeWorkout ? <WorkoutDisplay /> : null}
               <GraphContainer data={data.flatMap((x) => x.dataPoints)} />
             </Center>
           </Center>
           <Center>
-            <Stack width={["70%", "50%"]}>
+            <Stack width={['70%', '50%']}>
               <Button onClick={() => (running ? stop() : start())}>
-                {running ? "Stop" : "Start"}
+                {running ? 'Stop' : 'Start'}
               </Button>
               <Button onClick={() => setSmartTrainerResistance(0)}>0 w</Button>
               <Button onClick={() => setSmartTrainerResistance(50)}>

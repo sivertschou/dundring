@@ -1,13 +1,13 @@
-import { Button } from "@chakra-ui/button";
+import { Button } from '@chakra-ui/button';
 import {
   FormControl,
   FormErrorMessage,
   FormLabel,
-} from "@chakra-ui/form-control";
-import { useDisclosure } from "@chakra-ui/hooks";
-import { Input } from "@chakra-ui/input";
-import { Icon } from "@chakra-ui/icon";
-import { Link, Stack, Text } from "@chakra-ui/layout";
+} from '@chakra-ui/form-control';
+import { useDisclosure } from '@chakra-ui/hooks';
+import { Input } from '@chakra-ui/input';
+import { Icon } from '@chakra-ui/icon';
+import { Link, Stack, Text } from '@chakra-ui/layout';
 import {
   Modal,
   ModalBody,
@@ -16,24 +16,24 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-} from "@chakra-ui/modal";
-import { Spinner } from "@chakra-ui/react";
-import * as React from "react";
-import * as api from "../../api";
-import { useUser } from "../../context/UserContext";
-import { ActionBarItem } from "../ActionBarItem";
-import { useToast } from "@chakra-ui/react";
-import { Person } from "react-bootstrap-icons";
-import * as utils from "../../utils";
+} from '@chakra-ui/modal';
+import { Spinner } from '@chakra-ui/react';
+import * as React from 'react';
+import * as api from '../../api';
+import { useUser } from '../../context/UserContext';
+import { ActionBarItem } from '../ActionBarItem';
+import { useToast } from '@chakra-ui/react';
+import { Person } from 'react-bootstrap-icons';
+import * as utils from '../../utils';
 
 export const LoginModal = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [username, setUsername] = React.useState("");
-  const [mail, setMail] = React.useState("");
+  const [username, setUsername] = React.useState('');
+  const [mail, setMail] = React.useState('');
   const [mailIsTouched, setMailIsTouched] = React.useState(false);
-  const [password, setPassword] = React.useState("");
+  const [password, setPassword] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState("");
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const [creatingUser, setCreatingUser] = React.useState(false);
   const { setUser } = useUser();
@@ -54,7 +54,7 @@ export const LoginModal = () => {
     const trimmedPassword = password.trim();
 
     if (!trimmedUsername || !trimmedPassword) {
-      setErrorMessage("Enter username and password.");
+      setErrorMessage('Enter username and password.');
       return;
     }
 
@@ -65,9 +65,9 @@ export const LoginModal = () => {
     });
     setIsLoading(false);
 
-    if (response.status === "FAILURE") {
+    if (response.status === 'FAILURE') {
       setErrorMessage(response.message);
-    } else if (response.status === "SUCCESS") {
+    } else if (response.status === 'SUCCESS') {
       const { roles, token, username } = response.data;
       setUser({ loggedIn: true, token, roles, username, workouts: [] });
       onClose();
@@ -80,13 +80,13 @@ export const LoginModal = () => {
     const trimmedPassword = password.trim();
 
     if (!trimmedUsername || !trimmedPassword || !trimmedMail) {
-      setErrorMessage("Enter mail, username and password.");
+      setErrorMessage('Enter mail, username and password.');
       return;
     }
     const mailIsValid = utils.mailIsValid(mail);
 
     if (!mailIsValid) {
-      setErrorMessage("Please enter a valid email address.");
+      setErrorMessage('Please enter a valid email address.');
       return;
     }
     setIsLoading(true);
@@ -97,9 +97,9 @@ export const LoginModal = () => {
     });
     setIsLoading(false);
 
-    if (response.status === "FAILURE") {
+    if (response.status === 'FAILURE') {
       setErrorMessage(response.message);
-    } else if (response.status === "SUCCESS") {
+    } else if (response.status === 'SUCCESS') {
       const { roles, token, username } = response.data;
       setUser({
         loggedIn: true,
@@ -112,7 +112,7 @@ export const LoginModal = () => {
         title: `Created user '${username}'`,
         isClosable: true,
         duration: 5000,
-        status: "success",
+        status: 'success',
       });
       onClose();
     }
@@ -151,11 +151,11 @@ export const LoginModal = () => {
                       onChange={(e) => {
                         setMail(e.target.value);
                         setMailIsTouched(false);
-                        setErrorMessage("");
+                        setErrorMessage('');
                       }}
                       onBlur={(_e) => {
                         setMailIsTouched(true);
-                        setMail((mail) => mail.replace(" ", ""));
+                        setMail((mail) => mail.replace(' ', ''));
                       }}
                     />
                   </FormControl>
@@ -168,21 +168,21 @@ export const LoginModal = () => {
                       autoComplete="username"
                       value={username}
                       onChange={(e) => {
-                        setErrorMessage("");
-                        setUsername(e.target.value.replace(" ", ""));
+                        setErrorMessage('');
+                        setUsername(e.target.value.replace(' ', ''));
                       }}
                     />
                     <FormErrorMessage>
                       The username can't
                       {usernameIsTooLong
                         ? ` be more than ${maxUsernameLength} characters long`
-                        : ""}
+                        : ''}
                       {usernameIsTooLong && usernameContainsIllegalCharacters
-                        ? " or"
-                        : ""}
+                        ? ' or'
+                        : ''}
                       {usernameContainsIllegalCharacters
-                        ? ` contain ${illegalCharacters.join(",")}`
-                        : ""}
+                        ? ` contain ${illegalCharacters.join(',')}`
+                        : ''}
                       .
                     </FormErrorMessage>
                   </FormControl>
@@ -196,7 +196,7 @@ export const LoginModal = () => {
                       autoComplete="password"
                       value={password}
                       onChange={(e) => {
-                        setErrorMessage("");
+                        setErrorMessage('');
                         setPassword(e.target.value);
                       }}
                       onBlur={(_e) => {
@@ -206,7 +206,7 @@ export const LoginModal = () => {
                   </FormControl>
                   <Link
                     onClick={() => {
-                      setErrorMessage("");
+                      setErrorMessage('');
                       setCreatingUser(false);
                     }}
                   >
@@ -253,7 +253,7 @@ export const LoginModal = () => {
                       autoComplete="username"
                       value={username}
                       onChange={(e) => {
-                        setErrorMessage("");
+                        setErrorMessage('');
                         setUsername(e.target.value);
                       }}
                       onBlur={(_e) => {
@@ -271,7 +271,7 @@ export const LoginModal = () => {
                       autoComplete="password"
                       value={password}
                       onChange={(e) => {
-                        setErrorMessage("");
+                        setErrorMessage('');
                         setPassword(e.target.value);
                       }}
                       onBlur={(_e) => {
@@ -281,7 +281,7 @@ export const LoginModal = () => {
                   </FormControl>
                   <Link
                     onClick={() => {
-                      setErrorMessage("");
+                      setErrorMessage('');
                       setCreatingUser(true);
                     }}
                   >

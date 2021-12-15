@@ -9,3 +9,8 @@ if [ ! -d data ]; then
     printf "[]" > data/users.json
     printf "[]" > data/messages.json
 fi
+
+# Make sure parent preparations are done
+echo "Make sure project configs are installed ⚡️"
+cd .. && npm install
+echo "Done configuring project ⚡️"

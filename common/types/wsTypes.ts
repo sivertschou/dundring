@@ -60,7 +60,7 @@ export interface CreateGroupSessionSuccessResponse {
 }
 export interface CreateGroupSessionErrorResponse {
   type: WebSocketResponseType.failedToCreateGroupSession;
-  message: "Failed to create room.";
+  message: 'Failed to create room.';
 }
 
 export type CreateGroupSessionResponse =
@@ -74,7 +74,7 @@ export interface JoinGroupSessionSuccessResponse {
 }
 export interface JoinGroupSessionErrorResponse {
   type: WebSocketResponseType.failedToJoinGroupSession;
-  message: "Failed to join room.";
+  message: 'Failed to join room.';
 }
 
 export type JoinGroupSessionResponse =

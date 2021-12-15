@@ -1,6 +1,6 @@
-import { Message } from "../../../common/types/messageTypes";
-require("dotenv").config();
-const fs = require("fs");
+import { Message } from '../../../common/types/messageTypes';
+require('dotenv').config();
+const fs = require('fs');
 
 const messagePath = `${process.env.DATA_PATH}/messages.json`;
 

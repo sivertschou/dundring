@@ -1,7 +1,7 @@
-import * as React from "react";
-import useSWR from "swr";
-import { fetchMyWorkouts, validateToken } from "../api";
-import { UserContextType, Workout } from "../types";
+import * as React from 'react';
+import useSWR from 'swr';
+import { fetchMyWorkouts, validateToken } from '../api';
+import { UserContextType, Workout } from '../types';
 
 export const defaultUser: UserContextType = {
   loggedIn: false,
@@ -22,12 +22,12 @@ export const UserContextProvider = ({
   children: React.ReactNode;
 }) => {
   React.useEffect(() => {
-    const locallyStoredToken = localStorage["usertoken"];
+    const locallyStoredToken = localStorage['usertoken'];
     if (locallyStoredToken) {
       validateToken(locallyStoredToken)
         .then((res) => {
           switch (res.status) {
-            case "SUCCESS":
+            case 'SUCCESS':
               setUser({
                 loggedIn: true,
                 roles: res.data.roles,
@@ -37,25 +37,25 @@ export const UserContextProvider = ({
               });
               break;
             default:
-              localStorage["usertoken"] = "";
+              localStorage['usertoken'] = '';
           }
         })
-        .catch((e) => console.log("ERROR:", e));
+        .catch((e) => console.log('ERROR:', e));
     }
   }, []);
 
   const [user, setUser] = React.useState<UserContextType>(defaultUser);
   const { data: userWorkouts, mutate: refetchWorkouts } = useSWR(
-    ["/me/workouts", user.loggedIn],
+    ['/me/workouts', user.loggedIn],
     () => (user.loggedIn ? fetchMyWorkouts(user.token) : null)
   );
 
   const [localWorkouts, setLocalWorkouts] = React.useState<Workout[]>(
-    localStorage["workouts"] ? JSON.parse(localStorage["workouts"]) : []
+    localStorage['workouts'] ? JSON.parse(localStorage['workouts']) : []
   );
 
   const setUserExternal = (user: UserContextType) => {
-    localStorage["usertoken"] = user.loggedIn ? user.token : "";
+    localStorage['usertoken'] = user.loggedIn ? user.token : '';
     setUser(user);
   };
 
@@ -65,7 +65,7 @@ export const UserContextProvider = ({
         const updatedWorkouts = [...localWorkouts].map((w) =>
           workout.id === w.id ? workout : w
         );
-        localStorage["workouts"] = JSON.stringify(updatedWorkouts);
+        localStorage['workouts'] = JSON.stringify(updatedWorkouts);
       } else {
         const updatedWorkouts = [
           ...localWorkouts,
@@ -79,15 +79,15 @@ export const UserContextProvider = ({
           },
         ];
 
-        localStorage["workouts"] = JSON.stringify(updatedWorkouts);
+        localStorage['workouts'] = JSON.stringify(updatedWorkouts);
       }
-      return JSON.parse(localStorage["workouts"]);
+      return JSON.parse(localStorage['workouts']);
     });
   };
 
   const workouts =
     (userWorkouts &&
-      userWorkouts.status === "SUCCESS" &&
+      userWorkouts.status === 'SUCCESS' &&
       userWorkouts.data.workouts) ||
     [];
 
@@ -112,7 +112,7 @@ export const UserContextProvider = ({
 export const useUser = () => {
   const context = React.useContext(UserContext);
   if (context === null) {
-    throw new Error("useUser must be used within a UserContextProvider");
+    throw new Error('useUser must be used within a UserContextProvider');
   }
   return context;
 };
