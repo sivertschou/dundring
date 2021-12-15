@@ -41,7 +41,12 @@ export const WorkoutEditorModal = () => {
         onClick={onOpen}
       />
 
-      <Modal isOpen={isOpen} onClose={onClose} size="4xl">
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        closeOnOverlayClick={false}
+        size="4xl"
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
