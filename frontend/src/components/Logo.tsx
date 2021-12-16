@@ -5,12 +5,10 @@ import {
   forwardRef,
   useColorModeValue,
 } from '@chakra-ui/react';
-import logoPurple from '../assets/LogoPurpleGradient.svg';
 import logoBlack from '../assets/LogoBlackGradient.svg';
-import logoBlackTransparent from '../assets/LogoBlackGradientTransparent.svg';
 import logoWhite from '../assets/LogoWhiteGradient.svg';
 
-type LogoVariant = 'black' | 'black_transparent' | 'white' | 'purple';
+type LogoVariant = 'black' | 'white';
 
 interface Props {
   variant?: LogoVariant;
@@ -20,12 +18,8 @@ const getLogo = (variant: LogoVariant) => {
   switch (variant) {
     case 'black':
       return logoBlack;
-    case 'black_transparent':
-      return logoBlackTransparent;
     case 'white':
       return logoWhite;
-    case 'purple':
-      return logoPurple;
   }
 };
 
