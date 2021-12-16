@@ -1,4 +1,4 @@
-import { Center, Stack, Grid, Box } from '@chakra-ui/layout';
+import { Center, Stack, Box } from '@chakra-ui/layout';
 import { ChakraProvider, Button } from '@chakra-ui/react';
 import * as React from 'react';
 import { useGlobalClock } from './hooks/useGlobalClock';
