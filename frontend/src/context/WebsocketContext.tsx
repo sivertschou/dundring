@@ -162,7 +162,7 @@ export const WebsocketContextProvider = ({
   const [username, setUsername] = React.useState('');
   React.useEffect(() => {
     socket.onopen = () => {
-      addLog('connected to ws-server');
+      console.log('connected to ws-server');
     };
     socket.onclose = () => {
       addLog('disconnected from ws-server');
