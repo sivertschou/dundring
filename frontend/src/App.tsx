@@ -49,7 +49,7 @@ export const App = ({ clockWorker }: Props) => {
       });
     }
   });
-  const { add: addLog } = useLogs();
+  const { logEvent } = useLogs();
 
   const send = React.useCallback(() => {
     const heartRateToInclude = heartRate ? { heartRate } : {};
@@ -86,9 +86,9 @@ export const App = ({ clockWorker }: Props) => {
     if (!startingTime) {
       setStartingTime(new Date());
       setData([{ dataPoints: [] }]);
-      addLog('workout started');
+      logEvent('workout started');
     } else {
-      addLog('workout resumed');
+      logEvent('workout resumed');
     }
     startGlobalClock();
     startActiveWorkout();
@@ -96,7 +96,7 @@ export const App = ({ clockWorker }: Props) => {
   };
 
   const stop = () => {
-    addLog('workout paused');
+    logEvent('workout paused');
     stopGlobalClock();
     if (smartTrainerIsConnected) {
       setSmartTrainerResistance(0);

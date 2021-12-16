@@ -23,14 +23,13 @@ export const useHeartRateMonitorInterface = (): HeartRateMonitor => {
   const [heartRate, setHeartRate] = React.useState(0);
   const [isConnected, setIsConnected] = React.useState(false);
   const [device, setDevice] = React.useState<BluetoothDevice | null>(null);
-  const { add: addLog } = useLogs();
+  const { logEvent } = useLogs();
 
   const [characteristic, setCharacteristic] =
     React.useState<BluetoothRemoteGATTCharacteristic | null>(null);
 
   const handleHRUpdate = (event: any) => {
     const hr = parseHeartRate(event.target.value);
-    console.log('handleHRUpdate');
     setHeartRate(hr);
   };
   const requestPermission = async () => {
@@ -58,7 +57,7 @@ export const useHeartRateMonitorInterface = (): HeartRateMonitor => {
     });
 
     setIsConnected(true);
-    addLog('heart rate monitor connected');
+    logEvent('heart rate monitor connected');
   };
   const disconnect = async () => {
     if (characteristic) {
@@ -74,7 +73,7 @@ export const useHeartRateMonitorInterface = (): HeartRateMonitor => {
     }
     setDevice(null);
     setIsConnected(false);
-    addLog('heart rate monitor disconnected');
+    logEvent('heart rate monitor disconnected');
   };
 
   return {

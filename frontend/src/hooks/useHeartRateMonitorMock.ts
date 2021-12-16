@@ -6,7 +6,7 @@ import { HeartRateMonitor } from './useHeartRateMonitorInterface';
 export const useHeartRateMonitorMock = (): HeartRateMonitor => {
   const [heartRate, setHeartRate] = React.useState(0);
   const [isConnected, setIsConnected] = React.useState(false);
-  const { add: addLog } = useLogs();
+  const { logEvent } = useLogs();
 
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -22,11 +22,11 @@ export const useHeartRateMonitorMock = (): HeartRateMonitor => {
   return {
     requestPermission: () => {
       setIsConnected(true);
-      addLog('[mock] heart rate monitor connected');
+      logEvent('[mock] heart rate monitor connected');
     },
     disconnect: () => {
       setIsConnected(false);
-      addLog('[mock] heart rate monitor disconnected');
+      logEvent('[mock] heart rate monitor disconnected');
     },
     isConnected,
     heartRate,

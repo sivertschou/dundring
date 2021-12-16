@@ -6,8 +6,8 @@ interface LogMsg {
 }
 
 const LogContext = React.createContext<{
-  log: LogMsg[];
-  add: (msg: string) => void;
+  loggedEvents: LogMsg[];
+  logEvent: (msg: string) => void;
 } | null>(null);
 
 export const LogContextProvider = ({
@@ -15,14 +15,14 @@ export const LogContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [log, setLog] = React.useState<LogMsg[]>([]);
+  const [loggedEvents, setLoggedEvents] = React.useState<LogMsg[]>([]);
 
   return (
     <LogContext.Provider
       value={{
-        log,
-        add: (msg: string) =>
-          setLog((prev) => [{ msg, timestamp: new Date() }, ...prev]),
+        loggedEvents,
+        logEvent: (msg: string) =>
+          setLoggedEvents((prev) => [{ msg, timestamp: new Date() }, ...prev]),
       }}
     >
       {children}
