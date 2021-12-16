@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { wsUrl } from '../api';
 import { UserContextType } from '../types';
+import { useLogs } from './LogContext';
 export interface Room {
   id: string;
   creator: string;
@@ -147,6 +148,7 @@ export const WebsocketContextProvider = ({
   const [socket] = React.useState(
     React.useCallback(() => new WebSocket(wsUrl), [])
   );
+  const { add: addLog } = useLogs();
 
   const [activeGroupSession, setActiveGroupSession] =
     React.useState<LocalRoom | null>(null);
@@ -160,49 +162,45 @@ export const WebsocketContextProvider = ({
   const [username, setUsername] = React.useState('');
   React.useEffect(() => {
     socket.onopen = () => {
-      console.log('connected');
+      addLog('connected to ws-server');
     };
     socket.onclose = () => {
-      console.log('disconnected');
+      addLog('disconnected from ws-server');
     };
     socket.onmessage = (e) => {
       const message = JSON.parse(e.data) as WebSocketResponse;
       switch (message.type) {
         case WebSocketResponseType.createdGroupSession: {
-          console.log('created group session with id:', message.room.id);
+          addLog(`created group session with id: ${message.room.id}`);
           setActiveGroupSession({ ...message.room, workoutData: {} });
           setCreateStatus('NOT_ASKED');
           break;
         }
         case WebSocketResponseType.failedToCreateGroupSession: {
-          console.log('failed to create group session');
+          addLog('failed to create group session');
           setCreateStatus('ERROR');
           break;
         }
         case WebSocketResponseType.joinedGroupSession: {
-          console.log('joined group session with id:', message.room.id);
+          addLog(`joined group session with id: ${message.room.id}`);
           setActiveGroupSession({ ...message.room, workoutData: {} });
           setJoinStatus('NOT_ASKED');
           break;
         }
         case WebSocketResponseType.failedToJoinGroupSession: {
-          console.log('failed to join group session');
+          addLog('failed to join group session');
           setJoinStatus('ROOM_NOT_FOUND');
           break;
         }
         case WebSocketResponseType.memberJoinedGroupSession: {
           if (!activeGroupSession) return;
-          console.log(
-            `${message.username} joined group session with id: ${message.room.id}`
-          );
+          addLog(`${message.username} joined group session`);
           setActiveGroupSession({ ...activeGroupSession, ...message.room });
           break;
         }
         case WebSocketResponseType.memberLeftGroupSession: {
           if (!activeGroupSession) return;
-          console.log(
-            `${message.username} left group session with id: ${message.room.id}`
-          );
+          addLog(`${message.username} left group session`);
           setActiveGroupSession({ ...activeGroupSession, ...message.room });
           break;
         }
@@ -227,7 +225,7 @@ export const WebsocketContextProvider = ({
         }
       }
     };
-  }, [activeGroupSession, socket]);
+  }, [activeGroupSession, socket, addLog]);
 
   return (
     <WebsocketContext.Provider
@@ -264,6 +262,7 @@ export const WebsocketContextProvider = ({
               username,
             };
             socket.send(JSON.stringify(data));
+            addLog('left group session');
           }
         },
         sendData: (data: { heartRate?: number; power?: number }) => {
