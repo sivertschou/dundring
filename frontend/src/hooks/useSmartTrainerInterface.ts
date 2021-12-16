@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useLogs } from '../context/LogContext';
 
 export interface SmartTrainer {
   requestPermission: () => void;
@@ -8,28 +9,33 @@ export interface SmartTrainer {
   setResistance: (resistance: number) => void;
 }
 
+const parsePower = (value: any) => {
+  const buffer = value.buffer ? value : new DataView(value);
+
+  const powerLSB = buffer.getUint8(2);
+  const powerMSB = buffer.getUint8(3);
+  const power = powerLSB + powerMSB * 256;
+
+  return power;
+};
+
 export const useSmartTrainerInterface = (): SmartTrainer => {
   const [power, setPower] = React.useState(0);
   const [isConnected, setIsConnected] = React.useState(false);
+  const [device, setDevice] = React.useState<BluetoothDevice | null>(null);
+  const { logEvent } = useLogs();
+
   const [fitnessMachineCharacteristic, setFitnessMachineCharacteristic] =
     React.useState<BluetoothRemoteGATTCharacteristic | null>(null);
+
   const [cyclingPowerCharacteristic, setCyclingPowerCharacteristic] =
     React.useState<BluetoothRemoteGATTCharacteristic | null>(null);
-  const [device, setDevice] = React.useState<BluetoothDevice | null>(null);
 
-  const parsePower = (value: any) => {
-    const buffer = value.buffer ? value : new DataView(value);
-
-    const powerLSB = buffer.getUint8(2);
-    const powerMSB = buffer.getUint8(3);
-    const power = powerLSB + powerMSB * 256;
-
-    return power;
-  };
   const handlePowerUpdate = (event: any) => {
     const power = parsePower(event.target.value);
     setPower(power);
   };
+
   const requestPermission = async () => {
     const device = await navigator.bluetooth.requestDevice({
       // filters: [{ services: ["cycling_power"] }], // Cycling power 0x1818
@@ -38,6 +44,7 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
     });
 
     setDevice(device);
+
     const server = await device?.gatt?.connect();
 
     const fitnessMachineService = await server?.getPrimaryService(
@@ -68,6 +75,7 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
       handlePowerUpdate
     );
     setIsConnected(true);
+    logEvent('smart trainer connected');
   };
   const disconnect = async () => {
     if (cyclingPowerCharacteristic) {
@@ -82,6 +90,7 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
     }
     setDevice(null);
     setIsConnected(false);
+    logEvent('smart trainer disconnected');
   };
 
   return {
@@ -91,6 +100,7 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
     power,
     setResistance: async (resistance: number) => {
       if (!isConnected) {
+        logEvent('tried to set resistance, but no smart trainer is connected');
         return;
       }
       try {
@@ -103,6 +113,7 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
             await fitnessMachineCharacteristic.writeValue(
               new Uint8Array([0x05, 0])
             );
+            logEvent(`set resistance: 0W`);
           } else {
             const resBuf = new Uint8Array(new Uint16Array([resistance]).buffer);
             const cmdBuf = new Uint8Array([0x05]);
@@ -110,11 +121,14 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
             combined.set(cmdBuf);
             combined.set(resBuf, cmdBuf.length);
             await fitnessMachineCharacteristic.writeValue(combined);
+            logEvent(`set resistance: ${resistance}W`);
           }
         }
       } catch (error) {
-        if (error)
+        if (error) {
           console.error(`Tried setting resistance, but got error:`, error);
+          logEvent(`failed to set resistance: ${resistance}W`);
+        }
       }
     },
   };

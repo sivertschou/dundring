@@ -118,12 +118,14 @@ export interface HoursMinutesAndSeconds {
   minutes: number;
   seconds: number;
 }
+
 export const secondsToHoursMinutesAndSeconds = (totalSeconds: number) => {
   const hours = Math.floor((totalSeconds / 60 / 60) % 24);
   const minutes = Math.floor((totalSeconds / 60) % 60);
   const seconds = Math.floor(totalSeconds % 60);
   return { hours, minutes, seconds };
 };
+
 export const formatHoursMinutesAndSecondsAsString = ({
   hours,
   minutes,
@@ -132,6 +134,15 @@ export const formatHoursMinutesAndSecondsAsString = ({
   return `${hours > 0 ? hours + ':' : ''}${padLeadingZero(
     minutes
   )}:${padLeadingZero(seconds)}`;
+};
+
+export const timestampToFormattedHHMMSS = (timestamp: Date) => {
+  const hours = timestamp.getHours();
+  const minutes = timestamp.getMinutes();
+  const seconds = timestamp.getSeconds();
+  return `${hours < 10 ? '0' + hours : hours}:${
+    minutes < 10 ? '0' + minutes : minutes
+  }:${seconds < 10 ? '0' + seconds : seconds}`;
 };
 
 export const getTotalWorkoutTime = (workout: Workout) =>

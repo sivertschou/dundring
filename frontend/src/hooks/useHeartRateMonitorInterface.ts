@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useLogs } from '../context/LogContext';
 
 export interface HeartRateMonitor {
   requestPermission: () => void;
@@ -21,63 +22,58 @@ const parseHeartRate = (value: DataView | ArrayBuffer) => {
 export const useHeartRateMonitorInterface = (): HeartRateMonitor => {
   const [heartRate, setHeartRate] = React.useState(0);
   const [isConnected, setIsConnected] = React.useState(false);
+  const [device, setDevice] = React.useState<BluetoothDevice | null>(null);
+  const { logEvent } = useLogs();
+
   const [characteristic, setCharacteristic] =
     React.useState<BluetoothRemoteGATTCharacteristic | null>(null);
-  const [device, setDevice] = React.useState<BluetoothDevice | null>(null);
 
   const handleHRUpdate = (event: any) => {
     const hr = parseHeartRate(event.target.value);
-    console.log('handleHRUpdate');
     setHeartRate(hr);
   };
   const requestPermission = async () => {
-    navigator.bluetooth
-      .requestDevice({ filters: [{ services: ['heart_rate'] }] })
-      .then((device) => {
-        setDevice(device);
-        return device?.gatt?.connect();
-      })
-      .then((server) => {
-        setIsConnected(true);
-        return server?.getPrimaryService('heart_rate');
-      })
-      .then((service) => {
-        return service?.getCharacteristic('heart_rate_measurement');
-      })
-      .then((characteristic) => {
-        characteristic && setCharacteristic(characteristic);
-        return characteristic?.startNotifications().then((_) => {
-          console.log('> Notifications started');
-          characteristic.addEventListener(
-            'characteristicvaluechanged',
-            handleHRUpdate
-          );
-        });
-      })
-      .catch((error) => {
-        console.log('Argh! ' + error);
-      });
+    const device = await navigator.bluetooth.requestDevice({
+      filters: [{ services: ['heart_rate'] }],
+    });
+    setDevice(device);
+
+    const server = await device?.gatt?.connect();
+
+    const service = await server?.getPrimaryService('heart_rate');
+
+    const characteristic = await service?.getCharacteristic(
+      'heart_rate_measurement'
+    );
+
+    characteristic && setCharacteristic(characteristic);
+
+    await characteristic?.startNotifications().then((_) => {
+      console.log('> Notifications started');
+      characteristic.addEventListener(
+        'characteristicvaluechanged',
+        handleHRUpdate
+      );
+    });
+
+    setIsConnected(true);
+    logEvent('heart rate monitor connected');
   };
-  const disconnect = () => {
-    console.log('characteristic:', characteristic);
+  const disconnect = async () => {
     if (characteristic) {
-      characteristic
-        .stopNotifications()
-        .then((_) => {
-          console.log('> Notifications stopped');
-          characteristic.removeEventListener(
-            'characteristicvaluechanged',
-            handleHRUpdate
-          );
-          setCharacteristic(null);
-          device?.gatt?.disconnect();
-          setDevice(null);
-          setIsConnected(false);
-        })
-        .catch((error) => {
-          console.log('Argh! ' + error);
-        });
+      await characteristic.stopNotifications();
+
+      console.log('> Notifications stopped');
+      characteristic.removeEventListener(
+        'characteristicvaluechanged',
+        handleHRUpdate
+      );
+      setCharacteristic(null);
+      device?.gatt?.disconnect();
     }
+    setDevice(null);
+    setIsConnected(false);
+    logEvent('heart rate monitor disconnected');
   };
 
   return {

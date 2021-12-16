@@ -1,4 +1,4 @@
-import { Center, Stack } from '@chakra-ui/layout';
+import { Center, Stack, Box } from '@chakra-ui/layout';
 import { ChakraProvider, Button } from '@chakra-ui/react';
 import * as React from 'react';
 import { useGlobalClock } from './hooks/useGlobalClock';
@@ -14,6 +14,7 @@ import { GraphContainer } from './components/Graph/GraphContainer';
 import { useWebsocket } from './context/WebsocketContext';
 import { TopBar } from './components/TopBar';
 import { BottomBar } from './components/BottomBar';
+import { useLogs } from './context/LogContext';
 interface Props {
   clockWorker: Worker;
 }
@@ -48,6 +49,7 @@ export const App = ({ clockWorker }: Props) => {
       });
     }
   });
+  const { logEvent } = useLogs();
 
   const send = React.useCallback(() => {
     const heartRateToInclude = heartRate ? { heartRate } : {};
@@ -84,6 +86,9 @@ export const App = ({ clockWorker }: Props) => {
     if (!startingTime) {
       setStartingTime(new Date());
       setData([{ dataPoints: [] }]);
+      logEvent('workout started');
+    } else {
+      logEvent('workout resumed');
     }
     startGlobalClock();
     startActiveWorkout();
@@ -91,6 +96,7 @@ export const App = ({ clockWorker }: Props) => {
   };
 
   const stop = () => {
+    logEvent('workout paused');
     stopGlobalClock();
     if (smartTrainerIsConnected) {
       setSmartTrainerResistance(0);
@@ -137,6 +143,7 @@ export const App = ({ clockWorker }: Props) => {
               ) : null}
             </Stack>
           </Center>
+          <Box height="5vh" />
         </Stack>
       </Center>
       <TopBar timeElapsed={timeElapsed} />
