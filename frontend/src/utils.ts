@@ -136,12 +136,13 @@ export const formatHoursMinutesAndSecondsAsString = ({
   )}:${padLeadingZero(seconds)}`;
 };
 
-export const timestampToFormattedHHMM = (timestamp: Date) => {
+export const timestampToFormattedHHMMSS = (timestamp: Date) => {
   const hours = timestamp.getHours();
   const minutes = timestamp.getMinutes();
+  const seconds = timestamp.getSeconds();
   return `${hours < 10 ? '0' + hours : hours}:${
     minutes < 10 ? '0' + minutes : minutes
-  }`;
+  }:${seconds < 10 ? '0' + seconds : seconds}`;
 };
 
 export const getTotalWorkoutTime = (workout: Workout) =>
