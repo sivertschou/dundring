@@ -3,7 +3,6 @@ import { Center, Link, Stack, Text, Grid } from '@chakra-ui/layout';
 import { useAvailability } from '../hooks/useAvailability';
 import { useColorModeValue } from '@chakra-ui/react';
 import { Logo } from './Logo';
-import { useLogs } from '../context/LogContext';
 import { LogModal } from './Modals/LogModal';
 
 export const BottomBar = () => {

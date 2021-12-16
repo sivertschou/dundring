@@ -17,10 +17,20 @@ export const LogModal = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { log } = useLogs();
 
+  const now = new Date();
+  const lastMessageShouldBeVisible =
+    log[0] && now.getTime() - log[0].timestamp.getTime() < 10000 ? true : false;
+
   return (
     <>
-      <Button variant="link" onClick={onOpen}>
-        <Text textAlign="center">{log[0] ? `${log[0].msg}` : null}</Text>
+      <Button variant="link" fontWeight="normal" onClick={onOpen}>
+        <Text
+          textAlign="center"
+          opacity={lastMessageShouldBeVisible ? 100 : 0}
+          transition="opacity 0.5s ease"
+        >
+          {log[0] ? `${log[0].msg}` : null}
+        </Text>
       </Button>
       <Modal isOpen={isOpen} onClose={onClose} size="2xl">
         <ModalOverlay />
@@ -37,7 +47,7 @@ export const LogModal = () => {
             <Tbody>
               {log.map(({ timestamp, msg }) => (
                 <Tr key={timestamp.getTime()} m={0}>
-                  <Td paddingY="1">{timestampToFormattedHHMMSS(timestamp)}</Td>
+                  <Td padduingY="1">{timestampToFormattedHHMMSS(timestamp)}</Td>
                   <Td paddingY="1">{msg}</Td>
                 </Tr>
               ))}
