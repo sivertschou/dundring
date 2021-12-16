@@ -11,23 +11,26 @@ import { ActiveWorkoutContextProvider } from './context/WorkoutContext';
 import { WebsocketContextProvider } from './context/WebsocketContext';
 import WorkerBuilder from './workers/workerBuilder';
 import clockWorker from './workers/clock.worker';
+import { LogContextProvider } from './context/LogContext';
 
 const cw: Worker = new WorkerBuilder(clockWorker);
 cw && cw.postMessage('startTimer');
 ReactDOM.render(
   <React.StrictMode>
-    <UserContextProvider>
-      <HeartRateContextProvider>
-        <SmartTrainerContextProvider>
-          <ActiveWorkoutContextProvider>
-            <WebsocketContextProvider>
-              <ColorModeScript />
-              <App clockWorker={cw} />
-            </WebsocketContextProvider>
-          </ActiveWorkoutContextProvider>
-        </SmartTrainerContextProvider>
-      </HeartRateContextProvider>
-    </UserContextProvider>
+    <LogContextProvider>
+      <UserContextProvider>
+        <HeartRateContextProvider>
+          <SmartTrainerContextProvider>
+            <ActiveWorkoutContextProvider>
+              <WebsocketContextProvider>
+                <ColorModeScript />
+                <App clockWorker={cw} />
+              </WebsocketContextProvider>
+            </ActiveWorkoutContextProvider>
+          </SmartTrainerContextProvider>
+        </HeartRateContextProvider>
+      </UserContextProvider>
+    </LogContextProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
