@@ -103,6 +103,10 @@ export const App = ({ clockWorker }: Props) => {
     }
   };
 
+  const anyValidDataPoints = data.some((lap) =>
+    lap.dataPoints.some((dataPoint) => dataPoint.heartRate || dataPoint.power)
+  );
+
   return (
     <ChakraProvider theme={theme}>
       <Center>
@@ -138,7 +142,7 @@ export const App = ({ clockWorker }: Props) => {
                 300 w
               </Button>
 
-              {data.length > 0 ? (
+              {anyValidDataPoints ? (
                 <Button onClick={() => utils.toTCX(data)}>Download TCX</Button>
               ) : null}
             </Stack>
