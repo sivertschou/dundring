@@ -1,6 +1,6 @@
 if [ ! -f .env ]; then
     echo ".env does not exist; creating it ⚡️"
-    printf "PORT=\nTOKEN_SECRET=\nDATA_PATH=\nSLACK_USER_CREATION=\nSLACK_ERRORS=\nSLACK_GROUP_SESSION=\nSLACK_FEEDBACK=\n" > .env
+    printf "PORT=\nNODE_ENV=development\nTOKEN_SECRET=\nDATA_PATH=\nSLACK_USER_CREATION=\nSLACK_ERRORS=\nSLACK_GROUP_SESSION=\nSLACK_FEEDBACK=\n" > .env
 fi
 
 if [ ! -d data ]; then

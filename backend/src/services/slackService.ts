@@ -48,6 +48,12 @@ const getServiceUrl = (service: SlackService): string | null => {
 
 const sendSlackMessage = (service: SlackService, message: string) => {
   const url = getServiceUrl(service);
+
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`[slack]: ${message}`);
+    return;
+  }
+
   if (!url) return;
 
   try {
