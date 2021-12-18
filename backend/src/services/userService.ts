@@ -4,6 +4,7 @@ require('dotenv').config();
 import * as fs from 'fs';
 import { Workout } from '../../../common/types/workoutTypes';
 import * as validationService from './validationService';
+import * as slackService from './slackService';
 
 const usersPath = `${process.env.DATA_PATH}/users.json`;
 
@@ -90,6 +91,8 @@ export const createUser = (
     const parsedData = JSON.parse(rawdata.toString()) as StoredUser[];
 
     fs.writeFileSync(usersPath, JSON.stringify([...parsedData, user]));
+    slackService.logUserCreation(user);
+
     return { status: 'SUCCESS', data: user };
   } else {
     console.error('File not found', usersPath);
