@@ -183,7 +183,7 @@ router.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
       return;
     }
 
-    if (userService.validateUser(username, hashedPassword)) {
+    if (userService.validateUser(username, password)) {
       const token = validationService.generateAccessToken(username);
       const userRole = userService.getUserRoles(username);
       res.send({
