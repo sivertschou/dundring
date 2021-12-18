@@ -1,5 +1,6 @@
 import { User } from '../../../common/types/userTypes';
 import fetch from 'node-fetch';
+import { Room } from '../../../common/types/wsTypes';
 
 require('dotenv').config();
 
@@ -65,4 +66,24 @@ const sendSlackMessage = (service: SlackService, message: string) => {
 export const logUserCreation = (user: User) => {
   const message = `New user: *${user.username}* (${user.mail})`;
   sendSlackMessage(SlackService.USER_CREATION, message);
+};
+
+export const logRoomJoin = (username: string, room: Room) => {
+  const message = `*${username}* joined group session with id *#${room.id}*`;
+  sendSlackMessage(SlackService.GROUP_SESSION, message);
+};
+
+export const logRoomCreation = (room: Room) => {
+  const message = `*${room.creator}* created group session with id *#${room.id}*`;
+  sendSlackMessage(SlackService.GROUP_SESSION, message);
+};
+
+export const logRoomLeave = (username: string, room: Room) => {
+  const message = `*${username}* left group session with id *#${room.id}*.`;
+  sendSlackMessage(SlackService.GROUP_SESSION, message);
+};
+
+export const logRoomDeletion = (username: string, room: Room) => {
+  const message = `*${username}* left group session with id *#${room.id}*. No more users in group session; deleting it.`;
+  sendSlackMessage(SlackService.GROUP_SESSION, message);
 };

@@ -10,6 +10,7 @@ import {
   WebSocketResponse,
   WebSocketResponseType,
 } from '../../../common/types/wsTypes';
+import * as slackService from './slackService';
 
 import { Server, WebSocket } from 'ws';
 export interface ServerMember {
@@ -93,6 +94,7 @@ export const createRoom = (
       creator: creator.username,
       members: [creator],
     };
+    slackService.logRoomCreation(room);
     rooms[roomId] = room;
     usersAndActiveRooms[creator.username] = room.id;
     return { type: WebSocketResponseType.createdGroupSession, room };
@@ -124,6 +126,8 @@ export const joinRoom = (
       type: WebSocketResponseType.joinedGroupSession,
       room: toRoom(updatedRoom),
     };
+    slackService.logRoomJoin(member.username, room);
+
     ws.send(JSON.stringify(response));
 
     updatedRoom.members
@@ -156,8 +160,10 @@ export const leaveRoom = (username: string) => {
     };
 
     if (updatedRoom.members.length === 0) {
+      slackService.logRoomDeletion(username, room);
       delete rooms[roomId];
     } else {
+      slackService.logRoomLeave(username, room);
       rooms[roomId] = updatedRoom;
 
       delete usersAndActiveRooms[username];
