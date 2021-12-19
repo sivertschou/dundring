@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useGlobalClock } from './hooks/useGlobalClock';
 import theme from './theme';
 import { Lap } from './types';
-import * as utils from './utils';
+import * as createTcxFile from './createTcxFile';
 import { WorkoutDisplay } from './components/WorkoutDisplay';
 import { ActionBar } from './components/ActionBar';
 import { useHeartRateMonitor } from './context/HeartRateContext';
@@ -143,7 +143,9 @@ export const App = ({ clockWorker }: Props) => {
               </Button>
 
               {anyValidDataPoints ? (
-                <Button onClick={() => utils.toTCX(data)}>Download TCX</Button>
+                <Button onClick={() => createTcxFile.toTCX(data)}>
+                  Download TCX
+                </Button>
               ) : null}
             </Stack>
           </Center>
