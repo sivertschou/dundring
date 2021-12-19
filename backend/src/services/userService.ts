@@ -20,6 +20,9 @@ export const getUsers = (): StoredUser[] => {
 export const getUser = (username: string): StoredUser | null =>
   getUsers().find((user) => user.username === username) || null;
 
+export const getUserByMail = (mail: string): StoredUser | null =>
+  getUsers().find((user) => user.mail === mail) || null;
+
 export const validateUser = (username: string, password: string): boolean => {
   const user = getUser(username);
   if (!user) return false;
@@ -81,9 +84,16 @@ export const saveWorkout = (
 
 export const createUser = (
   user: StoredUser
-): Status<StoredUser, 'User already exists' | 'File not found'> => {
+): Status<
+  StoredUser,
+  'User already exists' | 'Mail is already in use' | 'File not found'
+> => {
   if (getUser(user.username)) {
     return { status: 'ERROR', type: 'User already exists' };
+  }
+
+  if (getUserByMail(user.mail)) {
+    return { status: 'ERROR', type: 'Mail is already in use' };
   }
 
   if (fs.existsSync(usersPath)) {
