@@ -15,6 +15,7 @@ interface Props {
   removeWorkoutPart: () => void;
   duplicateWorkoutPart: () => void;
   checkValidation: boolean;
+  ftp: number;
 }
 export const templateColumns = '1fr repeat(3, 3fr) 1fr 5fr 1fr 1fr';
 
@@ -24,10 +25,35 @@ export const WorkoutIntervalInput = ({
   duplicateWorkoutPart,
   checkValidation,
   workoutPart,
+  ftp,
 }: Props) => {
+  const parseInputAsInt = (input: string) => {
+    const parsed = parseInt(input);
+    if (isNaN(parsed)) {
+      return 0;
+    }
+    return parsed;
+  };
+
   const [powerInput, setPowerInput] = React.useState(
     '' + workoutPart.targetPower
   );
+
+  console.log(powerInput);
+
+  const [ftpInput, setFtpInput] = React.useState(
+    '' + parseInputAsInt('' + (100 * workoutPart.targetPower) / ftp)
+  );
+
+  const setPowerInputFromFtp = (ftpPct: string) =>
+    setPowerInput(
+      '' + parseInputAsInt('' + parseInputAsInt(ftpPct) * ftp * 0.01)
+    );
+
+  const setFtpInputFromPower = (power: string) =>
+    setFtpInput(
+      '' + parseInputAsInt('' + (100 * parseInputAsInt(power)) / ftp)
+    );
 
   const { hours, minutes, seconds } = secondsToHoursMinutesAndSeconds(
     workoutPart.duration
@@ -36,21 +62,14 @@ export const WorkoutIntervalInput = ({
   const [minutesInput, setMinutesInput] = React.useState('' + minutes);
   const [secondsInput, setSecondsInput] = React.useState('' + seconds);
 
-  const parseInput = (input: string) => {
-    const parsed = parseInt(input);
-    if (isNaN(parsed)) {
-      return 0;
-    }
-    return parsed;
-  };
   const calculateNewDuration = (
     hoursInput: string,
     minutesInput: string,
     secondsInput: string
   ) => {
-    const hoursAsSeconds = parseInput(hoursInput) * 3600;
-    const minutesAsSeconds = parseInput(minutesInput) * 60;
-    const secondsAsSeconds = parseInput(secondsInput);
+    const hoursAsSeconds = parseInputAsInt(hoursInput) * 3600;
+    const minutesAsSeconds = parseInputAsInt(minutesInput) * 60;
+    const secondsAsSeconds = parseInputAsInt(secondsInput);
 
     const totalSeconds = hoursAsSeconds + minutesAsSeconds + secondsAsSeconds;
     if (totalSeconds < 0) {
@@ -74,14 +93,16 @@ export const WorkoutIntervalInput = ({
 
     setWorkoutPart({
       duration: newDuration,
-      targetPower: parseInput(powerInput),
+      targetPower: parseInputAsInt(powerInput),
     });
   };
 
   const durationIsInvalid =
     calculateNewDuration(hoursInput, minutesInput, secondsInput) <= 0;
-  const powerAsNumber = parseInput(powerInput);
+  const powerAsNumber = parseInputAsInt(powerInput);
   const powerIsInvalid = powerAsNumber <= 0;
+
+  const ftpIsInvalid = parseInputAsInt(ftpInput) <= 0;
   return (
     <Grid templateColumns={templateColumns} gap="1" marginY="1">
       <Center>
@@ -130,16 +151,34 @@ export const WorkoutIntervalInput = ({
           @
         </Text>
       </Center>
-      <FormControl isInvalid={checkValidation && powerIsInvalid}>
+      <FormControl
+        isInvalid={checkValidation && powerIsInvalid && ftpIsInvalid}
+      >
         <InputGroup>
           <Input
             placeholder="power"
             type="number"
             value={powerInput}
-            onChange={(e) => setPowerInput(e.target.value)}
+            onChange={(e) => {
+              setPowerInput(e.target.value);
+              setFtpInputFromPower(e.target.value);
+            }}
             onBlur={updateInputs}
           />
           <InputRightAddon children="W" />
+        </InputGroup>
+        <InputGroup>
+          <Input
+            placeholder="%FTP"
+            type="number"
+            value={ftpInput}
+            onChange={(e) => {
+              setFtpInput(e.target.value);
+              setPowerInputFromFtp(e.target.value);
+            }}
+            onBlur={updateInputs}
+          />
+          <InputRightAddon children="%" />
         </InputGroup>
       </FormControl>
       <Tooltip label="Duplicate" placement="left">

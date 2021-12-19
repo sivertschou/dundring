@@ -135,6 +135,7 @@ export const WorkoutEditor = ({
                 });
               }}
               workoutPart={part}
+              ftp={300}
             />
           </DraggableItem>
         ))}
