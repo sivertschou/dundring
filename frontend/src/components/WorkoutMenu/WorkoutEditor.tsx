@@ -40,6 +40,18 @@ export const WorkoutEditor = ({
   const canSaveRemotely =
     token && (loadedWorkout.type === 'new' || loadedWorkout.type === 'remote');
 
+  const parseInputAsInt = (input: string) => {
+    const parsed = parseInt(input);
+    if (isNaN(parsed)) {
+      return 0;
+    }
+    return parsed;
+  };
+
+  const [ftp, setFtp] = React.useState('250');
+
+  const ftpNum = parseInputAsInt(ftp);
+
   const [workout, setWorkout] = React.useState<EditableWorkout>({
     ...loadedWorkout,
     parts: loadedWorkout.parts.map((part, i) => ({ ...part, id: i })),
@@ -88,6 +100,10 @@ export const WorkoutEditor = ({
           placeholder="Workout name"
         />
       </FormControl>
+      <FormControl id="ftp">
+        <FormLabel>FTP</FormLabel>
+        <Input value={ftp} onChange={(e) => setFtp(e.target.value)} />
+      </FormControl>
 
       {workout.parts.length > 0 ? (
         <Grid templateColumns={templateColumns} gap="1" mb="2">
@@ -135,7 +151,7 @@ export const WorkoutEditor = ({
                 });
               }}
               workoutPart={part}
-              ftp={300}
+              ftp={ftpNum}
             />
           </DraggableItem>
         ))}

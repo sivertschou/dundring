@@ -17,7 +17,7 @@ interface Props {
   checkValidation: boolean;
   ftp: number;
 }
-export const templateColumns = '1fr repeat(3, 3fr) 1fr 5fr 1fr 1fr';
+export const templateColumns = '1fr repeat(2, 3fr) 1fr 2fr 2fr 1fr 1fr';
 
 export const WorkoutIntervalInput = ({
   setWorkoutPart,
@@ -111,18 +111,6 @@ export const WorkoutIntervalInput = ({
       <FormControl isInvalid={checkValidation && durationIsInvalid}>
         <InputGroup>
           <Input
-            placeholder="hours"
-            type="number"
-            value={hoursInput}
-            onChange={(e) => setHoursInput(e.target.value)}
-            onBlur={updateInputs}
-          />
-          <InputRightAddon children="h" />
-        </InputGroup>
-      </FormControl>
-      <FormControl isInvalid={checkValidation && durationIsInvalid}>
-        <InputGroup>
-          <Input
             placeholder="minutes"
             type="number"
             value={minutesInput}
@@ -167,6 +155,10 @@ export const WorkoutIntervalInput = ({
           />
           <InputRightAddon children="W" />
         </InputGroup>
+      </FormControl>
+      <FormControl
+        isInvalid={checkValidation && powerIsInvalid && ftpIsInvalid}
+      >
         <InputGroup>
           <Input
             placeholder="%FTP"
