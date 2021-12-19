@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useGlobalClock } from './hooks/useGlobalClock';
 import theme from './theme';
 import { Lap } from './types';
-import * as utils from './utils';
+import * as createTcxFile from './createTcxFile';
 import { WorkoutDisplay } from './components/WorkoutDisplay';
 import { ActionBar } from './components/ActionBar';
 import { useHeartRateMonitor } from './context/HeartRateContext';
@@ -103,6 +103,10 @@ export const App = ({ clockWorker }: Props) => {
     }
   };
 
+  const anyValidDataPoints = data.some((lap) =>
+    lap.dataPoints.some((dataPoint) => dataPoint.heartRate || dataPoint.power)
+  );
+
   return (
     <ChakraProvider theme={theme}>
       <Center>
@@ -138,8 +142,10 @@ export const App = ({ clockWorker }: Props) => {
                 300 w
               </Button>
 
-              {data.length > 0 ? (
-                <Button onClick={() => utils.toTCX(data)}>Download TCX</Button>
+              {anyValidDataPoints ? (
+                <Button onClick={() => createTcxFile.toTCX(data)}>
+                  Download TCX
+                </Button>
               ) : null}
             </Stack>
           </Center>
