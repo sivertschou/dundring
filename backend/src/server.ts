@@ -170,6 +170,10 @@ router.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
           statusMessage = 'User already exists';
           statusCode = 400;
           break;
+        case 'Mail is already in use':
+          statusMessage = 'Mail is already in use';
+          statusCode = 400;
+          break;
         case 'File not found':
         default:
           break;
