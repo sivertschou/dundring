@@ -2,6 +2,7 @@ import * as messageService from './services/messageService';
 import * as userService from './services/userService';
 import * as groupSessionService from './services/groupSessionService';
 import * as validationService from './services/validationService';
+import * as slackService from './services/slackService';
 import * as express from 'express';
 import {
   ApiResponseBody,
@@ -29,6 +30,7 @@ const app = express.default();
 const router = express.Router();
 
 const httpPort = process.env.PORT;
+slackService.checkSlackConfig();
 
 app.use(express.json());
 app.use(cors());
@@ -181,7 +183,7 @@ router.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
       return;
     }
 
-    if (userService.validateUser(username, hashedPassword)) {
+    if (userService.validateUser(username, password)) {
       const token = validationService.generateAccessToken(username);
       const userRole = userService.getUserRoles(username);
       res.send({
