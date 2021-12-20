@@ -35,26 +35,42 @@ export const WorkoutIntervalInput = ({
     return parsed;
   };
 
-  console.log(workoutPart.targetPower);
-  const [powerInput, setPowerInput] = React.useState(
+  const [powerInput, setPowerInputBasic] = React.useState(
     '' + workoutPart.targetPower
   );
 
-  console.log(powerInput);
+  const [ftpWhenPowerSet, setFtpWhenPowerSet] = React.useState(ftp);
+
+  const setPowerInput = React.useCallback(
+    (p: string) => {
+      setFtpWhenPowerSet(ftp);
+      setPowerInputBasic(p);
+    },
+    [ftp]
+  );
 
   const [ftpInput, setFtpInput] = React.useState(
     '' + parseInputAsInt('' + (100 * workoutPart.targetPower) / ftp)
   );
-
-  const setPowerInputFromFtp = (ftpPct: string) =>
-    setPowerInput(
-      '' + parseInputAsInt('' + parseInputAsInt(ftpPct) * ftp * 0.01)
-    );
+  console.log({ w: workoutPart.targetPower, powerInput, ftpInput });
 
   const setFtpInputFromPower = (power: string) =>
-    setFtpInput(
-      '' + parseInputAsInt('' + (100 * parseInputAsInt(power)) / ftp)
+    setFtpInput('' + Math.ceil((100 * parseInputAsInt(power)) / ftp));
+
+  const powerAsNumber = parseInputAsInt(powerInput);
+
+  const setPowerInputFromFtp = (ftpInput: string) =>
+    setPowerInput(
+      '' + parseInputAsInt('' + 0.01 * parseInputAsInt(ftpInput) * ftp)
     );
+
+  const setNewPower = React.useCallback(() => {
+    console.log('new');
+    if (ftpWhenPowerSet === ftp) return;
+    setPowerInput(
+      '' + parseInputAsInt('' + 0.01 * parseInputAsInt(ftpInput) * ftp)
+    );
+  }, [ftp, ftpInput, ftpWhenPowerSet, setPowerInput]);
 
   const { hours, minutes, seconds } = secondsToHoursMinutesAndSeconds(
     workoutPart.duration
@@ -79,7 +95,7 @@ export const WorkoutIntervalInput = ({
     return totalSeconds;
   };
 
-  const updateInputs = () => {
+  const updateDurations = () => {
     const newDuration = calculateNewDuration(
       hoursInput,
       minutesInput,
@@ -92,15 +108,29 @@ export const WorkoutIntervalInput = ({
     setMinutesInput(minutes.toString());
     setSecondsInput(seconds.toString());
 
+    return newDuration;
+  };
+
+  const updateInputs = () => {
+    const newDuration = updateDurations();
+
     setWorkoutPart({
       duration: newDuration,
       targetPower: parseInputAsInt(powerInput),
     });
   };
 
+  React.useEffect(() => {
+    setNewPower();
+    if (parseInputAsInt(powerInput) === workoutPart.targetPower) return;
+    setWorkoutPart({
+      duration: 0,
+      targetPower: parseInputAsInt(powerInput),
+    });
+  }, [ftp, setNewPower, setWorkoutPart, powerInput, workoutPart.targetPower]);
+
   const durationIsInvalid =
     calculateNewDuration(hoursInput, minutesInput, secondsInput) <= 0;
-  const powerAsNumber = parseInputAsInt(powerInput);
   const powerIsInvalid = powerAsNumber <= 0;
 
   const ftpIsInvalid = parseInputAsInt(ftpInput) <= 0;
@@ -126,7 +156,7 @@ export const WorkoutIntervalInput = ({
           <Input
             placeholder="seconds"
             type="number"
-            value={secondsInput}
+            value={0}
             onChange={(e) => {
               setSecondsInput(e.target.value);
             }}
