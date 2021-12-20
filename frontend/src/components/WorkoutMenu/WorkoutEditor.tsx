@@ -9,8 +9,8 @@ import { DropResult } from 'react-beautiful-dnd';
 import { DraggableList } from './DraggableList';
 import { DraggableItem } from './DraggableItem';
 import {
-  formatHoursMinutesAndSecondsAsString,
-  secondsToHoursMinutesAndSeconds,
+  formatMinutesAndSecondsAsString,
+  secondsToMinutesAndSeconds,
 } from '../../utils';
 import { useUser } from '../../context/UserContext';
 import { saveWorkout } from '../../api';
@@ -61,8 +61,8 @@ export const WorkoutEditor = ({
     (sum, part) => sum + part.duration,
     0
   );
-  const totalDurationFormatted = formatHoursMinutesAndSecondsAsString(
-    secondsToHoursMinutesAndSeconds(totalDuration)
+  const totalDurationFormatted = formatMinutesAndSecondsAsString(
+    secondsToMinutesAndSeconds(totalDuration)
   );
 
   function onDragEnd(result: DropResult) {

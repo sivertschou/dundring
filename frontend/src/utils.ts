@@ -29,27 +29,22 @@ export const removeDuplicateWords = (words: string[]) =>
 
 export const mailIsValid = (mail: string) => /.+@.+\..+/.test(mail.trim());
 
-export interface HoursMinutesAndSeconds {
-  hours: number;
+export interface MinutesAndSeconds {
   minutes: number;
   seconds: number;
 }
 
-export const secondsToHoursMinutesAndSeconds = (totalSeconds: number) => {
-  const hours = Math.floor((totalSeconds / 60 / 60) % 24);
-  const minutes = Math.floor((totalSeconds / 60) % 60);
+export const secondsToMinutesAndSeconds = (totalSeconds: number) => {
+  const minutes = Math.floor(totalSeconds / 60);
   const seconds = Math.floor(totalSeconds % 60);
-  return { hours, minutes, seconds };
+  return { minutes, seconds };
 };
 
-export const formatHoursMinutesAndSecondsAsString = ({
-  hours,
+export const formatMinutesAndSecondsAsString = ({
   minutes,
   seconds,
-}: HoursMinutesAndSeconds) => {
-  return `${hours > 0 ? hours + ':' : ''}${padLeadingZero(
-    minutes
-  )}:${padLeadingZero(seconds)}`;
+}: MinutesAndSeconds) => {
+  return `${padLeadingZero(minutes)}:${padLeadingZero(seconds)}`;
 };
 
 export const timestampToFormattedHHMMSS = (timestamp: Date) => {

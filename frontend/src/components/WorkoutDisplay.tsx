@@ -11,8 +11,8 @@ export const WorkoutDisplay = () => {
   }
 
   const { activePart, isDone, partElapsedTime, workout } = activeWorkout;
-  const formattedElapsedTime = utils.formatHoursMinutesAndSecondsAsString(
-    utils.secondsToHoursMinutesAndSeconds(partElapsedTime)
+  const formattedElapsedTime = utils.formatMinutesAndSecondsAsString(
+    utils.secondsToMinutesAndSeconds(partElapsedTime)
   );
 
   return (
@@ -22,8 +22,8 @@ export const WorkoutDisplay = () => {
       {workout.parts.map((part, i) => {
         return (
           <Text key={i} color={!isDone && i === activePart ? 'orange' : ''}>
-            {`${utils.formatHoursMinutesAndSecondsAsString(
-              utils.secondsToHoursMinutesAndSeconds(part.duration)
+            {`${utils.formatMinutesAndSecondsAsString(
+              utils.secondsToMinutesAndSeconds(part.duration)
             )}@${part.targetPower}w`}
           </Text>
         );
@@ -54,7 +54,7 @@ const getTimeLeft = (
       0
     );
 
-  return utils.formatHoursMinutesAndSecondsAsString(
-    utils.secondsToHoursMinutesAndSeconds(totalWorkoutTime - timeElapsed)
+  return utils.formatMinutesAndSecondsAsString(
+    utils.secondsToMinutesAndSeconds(totalWorkoutTime - timeElapsed)
   );
 };

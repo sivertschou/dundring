@@ -6,9 +6,9 @@ import * as React from 'react';
 import { Cloud, Gear, Hdd } from 'react-bootstrap-icons';
 import { Workout } from '../../types';
 import {
-  formatHoursMinutesAndSecondsAsString,
+  formatMinutesAndSecondsAsString,
   getTotalWorkoutTime,
-  secondsToHoursMinutesAndSeconds,
+  secondsToMinutesAndSeconds,
 } from '../../utils';
 
 interface Props {
@@ -24,8 +24,8 @@ export const WorkoutListItem = ({
   isLocallyStored,
 }: Props) => {
   const workoutDuration = getTotalWorkoutTime(workout);
-  const formattedDuration = formatHoursMinutesAndSecondsAsString(
-    secondsToHoursMinutesAndSeconds(workoutDuration)
+  const formattedDuration = formatMinutesAndSecondsAsString(
+    secondsToMinutesAndSeconds(workoutDuration)
   );
 
   return (
