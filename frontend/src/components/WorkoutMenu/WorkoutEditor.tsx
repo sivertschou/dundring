@@ -50,8 +50,6 @@ export const WorkoutEditor = ({
 
   const [ftp, setFtp] = React.useState('250');
 
-  const ftpNum = parseInputAsInt(ftp);
-
   const [workout, setWorkout] = React.useState<EditableWorkout>({
     ...loadedWorkout,
     parts: loadedWorkout.parts.map((part, i) => ({ ...part, id: i })),
@@ -108,11 +106,11 @@ export const WorkoutEditor = ({
       {workout.parts.length > 0 ? (
         <Grid templateColumns={templateColumns} gap="1" mb="2">
           <Text />
-          <Text>Hours</Text>
           <Text>Minutes</Text>
           <Text>Seconds</Text>
           <Text />
           <Text>Power</Text>
+          <Text>% FTP</Text>
         </Grid>
       ) : null}
       <DraggableList onDragEnd={onDragEnd}>
@@ -151,7 +149,7 @@ export const WorkoutEditor = ({
                 });
               }}
               workoutPart={part}
-              ftp={ftpNum}
+              ftp={parseInputAsInt(ftp)}
             />
           </DraggableItem>
         ))}
