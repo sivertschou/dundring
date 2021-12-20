@@ -92,7 +92,6 @@ export const WorkoutEditor = ({
       {workout.parts.length > 0 ? (
         <Grid templateColumns={templateColumns} gap="1" mb="2">
           <Text />
-          <Text>Hours</Text>
           <Text>Minutes</Text>
           <Text>Seconds</Text>
           <Text />
