@@ -57,23 +57,18 @@ export const WorkoutIntervalInput = ({
 
   const powerValue = wattFromFtpPercent(parseInputAsInt(ftpInput), ftp);
 
-  const { hours, minutes, seconds } = secondsToHoursMinutesAndSeconds(
+  const { minutes, seconds } = secondsToHoursMinutesAndSeconds(
     workoutPart.duration
   );
-  const [hoursInput, setHoursInput] = React.useState('' + hours);
+
   const [minutesInput, setMinutesInput] = React.useState('' + minutes);
   const [secondsInput, setSecondsInput] = React.useState('' + seconds);
 
-  const calculateNewDuration = (
-    hoursInput: string,
-    minutesInput: string,
-    secondsInput: string
-  ) => {
-    const hoursAsSeconds = parseInputAsInt(hoursInput) * 3600;
+  const calculateNewDuration = (minutesInput: string, secondsInput: string) => {
     const minutesAsSeconds = parseInputAsInt(minutesInput) * 60;
     const secondsAsSeconds = parseInputAsInt(secondsInput);
 
-    const totalSeconds = hoursAsSeconds + minutesAsSeconds + secondsAsSeconds;
+    const totalSeconds = minutesAsSeconds + secondsAsSeconds;
     if (totalSeconds < 0) {
       return 0;
     }
@@ -81,15 +76,9 @@ export const WorkoutIntervalInput = ({
   };
 
   const updateDurations = () => {
-    const newDuration = calculateNewDuration(
-      hoursInput,
-      minutesInput,
-      secondsInput
-    );
-    const { hours, minutes, seconds } =
-      secondsToHoursMinutesAndSeconds(newDuration);
+    const newDuration = calculateNewDuration(minutesInput, secondsInput);
+    const { minutes, seconds } = secondsToHoursMinutesAndSeconds(newDuration);
 
-    setHoursInput(hours.toString());
     setMinutesInput(minutes.toString());
     setSecondsInput(seconds.toString());
 
@@ -106,7 +95,7 @@ export const WorkoutIntervalInput = ({
   };
 
   const durationIsInvalid =
-    calculateNewDuration(hoursInput, minutesInput, secondsInput) <= 0;
+    calculateNewDuration(minutesInput, secondsInput) <= 0;
   const powerIsInvalid = powerValue <= 0;
 
   const ftpIsInvalid = parseInputAsInt(ftpInput) <= 0;
