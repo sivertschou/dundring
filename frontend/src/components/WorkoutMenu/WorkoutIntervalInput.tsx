@@ -7,7 +7,7 @@ import { FormControl } from '@chakra-ui/react';
 import * as React from 'react';
 import { Files, List, X } from 'react-bootstrap-icons';
 import { WorkoutPart } from '../../types';
-import { secondsToHoursMinutesAndSeconds } from '../../utils';
+import { secondsToMinutesAndSeconds } from '../../utils';
 
 interface Props {
   workoutPart: WorkoutPart;
@@ -29,9 +29,7 @@ export const WorkoutIntervalInput = ({
     '' + workoutPart.targetPower
   );
 
-  const { minutes, seconds } = secondsToHoursMinutesAndSeconds(
-    workoutPart.duration
-  );
+  const { minutes, seconds } = secondsToMinutesAndSeconds(workoutPart.duration);
 
   const [minutesInput, setMinutesInput] = React.useState('' + minutes);
   const [secondsInput, setSecondsInput] = React.useState('' + seconds);
@@ -56,7 +54,7 @@ export const WorkoutIntervalInput = ({
 
   const updateInputs = () => {
     const newDuration = calculateNewDuration(minutesInput, secondsInput);
-    const { minutes, seconds } = secondsToHoursMinutesAndSeconds(newDuration);
+    const { minutes, seconds } = secondsToMinutesAndSeconds(newDuration);
 
     setMinutesInput(minutes.toString());
     setSecondsInput(seconds.toString());
