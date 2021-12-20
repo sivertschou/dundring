@@ -35,42 +35,27 @@ export const WorkoutIntervalInput = ({
     return parsed;
   };
 
-  const [powerInput, setPowerInputBasic] = React.useState(
-    '' + workoutPart.targetPower
-  );
+  const ftpPercentFromWatt = (watt: number, ftp: number) =>
+    Math.round(100 * (watt / ftp));
 
-  const [ftpWhenPowerSet, setFtpWhenPowerSet] = React.useState(ftp);
-
-  const setPowerInput = React.useCallback(
-    (p: string) => {
-      setFtpWhenPowerSet(ftp);
-      setPowerInputBasic(p);
-    },
-    [ftp]
-  );
+  const wattFromFtpPercent = (ftpPercent: number, ftp: number) =>
+    Math.round((ftpPercent / 100) * ftp);
 
   const [ftpInput, setFtpInput] = React.useState(
-    '' + parseInputAsInt('' + (100 * workoutPart.targetPower) / ftp)
+    '' + ftpPercentFromWatt(workoutPart.targetPower, ftp)
   );
-  console.log({ w: workoutPart.targetPower, powerInput, ftpInput });
 
-  const setFtpInputFromPower = (power: string) =>
-    setFtpInput('' + Math.ceil((100 * parseInputAsInt(power)) / ftp));
+  const [tmpPowerInput, setTmpPowerInput] = React.useState(
+    '' + wattFromFtpPercent(parseInputAsInt(ftpInput), ftp)
+  );
 
-  const powerAsNumber = parseInputAsInt(powerInput);
+  React.useEffect(() => {
+    setTmpPowerInput('' + wattFromFtpPercent(parseInputAsInt(ftpInput), ftp));
+  }, [ftp, ftpInput]);
 
-  const setPowerInputFromFtp = (ftpInput: string) =>
-    setPowerInput(
-      '' + parseInputAsInt('' + 0.01 * parseInputAsInt(ftpInput) * ftp)
-    );
+  const [usingTmpPowerInput, setUsingTmpPowerInput] = React.useState(false);
 
-  const setNewPower = React.useCallback(() => {
-    console.log('new');
-    if (ftpWhenPowerSet === ftp) return;
-    setPowerInput(
-      '' + parseInputAsInt('' + 0.01 * parseInputAsInt(ftpInput) * ftp)
-    );
-  }, [ftp, ftpInput, ftpWhenPowerSet, setPowerInput]);
+  const powerValue = wattFromFtpPercent(parseInputAsInt(ftpInput), ftp);
 
   const { hours, minutes, seconds } = secondsToHoursMinutesAndSeconds(
     workoutPart.duration
@@ -116,22 +101,13 @@ export const WorkoutIntervalInput = ({
 
     setWorkoutPart({
       duration: newDuration,
-      targetPower: parseInputAsInt(powerInput),
+      targetPower: workoutPart.targetPower,
     });
   };
 
-  React.useEffect(() => {
-    setNewPower();
-    if (parseInputAsInt(powerInput) === workoutPart.targetPower) return;
-    setWorkoutPart({
-      duration: 0,
-      targetPower: parseInputAsInt(powerInput),
-    });
-  }, [ftp, setNewPower, setWorkoutPart, powerInput, workoutPart.targetPower]);
-
   const durationIsInvalid =
     calculateNewDuration(hoursInput, minutesInput, secondsInput) <= 0;
-  const powerIsInvalid = powerAsNumber <= 0;
+  const powerIsInvalid = powerValue <= 0;
 
   const ftpIsInvalid = parseInputAsInt(ftpInput) <= 0;
   return (
@@ -177,12 +153,20 @@ export const WorkoutIntervalInput = ({
           <Input
             placeholder="power"
             type="number"
-            value={powerInput}
+            value={usingTmpPowerInput ? tmpPowerInput : powerValue + ''}
             onChange={(e) => {
-              setPowerInput(e.target.value);
-              setFtpInputFromPower(e.target.value);
+              setTmpPowerInput(e.target.value);
             }}
-            onBlur={updateInputs}
+            onFocus={() => setUsingTmpPowerInput(true)}
+            onBlur={() => {
+              setUsingTmpPowerInput(false);
+              const powerAsFtpPercent = ftpPercentFromWatt(
+                parseInputAsInt(tmpPowerInput),
+                ftp
+              );
+              setFtpInput('' + powerAsFtpPercent);
+              setTmpPowerInput('' + wattFromFtpPercent(powerAsFtpPercent, ftp));
+            }}
           />
           <InputRightAddon children="W" />
         </InputGroup>
@@ -194,12 +178,17 @@ export const WorkoutIntervalInput = ({
           <Input
             placeholder="%FTP"
             type="number"
-            value={ftpInput}
+            value={
+              usingTmpPowerInput
+                ? '' + ftpPercentFromWatt(parseInputAsInt(tmpPowerInput), ftp)
+                : ftpInput
+            }
             onChange={(e) => {
               setFtpInput(e.target.value);
-              setPowerInputFromFtp(e.target.value);
+              setTmpPowerInput(
+                '' + ftpPercentFromWatt(parseInputAsInt(e.target.value), ftp)
+              );
             }}
-            onBlur={updateInputs}
           />
           <InputRightAddon children="%" />
         </InputGroup>
