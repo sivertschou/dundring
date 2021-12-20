@@ -119,7 +119,7 @@ export const WorkoutIntervalInput = ({
           <Input
             placeholder="seconds"
             type="number"
-            value={0}
+            value={secondsInput}
             onChange={(e) => {
               setSecondsInput(e.target.value);
             }}
