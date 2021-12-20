@@ -16,7 +16,7 @@ interface Props {
   duplicateWorkoutPart: () => void;
   checkValidation: boolean;
 }
-export const templateColumns = '1fr repeat(3, 3fr) 1fr 5fr 1fr 1fr';
+export const templateColumns = '1fr repeat(2, 3fr) 1fr 5fr 1fr 1fr';
 
 export const WorkoutIntervalInput = ({
   setWorkoutPart,
@@ -29,10 +29,10 @@ export const WorkoutIntervalInput = ({
     '' + workoutPart.targetPower
   );
 
-  const { hours, minutes, seconds } = secondsToHoursMinutesAndSeconds(
+  const { minutes, seconds } = secondsToHoursMinutesAndSeconds(
     workoutPart.duration
   );
-  const [hoursInput, setHoursInput] = React.useState('' + hours);
+
   const [minutesInput, setMinutesInput] = React.useState('' + minutes);
   const [secondsInput, setSecondsInput] = React.useState('' + seconds);
 
@@ -43,16 +43,11 @@ export const WorkoutIntervalInput = ({
     }
     return parsed;
   };
-  const calculateNewDuration = (
-    hoursInput: string,
-    minutesInput: string,
-    secondsInput: string
-  ) => {
-    const hoursAsSeconds = parseInput(hoursInput) * 3600;
+  const calculateNewDuration = (minutesInput: string, secondsInput: string) => {
     const minutesAsSeconds = parseInput(minutesInput) * 60;
     const secondsAsSeconds = parseInput(secondsInput);
 
-    const totalSeconds = hoursAsSeconds + minutesAsSeconds + secondsAsSeconds;
+    const totalSeconds = minutesAsSeconds + secondsAsSeconds;
     if (totalSeconds < 0) {
       return 0;
     }
@@ -60,15 +55,9 @@ export const WorkoutIntervalInput = ({
   };
 
   const updateInputs = () => {
-    const newDuration = calculateNewDuration(
-      hoursInput,
-      minutesInput,
-      secondsInput
-    );
-    const { hours, minutes, seconds } =
-      secondsToHoursMinutesAndSeconds(newDuration);
+    const newDuration = calculateNewDuration(minutesInput, secondsInput);
+    const { minutes, seconds } = secondsToHoursMinutesAndSeconds(newDuration);
 
-    setHoursInput(hours.toString());
     setMinutesInput(minutes.toString());
     setSecondsInput(seconds.toString());
 
@@ -79,7 +68,7 @@ export const WorkoutIntervalInput = ({
   };
 
   const durationIsInvalid =
-    calculateNewDuration(hoursInput, minutesInput, secondsInput) <= 0;
+    calculateNewDuration(minutesInput, secondsInput) <= 0;
   const powerAsNumber = parseInput(powerInput);
   const powerIsInvalid = powerAsNumber <= 0;
   return (
@@ -87,18 +76,6 @@ export const WorkoutIntervalInput = ({
       <Center>
         <Icon as={List} />
       </Center>
-      <FormControl isInvalid={checkValidation && durationIsInvalid}>
-        <InputGroup>
-          <Input
-            placeholder="hours"
-            type="number"
-            value={hoursInput}
-            onChange={(e) => setHoursInput(e.target.value)}
-            onBlur={updateInputs}
-          />
-          <InputRightAddon children="h" />
-        </InputGroup>
-      </FormControl>
       <FormControl isInvalid={checkValidation && durationIsInvalid}>
         <InputGroup>
           <Input
