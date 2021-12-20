@@ -35,6 +35,7 @@ export const WorkoutIntervalInput = ({
     return parsed;
   };
 
+  console.log(workoutPart.targetPower);
   const [powerInput, setPowerInput] = React.useState(
     '' + workoutPart.targetPower
   );
