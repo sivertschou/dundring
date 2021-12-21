@@ -33,6 +33,7 @@ export interface LoginResponseBody {
   username: string;
   roles: UserRole[];
   token: string;
+  ftp: number;
 }
 
 export interface RegisterRequestBody {

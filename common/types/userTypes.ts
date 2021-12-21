@@ -4,6 +4,7 @@ export interface User {
   username: string;
   mail: string;
   roles: UserRole[];
+  ftp: number;
 }
 
 export interface StoredUser {
@@ -13,6 +14,7 @@ export interface StoredUser {
   password: string;
   workouts: Workout[];
   salt: string;
+  ftp: number;
 }
 
 export enum UserRole {

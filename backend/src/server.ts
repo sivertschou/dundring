@@ -95,9 +95,10 @@ router.post<null, ApiResponseBody<LoginResponseBody>>(
       return;
     }
 
+    const { roles, ftp } = user;
     res.send({
       status: ApiStatus.SUCCESS,
-      data: { roles: user.roles, token: token || '', username: user.username },
+      data: { roles, ftp, token: token || '', username: user.username },
     });
     return;
   }
@@ -122,16 +123,21 @@ router.post<null, ApiResponseBody<LoginResponseBody>, LoginRequestBody>(
 
     if (userService.validateUser(username, password)) {
       const token = validationService.generateAccessToken(username);
-      const userRole = userService.getUserRoles(username);
-      res.send({
-        status: ApiStatus.SUCCESS,
-        data: {
-          username,
-          token,
-          roles: userRole,
-        },
-      });
-      return;
+      const user = userService.getUser(username);
+      if (user) {
+        const { roles, ftp } = user;
+
+        res.send({
+          status: ApiStatus.SUCCESS,
+          data: {
+            username,
+            token,
+            roles,
+            ftp,
+          },
+        });
+        return;
+      }
     }
 
     res.statusMessage = 'Invalid username or password.';
@@ -159,6 +165,7 @@ router.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
       salt,
       roles: [UserRole.DEFAULT],
       workouts: [],
+      ftp: 250,
     });
 
     if (ret.status === 'ERROR') {
@@ -189,16 +196,20 @@ router.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
 
     if (userService.validateUser(username, password)) {
       const token = validationService.generateAccessToken(username);
-      const userRole = userService.getUserRoles(username);
-      res.send({
-        status: ApiStatus.SUCCESS,
-        data: {
-          username,
-          token,
-          roles: userRole,
-        },
-      });
-      return;
+      const user = userService.getUser(username);
+      if (user) {
+        const { roles, ftp } = user;
+        res.send({
+          status: ApiStatus.SUCCESS,
+          data: {
+            username,
+            token,
+            roles,
+            ftp,
+          },
+        });
+        return;
+      }
     }
 
     res.statusMessage = 'Invalid username or password.';
