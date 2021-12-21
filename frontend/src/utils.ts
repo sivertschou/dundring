@@ -60,3 +60,14 @@ export const getTotalWorkoutTime = (workout: Workout) =>
   workout.parts.reduce((sum, part) => sum + part.duration, 0);
 
 export const padLeadingZero = (nr: number) => (nr < 10 ? '0' + nr : nr);
+
+export const averageNonNull = (xs: (number | null | undefined)[]) => {
+  const [num, den] = xs.reduce(
+    (acc, cur) =>
+      cur === null || cur === undefined ? acc : [acc[0] + cur, acc[1] + 1],
+    [0, 0]
+  );
+
+  if (den === 0) return 0;
+  return num / den;
+};

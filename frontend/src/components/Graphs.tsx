@@ -8,11 +8,13 @@ import {
   BarChart,
   ResponsiveContainer,
   Tooltip,
+  XAxis,
   YAxis,
 } from 'recharts';
 import { hrColors, powerColors } from '../colors';
 import { LocalRoom, Member } from '../context/WebsocketContext';
 import { DataPoint } from '../types';
+import { averageNonNull } from '../utils';
 import { CustomChartTooltip } from './Graph/CustomChartTooltip';
 import { CustomGraphTooltip } from './Graph/CustomGraphTooltip';
 import { ShowData } from './Graph/GraphContainer';
@@ -25,7 +27,12 @@ interface Props {
   showUserData: ShowData;
   showOtherUsersData: { [username: string]: ShowData };
 }
-const mergeArrays = (arr1: any[], arr2: any[]) => {
+
+interface GraphData {
+  [x: string]: number | undefined;
+}
+
+const mergeArrays = <T extends object>(arr1: T[], arr2: T[]): T[] => {
   const a = arr1.length > arr2.length ? arr1 : arr2;
   const b = arr1.length > arr2.length ? arr2 : arr1;
   return a.map((a, i) => ({ ...a, ...b[i] }));
@@ -44,38 +51,42 @@ export const Graphs = ({
     const data = rawData.map((dp) => ({
       'You HR': dp.heartRate,
       'You Power': dp.power,
+      'You Time': dp.timeStamp,
     }));
     const otherPeoplesDataMerged = otherUsers
       .map((user) => {
         const data = activeGroupSession?.workoutData[user.username];
         if (!data) return [];
+
         const baseData = [
           ...new Array(numPoints).fill({
             [user.username + ' HR']: undefined,
             [user.username + ' Power']: undefined,
           }),
-        ];
+        ] as GraphData[];
 
         const reversed = [...data].reverse();
 
-        return [
+        const xs = [
           ...baseData,
           ...reversed.map((data) => ({
             [user.username + ' HR']: data.heartRate,
             [user.username + ' Power']: data.power,
           })),
-        ].splice(-numPoints);
+        ];
+
+        return xs.splice(-numPoints);
       })
       .reduce(
         (merged, data) => mergeArrays(merged, data),
-        [...Array(numPoints)]
+        [...Array<GraphData>(numPoints)]
       );
 
     const filledData = [
-      ...new Array(numPoints).fill({
+      ...(new Array(numPoints).fill({
         'You HR': undefined,
         'You Power': undefined,
-      }),
+      }) as GraphData[]),
       ...data,
     ].splice(-numPoints);
 
@@ -83,18 +94,14 @@ export const Graphs = ({
       const data = activeGroupSession?.workoutData[user.username];
       if (!data) return null;
       const avgPower = Math.floor(
-        ((data[0]?.power || 0) +
-          (data[1]?.power || 0) +
-          (data[1]?.power || 0)) /
-          3
+        averageNonNull([data[0]?.power, data[1]?.power, data[2]?.power])
       );
+
       const name = `${user.username} Power`;
       return { name, [name]: avgPower };
     });
     const myAvgPower = Math.floor(
-      [...rawData]
-        .splice(-3)
-        .reduce((sum, data) => sum + (data.power || 0), 0) / 3
+      averageNonNull([...rawData].map((d) => d.power))
     );
 
     return [
@@ -233,6 +240,7 @@ export const Graphs = ({
               )}
               {fillAreaChart('You', showUserData, 0, showFill, 'hr')}
 
+              <XAxis />
               <YAxis />
               <Tooltip content={<CustomGraphTooltip />} />
             </AreaChart>
