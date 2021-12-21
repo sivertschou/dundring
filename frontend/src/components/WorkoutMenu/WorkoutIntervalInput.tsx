@@ -15,8 +15,9 @@ interface Props {
   removeWorkoutPart: () => void;
   duplicateWorkoutPart: () => void;
   checkValidation: boolean;
+  ftp: number;
 }
-export const templateColumns = '1fr repeat(2, 3fr) 1fr 5fr 1fr 1fr';
+export const templateColumns = '1fr repeat(2, 3fr) 1fr 2fr 2fr 1fr 1fr';
 
 export const WorkoutIntervalInput = ({
   setWorkoutPart,
@@ -24,26 +25,46 @@ export const WorkoutIntervalInput = ({
   duplicateWorkoutPart,
   checkValidation,
   workoutPart,
+  ftp,
 }: Props) => {
-  const [powerInput, setPowerInput] = React.useState(
-    '' + workoutPart.targetPower
-  );
-
-  const { minutes, seconds } = secondsToMinutesAndSeconds(workoutPart.duration);
-
-  const [minutesInput, setMinutesInput] = React.useState('' + minutes);
-  const [secondsInput, setSecondsInput] = React.useState('' + seconds);
-
-  const parseInput = (input: string) => {
+  const parseInputAsInt = (input: string) => {
     const parsed = parseInt(input);
     if (isNaN(parsed)) {
       return 0;
     }
     return parsed;
   };
+
+  const ftpPercentFromWatt = (watt: number, ftp: number) =>
+    Math.round(100 * (watt / ftp));
+
+  const wattFromFtpPercent = (ftpPercent: number, ftp: number) =>
+    Math.round((ftpPercent / 100) * ftp);
+
+  const [ftpInput, setFtpInput] = React.useState(
+    '' + ftpPercentFromWatt(workoutPart.targetPower, ftp)
+  );
+
+  const [tmpPowerInput, setTmpPowerInput] = React.useState(
+    '' + wattFromFtpPercent(parseInputAsInt(ftpInput), ftp)
+  );
+
+  React.useEffect(() => {
+    setTmpPowerInput('' + wattFromFtpPercent(parseInputAsInt(ftpInput), ftp));
+  }, [ftp, ftpInput]);
+
+  const [usingTmpPowerInput, setUsingTmpPowerInput] = React.useState(false);
+
+  const powerValue = wattFromFtpPercent(parseInputAsInt(ftpInput), ftp);
+
+  const { minutes, seconds } = secondsToMinutesAndSeconds(workoutPart.duration);
+
+  const [minutesInput, setMinutesInput] = React.useState('' + minutes);
+  const [secondsInput, setSecondsInput] = React.useState('' + seconds);
+
   const calculateNewDuration = (minutesInput: string, secondsInput: string) => {
-    const minutesAsSeconds = parseInput(minutesInput) * 60;
-    const secondsAsSeconds = parseInput(secondsInput);
+    const minutesAsSeconds = parseInputAsInt(minutesInput) * 60;
+    const secondsAsSeconds = parseInputAsInt(secondsInput);
 
     const totalSeconds = minutesAsSeconds + secondsAsSeconds;
     if (totalSeconds < 0) {
@@ -52,23 +73,30 @@ export const WorkoutIntervalInput = ({
     return totalSeconds;
   };
 
-  const updateInputs = () => {
+  const updateDurations = () => {
     const newDuration = calculateNewDuration(minutesInput, secondsInput);
     const { minutes, seconds } = secondsToMinutesAndSeconds(newDuration);
 
     setMinutesInput(minutes.toString());
     setSecondsInput(seconds.toString());
 
+    return newDuration;
+  };
+
+  const updateInputs = () => {
+    const newDuration = updateDurations();
+
     setWorkoutPart({
       duration: newDuration,
-      targetPower: parseInput(powerInput),
+      targetPower: workoutPart.targetPower,
     });
   };
 
   const durationIsInvalid =
     calculateNewDuration(minutesInput, secondsInput) <= 0;
-  const powerAsNumber = parseInput(powerInput);
-  const powerIsInvalid = powerAsNumber <= 0;
+  const powerIsInvalid = powerValue <= 0;
+
+  const ftpIsInvalid = parseInputAsInt(ftpInput) <= 0;
   return (
     <Grid templateColumns={templateColumns} gap="1" marginY="1">
       <Center>
@@ -105,16 +133,51 @@ export const WorkoutIntervalInput = ({
           @
         </Text>
       </Center>
-      <FormControl isInvalid={checkValidation && powerIsInvalid}>
+      <FormControl
+        isInvalid={checkValidation && powerIsInvalid && ftpIsInvalid}
+      >
         <InputGroup>
           <Input
             placeholder="power"
             type="number"
-            value={powerInput}
-            onChange={(e) => setPowerInput(e.target.value)}
-            onBlur={updateInputs}
+            value={usingTmpPowerInput ? tmpPowerInput : powerValue + ''}
+            onChange={(e) => {
+              setTmpPowerInput(e.target.value);
+            }}
+            onFocus={() => setUsingTmpPowerInput(true)}
+            onBlur={() => {
+              setUsingTmpPowerInput(false);
+              const powerAsFtpPercent = ftpPercentFromWatt(
+                parseInputAsInt(tmpPowerInput),
+                ftp
+              );
+              setFtpInput('' + powerAsFtpPercent);
+              setTmpPowerInput('' + wattFromFtpPercent(powerAsFtpPercent, ftp));
+            }}
           />
           <InputRightAddon children="W" />
+        </InputGroup>
+      </FormControl>
+      <FormControl
+        isInvalid={checkValidation && powerIsInvalid && ftpIsInvalid}
+      >
+        <InputGroup>
+          <Input
+            placeholder="%FTP"
+            type="number"
+            value={
+              usingTmpPowerInput
+                ? '' + ftpPercentFromWatt(parseInputAsInt(tmpPowerInput), ftp)
+                : ftpInput
+            }
+            onChange={(e) => {
+              setFtpInput(e.target.value);
+              setTmpPowerInput(
+                '' + ftpPercentFromWatt(parseInputAsInt(e.target.value), ftp)
+              );
+            }}
+          />
+          <InputRightAddon children="%" />
         </InputGroup>
       </FormControl>
       <Tooltip label="Duplicate" placement="left">
