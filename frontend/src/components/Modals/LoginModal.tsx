@@ -68,8 +68,8 @@ export const LoginModal = () => {
     if (response.status === 'FAILURE') {
       setErrorMessage(response.message);
     } else if (response.status === 'SUCCESS') {
-      const { roles, token, username } = response.data;
-      setUser({ loggedIn: true, token, roles, username, workouts: [] });
+      const { roles, token, username, ftp } = response.data;
+      setUser({ loggedIn: true, token, roles, username, ftp, workouts: [] });
       onClose();
     }
   };
@@ -100,12 +100,13 @@ export const LoginModal = () => {
     if (response.status === 'FAILURE') {
       setErrorMessage(response.message);
     } else if (response.status === 'SUCCESS') {
-      const { roles, token, username } = response.data;
+      const { roles, token, username, ftp } = response.data;
       setUser({
         loggedIn: true,
         token,
         roles,
         username,
+        ftp,
         workouts: [],
       });
       toast({

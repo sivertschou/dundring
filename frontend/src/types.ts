@@ -34,6 +34,7 @@ export interface LoggedInUser {
   username: string;
   roles: UserRole[];
   workouts: Workout[];
+  ftp: number;
 }
 
 export interface LoggedOutUser {
