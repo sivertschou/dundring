@@ -56,7 +56,6 @@ export const WorkoutEditor = ({
     ...loadedWorkout,
     parts: loadedWorkout.parts.map((part, i) => ({ ...part, id: i })),
   });
-  const checkValidation = true;
   const totalDuration = workout.parts.reduce(
     (sum, part) => sum + part.duration,
     0
@@ -119,7 +118,6 @@ export const WorkoutEditor = ({
           <DraggableItem id={part.id + ''} index={index} key={part.id}>
             <WorkoutIntervalInput
               key={part.id}
-              checkValidation={checkValidation}
               removeWorkoutPart={() =>
                 setWorkout((workout) => ({
                   ...workout,
