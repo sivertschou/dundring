@@ -14,7 +14,6 @@ interface Props {
   setWorkoutPart: (workoutPart: WorkoutPart) => void;
   removeWorkoutPart: () => void;
   duplicateWorkoutPart: () => void;
-  checkValidation: boolean;
   ftp: number;
 }
 export const templateColumns = '1fr repeat(2, 3fr) 1fr 2fr 2fr 1fr 1fr';
@@ -23,7 +22,6 @@ export const WorkoutIntervalInput = ({
   setWorkoutPart,
   removeWorkoutPart,
   duplicateWorkoutPart,
-  checkValidation,
   workoutPart,
   ftp,
 }: Props) => {
@@ -102,7 +100,7 @@ export const WorkoutIntervalInput = ({
       <Center>
         <Icon as={List} />
       </Center>
-      <FormControl isInvalid={checkValidation && durationIsInvalid}>
+      <FormControl isInvalid={durationIsInvalid}>
         <InputGroup>
           <Input
             placeholder="minutes"
@@ -114,7 +112,7 @@ export const WorkoutIntervalInput = ({
           <InputRightAddon children="m" />
         </InputGroup>
       </FormControl>
-      <FormControl isInvalid={checkValidation && durationIsInvalid}>
+      <FormControl isInvalid={durationIsInvalid}>
         <InputGroup>
           <Input
             placeholder="seconds"
@@ -133,9 +131,7 @@ export const WorkoutIntervalInput = ({
           @
         </Text>
       </Center>
-      <FormControl
-        isInvalid={checkValidation && powerIsInvalid && ftpIsInvalid}
-      >
+      <FormControl isInvalid={powerIsInvalid || ftpIsInvalid}>
         <InputGroup>
           <Input
             placeholder="power"
@@ -158,9 +154,7 @@ export const WorkoutIntervalInput = ({
           <InputRightAddon children="W" />
         </InputGroup>
       </FormControl>
-      <FormControl
-        isInvalid={checkValidation && powerIsInvalid && ftpIsInvalid}
-      >
+      <FormControl isInvalid={powerIsInvalid || ftpIsInvalid}>
         <InputGroup>
           <Input
             placeholder="%FTP"
