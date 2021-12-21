@@ -33,12 +33,17 @@ export interface LoginResponseBody {
   username: string;
   roles: UserRole[];
   token: string;
+  ftp: number;
 }
 
 export interface RegisterRequestBody {
   username: string;
   mail: string;
   password: string;
+}
+
+export interface UserUpdateRequestBody {
+  ftp: number;
 }
 
 export interface WorkoutsResponseBody {

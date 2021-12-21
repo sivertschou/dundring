@@ -34,6 +34,7 @@ export const UserContextProvider = ({
                 token: locallyStoredToken,
                 username: res.data.username,
                 workouts: [],
+                ftp: res.data.ftp,
               });
               break;
             default:

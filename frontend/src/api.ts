@@ -3,6 +3,7 @@ import {
   LoginRequestBody,
   LoginResponseBody,
   RegisterRequestBody,
+  UserUpdateRequestBody,
   WorkoutRequestBody,
   WorkoutsResponseBody,
 } from '../../common/types/apiTypes';
@@ -93,4 +94,11 @@ export const saveWorkout = async (
     token,
     workout
   );
+};
+
+export const updateUser = async (token: string, data: { ftp: number }) => {
+  return authPost<
+    ApiResponseBody<UserUpdateRequestBody>,
+    UserUpdateRequestBody
+  >(`${httpUrl}/me`, token, data);
 };

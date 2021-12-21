@@ -11,6 +11,7 @@ import {
   LoginResponseBody,
   MessagesResponseBody,
   RegisterRequestBody,
+  UserUpdateRequestBody,
   WorkoutRequestBody,
   WorkoutsResponseBody,
 } from '../../common/types/apiTypes';
@@ -51,6 +52,7 @@ router.get<null, ApiResponseBody<WorkoutsResponseBody>>(
     });
   }
 );
+
 router.post<WorkoutRequestBody, ApiResponseBody<WorkoutsResponseBody>>(
   '/me/workout',
   validationService.authenticateToken,
@@ -82,6 +84,39 @@ router.post<WorkoutRequestBody, ApiResponseBody<WorkoutsResponseBody>>(
     }
   }
 );
+
+router.post<UserUpdateRequestBody, ApiResponseBody<UserUpdateRequestBody>>(
+  '/me',
+  validationService.authenticateToken,
+  (req: validationService.AuthenticatedRequest<UserUpdateRequestBody>, res) => {
+    if (!req.username) {
+      res.send({
+        status: ApiStatus.FAILURE,
+        message: 'Unathorized',
+      });
+      return;
+    }
+    const { ftp } = req.body;
+
+    const ret = userService.updateUserFtp(req.username, ftp);
+
+    switch (ret.status) {
+      case 'SUCCESS':
+        res.send({
+          status: ApiStatus.SUCCESS,
+          data: { ftp },
+        });
+        return;
+      default:
+        res.send({
+          status: ApiStatus.FAILURE,
+          message: ret.type,
+        });
+        return;
+    }
+  }
+);
+
 router.post<null, ApiResponseBody<LoginResponseBody>>(
   '/validate',
   validationService.authenticateToken,
@@ -95,9 +130,10 @@ router.post<null, ApiResponseBody<LoginResponseBody>>(
       return;
     }
 
+    const { roles, ftp } = user;
     res.send({
       status: ApiStatus.SUCCESS,
-      data: { roles: user.roles, token: token || '', username: user.username },
+      data: { roles, ftp, token: token || '', username: user.username },
     });
     return;
   }
@@ -122,16 +158,21 @@ router.post<null, ApiResponseBody<LoginResponseBody>, LoginRequestBody>(
 
     if (userService.validateUser(username, password)) {
       const token = validationService.generateAccessToken(username);
-      const userRole = userService.getUserRoles(username);
-      res.send({
-        status: ApiStatus.SUCCESS,
-        data: {
-          username,
-          token,
-          roles: userRole,
-        },
-      });
-      return;
+      const user = userService.getUser(username);
+      if (user) {
+        const { roles, ftp } = user;
+
+        res.send({
+          status: ApiStatus.SUCCESS,
+          data: {
+            username,
+            token,
+            roles,
+            ftp,
+          },
+        });
+        return;
+      }
     }
 
     res.statusMessage = 'Invalid username or password.';
@@ -159,6 +200,7 @@ router.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
       salt,
       roles: [UserRole.DEFAULT],
       workouts: [],
+      ftp: 250,
     });
 
     if (ret.status === 'ERROR') {
@@ -189,16 +231,20 @@ router.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
 
     if (userService.validateUser(username, password)) {
       const token = validationService.generateAccessToken(username);
-      const userRole = userService.getUserRoles(username);
-      res.send({
-        status: ApiStatus.SUCCESS,
-        data: {
-          username,
-          token,
-          roles: userRole,
-        },
-      });
-      return;
+      const user = userService.getUser(username);
+      if (user) {
+        const { roles, ftp } = user;
+        res.send({
+          status: ApiStatus.SUCCESS,
+          data: {
+            username,
+            token,
+            roles,
+            ftp,
+          },
+        });
+        return;
+      }
     }
 
     res.statusMessage = 'Invalid username or password.';

@@ -19,6 +19,7 @@ import { useWebsocket } from '../context/WebsocketContext';
 import { ActionBarItem } from './ActionBarItem';
 import { GroupSessionModal } from './Modals/GroupSessionModal';
 import { LoginModal } from './Modals/LoginModal';
+import { ProfileModal } from './Modals/ProfileModal';
 import { WorkoutEditorModal } from './Modals/WorkoutEditorModal';
 
 export const ActionBar = () => {
@@ -39,13 +40,7 @@ export const ActionBar = () => {
   const { colorMode, setColorMode } = useColorMode();
   return (
     <Stack position="fixed" right="5" top="5" alignItems="flex-end" spacing="1">
-      {user.loggedIn ? (
-        <Text fontSize="xl" fontWeight="bold">
-          {user.loggedIn ? user.username : null}
-        </Text>
-      ) : (
-        <LoginModal />
-      )}
+      {user.loggedIn ? <ProfileModal /> : <LoginModal />}
       {activeGroupSession ? (
         <Text fontSize="lg" fontWeight="bold">
           #{activeGroupSession.id}

@@ -16,7 +16,8 @@ export const WorkoutOverview = ({
   setWorkoutToEdit,
   setActiveWorkout,
 }: Props) => {
-  const { workouts, localWorkouts } = useUser();
+  const { workouts, localWorkouts, user } = useUser();
+  const previewFTP = user.loggedIn ? user.ftp : 250;
   return (
     <Stack p="5">
       <Button
@@ -29,6 +30,7 @@ export const WorkoutOverview = ({
             parts: [],
             id: '',
             type: 'new',
+            previewFTP,
           })
         }
       >
@@ -42,7 +44,7 @@ export const WorkoutOverview = ({
           workout={workout}
           setActiveWorkout={setActiveWorkout}
           onClickEdit={() => {
-            setWorkoutToEdit({ ...workout, type: 'remote' });
+            setWorkoutToEdit({ ...workout, type: 'remote', previewFTP });
           }}
         />
       ))}
@@ -53,7 +55,7 @@ export const WorkoutOverview = ({
           workout={workout}
           setActiveWorkout={setActiveWorkout}
           onClickEdit={() => {
-            setWorkoutToEdit({ ...workout, type: 'local' });
+            setWorkoutToEdit({ ...workout, type: 'local', previewFTP });
           }}
         />
       ))}

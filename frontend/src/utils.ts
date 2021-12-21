@@ -60,3 +60,7 @@ export const getTotalWorkoutTime = (workout: Workout) =>
   workout.parts.reduce((sum, part) => sum + part.duration, 0);
 
 export const padLeadingZero = (nr: number) => (nr < 10 ? '0' + nr : nr);
+
+const digits = '0123456789'.split('');
+export const stringIsValidUnsignedInt = (input: string) =>
+  input.split('').every((char) => digits.includes(char));
