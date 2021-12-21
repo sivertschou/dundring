@@ -13,6 +13,7 @@ import {
   secondsToMinutesAndSeconds,
   wattFromFtpPercent,
 } from '../../utils';
+import { findZone } from '../../zones';
 
 interface Props {
   workoutPart: WorkoutPart;
@@ -21,7 +22,7 @@ interface Props {
   duplicateWorkoutPart: () => void;
   ftp: number;
 }
-export const templateColumns = '1fr repeat(2, 3fr) 1fr 2fr 2fr 1fr 1fr';
+export const templateColumns = '1fr repeat(2, 3fr) 1fr 2fr 2fr 1fr 1fr 1fr';
 
 export const WorkoutIntervalInput = ({
   setWorkoutPart,
@@ -36,13 +37,15 @@ export const WorkoutIntervalInput = ({
     '' + wattFromFtpPercent(parseInputAsInt(ftpInput), ftp)
   );
 
+  const powerValue = wattFromFtpPercent(parseInputAsInt(ftpInput), ftp);
+
+  const ftpPctValue = parseInputAsInt(ftpInput);
+
   React.useEffect(() => {
-    setTmpPowerInput('' + wattFromFtpPercent(parseInputAsInt(ftpInput), ftp));
-  }, [ftp, ftpInput]);
+    setTmpPowerInput('' + wattFromFtpPercent(ftpPctValue, ftp));
+  }, [ftp, ftpPctValue]);
 
   const [usingTmpPowerInput, setUsingTmpPowerInput] = React.useState(false);
-
-  const powerValue = wattFromFtpPercent(parseInputAsInt(ftpInput), ftp);
 
   const { minutes, seconds } = secondsToMinutesAndSeconds(workoutPart.duration);
 
@@ -166,6 +169,9 @@ export const WorkoutIntervalInput = ({
           <InputRightAddon children="%" />
         </InputGroup>
       </FormControl>
+      <Tooltip label="zone">
+        <Center>{findZone(ftpPctValue)}</Center>
+      </Tooltip>
       <Tooltip label="Duplicate" placement="left">
         <Center>
           <IconButton

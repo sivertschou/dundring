@@ -18,6 +18,16 @@ import { CloudUpload, Hdd } from 'react-bootstrap-icons';
 import Icon from '@chakra-ui/icon';
 import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
 import { useActiveWorkout } from '../../context/WorkoutContext';
+import {
+  Table,
+  Tbody,
+  Td,
+  Tfoot,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react';
+import { createZoneTableInfo } from '../../zones';
 interface Props {
   workout: WorkoutToEdit;
   closeEditor: () => void;
@@ -52,7 +62,7 @@ export const WorkoutEditor = ({
 
   const [ftp, setFtp] = React.useState('' + activeFTP);
 
-  const ftpNum = parseInputAsInt(ftp);
+  const ftpValue = parseInputAsInt(ftp);
 
   const [workout, setWorkout] = React.useState<EditableWorkout>({
     ...loadedWorkout,
@@ -87,6 +97,12 @@ export const WorkoutEditor = ({
 
   const getNextWorkoutPartsId = (workoutParts: EditableWorkoutPart[]) =>
     workoutParts.reduce((maxId, cur) => Math.max(maxId, cur.id), 0) + 1;
+
+  const zoneTableInfo = createZoneTableInfo(
+    workout.parts,
+    totalDuration,
+    ftpValue
+  );
 
   return (
     <Stack p="5">
@@ -157,7 +173,7 @@ export const WorkoutEditor = ({
                 });
               }}
               workoutPart={part}
-              ftp={ftpNum}
+              ftp={ftpValue}
             />
           </DraggableItem>
         ))}
@@ -180,7 +196,45 @@ export const WorkoutEditor = ({
       >
         Add part
       </Button>
-      <Text>Total duration: {totalDurationFormatted}</Text>
+      <Table variant="simple">
+        <Thead>
+          <Tr>
+            <Th>Zone</Th>
+            <Th whiteSpace="nowrap">Range %</Th>
+            <Th whiteSpace="nowrap">Range W</Th>
+            <Th>Duration</Th>
+            <Th>Percentage</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {zoneTableInfo.map(
+            ({ zone, range, rangePct, duration, pctDuration }) => (
+              <Tr key={zone}>
+                <Td>{zone}</Td>
+                <Td whiteSpace="nowrap">
+                  {rangePct.lower}
+                  {rangePct.upper ? '-' + rangePct.upper : '+'}%
+                </Td>
+                <Td whiteSpace="nowrap">
+                  {range.lower}
+                  {range.upper ? '-' + range.upper : '+'} w
+                </Td>
+                <Td>{duration}</Td>
+                <Td>{pctDuration}%</Td>
+              </Tr>
+            )
+          )}
+        </Tbody>
+        <Tfoot>
+          <Tr>
+            <Td fontWeight="bold">Total</Td>
+            <Td></Td>
+            <Td></Td>
+            <Td fontWeight="bold">{totalDurationFormatted}</Td>
+          </Tr>
+        </Tfoot>
+      </Table>
+
       <HStack>
         {canSaveRemotely ? (
           <Button
