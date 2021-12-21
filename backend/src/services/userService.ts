@@ -36,9 +36,23 @@ export const getUserRoles = (username: string): UserRole[] => {
   const user = getUser(username);
   return user ? user.roles : [];
 };
+
 export const getUserWorkouts = (username: string): Workout[] => {
   const user = getUser(username);
   return user ? user.workouts : [];
+};
+
+export const updateUserFtp = (
+  username: string,
+  ftp: number
+): Status<StoredUser, 'File not found' | 'User not found'> => {
+  const user = getUser(username);
+
+  if (!user) {
+    return { status: 'ERROR', type: 'User not found' };
+  }
+
+  return setUser({ ...user, ftp });
 };
 
 const updateWorkoutOrAppendIfNotFound = (

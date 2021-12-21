@@ -42,6 +42,10 @@ export interface RegisterRequestBody {
   password: string;
 }
 
+export interface UserUpdateRequestBody {
+  ftp: number;
+}
+
 export interface WorkoutsResponseBody {
   workouts: Workout[];
 }

@@ -11,6 +11,7 @@ import {
   LoginResponseBody,
   MessagesResponseBody,
   RegisterRequestBody,
+  UserUpdateRequestBody,
   WorkoutRequestBody,
   WorkoutsResponseBody,
 } from '../../common/types/apiTypes';
@@ -51,6 +52,7 @@ router.get<null, ApiResponseBody<WorkoutsResponseBody>>(
     });
   }
 );
+
 router.post<WorkoutRequestBody, ApiResponseBody<WorkoutsResponseBody>>(
   '/me/workout',
   validationService.authenticateToken,
@@ -82,6 +84,39 @@ router.post<WorkoutRequestBody, ApiResponseBody<WorkoutsResponseBody>>(
     }
   }
 );
+
+router.post<UserUpdateRequestBody, ApiResponseBody<UserUpdateRequestBody>>(
+  '/me',
+  validationService.authenticateToken,
+  (req: validationService.AuthenticatedRequest<UserUpdateRequestBody>, res) => {
+    if (!req.username) {
+      res.send({
+        status: ApiStatus.FAILURE,
+        message: 'Unathorized',
+      });
+      return;
+    }
+    const { ftp } = req.body;
+
+    const ret = userService.updateUserFtp(req.username, ftp);
+
+    switch (ret.status) {
+      case 'SUCCESS':
+        res.send({
+          status: ApiStatus.SUCCESS,
+          data: { ftp },
+        });
+        return;
+      default:
+        res.send({
+          status: ApiStatus.FAILURE,
+          message: ret.type,
+        });
+        return;
+    }
+  }
+);
+
 router.post<null, ApiResponseBody<LoginResponseBody>>(
   '/validate',
   validationService.authenticateToken,
