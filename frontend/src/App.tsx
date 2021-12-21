@@ -120,7 +120,7 @@ export const App = ({ clockWorker }: Props) => {
           <Center>
             <Stack width={['70%', '50%']}>
               <Button onClick={() => (running ? stop() : start())}>
-                {running ? 'Stop' : 'Start'}
+                {getStartStopButtonText({ smartTrainerIsConnected, running })}
               </Button>
               <Button onClick={() => setSmartTrainerResistance(0)}>0 w</Button>
               <Button onClick={() => setSmartTrainerResistance(50)}>
@@ -157,4 +157,16 @@ export const App = ({ clockWorker }: Props) => {
       <BottomBar />
     </ChakraProvider>
   );
+};
+
+const getStartStopButtonText = ({
+  smartTrainerIsConnected,
+  running,
+}: {
+  smartTrainerIsConnected: boolean;
+  running: boolean;
+}): string => {
+  if (running) return 'Stop';
+  if (smartTrainerIsConnected) return 'Start';
+  return 'Start (without power)';
 };
