@@ -64,3 +64,9 @@ export const padLeadingZero = (nr: number) => (nr < 10 ? '0' + nr : nr);
 const digits = '0123456789'.split('');
 export const stringIsValidUnsignedInt = (input: string) =>
   input.split('').every((char) => digits.includes(char));
+
+export const ftpPercentFromWatt = (watt: number, ftp: number) =>
+  Math.round(100 * (watt / ftp));
+
+export const wattFromFtpPercent = (ftpPercent: number, ftp: number) =>
+  Math.round((ftpPercent / 100) * ftp);
