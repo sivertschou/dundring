@@ -23,6 +23,7 @@ import { useUser } from '../../context/UserContext';
 
 export interface WorkoutToEdit extends Workout {
   type: 'local' | 'remote' | 'new';
+  previewFTP: number;
 }
 export const WorkoutEditorModal = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();

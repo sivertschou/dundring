@@ -48,7 +48,7 @@ export const WorkoutEditor = ({
     return parsed;
   };
 
-  const [ftp, setFtp] = React.useState('250');
+  const [ftp, setFtp] = React.useState('' + loadedWorkout.previewFTP);
 
   const ftpNum = parseInputAsInt(ftp);
 
