@@ -1,6 +1,6 @@
 import { Button } from '@chakra-ui/button';
 import { FormControl, FormLabel } from '@chakra-ui/form-control';
-import { Input } from '@chakra-ui/input';
+import { Input, InputGroup, InputRightAddon } from '@chakra-ui/input';
 import { Grid, HStack, Stack, Text } from '@chakra-ui/layout';
 import * as React from 'react';
 import { Workout, WorkoutPart } from '../../types';
@@ -104,11 +104,14 @@ export const WorkoutEditor = ({
       </FormControl>
       <FormControl id="ftp">
         <FormLabel>FTP</FormLabel>
-        <Input
-          value={ftp}
-          onChange={(e) => setFtp(e.target.value)}
-          onBlur={() => setActiveFTP(parseInputAsInt(ftp))}
-        />
+        <InputGroup>
+          <Input
+            value={ftp}
+            onChange={(e) => setFtp(e.target.value)}
+            onBlur={() => setActiveFTP(parseInputAsInt(ftp))}
+          />
+          <InputRightAddon children="W" />
+        </InputGroup>
       </FormControl>
 
       {workout.parts.length > 0 ? (

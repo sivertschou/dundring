@@ -1,6 +1,11 @@
 import { Button } from '@chakra-ui/button';
+import {
+  FormControl,
+  FormHelperText,
+  FormLabel,
+} from '@chakra-ui/form-control';
 import Icon from '@chakra-ui/icon';
-import { Input } from '@chakra-ui/input';
+import { Input, InputGroup, InputRightAddon } from '@chakra-ui/input';
 import { Divider, Stack } from '@chakra-ui/layout';
 import * as React from 'react';
 import { PencilSquare } from 'react-bootstrap-icons';
@@ -42,11 +47,23 @@ export const WorkoutOverview = ({
         Create new workout
       </Button>
       <Divider />
-      <Input
-        value={previewFTP}
-        onChange={(e) => setPreviewFTP(e.target.value)}
-        onBlur={(_) => setActiveFTP(parseInputAsInt(previewFTP))}
-      />
+      <FormControl id="ftp">
+        <FormLabel>Based on FTP</FormLabel>
+        <InputGroup>
+          <Input
+            value={previewFTP}
+            onChange={(e) => setPreviewFTP(e.target.value)}
+            onBlur={(_) => setActiveFTP(parseInputAsInt(previewFTP))}
+          />
+          <InputRightAddon children="W" />
+        </InputGroup>
+        <FormHelperText>
+          This value will be used as your FTP for this session. You can change
+          your actual FTP on your profile page
+        </FormHelperText>
+      </FormControl>
+
+      <Divider />
       {workouts.map((workout, i) => (
         <WorkoutListItem
           key={`${i}-${workout.name}`}
