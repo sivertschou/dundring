@@ -98,38 +98,45 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
     disconnect,
     isConnected,
     power,
-    setResistance: async (resistance: number) => {
-      if (!isConnected) {
-        logEvent('tried to set resistance, but no smart trainer is connected');
-        return;
-      }
-      try {
-        if (fitnessMachineCharacteristic) {
-          if (!resistance) {
-            // Reset
-            await fitnessMachineCharacteristic.writeValue(
-              new Uint8Array([0x01])
-            );
-            await fitnessMachineCharacteristic.writeValue(
-              new Uint8Array([0x05, 0])
-            );
-            logEvent(`set resistance: 0W`);
-          } else {
-            const resBuf = new Uint8Array(new Uint16Array([resistance]).buffer);
-            const cmdBuf = new Uint8Array([0x05]);
-            const combined = new Uint8Array(cmdBuf.length + resBuf.length);
-            combined.set(cmdBuf);
-            combined.set(resBuf, cmdBuf.length);
-            await fitnessMachineCharacteristic.writeValue(combined);
-            logEvent(`set resistance: ${resistance}W`);
+    setResistance: React.useCallback(
+      async (resistance: number) => {
+        if (!isConnected) {
+          logEvent(
+            'tried to set resistance, but no smart trainer is connected'
+          );
+          return;
+        }
+        try {
+          if (fitnessMachineCharacteristic) {
+            if (!resistance) {
+              // Reset
+              await fitnessMachineCharacteristic.writeValue(
+                new Uint8Array([0x01])
+              );
+              await fitnessMachineCharacteristic.writeValue(
+                new Uint8Array([0x05, 0])
+              );
+              logEvent(`set resistance: 0W`);
+            } else {
+              const resBuf = new Uint8Array(
+                new Uint16Array([resistance]).buffer
+              );
+              const cmdBuf = new Uint8Array([0x05]);
+              const combined = new Uint8Array(cmdBuf.length + resBuf.length);
+              combined.set(cmdBuf);
+              combined.set(resBuf, cmdBuf.length);
+              await fitnessMachineCharacteristic.writeValue(combined);
+              logEvent(`set resistance: ${resistance}W`);
+            }
+          }
+        } catch (error) {
+          if (error) {
+            console.error(`Tried setting resistance, but got error:`, error);
+            logEvent(`failed to set resistance: ${resistance}W`);
           }
         }
-      } catch (error) {
-        if (error) {
-          console.error(`Tried setting resistance, but got error:`, error);
-          logEvent(`failed to set resistance: ${resistance}W`);
-        }
-      }
-    },
+      },
+      [isConnected, logEvent, fitnessMachineCharacteristic]
+    ),
   };
 };

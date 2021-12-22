@@ -7,8 +7,8 @@ export const useSmartTrainerMock = (): SmartTrainer => {
   const [power, setPower] = React.useState(0);
   const [isConnected, setIsConnected] = React.useState(false);
   const { logEvent } = useLogs();
-
   React.useEffect(() => {
+    console.log('redo the useEffect');
     const interval = setInterval(() => {
       if (isConnected) {
         setPower((prev) =>
@@ -30,9 +30,12 @@ export const useSmartTrainerMock = (): SmartTrainer => {
     },
     isConnected,
     power,
-    setResistance: (resistance: number) => {
-      console.log('MOCK: set resistance: ', resistance);
-      logEvent(`[mock] set resistance: ${resistance}W`);
-    },
+    setResistance: React.useCallback(
+      (resistance: number) => {
+        console.log('MOCK: set resistance: ', resistance);
+        logEvent(`[mock] set resistance: ${resistance}W`);
+      },
+      [logEvent]
+    ),
   };
 };

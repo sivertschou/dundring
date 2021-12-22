@@ -26,6 +26,7 @@ export interface ActiveWorkout {
   activePart: number;
   isDone: boolean;
   isActive: boolean;
+  activeFTP: number;
 }
 
 export interface LoggedInUser {

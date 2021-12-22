@@ -21,8 +21,14 @@ export const LogContextProvider = ({
     <LogContext.Provider
       value={{
         loggedEvents,
-        logEvent: (msg: string) =>
-          setLoggedEvents((prev) => [{ msg, timestamp: new Date() }, ...prev]),
+        logEvent: React.useCallback(
+          (msg: string) =>
+            setLoggedEvents((prev) => [
+              { msg, timestamp: new Date() },
+              ...prev,
+            ]),
+          [setLoggedEvents]
+        ),
       }}
     >
       {children}
