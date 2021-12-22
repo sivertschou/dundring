@@ -17,6 +17,7 @@ import { saveWorkout } from '../../api';
 import { CloudUpload, Hdd } from 'react-bootstrap-icons';
 import Icon from '@chakra-ui/icon';
 import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
+import { useActiveWorkout } from '../../context/WorkoutContext';
 interface Props {
   workout: WorkoutToEdit;
   closeEditor: () => void;
@@ -33,6 +34,7 @@ export const WorkoutEditor = ({
   workout: loadedWorkout,
   closeEditor,
 }: Props) => {
+  const { activeFTP, setActiveFTP } = useActiveWorkout();
   const { user, saveLocalWorkout } = useUser();
   const token = user.loggedIn && user.token;
   const canSaveLocally =
@@ -48,7 +50,7 @@ export const WorkoutEditor = ({
     return parsed;
   };
 
-  const [ftp, setFtp] = React.useState('' + loadedWorkout.previewFTP);
+  const [ftp, setFtp] = React.useState('' + activeFTP);
 
   const ftpNum = parseInputAsInt(ftp);
 
@@ -102,7 +104,11 @@ export const WorkoutEditor = ({
       </FormControl>
       <FormControl id="ftp">
         <FormLabel>FTP</FormLabel>
-        <Input value={ftp} onChange={(e) => setFtp(e.target.value)} />
+        <Input
+          value={ftp}
+          onChange={(e) => setFtp(e.target.value)}
+          onBlur={() => setActiveFTP(parseInputAsInt(ftp))}
+        />
       </FormControl>
 
       {workout.parts.length > 0 ? (

@@ -52,6 +52,12 @@ export const ActiveWorkoutContextProvider = ({
   const [activeFTP, setActiveFTP] = React.useState(
     (user.loggedIn && user.ftp) || 250
   );
+  React.useEffect(() => {
+    // TODO: This might get triggered when other updates are made to user.
+    if (user.loggedIn && user.ftp) {
+      setActiveFTP(user.ftp);
+    }
+  }, [user]);
 
   const activeWorkoutReducer = (
     activeWorkout: ActiveWorkout,

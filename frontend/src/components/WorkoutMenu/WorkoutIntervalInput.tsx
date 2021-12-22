@@ -9,6 +9,7 @@ import { Files, List, X } from 'react-bootstrap-icons';
 import { WorkoutPart } from '../../types';
 import {
   ftpPercentFromWatt,
+  parseInputAsInt,
   secondsToMinutesAndSeconds,
   wattFromFtpPercent,
 } from '../../utils';
@@ -31,14 +32,6 @@ export const WorkoutIntervalInput = ({
   workoutPart,
   ftp,
 }: Props) => {
-  const parseInputAsInt = (input: string) => {
-    const parsed = parseInt(input);
-    if (isNaN(parsed)) {
-      return 0;
-    }
-    return parsed;
-  };
-
   const [ftpInput, setFtpInput] = React.useState('' + workoutPart.targetPower);
 
   const [tmpPowerInput, setTmpPowerInput] = React.useState(
