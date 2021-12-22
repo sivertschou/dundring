@@ -5,7 +5,7 @@ import { Workout } from '../types';
 import * as utils from '../utils';
 
 export const WorkoutDisplay = () => {
-  const { activeWorkout, activeFTP } = useActiveWorkout();
+  const { activeWorkout, activeFTP, changeActivePart } = useActiveWorkout();
   if (!activeWorkout.workout) {
     return null;
   }
@@ -27,6 +27,8 @@ export const WorkoutDisplay = () => {
             key={i}
             fontWeight={isActive ? 'bold' : 'normal'}
             color={isActive ? 'purple.500' : ''}
+            cursor="pointer"
+            onClick={() => changeActivePart(i)}
           >
             {`${utils.formatMinutesAndSecondsAsString(
               utils.secondsToMinutesAndSeconds(part.duration)
