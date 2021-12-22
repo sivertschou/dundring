@@ -37,6 +37,25 @@ const getRange = (zone: Zone): { lower: number; upper: number | null } => {
   }
 };
 
+const getDescription = (zone: Zone): string => {
+  switch (zone) {
+    case 'Z1':
+      return 'Active Recovery';
+    case 'Z2':
+      return 'Endurance';
+    case 'Z3':
+      return 'Tempo';
+    case 'Z4':
+      return 'Threshold';
+    case 'Z5':
+      return 'VO2Max';
+    case 'Z6':
+      return 'Anaerobic';
+    case 'Z7':
+      return 'Actual Dundring';
+  }
+};
+
 export const findZone = (pct: number): Zone => {
   if (pct <= getRange('Z1').upper!!) return 'Z1';
   if (pct <= getRange('Z2').upper!!) return 'Z2';
@@ -81,5 +100,6 @@ export const createZoneTableInfo = (
     ),
     range: scaleRangeToFtp(getRange(zoneWithDurations.zone), ftp),
     rangePct: getRange(zoneWithDurations.zone),
+    description: getDescription(zoneWithDurations.zone),
   }));
 };

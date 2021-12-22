@@ -25,6 +25,7 @@ import {
   Tfoot,
   Th,
   Thead,
+  Tooltip,
   Tr,
 } from '@chakra-ui/react';
 import { createZoneTableInfo } from '../../zones';
@@ -208,9 +209,11 @@ export const WorkoutEditor = ({
         </Thead>
         <Tbody>
           {zoneTableInfo.map(
-            ({ zone, range, rangePct, duration, pctDuration }) => (
+            ({ zone, range, rangePct, duration, pctDuration, description }) => (
               <Tr key={zone}>
-                <Td>{zone}</Td>
+                <Tooltip label={description}>
+                  <Td>{zone}</Td>
+                </Tooltip>
                 <Td whiteSpace="nowrap">
                   {rangePct.lower}
                   {rangePct.upper ? '-' + rangePct.upper : '+'}%
