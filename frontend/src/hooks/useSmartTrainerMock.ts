@@ -8,7 +8,6 @@ export const useSmartTrainerMock = (): SmartTrainer => {
   const [isConnected, setIsConnected] = React.useState(false);
   const { logEvent } = useLogs();
   React.useEffect(() => {
-    console.log('redo the useEffect');
     const interval = setInterval(() => {
       if (isConnected) {
         setPower((prev) =>
