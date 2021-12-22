@@ -169,8 +169,8 @@ export const WorkoutEditor = ({
             parts: [
               ...workout.parts,
               {
-                duration: 300,
-                targetPower: 200,
+                duration: 120,
+                targetPower: 75,
                 id: getNextWorkoutPartsId(workout.parts),
               },
             ],
