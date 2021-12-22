@@ -5,7 +5,7 @@ import { Workout } from '../types';
 import * as utils from '../utils';
 
 export const WorkoutDisplay = () => {
-  const { activeWorkout } = useActiveWorkout();
+  const { activeWorkout, activeFTP } = useActiveWorkout();
   if (!activeWorkout.workout) {
     return null;
   }
@@ -16,15 +16,24 @@ export const WorkoutDisplay = () => {
   );
 
   return (
-    <Stack>
+    <Stack fontSize="sm">
       <Text>{workout.name}</Text>
+      <Text>Based on {activeFTP}W FTP</Text>
       <Text>{formattedElapsedTime}</Text>
       {workout.parts.map((part, i) => {
+        const isActive = !isDone && i === activePart;
         return (
-          <Text key={i} color={!isDone && i === activePart ? 'orange' : ''}>
+          <Text
+            key={i}
+            fontWeight={isActive ? 'bold' : 'normal'}
+            color={isActive ? 'purple.500' : ''}
+          >
             {`${utils.formatMinutesAndSecondsAsString(
               utils.secondsToMinutesAndSeconds(part.duration)
-            )}@${part.targetPower}w`}
+            )}@${part.targetPower}% (${utils.wattFromFtpPercent(
+              part.targetPower,
+              activeFTP
+            )}W)`}
           </Text>
         );
       })}

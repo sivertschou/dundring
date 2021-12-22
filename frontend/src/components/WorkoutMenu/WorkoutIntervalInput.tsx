@@ -7,7 +7,12 @@ import { FormControl } from '@chakra-ui/react';
 import * as React from 'react';
 import { Files, List, X } from 'react-bootstrap-icons';
 import { WorkoutPart } from '../../types';
-import { secondsToMinutesAndSeconds } from '../../utils';
+import {
+  ftpPercentFromWatt,
+  parseInputAsInt,
+  secondsToMinutesAndSeconds,
+  wattFromFtpPercent,
+} from '../../utils';
 
 interface Props {
   workoutPart: WorkoutPart;
@@ -25,23 +30,7 @@ export const WorkoutIntervalInput = ({
   workoutPart,
   ftp,
 }: Props) => {
-  const parseInputAsInt = (input: string) => {
-    const parsed = parseInt(input);
-    if (isNaN(parsed)) {
-      return 0;
-    }
-    return parsed;
-  };
-
-  const ftpPercentFromWatt = (watt: number, ftp: number) =>
-    Math.round(100 * (watt / ftp));
-
-  const wattFromFtpPercent = (ftpPercent: number, ftp: number) =>
-    Math.round((ftpPercent / 100) * ftp);
-
-  const [ftpInput, setFtpInput] = React.useState(
-    '' + ftpPercentFromWatt(workoutPart.targetPower, ftp)
-  );
+  const [ftpInput, setFtpInput] = React.useState('' + workoutPart.targetPower);
 
   const [tmpPowerInput, setTmpPowerInput] = React.useState(
     '' + wattFromFtpPercent(parseInputAsInt(ftpInput), ftp)
@@ -83,10 +72,11 @@ export const WorkoutIntervalInput = ({
 
   const updateInputs = () => {
     const newDuration = updateDurations();
+    const targetPower = parseInputAsInt(ftpInput);
 
     setWorkoutPart({
       duration: newDuration,
-      targetPower: workoutPart.targetPower,
+      targetPower,
     });
   };
 
@@ -149,6 +139,7 @@ export const WorkoutIntervalInput = ({
               );
               setFtpInput('' + powerAsFtpPercent);
               setTmpPowerInput('' + wattFromFtpPercent(powerAsFtpPercent, ftp));
+              updateInputs();
             }}
           />
           <InputRightAddon children="W" />
@@ -170,6 +161,7 @@ export const WorkoutIntervalInput = ({
                 '' + ftpPercentFromWatt(parseInputAsInt(e.target.value), ftp)
               );
             }}
+            onBlur={updateInputs}
           />
           <InputRightAddon children="%" />
         </InputGroup>

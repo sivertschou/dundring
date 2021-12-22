@@ -50,8 +50,8 @@ export const LogModal = () => {
             <Tbody>
               {loggedEvents.map(({ timestamp, msg }) => (
                 <Tr key={timestamp.getTime()} m={0}>
-                  <Td padduingY="1">{timestampToFormattedHHMMSS(timestamp)}</Td>
-                  <Td paddingY="1">{msg}</Td>
+                  <Td paddingY="2">{timestampToFormattedHHMMSS(timestamp)}</Td>
+                  <Td paddingY="2">{msg}</Td>
                 </Tr>
               ))}
             </Tbody>

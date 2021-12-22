@@ -1,6 +1,6 @@
 import { Button } from '@chakra-ui/button';
 import { FormControl, FormLabel } from '@chakra-ui/form-control';
-import { Input } from '@chakra-ui/input';
+import { Input, InputGroup, InputRightAddon } from '@chakra-ui/input';
 import { Grid, HStack, Stack, Text } from '@chakra-ui/layout';
 import * as React from 'react';
 import { Workout, WorkoutPart } from '../../types';
@@ -17,6 +17,7 @@ import { saveWorkout } from '../../api';
 import { CloudUpload, Hdd } from 'react-bootstrap-icons';
 import Icon from '@chakra-ui/icon';
 import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
+import { useActiveWorkout } from '../../context/WorkoutContext';
 interface Props {
   workout: WorkoutToEdit;
   closeEditor: () => void;
@@ -33,6 +34,7 @@ export const WorkoutEditor = ({
   workout: loadedWorkout,
   closeEditor,
 }: Props) => {
+  const { activeFTP, setActiveFTP } = useActiveWorkout();
   const { user, saveLocalWorkout } = useUser();
   const token = user.loggedIn && user.token;
   const canSaveLocally =
@@ -48,7 +50,7 @@ export const WorkoutEditor = ({
     return parsed;
   };
 
-  const [ftp, setFtp] = React.useState('' + loadedWorkout.previewFTP);
+  const [ftp, setFtp] = React.useState('' + activeFTP);
 
   const ftpNum = parseInputAsInt(ftp);
 
@@ -101,7 +103,14 @@ export const WorkoutEditor = ({
       </FormControl>
       <FormControl id="ftp">
         <FormLabel>FTP</FormLabel>
-        <Input value={ftp} onChange={(e) => setFtp(e.target.value)} />
+        <InputGroup>
+          <Input
+            value={ftp}
+            onChange={(e) => setFtp(e.target.value)}
+            onBlur={() => setActiveFTP(parseInputAsInt(ftp))}
+          />
+          <InputRightAddon children="W" />
+        </InputGroup>
       </FormControl>
 
       {workout.parts.length > 0 ? (
@@ -161,8 +170,8 @@ export const WorkoutEditor = ({
             parts: [
               ...workout.parts,
               {
-                duration: 300,
-                targetPower: 200,
+                duration: 120,
+                targetPower: 75,
                 id: getNextWorkoutPartsId(workout.parts),
               },
             ],
