@@ -30,8 +30,7 @@ require('dotenv').config();
 const app = express.default();
 const router = express.Router();
 
-const httpPort = process.env.PORT;
-slackService.checkSlackConfig();
+const httpPort = process.env.PORT || 8080;
 
 app.use(express.json());
 app.use(cors());
@@ -40,6 +39,30 @@ app.use('/api', router);
 
 const httpServer = http.createServer(app);
 const wss = new WebSocket.Server({ server: httpServer });
+
+const checkEnvConfig = () => {
+  if (!process.env.PORT) {
+    console.log(
+      '[.env]: No port provided; using 8080. Override this by setting the PORT in the environment config.'
+    );
+  }
+
+  if (!process.env.DATA_PATH) {
+    console.log(
+      '[.env]: No path for the data directory provided; using ./data/. Override this by setting the DATA_PATH in the environment config.'
+    );
+  }
+
+  if (!process.env.TOKEN_SECRET) {
+    console.log(
+      '[.env]: No token secret provided; using 12345. Override this by setting the TOKEN_SECRET in the environment config.'
+    );
+  }
+
+  slackService.checkSlackConfig();
+};
+
+checkEnvConfig();
 
 router.get<null, ApiResponseBody<WorkoutsResponseBody>>(
   '/me/workouts',

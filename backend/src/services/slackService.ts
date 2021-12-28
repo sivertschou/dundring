@@ -6,16 +6,24 @@ require('dotenv').config();
 
 export const checkSlackConfig = () => {
   if (!process.env.SLACK_USER_CREATION) {
-    console.log('[.env]: No Slack service for user creation provided');
+    console.log(
+      '[.env]: No Slack service for user creation provided. Override this by setting the SLACK_USER_CREATION in the environment config.'
+    );
   }
   if (!process.env.SLACK_ERRORS) {
-    console.log('[.env]: No Slack service for errors provided');
+    console.log(
+      '[.env]: No Slack service for errors provided. Override this by setting the SLACK_ERRORS in the environment config.'
+    );
   }
   if (!process.env.SLACK_GROUP_SESSION) {
-    console.log('[.env]: No Slack service for group session provided');
+    console.log(
+      '[.env]: No Slack service for group session provided. Override this by setting the SLACK_GROUP_SESSION in the environment config.'
+    );
   }
   if (!process.env.SLACK_FEEDBACK) {
-    console.log('[.env]: No Slack service for feedback provided');
+    console.log(
+      '[.env]: No Slack service for feedback provided. Override this by setting the SLACK_FEEDBACK in the environment config.'
+    );
   }
 };
 

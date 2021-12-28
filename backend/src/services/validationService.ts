@@ -3,6 +3,7 @@ import { ApiResponseBody, ApiStatus } from '../../../common/types/apiTypes';
 
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const tokenSecret = process.env.TOKEN_SECRET || 12345;
 
 export const hash = (message: string) => {
   return crypto.createHash('md5').update(message).digest('hex');
@@ -15,7 +16,7 @@ export const generateSalt = () =>
     .join('');
 
 export const generateAccessToken = (username: string) => {
-  return jwt.sign({ username }, process.env.TOKEN_SECRET, {
+  return jwt.sign({ username }, tokenSecret, {
     expiresIn: '120d',
   });
 };
@@ -41,22 +42,18 @@ export const authenticateToken = <T, R>(
     return;
   }
 
-  jwt.verify(
-    token,
-    process.env.TOKEN_SECRET,
-    (err: Error, user: { username: string }) => {
-      if (err) {
-        const statusMessage = 'Could not verify token.';
-        res.statusMessage = statusMessage;
-        res.statusCode = 401;
-        res.send({
-          status: ApiStatus.FAILURE,
-          message: statusMessage,
-        });
-        return;
-      }
-      req.username = user.username;
-      next();
+  jwt.verify(token, tokenSecret, (err: Error, user: { username: string }) => {
+    if (err) {
+      const statusMessage = 'Could not verify token.';
+      res.statusMessage = statusMessage;
+      res.statusCode = 401;
+      res.send({
+        status: ApiStatus.FAILURE,
+        message: statusMessage,
+      });
+      return;
     }
-  );
+    req.username = user.username;
+    next();
+  });
 };
