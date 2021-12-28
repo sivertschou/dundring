@@ -6,7 +6,8 @@ import { Workout } from '../../../common/types/workoutTypes';
 import * as validationService from './validationService';
 import * as slackService from './slackService';
 
-const usersPath = `${process.env.DATA_PATH}/users.json`;
+const dataPath = process.env.DATA_PATH || 'data';
+const usersPath = `${dataPath}/users.json`;
 
 export const getUsers = (): StoredUser[] => {
   if (fs.existsSync(usersPath)) {
