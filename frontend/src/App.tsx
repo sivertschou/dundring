@@ -21,6 +21,7 @@ interface Props {
 export const App = ({ clockWorker }: Props) => {
   const {
     power,
+    cadence,
     isConnected: smartTrainerIsConnected,
     setResistance: setSmartTrainerResistance,
   } = useSmartTrainer();
@@ -54,11 +55,13 @@ export const App = ({ clockWorker }: Props) => {
   const send = React.useCallback(() => {
     const heartRateToInclude = heartRate ? { heartRate } : {};
     const powerToInclude = power ? { power } : {};
+    const cadenceToInclude = cadence ? { cadence } : {};
     if (running) {
       setData((laps: Lap[]) => {
         const newPoint = {
           ...heartRateToInclude,
           ...powerToInclude,
+          ...cadenceToInclude,
           timeStamp: new Date(),
         };
 
@@ -72,7 +75,7 @@ export const App = ({ clockWorker }: Props) => {
     }
 
     sendData({ ...heartRateToInclude, ...powerToInclude });
-  }, [heartRate, power, running, setData, sendData]);
+  }, [heartRate, power, cadence, running, setData, sendData]);
   React.useEffect(() => {
     if (clockWorker === null) return;
 
