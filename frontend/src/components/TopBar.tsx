@@ -10,8 +10,7 @@ interface Props {
   timeElapsed: number;
 }
 export const TopBar = ({ timeElapsed }: Props) => {
-  const { power } = useSmartTrainer();
-
+  const { power, cadence } = useSmartTrainer();
   const { heartRate } = useHeartRateMonitor();
 
   const secondsElapsed = Math.floor(timeElapsed / 1000);
@@ -21,6 +20,7 @@ export const TopBar = ({ timeElapsed }: Props) => {
 
   const mainFontSize = ['xl', '3xl', '7xl'];
   const unitFontSize = ['l', '2xl', '4xl'];
+  const secondaryFontSize = ['m', 'xl', '2xl'];
   const bgColor = useColorModeValue(theme.colors.white, theme.colors.gray[800]);
   const textShadow = `0px 0px 1vh ${bgColor}`;
   return (
@@ -28,30 +28,39 @@ export const TopBar = ({ timeElapsed }: Props) => {
       <Stack width={['70%', '80%', '100%']}>
         <Center width="100%">
           <Grid width="90%" templateColumns="repeat(3, 1fr)">
-            <Center color={hrColor} textShadow={textShadow}>
-              <Text fontSize={mainFontSize} fontWeight="bold">
-                {heartRate}
-              </Text>
-              <Text fontSize={unitFontSize} fontWeight="bold">
-                bpm
-              </Text>
-            </Center>
-            <Center textShadow={textShadow}>
-              <Text fontSize={mainFontSize} fontWeight="bold">
-                {hours ? hours + ':' : null}
-                {minutes < 10 ? '0' + minutes : minutes}
-                {':'}
-                {seconds < 10 ? '0' + seconds : seconds}
-              </Text>
-            </Center>
-            <Center color={powerColor} textShadow={textShadow}>
-              <Text fontSize={mainFontSize} fontWeight="bold">
-                {power}
-              </Text>
-              <Text fontSize={unitFontSize} fontWeight="bold">
-                w
-              </Text>
-            </Center>
+            <Stack>
+              <Center color={hrColor} textShadow={textShadow} fontWeight="bold">
+                <Text fontSize={mainFontSize}>{heartRate}</Text>
+                <Text fontSize={unitFontSize}>bpm</Text>
+              </Center>
+            </Stack>
+            <Stack>
+              <Center textShadow={textShadow} fontWeight="bold">
+                <Text fontSize={mainFontSize}>
+                  {hours ? hours + ':' : null}
+                  {minutes < 10 ? '0' + minutes : minutes}
+                  {':'}
+                  {seconds < 10 ? '0' + seconds : seconds}
+                </Text>
+              </Center>
+            </Stack>
+            <Stack spacing="0">
+              <Center
+                color={powerColor}
+                textShadow={textShadow}
+                fontWeight="bold"
+              >
+                <Text fontSize={mainFontSize}>{power}</Text>
+                <Text fontSize={unitFontSize}>w</Text>
+              </Center>
+              <Center
+                color={powerColor}
+                textShadow={textShadow}
+                fontWeight="bold"
+              >
+                <Text fontSize={secondaryFontSize}>{cadence} spm</Text>
+              </Center>
+            </Stack>
           </Grid>
         </Center>
       </Stack>

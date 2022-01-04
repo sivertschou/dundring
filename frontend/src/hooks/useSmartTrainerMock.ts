@@ -29,6 +29,8 @@ export const useSmartTrainerMock = (): SmartTrainer => {
     },
     isConnected,
     power,
+    cadence: 0,
+    speed: 0,
     setResistance: React.useCallback(
       (resistance: number) => {
         console.log('MOCK: set resistance: ', resistance);
