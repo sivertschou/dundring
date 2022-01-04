@@ -5,6 +5,7 @@ import { SmartTrainer } from './useSmartTrainerInterface';
 
 export const useSmartTrainerMock = (): SmartTrainer => {
   const [power, setPower] = React.useState(0);
+  const [cadence, setCadence] = React.useState(0);
   const [isConnected, setIsConnected] = React.useState(false);
   const { logEvent } = useLogs();
   React.useEffect(() => {
@@ -12,6 +13,9 @@ export const useSmartTrainerMock = (): SmartTrainer => {
       if (isConnected) {
         setPower((prev) =>
           randomIntFromIntervalBasedOnPrev(100, 400, prev, 50)
+        );
+        setCadence((prev) =>
+          randomIntFromIntervalBasedOnPrev(50, 100, prev, 10)
         );
       }
     }, 1000);
@@ -29,7 +33,7 @@ export const useSmartTrainerMock = (): SmartTrainer => {
     },
     isConnected,
     power,
-    cadence: 0,
+    cadence: cadence,
     speed: 0,
     setResistance: React.useCallback(
       (resistance: number) => {
