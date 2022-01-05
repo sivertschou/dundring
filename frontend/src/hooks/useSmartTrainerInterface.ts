@@ -3,24 +3,26 @@ import { useLogs } from '../context/LogContext';
 
 export interface SmartTrainer {
   requestPermission: () => void;
-  power: number;
+  power: number | null;
+  cadence: number | null;
+  speed: number | null;
   isConnected: boolean;
   disconnect: () => void;
   setResistance: (resistance: number) => void;
 }
 
-const parsePower = (value: any) => {
-  const buffer = value.buffer ? value : new DataView(value);
-
-  const powerLSB = buffer.getUint8(2);
-  const powerMSB = buffer.getUint8(3);
-  const power = powerLSB + powerMSB * 256;
-
-  return power;
-};
-
+interface SmartTrainerData {
+  power: number | null;
+  cadence: number | null;
+  speed: number | null;
+}
+/* Information about the Bluetooth services: https://www.bluetooth.com/specifications/specs/fitness-machine-service-1-0/ */
 export const useSmartTrainerInterface = (): SmartTrainer => {
-  const [power, setPower] = React.useState(0);
+  const [data, setData] = React.useState<SmartTrainerData>({
+    power: 0,
+    cadence: 0,
+    speed: 0,
+  });
   const [isConnected, setIsConnected] = React.useState(false);
   const [device, setDevice] = React.useState<BluetoothDevice | null>(null);
   const { logEvent } = useLogs();
@@ -28,19 +30,25 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
   const [fitnessMachineCharacteristic, setFitnessMachineCharacteristic] =
     React.useState<BluetoothRemoteGATTCharacteristic | null>(null);
 
-  const [cyclingPowerCharacteristic, setCyclingPowerCharacteristic] =
+  const [indoorBikeDataCharacteristic, setIndoorBikeDataCharacteristic] =
     React.useState<BluetoothRemoteGATTCharacteristic | null>(null);
 
-  const handlePowerUpdate = (event: any) => {
-    const power = parsePower(event.target.value);
-    setPower(power);
+  const handleIndoorBikeDataUpdate = (event: any) => {
+    const data = event.target.value as DataView;
+
+    /* NB: speed is only based on the rotation of the smart trainer's resistance unit, meaning that it is easier to get a higher speed
+     *  when using less resistance. If we really want to use speed, we should do a do some trickery using the power, either calculating
+     *  the speed solely on power or some hybrid using the smart trainer speed weighted with the power. I think 100% power based speed
+     *  would be best. */
+    const speed = (data.getUint8(2) + (data.getUint8(3) << 8)) / 100;
+    const cadence = (data.getUint8(4) + (data.getUint8(5) << 8)) / 2;
+    const power = data.getUint8(6) + (data.getUint8(7) << 8);
+    setData({ power, cadence, speed });
   };
 
   const requestPermission = async () => {
     const device = await navigator.bluetooth.requestDevice({
-      // filters: [{ services: ["cycling_power"] }], // Cycling power 0x1818
       filters: [{ services: ['fitness_machine'] }], // Fitness machine 0x1826
-      optionalServices: ['cycling_power'],
     });
 
     setDevice(device);
@@ -61,33 +69,31 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
     fitnessMachineCharacteristic &&
       setFitnessMachineCharacteristic(fitnessMachineCharacteristic);
 
-    const cyclingPowerService = await server?.getPrimaryService(
-      'cycling_power'
-    );
-    const cyclingPowerCharacteristic =
-      await cyclingPowerService?.getCharacteristic('cycling_power_measurement');
-    cyclingPowerCharacteristic &&
-      setCyclingPowerCharacteristic(cyclingPowerCharacteristic);
+    const indoorBikeDataCharacteristic =
+      await fitnessMachineService?.getCharacteristic('indoor_bike_data');
 
-    await cyclingPowerCharacteristic?.startNotifications();
-    cyclingPowerCharacteristic?.addEventListener(
+    await indoorBikeDataCharacteristic?.startNotifications();
+    indoorBikeDataCharacteristic?.addEventListener(
       'characteristicvaluechanged',
-      handlePowerUpdate
+      handleIndoorBikeDataUpdate
     );
+    indoorBikeDataCharacteristic &&
+      setIndoorBikeDataCharacteristic(indoorBikeDataCharacteristic);
+
     setIsConnected(true);
     logEvent('smart trainer connected');
   };
   const disconnect = async () => {
-    if (cyclingPowerCharacteristic) {
-      await cyclingPowerCharacteristic.stopNotifications();
-      console.log('> Cycling power notifications stopped');
-      cyclingPowerCharacteristic.removeEventListener(
+    if (indoorBikeDataCharacteristic) {
+      await indoorBikeDataCharacteristic.stopNotifications();
+      console.log('> Indoor bike data notifications stopped');
+      indoorBikeDataCharacteristic.removeEventListener(
         'characteristicvaluechanged',
-        handlePowerUpdate
+        handleIndoorBikeDataUpdate
       );
-      setCyclingPowerCharacteristic(null);
-      device?.gatt?.disconnect();
+      setIndoorBikeDataCharacteristic(null);
     }
+    device?.gatt?.disconnect();
     setDevice(null);
     setIsConnected(false);
     logEvent('smart trainer disconnected');
@@ -97,7 +103,9 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
     requestPermission,
     disconnect,
     isConnected,
-    power,
+    power: data.power,
+    cadence: data.cadence,
+    speed: data.speed,
     setResistance: React.useCallback(
       async (resistance: number) => {
         if (!isConnected) {

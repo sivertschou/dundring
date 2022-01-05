@@ -46,29 +46,32 @@ export const toTCX = (laps: Lap[]) => {
 
 const lapToTCX = (lap: Lap) => {
   const filtererdDataPoints = lap.dataPoints.filter(
-    (d) => d.heartRate || d.power
+    (data) => data.heartRate || data.power
   );
   return [
     `      <Lap StartTime="${filtererdDataPoints[0].timeStamp.toISOString()}">`,
     `        <Track>`,
     `${filtererdDataPoints.reduce(
-      (output, d) =>
+      (output, data) =>
         (output ? output + '\n' : output) +
         [
           `          <Trackpoint>`,
-          `            <Time>${d.timeStamp.toISOString()}</Time>`,
-          d.heartRate !== undefined
+          `            <Time>${data.timeStamp.toISOString()}</Time>`,
+          data.heartRate !== undefined
             ? [
                 `            <HeartRateBpm>`,
-                `              <Value>${d.heartRate}</Value>`,
+                `              <Value>${data.heartRate}</Value>`,
                 `            </HeartRateBpm>`,
               ].join('\n')
             : '',
-          d.power !== undefined
+          data.cadence !== undefined
+            ? `            <Cadence>${data.cadence}</Cadence>`
+            : '',
+          data.power !== undefined
             ? [
                 `            <Extensions>`,
                 `              <ns3:TPX>`,
-                `                <ns3:Watts>${d.power}</ns3:Watts>`,
+                `                <ns3:Watts>${data.power}</ns3:Watts>`,
                 `              </ns3:TPX>`,
                 `            </Extensions>`,
               ].join('\n')
