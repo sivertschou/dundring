@@ -12,6 +12,7 @@ export const WorkoutContext = React.createContext<{
   pause: () => void;
   activeFTP: number;
   setActiveFTP: (ftp: number) => void;
+  changeActivePart: (partNumber: number) => void;
 } | null>(null);
 
 interface IncreasePartElapsedTimeAction {
@@ -38,11 +39,20 @@ interface PauseAction {
   activeFTP: number;
 }
 
+interface ChangeActivePartAction {
+  type: 'CHANGE_ACTIVE_PART';
+  setResistance: (resistance: number) => void;
+  activeFTP: number;
+  addLap: () => void;
+  partNumber: number;
+}
+
 type ActiveWorkoutAction =
   | IncreasePartElapsedTimeAction
   | SetWorkoutAction
   | StartAction
-  | PauseAction;
+  | PauseAction
+  | ChangeActivePartAction;
 export const ActiveWorkoutContextProvider = ({
   children,
 }: {
@@ -96,6 +106,7 @@ export const ActiveWorkoutContextProvider = ({
             action.addLap();
             return nextState;
           }
+          // Only done with current part, other parts unfinished
           const nextState = {
             ...activeWorkout,
             partElapsedTime: newElapsed - currentPartDuration * 1000,
@@ -103,11 +114,10 @@ export const ActiveWorkoutContextProvider = ({
             isDone: false,
             isActive: true,
           };
-
           action.addLap();
           return nextState;
         }
-
+        // Current part is not finished
         return { ...activeWorkout, partElapsedTime: newElapsed };
       case 'START': {
         const nextState = { ...activeWorkout, isActive: true };
@@ -117,8 +127,15 @@ export const ActiveWorkoutContextProvider = ({
         const nextState = { ...activeWorkout, isActive: false };
         return nextState;
       }
-      default:
-        return activeWorkout;
+      case 'CHANGE_ACTIVE_PART': {
+        const nextState = {
+          ...activeWorkout,
+          partElapsedTime: 0,
+          activePart: action.partNumber,
+        };
+        action.addLap();
+        return nextState;
+      }
     }
   };
 
@@ -173,6 +190,16 @@ export const ActiveWorkoutContextProvider = ({
     dispatchActiveWorkoutAction({ type: 'PAUSE', setResistance, activeFTP });
   };
 
+  const changeActivePart = (partNumber: number) => {
+    dispatchActiveWorkoutAction({
+      type: 'CHANGE_ACTIVE_PART',
+      setResistance,
+      activeFTP,
+      addLap: () => {},
+      partNumber: partNumber,
+    });
+  };
+
   const increaseElapsedTime = (millis: number, addLap: () => void) => {
     dispatchActiveWorkoutAction({
       type: 'INCREASE_PART_ELAPSED_TIME',
@@ -199,6 +226,7 @@ export const ActiveWorkoutContextProvider = ({
         pause,
         activeFTP,
         setActiveFTP,
+        changeActivePart: changeActivePart,
       }}
     >
       {children}
