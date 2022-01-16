@@ -37,7 +37,12 @@ export const WorkoutOverview = ({
         onClick={() =>
           setWorkoutToEdit({
             name: 'New workout',
-            parts: [],
+            parts: [
+              {
+                duration: 5 * 60,
+                targetPower: 70,
+              },
+            ],
             id: '',
             type: 'new',
             previewFTP: previewFTPAsNumber,
