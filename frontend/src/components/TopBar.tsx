@@ -5,18 +5,24 @@ import { useSmartTrainer } from '../context/SmartTrainerContext';
 import { useHeartRateMonitor } from '../context/HeartRateContext';
 import { useColorModeValue } from '@chakra-ui/color-mode';
 import theme from '../theme';
+import { getRemainingTime, useActiveWorkout } from '../context/WorkoutContext';
+import {
+  formatHoursMinutesAndSecondsAsString,
+  secondsToHoursMinutesAndSeconds,
+} from '../utils';
 
 interface Props {
   timeElapsed: number;
 }
+
 export const TopBar = ({ timeElapsed }: Props) => {
   const { power, cadence } = useSmartTrainer();
   const { heartRate } = useHeartRateMonitor();
+  const { activeWorkout } = useActiveWorkout();
+
+  const remainingTime = getRemainingTime(activeWorkout);
 
   const secondsElapsed = Math.floor(timeElapsed / 1000);
-  const hours = Math.floor((secondsElapsed / 60 / 60) % 24);
-  const minutes = Math.floor((secondsElapsed / 60) % 60);
-  const seconds = Math.floor(secondsElapsed % 60);
 
   const mainFontSize = ['xl', '3xl', '7xl'];
   const unitFontSize = ['l', '2xl', '4xl'];
@@ -35,13 +41,31 @@ export const TopBar = ({ timeElapsed }: Props) => {
               </Center>
             </Stack>
             <Stack>
-              <Center textShadow={textShadow} fontWeight="bold">
-                <Text fontSize={mainFontSize}>
-                  {hours ? hours + ':' : null}
-                  {minutes < 10 ? '0' + minutes : minutes}
-                  {':'}
-                  {seconds < 10 ? '0' + seconds : seconds}
-                </Text>
+              <Center
+                textShadow={textShadow}
+                textAlign="center"
+                fontWeight="bold"
+              >
+                {remainingTime !== null ? (
+                  <Stack spacing="0">
+                    <Text fontSize={secondaryFontSize}>
+                      {formatHoursMinutesAndSecondsAsString(
+                        secondsToHoursMinutesAndSeconds(secondsElapsed)
+                      )}
+                    </Text>
+                    <Text fontSize={mainFontSize} lineHeight="1">
+                      {formatHoursMinutesAndSecondsAsString(
+                        secondsToHoursMinutesAndSeconds(remainingTime)
+                      )}
+                    </Text>
+                  </Stack>
+                ) : (
+                  <Text fontSize={mainFontSize}>
+                    {formatHoursMinutesAndSecondsAsString(
+                      secondsToHoursMinutesAndSeconds(secondsElapsed)
+                    )}
+                  </Text>
+                )}
               </Center>
             </Stack>
             <Stack spacing="0">

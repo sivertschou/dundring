@@ -270,3 +270,11 @@ export const useActiveWorkout = () => {
   }
   return context;
 };
+
+export const getRemainingTime = (activeWorkout: ActiveWorkout) => {
+  const { workout, isDone, isActive, activePart, partElapsedTime } =
+    activeWorkout;
+  if (!workout || isDone || !isActive) return null;
+
+  return workout.parts[activePart].duration - partElapsedTime;
+};
