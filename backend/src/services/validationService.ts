@@ -3,7 +3,7 @@ import { ApiResponseBody, ApiStatus } from '../../../common/types/apiTypes';
 
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const tokenSecret = process.env.TOKEN_SECRET || 12345;
+const tokenSecret = process.env.TOKEN_SECRET || '12345';
 
 export const hash = (message: string) => {
   return crypto.createHash('md5').update(message).digest('hex');
