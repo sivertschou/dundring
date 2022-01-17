@@ -22,12 +22,11 @@ export const BottomBar = () => {
       <Stack width="100%">
         <Grid
           backgroundColor={bgColor}
-          height={'3vh'}
           width="100%"
           templateColumns="1fr 4fr 1fr"
         >
-          <Flex p="2">
-            <Logo height="100%" />
+          <Flex p="1">
+            <Logo height="20px" />
           </Flex>
           <LogModal />
           <HStack justifyContent="flex-end" paddingX="2">
