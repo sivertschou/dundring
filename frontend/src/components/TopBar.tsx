@@ -5,7 +5,11 @@ import { useSmartTrainer } from '../context/SmartTrainerContext';
 import { useHeartRateMonitor } from '../context/HeartRateContext';
 import { useColorModeValue } from '@chakra-ui/color-mode';
 import theme from '../theme';
-import { getRemainingTime, useActiveWorkout } from '../context/WorkoutContext';
+import {
+  getRemainingTime,
+  getTargetPower,
+  useActiveWorkout,
+} from '../context/WorkoutContext';
 import {
   formatHoursMinutesAndSecondsAsString,
   secondsToHoursMinutesAndSeconds,
@@ -18,9 +22,10 @@ interface Props {
 export const TopBar = ({ timeElapsed }: Props) => {
   const { power, cadence } = useSmartTrainer();
   const { heartRate } = useHeartRateMonitor();
-  const { activeWorkout } = useActiveWorkout();
+  const { activeWorkout, activeFTP } = useActiveWorkout();
 
   const remainingTime = getRemainingTime(activeWorkout);
+  const targetPower = getTargetPower(activeWorkout, activeFTP);
 
   const secondsElapsed = Math.floor(timeElapsed / 1000);
 
@@ -30,60 +35,56 @@ export const TopBar = ({ timeElapsed }: Props) => {
   const bgColor = useColorModeValue(theme.colors.white, theme.colors.gray[800]);
   const textShadow = `0px 0px 1vh ${bgColor}`;
   return (
-    <Center width="100%" position="fixed" top="0">
+    <Center
+      width="100%"
+      position="fixed"
+      top="0"
+      lineHeight="1"
+      pt="2"
+      textShadow={textShadow}
+      fontWeight="bold"
+      textAlign="center"
+    >
       <Stack width={['70%', '80%', '100%']}>
         <Center width="100%">
           <Grid width="90%" templateColumns="repeat(3, 1fr)">
             <Stack>
-              <Center color={hrColor} textShadow={textShadow} fontWeight="bold">
+              <Center color={hrColor}>
                 <Text fontSize={mainFontSize}>{heartRate}</Text>
                 <Text fontSize={unitFontSize}>bpm</Text>
               </Center>
             </Stack>
-            <Stack>
-              <Center
-                textShadow={textShadow}
-                textAlign="center"
-                fontWeight="bold"
-              >
-                {remainingTime !== null ? (
-                  <Stack spacing="0">
-                    <Text fontSize={secondaryFontSize}>
-                      {formatHoursMinutesAndSecondsAsString(
-                        secondsToHoursMinutesAndSeconds(secondsElapsed)
-                      )}
-                    </Text>
-                    <Text fontSize={mainFontSize} lineHeight="1">
-                      {formatHoursMinutesAndSecondsAsString(
-                        secondsToHoursMinutesAndSeconds(remainingTime)
-                      )}
-                    </Text>
-                  </Stack>
-                ) : (
-                  <Text fontSize={mainFontSize}>
+            <Stack spacing="0">
+              {remainingTime !== null ? (
+                <>
+                  <Text fontSize={secondaryFontSize}>
                     {formatHoursMinutesAndSecondsAsString(
                       secondsToHoursMinutesAndSeconds(secondsElapsed)
                     )}
                   </Text>
-                )}
-              </Center>
+                  <Text fontSize={mainFontSize}>
+                    {formatHoursMinutesAndSecondsAsString(
+                      secondsToHoursMinutesAndSeconds(remainingTime)
+                    )}
+                  </Text>
+                </>
+              ) : (
+                <Text fontSize={mainFontSize}>
+                  {formatHoursMinutesAndSecondsAsString(
+                    secondsToHoursMinutesAndSeconds(secondsElapsed)
+                  )}
+                </Text>
+              )}
             </Stack>
-            <Stack spacing="0">
-              <Center
-                color={powerColor}
-                textShadow={textShadow}
-                fontWeight="bold"
-              >
+            <Stack spacing="0" color={powerColor}>
+              {targetPower !== null ? (
+                <Text fontSize={secondaryFontSize}>@{targetPower}w</Text>
+              ) : null}
+              <Center>
                 <Text fontSize={mainFontSize}>{power}</Text>
                 <Text fontSize={unitFontSize}>w</Text>
               </Center>
-              <Center
-                color={powerColor}
-                textShadow={textShadow}
-                fontWeight="bold"
-              >
-                <Text fontSize={secondaryFontSize}>{cadence} spm</Text>
-              </Center>
+              <Text fontSize={secondaryFontSize}>{cadence} rpm</Text>
             </Stack>
           </Grid>
         </Center>
