@@ -13,6 +13,7 @@ export const WorkoutContext = React.createContext<{
   activeFTP: number;
   setActiveFTP: (ftp: number) => void;
   changeActivePart: (partNumber: number) => void;
+  syncResistance: () => void;
 } | null>(null);
 
 interface IncreasePartElapsedTimeAction {
@@ -189,6 +190,23 @@ export const ActiveWorkoutContextProvider = ({
   const pause = () => {
     dispatchActiveWorkoutAction({ type: 'PAUSE', setResistance, activeFTP });
   };
+  const syncResistance = () => {
+    if (!isConnected) return;
+
+    const isDone = activeWorkout.isDone;
+    const isActive = activeWorkout.isActive;
+    const workout = activeWorkout.workout;
+    if (isDone || !isActive || !workout) {
+      setResistance(0);
+    } else {
+      const activeWorkoutPart = workout.parts[activeWorkout.activePart];
+      const targetPowerAsWatt = wattFromFtpPercent(
+        activeWorkoutPart.targetPower,
+        activeFTP
+      );
+      setResistance(targetPowerAsWatt);
+    }
+  };
 
   const changeActivePart = (partNumber: number) => {
     dispatchActiveWorkoutAction({
@@ -227,6 +245,7 @@ export const ActiveWorkoutContextProvider = ({
         activeFTP,
         setActiveFTP,
         changeActivePart: changeActivePart,
+        syncResistance,
       }}
     >
       {children}
