@@ -17,13 +17,16 @@ import { CreateOrJoinGroupSession } from '../GroupSession/CreateOrJoinGroupSessi
 export const GroupSessionModal = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const { activeGroupSession } = useWebsocket();
+  const { activeGroupSession, connect } = useWebsocket();
   return (
     <>
       <ActionBarItem
         text="Open group session overview"
         icon={<Icon as={activeGroupSession ? PeopleFill : People} />}
-        onClick={onOpen}
+        onClick={() => {
+          onOpen();
+          connect();
+        }}
       />
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />

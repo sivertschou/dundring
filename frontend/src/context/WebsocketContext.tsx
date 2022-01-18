@@ -137,6 +137,7 @@ const WebsocketContext = React.createContext<{
   leaveGroupSession: () => void;
   sendData: (data: { heartRate?: number; power?: number }) => void;
   providedUsername: string;
+  connect: () => void;
 } | null>(null);
 
 export const WebsocketContextProvider = ({
@@ -145,7 +146,7 @@ export const WebsocketContextProvider = ({
   children: React.ReactNode;
 }) => {
   // TODO: Handle reconnect
-  const [socket] = React.useState(
+  const [socket, setSocket] = React.useState<WebSocket | null>(
     React.useCallback(() => new WebSocket(wsUrl), [])
   );
   const { logEvent } = useLogs();
@@ -161,12 +162,17 @@ export const WebsocketContextProvider = ({
 
   const [username, setUsername] = React.useState('');
   React.useEffect(() => {
+    if (!socket) return;
+
     socket.onopen = () => {
       console.log('connected to ws-server');
     };
+
     socket.onclose = () => {
-      logEvent('disconnected from ws-server');
+      console.log('disconnected from ws-server');
+      setSocket(null);
     };
+
     socket.onmessage = (e) => {
       const message = JSON.parse(e.data) as WebSocketResponse;
       switch (message.type) {
@@ -267,9 +273,9 @@ export const WebsocketContextProvider = ({
         },
         sendData: (data: { heartRate?: number; power?: number }) => {
           if (!activeGroupSession) return;
-          if (!data.heartRate && !data.power) {
-            return;
-          }
+          if (!socket) return;
+          if (!data.heartRate && !data.power) return;
+
           const request: SendDataRequest = {
             type: WebSocketRequestType.sendData,
             data,
@@ -280,6 +286,11 @@ export const WebsocketContextProvider = ({
         joinStatus,
         createStatus,
         providedUsername: username,
+        connect: () => {
+          if (!socket) {
+            setSocket(new WebSocket(wsUrl));
+          }
+        },
       }}
       children={children}
     />
