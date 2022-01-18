@@ -156,9 +156,7 @@ export const ActiveWorkoutContextProvider = ({
   const { setResistance, isConnected } = useSmartTrainer();
   React.useEffect(() => {
     if (!isConnected) return;
-    const isDone = activeWorkout.isDone;
-    const isActive = activeWorkout.isActive;
-    const workout = activeWorkout.workout;
+    const { isDone, isActive, workout } = activeWorkout;
     if (isDone || !isActive || !workout) {
       setResistance(0);
     } else {
@@ -193,9 +191,7 @@ export const ActiveWorkoutContextProvider = ({
   const syncResistance = () => {
     if (!isConnected) return;
 
-    const isDone = activeWorkout.isDone;
-    const isActive = activeWorkout.isActive;
-    const workout = activeWorkout.workout;
+    const { isDone, isActive, workout } = activeWorkout;
     if (isDone || !isActive || !workout) {
       setResistance(0);
     } else {
