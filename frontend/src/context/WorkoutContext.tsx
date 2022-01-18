@@ -13,6 +13,8 @@ export const WorkoutContext = React.createContext<{
   activeFTP: number;
   setActiveFTP: (ftp: number) => void;
   changeActivePart: (partNumber: number) => void;
+  syncResistance: () => void;
+  syncResistanceIfActive: () => void;
 } | null>(null);
 
 interface IncreasePartElapsedTimeAction {
@@ -155,9 +157,7 @@ export const ActiveWorkoutContextProvider = ({
   const { setResistance, isConnected } = useSmartTrainer();
   React.useEffect(() => {
     if (!isConnected) return;
-    const isDone = activeWorkout.isDone;
-    const isActive = activeWorkout.isActive;
-    const workout = activeWorkout.workout;
+    const { isDone, isActive, workout } = activeWorkout;
     if (isDone || !isActive || !workout) {
       setResistance(0);
     } else {
@@ -177,6 +177,7 @@ export const ActiveWorkoutContextProvider = ({
     setResistance,
     isConnected,
     activeFTP,
+    activeWorkout,
   ]);
 
   const setWorkout = (workout: Workout) => {
@@ -186,8 +187,32 @@ export const ActiveWorkoutContextProvider = ({
   const start = () => {
     dispatchActiveWorkoutAction({ type: 'START', setResistance, activeFTP });
   };
+
   const pause = () => {
     dispatchActiveWorkoutAction({ type: 'PAUSE', setResistance, activeFTP });
+  };
+
+  const syncResistanceIfActive = () => {
+    if (!isConnected) return;
+
+    const { isDone, isActive, workout } = activeWorkout;
+    if (isDone || !isActive || !workout) {
+      setResistance(0);
+    } else {
+      syncResistance();
+    }
+  };
+
+  const syncResistance = () => {
+    const { workout } = activeWorkout;
+    if (!isConnected || !workout) return;
+
+    const activeWorkoutPart = workout.parts[activeWorkout.activePart];
+    const targetPowerAsWatt = wattFromFtpPercent(
+      activeWorkoutPart.targetPower,
+      activeFTP
+    );
+    setResistance(targetPowerAsWatt);
   };
 
   const changeActivePart = (partNumber: number) => {
@@ -227,6 +252,8 @@ export const ActiveWorkoutContextProvider = ({
         activeFTP,
         setActiveFTP,
         changeActivePart: changeActivePart,
+        syncResistance,
+        syncResistanceIfActive,
       }}
     >
       {children}

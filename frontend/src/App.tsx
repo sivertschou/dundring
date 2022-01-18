@@ -31,6 +31,7 @@ export const App = ({ clockWorker }: Props) => {
     activeWorkout,
     increaseElapsedTime: increaseActiveWorkoutElapsedTime,
     start: startActiveWorkout,
+    syncResistance,
   } = useActiveWorkout();
 
   const [data, setData] = React.useState<Lap[]>([]);
@@ -92,6 +93,7 @@ export const App = ({ clockWorker }: Props) => {
       logEvent('workout started');
     } else {
       logEvent('workout resumed');
+      syncResistance();
     }
     startGlobalClock();
     startActiveWorkout();
