@@ -72,7 +72,7 @@ export const GraphContainer = ({ data }: Props) => {
     ]
   );
   return (
-    <Stack width="100%">
+    <Stack width="100%" mb={showOptions ? '20em' : '0'}>
       <HStack flexDir="row-reverse"></HStack>
       {graphs}
       <Center>

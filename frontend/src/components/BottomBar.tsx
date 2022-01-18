@@ -13,17 +13,20 @@ import { Icon, Tooltip, useColorModeValue } from '@chakra-ui/react';
 import { Logo } from './Logo';
 import { LogModal } from './Modals/LogModal';
 import { Github, Slack } from 'react-bootstrap-icons';
+import { MainActionBar } from './MainActionBar';
 
 export const BottomBar = () => {
   const { available: bluetoothIsAvailable } = useAvailability();
   const bgColor = useColorModeValue('gray.200', 'gray.900');
   return (
-    <Center width="100%" position="fixed" bottom="0">
+    <Center width="100%" position="fixed" bottom="0" pointerEvents="none">
       <Stack width="100%" spacing="0">
+        <MainActionBar />
         <Grid
           backgroundColor={bgColor}
           width="100%"
           templateColumns="1fr 4fr 1fr"
+          pointerEvents="auto"
         >
           <Flex p="1">
             <Logo height="20px" />

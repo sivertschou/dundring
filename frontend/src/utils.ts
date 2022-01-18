@@ -109,3 +109,19 @@ export const parseInputAsInt = (input: string) => {
   }
   return parsed;
 };
+
+export const parseWattInput = (input: string) => {
+  const parsed = parseFloat(input);
+
+  if (isNaN(parsed)) return null;
+
+  return Math.floor(parsed);
+};
+
+export const parseFtpPercentInput = (input: string) => {
+  const parsed = parseFloat(input);
+
+  if (isNaN(parsed)) return null;
+
+  return Math.floor(parsed * 10) / 10;
+};

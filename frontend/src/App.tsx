@@ -124,29 +124,6 @@ export const App = ({ clockWorker }: Props) => {
           </Center>
           <Center>
             <Stack width={['70%', '50%']}>
-              <Button onClick={() => (running ? stop() : start())}>
-                {getStartStopButtonText({ smartTrainerIsConnected, running })}
-              </Button>
-              <Button onClick={() => setSmartTrainerResistance(0)}>0 w</Button>
-              <Button onClick={() => setSmartTrainerResistance(50)}>
-                50 w
-              </Button>
-              <Button onClick={() => setSmartTrainerResistance(100)}>
-                100 w
-              </Button>
-              <Button onClick={() => setSmartTrainerResistance(150)}>
-                150 w
-              </Button>
-              <Button onClick={() => setSmartTrainerResistance(200)}>
-                200 w
-              </Button>
-              <Button onClick={() => setSmartTrainerResistance(250)}>
-                250 w
-              </Button>
-              <Button onClick={() => setSmartTrainerResistance(300)}>
-                300 w
-              </Button>
-
               {anyValidDataPoints ? (
                 <Button onClick={() => createTcxFile.toTCX(data)}>
                   Download TCX
