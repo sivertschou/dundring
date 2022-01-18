@@ -36,6 +36,7 @@ export const ActionBarItem = ({ text, icon, onClick, iconColor }: Props) => {
         isRound
         size="lg"
         {...color}
+        pointerEvents="auto"
       />
     </HStack>
   );

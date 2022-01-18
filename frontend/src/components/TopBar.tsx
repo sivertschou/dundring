@@ -41,6 +41,7 @@ export const TopBar = ({ timeElapsed }: Props) => {
       textShadow={textShadow}
       fontWeight="bold"
       textAlign="center"
+      pointerEvents="none"
     >
       <Stack width={['70%', '80%', '100%']}>
         <Center width="100%">
