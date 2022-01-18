@@ -83,7 +83,6 @@ export const ActiveWorkoutContextProvider = ({
           isActive: false,
           isDone: false,
           partElapsedTime: 0,
-          activeFTP: 0,
         };
       case 'INCREASE_PART_ELAPSED_TIME':
         if (!activeWorkout.workout || !activeWorkout.isActive)
@@ -150,7 +149,6 @@ export const ActiveWorkoutContextProvider = ({
       isDone: false,
       partElapsedTime: 0,
       isActive: false,
-      activeFTP,
     }
   );
 
@@ -171,7 +169,6 @@ export const ActiveWorkoutContextProvider = ({
   }, [
     activeWorkout.isDone,
     activeWorkout.isActive,
-    activeWorkout.activeFTP,
     activeWorkout.activePart,
     activeWorkout.workout,
     setResistance,
@@ -269,4 +266,21 @@ export const useActiveWorkout = () => {
     );
   }
   return context;
+};
+
+export const getRemainingTime = (activeWorkout: ActiveWorkout) => {
+  const { workout, isDone, isActive, activePart, partElapsedTime } =
+    activeWorkout;
+  if (!workout || isDone || !isActive) return null;
+
+  return workout.parts[activePart].duration - partElapsedTime;
+};
+
+export const getTargetPower = (
+  activeWorkout: ActiveWorkout,
+  activeFTP: number
+) => {
+  const { workout, isDone, isActive, activePart } = activeWorkout;
+  if (!workout || isDone || !isActive) return null;
+  return Math.floor((workout.parts[activePart].targetPower * activeFTP) / 100);
 };

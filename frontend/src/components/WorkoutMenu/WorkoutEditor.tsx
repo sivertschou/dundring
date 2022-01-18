@@ -8,10 +8,7 @@ import { templateColumns, WorkoutIntervalInput } from './WorkoutIntervalInput';
 import { DropResult } from 'react-beautiful-dnd';
 import { DraggableList } from './DraggableList';
 import { DraggableItem } from './DraggableItem';
-import {
-  formatMinutesAndSecondsAsString,
-  secondsToMinutesAndSeconds,
-} from '../../utils';
+import { secondsToHoursMinutesAndSecondsString } from '../../utils';
 import { useUser } from '../../context/UserContext';
 import { saveWorkout } from '../../api';
 import { CloudUpload, Hdd } from 'react-bootstrap-icons';
@@ -72,9 +69,6 @@ export const WorkoutEditor = ({
   const totalDuration = workout.parts.reduce(
     (sum, part) => sum + part.duration,
     0
-  );
-  const totalDurationFormatted = formatMinutesAndSecondsAsString(
-    secondsToMinutesAndSeconds(totalDuration)
   );
 
   function onDragEnd(result: DropResult) {
@@ -206,7 +200,7 @@ export const WorkoutEditor = ({
             <Th>Zone</Th>
             <Th whiteSpace="nowrap">Range %</Th>
             <Th whiteSpace="nowrap">Range W</Th>
-            <Th>Duration</Th>
+            <Th textAlign="right">Duration</Th>
             <Th>Percentage</Th>
           </Tr>
         </Thead>
@@ -225,7 +219,7 @@ export const WorkoutEditor = ({
                   {range.lower}
                   {range.upper ? '-' + range.upper : '+'} w
                 </Td>
-                <Td>{duration}</Td>
+                <Td textAlign="right">{duration}</Td>
                 <Td>{pctDuration}%</Td>
               </Tr>
             )
@@ -236,7 +230,9 @@ export const WorkoutEditor = ({
             <Td fontWeight="bold">Total</Td>
             <Td></Td>
             <Td></Td>
-            <Td fontWeight="bold">{totalDurationFormatted}</Td>
+            <Td fontWeight="bold" textAlign="right">
+              {secondsToHoursMinutesAndSecondsString(totalDuration)}
+            </Td>
           </Tr>
         </Tfoot>
       </Table>
