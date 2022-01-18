@@ -10,10 +10,7 @@ import {
   getTargetPower,
   useActiveWorkout,
 } from '../context/WorkoutContext';
-import {
-  formatHoursMinutesAndSecondsAsString,
-  secondsToHoursMinutesAndSeconds,
-} from '../utils';
+import { secondsToHoursMinutesAndSecondsString } from '../utils';
 
 interface Props {
   timeElapsed: number;
@@ -58,21 +55,15 @@ export const TopBar = ({ timeElapsed }: Props) => {
               {remainingTime !== null ? (
                 <>
                   <Text fontSize={secondaryFontSize}>
-                    {formatHoursMinutesAndSecondsAsString(
-                      secondsToHoursMinutesAndSeconds(secondsElapsed)
-                    )}
+                    {secondsToHoursMinutesAndSecondsString(secondsElapsed)}
                   </Text>
                   <Text fontSize={mainFontSize}>
-                    {formatHoursMinutesAndSecondsAsString(
-                      secondsToHoursMinutesAndSeconds(remainingTime)
-                    )}
+                    {secondsToHoursMinutesAndSecondsString(remainingTime)}
                   </Text>
                 </>
               ) : (
                 <Text fontSize={mainFontSize}>
-                  {formatHoursMinutesAndSecondsAsString(
-                    secondsToHoursMinutesAndSeconds(secondsElapsed)
-                  )}
+                  {secondsToHoursMinutesAndSecondsString(secondsElapsed)}
                 </Text>
               )}
             </Stack>

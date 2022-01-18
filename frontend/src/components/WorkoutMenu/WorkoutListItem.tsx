@@ -6,9 +6,8 @@ import * as React from 'react';
 import { Cloud, Gear, Hdd } from 'react-bootstrap-icons';
 import { Workout } from '../../types';
 import {
-  formatMinutesAndSecondsAsString,
   getTotalWorkoutTime,
-  secondsToMinutesAndSeconds,
+  secondsToHoursMinutesAndSecondsString,
 } from '../../utils';
 
 interface Props {
@@ -24,9 +23,6 @@ export const WorkoutListItem = ({
   isLocallyStored,
 }: Props) => {
   const workoutDuration = getTotalWorkoutTime(workout);
-  const formattedDuration = formatMinutesAndSecondsAsString(
-    secondsToMinutesAndSeconds(workoutDuration)
-  );
 
   return (
     <Grid templateColumns="1fr 10fr 3fr">
@@ -44,7 +40,9 @@ export const WorkoutListItem = ({
         <Heading as="h2" fontSize="2xl">
           {workout.name}
         </Heading>
-        <Text>Duration: {formattedDuration}</Text>
+        <Text>
+          Duration: {secondsToHoursMinutesAndSecondsString(workoutDuration)}
+        </Text>
       </Stack>
       <HStack>
         <Button width="100%" onClick={() => setActiveWorkout(workout)}>

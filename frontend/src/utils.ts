@@ -70,6 +70,14 @@ export const formatHoursMinutesAndSecondsAsString = ({
   })}`;
 };
 
+export const secondsToMinutesAndSecondsString = (seconds: number) =>
+  formatMinutesAndSecondsAsString(secondsToMinutesAndSeconds(seconds));
+
+export const secondsToHoursMinutesAndSecondsString = (seconds: number) =>
+  formatHoursMinutesAndSecondsAsString(
+    secondsToHoursMinutesAndSeconds(seconds)
+  );
+
 export const timestampToFormattedHHMMSS = (timestamp: Date) => {
   const hours = timestamp.getHours();
   const minutes = timestamp.getMinutes();
