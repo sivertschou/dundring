@@ -5,7 +5,12 @@ import { Center, HStack, Stack } from '@chakra-ui/layout';
 import { Tooltip } from '@chakra-ui/tooltip';
 import { IconButton } from '@chakra-ui/button';
 import Icon from '@chakra-ui/icon';
-import { BarChartLine, BarChartLineFill } from 'react-bootstrap-icons';
+import {
+  BarChartLine,
+  BarChartLineFill,
+  Gear,
+  GearFill,
+} from 'react-bootstrap-icons';
 import { GraphCheckboxes } from './GraphCheckboxes';
 import { useWebsocket } from '../../context/WebsocketContext';
 
@@ -22,6 +27,12 @@ export const GraphContainer = ({ data }: Props) => {
   const toggleGraphFillButtonText = showFill
     ? 'Hide graph fill'
     : 'Show graph fill';
+
+  const [showOptions, setShowOptions] = React.useState(false);
+  const showOptionsButtonText = showOptions
+    ? 'Hide graph options'
+    : 'Show graph options';
+
   const { activeGroupSession, providedUsername } = useWebsocket();
   const otherUsers = React.useMemo(
     () =>
@@ -62,19 +73,35 @@ export const GraphContainer = ({ data }: Props) => {
   );
   return (
     <Stack width="100%">
-      <HStack flexDir="row-reverse">
-        <Tooltip label={toggleGraphFillButtonText} placement="left">
-          <IconButton
-            variant="ghost"
-            icon={<Icon as={showFill ? BarChartLineFill : BarChartLine} />}
-            aria-label={toggleGraphFillButtonText}
-            isRound={true}
-            onClick={() => setShowFill((prev) => !prev)}
-          />
-        </Tooltip>
-      </HStack>
+      <HStack flexDir="row-reverse"></HStack>
       {graphs}
-      <Stack>
+      <Center>
+        <HStack width="90%">
+          <Tooltip label={showOptionsButtonText} placement="bottom">
+            <IconButton
+              variant="ghost"
+              icon={<Icon as={showOptions ? GearFill : Gear} />}
+              aria-label={showOptionsButtonText}
+              isRound={true}
+              onClick={() => setShowOptions((prev) => !prev)}
+            />
+          </Tooltip>
+
+          {showOptions ? (
+            <Tooltip label={toggleGraphFillButtonText} placement="bottom">
+              <IconButton
+                variant="ghost"
+                icon={<Icon as={showFill ? BarChartLineFill : BarChartLine} />}
+                aria-label={toggleGraphFillButtonText}
+                isRound={true}
+                onClick={() => setShowFill((prev) => !prev)}
+              />
+            </Tooltip>
+          ) : null}
+        </HStack>
+      </Center>
+
+      {showOptions ? (
         <Center>
           <HStack>
             <GraphCheckboxes
@@ -100,7 +127,7 @@ export const GraphContainer = ({ data }: Props) => {
             ))}
           </HStack>
         </Center>
-      </Stack>
+      ) : null}
     </Stack>
   );
 };
