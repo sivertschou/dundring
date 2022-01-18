@@ -19,15 +19,14 @@ export const BottomBar = () => {
   const bgColor = useColorModeValue('gray.200', 'gray.900');
   return (
     <Center width="100%" position="fixed" bottom="0">
-      <Stack width="100%">
+      <Stack width="100%" spacing="0">
         <Grid
           backgroundColor={bgColor}
-          height={'3vh'}
           width="100%"
           templateColumns="1fr 4fr 1fr"
         >
-          <Flex p="2">
-            <Logo height="100%" />
+          <Flex p="1">
+            <Logo height="20px" />
           </Flex>
           <LogModal />
           <HStack justifyContent="flex-end" paddingX="2">
@@ -48,7 +47,7 @@ export const BottomBar = () => {
         </Grid>
         {!bluetoothIsAvailable ? (
           <Center p="2" backgroundColor="red">
-            <Text fontSize="xl">
+            <Text fontSize="l">
               Bluetooth is not available in this browser yet. Check{' '}
               <Link
                 textDecor="underline"
