@@ -63,7 +63,12 @@ export const ProfileModal = () => {
 
   return (
     <>
-      <Button variant="link" fontWeight="normal" onClick={onOpen}>
+      <Button
+        variant="link"
+        fontWeight="normal"
+        onClick={onOpen}
+        pointerEvents="auto"
+      >
         <Text fontSize="xl" fontWeight="bold">
           {user.username}
         </Text>
