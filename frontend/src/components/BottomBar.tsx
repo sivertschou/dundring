@@ -14,11 +14,13 @@ import { Logo } from './Logo';
 import { LogModal } from './Modals/LogModal';
 import { Github, Slack } from 'react-bootstrap-icons';
 import { MainActionBar } from './MainActionBar';
+import { Lap } from '../types';
 
 interface Props {
   start: () => void;
   stop: () => void;
   running: boolean;
+  data: Lap[];
 }
 export const BottomBar = (props: Props) => {
   const { available: bluetoothIsAvailable } = useAvailability();

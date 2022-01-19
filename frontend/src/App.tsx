@@ -1,10 +1,9 @@
-import { Center, Stack, Box } from '@chakra-ui/layout';
-import { ChakraProvider, Button } from '@chakra-ui/react';
+import { Center, Stack } from '@chakra-ui/layout';
+import { ChakraProvider } from '@chakra-ui/react';
 import * as React from 'react';
 import { useGlobalClock } from './hooks/useGlobalClock';
 import theme from './theme';
 import { Lap } from './types';
-import * as createTcxFile from './createTcxFile';
 import { WorkoutDisplay } from './components/WorkoutDisplay';
 import { ActionBar } from './components/ActionBar';
 import { useHeartRateMonitor } from './context/HeartRateContext';
@@ -108,10 +107,6 @@ export const App = ({ clockWorker }: Props) => {
     }
   };
 
-  const anyValidDataPoints = data.some((lap) =>
-    lap.dataPoints.some((dataPoint) => dataPoint.heartRate || dataPoint.power)
-  );
-
   return (
     <ChakraProvider theme={theme}>
       <Center>
@@ -122,33 +117,11 @@ export const App = ({ clockWorker }: Props) => {
               <GraphContainer data={data.flatMap((x) => x.dataPoints)} />
             </Center>
           </Center>
-          <Center>
-            <Stack width={['70%', '50%']}>
-              {anyValidDataPoints ? (
-                <Button onClick={() => createTcxFile.toTCX(data)}>
-                  Download TCX
-                </Button>
-              ) : null}
-            </Stack>
-          </Center>
-          <Box height="5vh" />
         </Stack>
       </Center>
       <TopBar timeElapsed={timeElapsed} />
       <ActionBar />
-      <BottomBar start={start} stop={stop} running={running} />
+      <BottomBar start={start} stop={stop} running={running} data={data} />
     </ChakraProvider>
   );
-};
-
-const getStartStopButtonText = ({
-  smartTrainerIsConnected,
-  running,
-}: {
-  smartTrainerIsConnected: boolean;
-  running: boolean;
-}): string => {
-  if (running) return 'Stop';
-  if (smartTrainerIsConnected) return 'Start';
-  return 'Start (without power)';
 };

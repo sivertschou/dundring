@@ -2,10 +2,10 @@ import * as React from 'react';
 
 import {
   Center,
+  Text,
   Stack,
   Box,
   Grid,
-  Text,
   HStack,
   GridItem,
 } from '@chakra-ui/layout';
@@ -22,6 +22,7 @@ import {
   SkipForwardFill,
   ArrowRepeat,
   BarChartLine,
+  Download,
 } from 'react-bootstrap-icons';
 import Icon from '@chakra-ui/icon';
 import { useActiveWorkout } from '../context/WorkoutContext';
@@ -31,6 +32,8 @@ import { Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/menu';
 import { Input, InputGroup, InputRightAddon } from '@chakra-ui/input';
 import { useColorModeValue } from '@chakra-ui/color-mode';
 import { FormControl } from '@chakra-ui/form-control';
+import { Lap } from '../types';
+import { toTCX } from '../createTcxFile';
 
 const parseWattInput = (input: string) => {
   const parsed = parseFloat(input);
@@ -57,12 +60,16 @@ interface Props {
   start: () => void;
   stop: () => void;
   running: boolean;
+  data: Lap[];
 }
-export const MainActionBar = ({ start, stop, running }: Props) => {
+export const MainActionBar = ({ start, stop, running, data }: Props) => {
   const { activeFTP } = useActiveWorkout();
   const [showPowerControls, setShowPowerControls] = React.useState(false);
   const [showWorkoutControls, setShowWorkoutControls] = React.useState(false);
 
+  const anyValidDataPoints = data.some((lap) =>
+    lap.dataPoints.some((dataPoint) => dataPoint.heartRate || dataPoint.power)
+  );
   const [powerInputData, dispatchPowerInputAction] = React.useReducer(
     (
       _currentData: PowerInputData,
@@ -257,22 +264,24 @@ export const MainActionBar = ({ start, stop, running }: Props) => {
           </Center>
         ) : null}
         <Grid templateColumns="1fr 1fr 1fr" gap="1" alignItems="end">
-          <HStack>
-            <Tooltip label="Load workout">
-              <IconButton
-                aria-label="Load workout"
-                icon={<Icon as={BarChartLine} />}
-              />
-            </Tooltip>
-            <Tooltip label="Show workout controls">
-              <IconButton
-                aria-label="Show workout controls"
-                variant={showWorkoutControls ? 'outline' : 'solid'}
-                onClick={() => setShowWorkoutControls((current) => !current)}
-                icon={<Icon as={Grid3x2GapFill} />}
-              />
-            </Tooltip>
-          </HStack>
+          <Center height="100%">
+            <HStack>
+              <Tooltip label="Load workout">
+                <IconButton
+                  aria-label="Load workout"
+                  icon={<Icon as={BarChartLine} />}
+                />
+              </Tooltip>
+              <Tooltip label="Show workout controls">
+                <IconButton
+                  aria-label="Show workout controls"
+                  variant={showWorkoutControls ? 'outline' : 'solid'}
+                  onClick={() => setShowWorkoutControls((current) => !current)}
+                  icon={<Icon as={Grid3x2GapFill} />}
+                />
+              </Tooltip>
+            </HStack>
+          </Center>
           <Center width="8em">
             {running ? (
               <Button
@@ -290,44 +299,59 @@ export const MainActionBar = ({ start, stop, running }: Props) => {
                 onClick={start}
                 leftIcon={<Icon as={PlayFill} />}
               >
-                Start
+                {anyValidDataPoints ? 'Resume' : 'Start'}
               </Button>
             )}
           </Center>
-
-          <HStack justifyContent="flex-end">
-            <Tooltip label="Show power controls">
-              <IconButton
-                aria-label="Show power controls"
-                variant={showPowerControls ? 'outline' : 'solid'}
-                onClick={() => setShowPowerControls((current) => !current)}
-                icon={<Icon as={Grid3x2GapFill} />}
-              />
-            </Tooltip>
-            <Menu placement="top">
-              <MenuList>
-                <Box>
-                  {defaultResistancePercentages.map((percentage, i) => (
-                    <MenuItem key={i}>
-                      {wattFromFtpPercent(percentage, activeFTP)}W ({percentage}
-                      %)
-                    </MenuItem>
-                  ))}
-                </Box>
-              </MenuList>
-
-              <Tooltip label="Quick power">
-                <MenuButton
-                  icon={<Icon as={LightningChargeFill} />}
-                  as={IconButton}
-                  aria-label="Quick power"
+          <Center height="100%">
+            <HStack justifyContent="flex-end">
+              <Tooltip label="Show power controls">
+                <IconButton
+                  aria-label="Show power controls"
+                  variant={showPowerControls ? 'outline' : 'solid'}
+                  onClick={() => setShowPowerControls((current) => !current)}
+                  icon={<Icon as={Grid3x2GapFill} />}
                 />
               </Tooltip>
-            </Menu>
-          </HStack>
-        </Grid>
+              <Menu placement="top">
+                <MenuList>
+                  <Box>
+                    {defaultResistancePercentages.map((percentage, i) => (
+                      <MenuItem key={i}>
+                        {wattFromFtpPercent(percentage, activeFTP)}W (
+                        {percentage}
+                        %)
+                      </MenuItem>
+                    ))}
+                  </Box>
+                </MenuList>
 
-        <Text>Active FTP: {activeFTP} </Text>
+                <Tooltip label="Quick power">
+                  <MenuButton
+                    icon={<Icon as={LightningChargeFill} />}
+                    as={IconButton}
+                    aria-label="Quick power"
+                  />
+                </Tooltip>
+              </Menu>
+            </HStack>
+          </Center>
+        </Grid>
+        {anyValidDataPoints && !running ? (
+          <Grid templateColumns="1fr 1fr 1fr" gap="1" colStart={1}>
+            <Text />
+            <Center width="8em">
+              <Button
+                width="100%"
+                onClick={() => toTCX(data)}
+                leftIcon={<Icon as={Download} />}
+              >
+                Save TCX
+              </Button>
+            </Center>
+            <Text />
+          </Grid>
+        ) : null}
       </Stack>
     </Center>
   );
