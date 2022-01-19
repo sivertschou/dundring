@@ -155,7 +155,9 @@ export const ActiveWorkoutContextProvider = ({
   const { setResistance, isConnected } = useSmartTrainer();
   React.useEffect(() => {
     if (!isConnected) return;
-    const { isDone, isActive, workout } = activeWorkout;
+    const isDone = activeWorkout.isDone;
+    const isActive = activeWorkout.isActive;
+    const workout = activeWorkout.workout;
     if (isDone || !isActive || !workout) {
       setResistance(0);
     } else {
@@ -167,6 +169,10 @@ export const ActiveWorkoutContextProvider = ({
       setResistance(targetPowerAsWatt);
     }
   }, [
+    /* NB: Only include the necessary attributes, since including the
+     *     whole activeWorkout object would lead to a re-render every
+     *     time activeWorkout.partElapsedTime is updated.
+     * */
     activeWorkout.isDone,
     activeWorkout.isActive,
     activeWorkout.activePart,
@@ -174,7 +180,6 @@ export const ActiveWorkoutContextProvider = ({
     setResistance,
     isConnected,
     activeFTP,
-    activeWorkout,
   ]);
 
   const setWorkout = (workout: Workout) => {
