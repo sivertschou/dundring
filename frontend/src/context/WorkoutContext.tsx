@@ -169,6 +169,10 @@ export const ActiveWorkoutContextProvider = ({
       setResistance(targetPowerAsWatt);
     }
   }, [
+    /* NB: Only include the necessary attributes, since including the
+     *     whole activeWorkout object would lead to a re-render every
+     *     time activeWorkout.partElapsedTime is updated.
+     * */
     activeWorkout.isDone,
     activeWorkout.isActive,
     activeWorkout.activePart,
