@@ -136,7 +136,7 @@ export const App = ({ clockWorker }: Props) => {
       </Center>
       <TopBar timeElapsed={timeElapsed} />
       <ActionBar />
-      <BottomBar />
+      <BottomBar start={start} stop={stop} running={running} />
     </ChakraProvider>
   );
 };

@@ -15,7 +15,6 @@ import {
   ArrowUp,
   LightningChargeFill,
   PlayFill,
-  SaveFill,
   Grid3x2GapFill,
   SkipBackwardFill,
   SkipStartFill,
@@ -54,7 +53,12 @@ interface PowerInputData {
   percentInput: string;
 }
 
-export const MainActionBar = () => {
+interface Props {
+  start: () => void;
+  stop: () => void;
+  running: boolean;
+}
+export const MainActionBar = ({ start, stop, running }: Props) => {
   const { activeFTP } = useActiveWorkout();
   const [showPowerControls, setShowPowerControls] = React.useState(false);
   const [showWorkoutControls, setShowWorkoutControls] = React.useState(false);
@@ -269,10 +273,26 @@ export const MainActionBar = () => {
               />
             </Tooltip>
           </HStack>
-          <Center>
-            <Button size="lg" leftIcon={<Icon as={PlayFill} />}>
-              Start
-            </Button>
+          <Center width="8em">
+            {running ? (
+              <Button
+                width="100%"
+                size="lg"
+                onClick={stop}
+                leftIcon={<Icon as={PauseFill} />}
+              >
+                Pause
+              </Button>
+            ) : (
+              <Button
+                width="100%"
+                size="lg"
+                onClick={start}
+                leftIcon={<Icon as={PlayFill} />}
+              >
+                Start
+              </Button>
+            )}
           </Center>
 
           <HStack justifyContent="flex-end">

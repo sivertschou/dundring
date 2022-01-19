@@ -15,13 +15,18 @@ import { LogModal } from './Modals/LogModal';
 import { Github, Slack } from 'react-bootstrap-icons';
 import { MainActionBar } from './MainActionBar';
 
-export const BottomBar = () => {
+interface Props {
+  start: () => void;
+  stop: () => void;
+  running: boolean;
+}
+export const BottomBar = (props: Props) => {
   const { available: bluetoothIsAvailable } = useAvailability();
   const bgColor = useColorModeValue('gray.200', 'gray.900');
   return (
     <Center width="100%" position="fixed" bottom="0" pointerEvents="none">
       <Stack width="100%" spacing="0">
-        <MainActionBar />
+        <MainActionBar {...props} />
         <Grid
           backgroundColor={bgColor}
           width="100%"
