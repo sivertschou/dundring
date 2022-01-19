@@ -155,7 +155,9 @@ export const ActiveWorkoutContextProvider = ({
   const { setResistance, isConnected } = useSmartTrainer();
   React.useEffect(() => {
     if (!isConnected) return;
-    const { isDone, isActive, workout } = activeWorkout;
+    const isDone = activeWorkout.isDone;
+    const isActive = activeWorkout.isActive;
+    const workout = activeWorkout.workout;
     if (isDone || !isActive || !workout) {
       setResistance(0);
     } else {
@@ -174,7 +176,6 @@ export const ActiveWorkoutContextProvider = ({
     setResistance,
     isConnected,
     activeFTP,
-    activeWorkout,
   ]);
 
   const setWorkout = (workout: Workout) => {
