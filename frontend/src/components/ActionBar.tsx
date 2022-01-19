@@ -39,7 +39,14 @@ export const ActionBar = () => {
 
   const { colorMode, setColorMode } = useColorMode();
   return (
-    <Stack position="fixed" right="5" top="5" alignItems="flex-end" spacing="1">
+    <Stack
+      position="fixed"
+      right="5"
+      top="5"
+      alignItems="flex-end"
+      spacing="1"
+      pointerEvents="none"
+    >
       {user.loggedIn ? <ProfileModal /> : <LoginModal />}
       {activeGroupSession ? (
         <Text fontSize="lg" fontWeight="bold">
