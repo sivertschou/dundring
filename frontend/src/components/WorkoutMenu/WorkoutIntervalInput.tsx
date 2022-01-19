@@ -22,7 +22,7 @@ interface Props {
   duplicateWorkoutPart: () => void;
   ftp: number;
 }
-export const templateColumns = '1fr repeat(2, 3fr) 1fr 2fr 2fr 1fr 1fr 1fr';
+export const templateColumns = '1fr 4fr 4fr 1fr 5fr 5fr 1fr 1fr 1fr';
 
 export const WorkoutIntervalInput = ({
   setWorkoutPart,
