@@ -34,6 +34,7 @@ import { useColorModeValue } from '@chakra-ui/color-mode';
 import { FormControl } from '@chakra-ui/form-control';
 import { Lap } from '../types';
 import { toTCX } from '../createTcxFile';
+import { useSmartTrainer } from '../context/SmartTrainerContext';
 
 const parseWattInput = (input: string) => {
   const parsed = parseFloat(input);
@@ -66,6 +67,12 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
   const { activeFTP } = useActiveWorkout();
   const [showPowerControls, setShowPowerControls] = React.useState(false);
   const [showWorkoutControls, setShowWorkoutControls] = React.useState(false);
+
+  const {
+    isConnected: smartTrainerIsConnected,
+    setResistance: setSmartTrainerResistance,
+    requestPermission: connectToSmartTrainer,
+  } = useSmartTrainer();
 
   const anyValidDataPoints = data.some((lap) =>
     lap.dataPoints.some((dataPoint) => dataPoint.heartRate || dataPoint.power)
@@ -176,33 +183,57 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
           <Center justifyContent="space-between">
             <Grid templateColumns="2fr 2fr 2fr" gap="1">
               <Tooltip label={`+${wattFromFtpPercent(1, activeFTP)}W (1%)`}>
-                <Button size="sm" leftIcon={<Icon as={ArrowUp} />}>
+                <Button
+                  isDisabled={!smartTrainerIsConnected}
+                  size="sm"
+                  leftIcon={<Icon as={ArrowUp} />}
+                >
                   1
                 </Button>
               </Tooltip>
               <Tooltip label={`+${wattFromFtpPercent(5, activeFTP)}W (5%)`}>
-                <Button size="sm" leftIcon={<Icon as={ArrowUp} />}>
+                <Button
+                  isDisabled={!smartTrainerIsConnected}
+                  size="sm"
+                  leftIcon={<Icon as={ArrowUp} />}
+                >
                   5
                 </Button>
               </Tooltip>
               <Tooltip label={`+${wattFromFtpPercent(10, activeFTP)}W (10%)`}>
-                <Button size="sm" leftIcon={<Icon as={ArrowUp} />}>
+                <Button
+                  isDisabled={!smartTrainerIsConnected}
+                  size="sm"
+                  leftIcon={<Icon as={ArrowUp} />}
+                >
                   10
                 </Button>
               </Tooltip>
 
               <Tooltip label={`-${wattFromFtpPercent(1, activeFTP)}W (1%)`}>
-                <Button size="sm" leftIcon={<Icon as={ArrowDown} />}>
+                <Button
+                  isDisabled={!smartTrainerIsConnected}
+                  size="sm"
+                  leftIcon={<Icon as={ArrowDown} />}
+                >
                   1
                 </Button>
               </Tooltip>
               <Tooltip label={`-${wattFromFtpPercent(5, activeFTP)}W (5%)`}>
-                <Button size="sm" leftIcon={<Icon as={ArrowDown} />}>
+                <Button
+                  isDisabled={!smartTrainerIsConnected}
+                  size="sm"
+                  leftIcon={<Icon as={ArrowDown} />}
+                >
                   5
                 </Button>
               </Tooltip>
               <Tooltip label={`-${wattFromFtpPercent(10, activeFTP)}W (10%)`}>
-                <Button size="sm" leftIcon={<Icon as={ArrowDown} />}>
+                <Button
+                  isDisabled={!smartTrainerIsConnected}
+                  size="sm"
+                  leftIcon={<Icon as={ArrowDown} />}
+                >
                   10
                 </Button>
               </Tooltip>
@@ -234,7 +265,9 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
               </GridItem>
               <GridItem colSpan={1} rowSpan={2}>
                 <Button
-                  isDisabled={powerInputData.power === null}
+                  isDisabled={
+                    !smartTrainerIsConnected || powerInputData.power === null
+                  }
                   height="100%"
                   width="100%"
                 >
@@ -262,6 +295,12 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
               </GridItem>
             </Grid>
           </Center>
+        ) : null}
+
+        {!smartTrainerIsConnected ? (
+          <Button variant="link" onClick={() => connectToSmartTrainer()}>
+            Connect to Smart Trainer
+          </Button>
         ) : null}
         <Grid templateColumns="1fr 1fr 1fr" gap="1" alignItems="end">
           <Center height="100%">
@@ -317,7 +356,14 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
                 <MenuList>
                   <Box>
                     {defaultResistancePercentages.map((percentage, i) => (
-                      <MenuItem key={i}>
+                      <MenuItem
+                        key={i}
+                        onClick={() =>
+                          setSmartTrainerResistance(
+                            wattFromFtpPercent(percentage, activeFTP)
+                          )
+                        }
+                      >
                         {wattFromFtpPercent(percentage, activeFTP)}W (
                         {percentage}
                         %)
@@ -328,6 +374,7 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
 
                 <Tooltip label="Quick power">
                   <MenuButton
+                    isDisabled={!smartTrainerIsConnected}
                     icon={<Icon as={LightningChargeFill} />}
                     as={IconButton}
                     aria-label="Quick power"
