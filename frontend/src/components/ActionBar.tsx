@@ -3,6 +3,8 @@ import Icon from '@chakra-ui/icon';
 import { Stack, Text } from '@chakra-ui/layout';
 import * as React from 'react';
 import {
+  BarChartLine,
+  BarChartLineFill,
   BoxArrowRight,
   Heart,
   HeartFill,
@@ -13,18 +15,23 @@ import {
 } from 'react-bootstrap-icons';
 import { hrColor, powerColor } from '../colors';
 import { useHeartRateMonitor } from '../context/HeartRateContext';
+import { useWorkoutEditorModal } from '../context/ModalContext';
 import { useSmartTrainer } from '../context/SmartTrainerContext';
 import { useUser } from '../context/UserContext';
 import { useWebsocket } from '../context/WebsocketContext';
+import { useActiveWorkout } from '../context/WorkoutContext';
 import { ActionBarItem } from './ActionBarItem';
 import { GroupSessionModal } from './Modals/GroupSessionModal';
 import { LoginModal } from './Modals/LoginModal';
 import { ProfileModal } from './Modals/ProfileModal';
-import { WorkoutEditorModal } from './Modals/WorkoutEditorModal';
 
 export const ActionBar = () => {
   const { user, setUser } = useUser();
   const { activeGroupSession } = useWebsocket();
+  const { activeWorkout } = useActiveWorkout();
+  const { colorMode, setColorMode } = useColorMode();
+  const { onOpen } = useWorkoutEditorModal();
+
   const {
     isConnected: hrIsConnected,
     disconnect: disconnectHR,
@@ -37,7 +44,6 @@ export const ActionBar = () => {
     requestPermission: connectSmartTrainer,
   } = useSmartTrainer();
 
-  const { colorMode, setColorMode } = useColorMode();
   return (
     <Stack
       position="fixed"
@@ -82,7 +88,13 @@ export const ActionBar = () => {
         />
       )}
       <GroupSessionModal />
-      <WorkoutEditorModal />
+      <ActionBarItem
+        text="Open workout editor"
+        icon={
+          <Icon as={activeWorkout.workout ? BarChartLineFill : BarChartLine} />
+        }
+        onClick={onOpen}
+      />
       {colorMode === 'light' ? (
         <ActionBarItem
           text="Enable darkmode"

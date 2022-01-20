@@ -14,6 +14,8 @@ import clockWorker from './workers/clock.worker';
 import { LogContextProvider } from './context/LogContext';
 import theme from './theme';
 import { BrowserRouter } from 'react-router-dom';
+import { ModalContextProvider } from './context/ModalContext';
+
 const cw: Worker = new WorkerBuilder(clockWorker);
 cw && cw.postMessage('startTimer');
 ReactDOM.render(
@@ -26,8 +28,10 @@ ReactDOM.render(
               <SmartTrainerContextProvider>
                 <ActiveWorkoutContextProvider>
                   <WebsocketContextProvider>
-                    <ColorModeScript />
-                    <App clockWorker={cw} />
+                    <ModalContextProvider>
+                      <ColorModeScript />
+                      <App clockWorker={cw} />
+                    </ModalContextProvider>
                   </WebsocketContextProvider>
                 </ActiveWorkoutContextProvider>
               </SmartTrainerContextProvider>
