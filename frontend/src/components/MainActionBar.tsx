@@ -144,14 +144,14 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
         {showWorkoutControls ? (
           <Center>
             <HStack>
-              <Tooltip label="Re-sync resistance">
+              <Tooltip label="Re-sync resistance" placement="top">
                 <IconButton
                   size="sm"
                   aria-label="Re-sync resistance"
                   icon={<Icon as={ArrowRepeat} />}
                 />
               </Tooltip>
-              <Tooltip label="Previous part">
+              <Tooltip label="Previous part" placement="top">
                 <IconButton
                   size="sm"
                   aria-label="Previous part"
@@ -159,7 +159,7 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
                 />
               </Tooltip>
 
-              <Tooltip label="Go to start of the part">
+              <Tooltip label="Go to start of the part" placement="top">
                 <IconButton
                   size="sm"
                   aria-label="Go to start of the part"
@@ -167,14 +167,14 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
                 />
               </Tooltip>
 
-              <Tooltip label="Pause workout timer">
+              <Tooltip label="Pause workout timer" placement="top">
                 <IconButton
                   size="sm"
                   aria-label="Pause workout timer"
                   icon={<Icon as={PauseFill} />}
                 />
               </Tooltip>
-              <Tooltip label="Next part">
+              <Tooltip label="Next part" placement="top">
                 <IconButton
                   size="sm"
                   aria-label="Next part"
@@ -187,7 +187,10 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
         {showPowerControls ? (
           <Center justifyContent="space-between">
             <Grid templateColumns="2fr 2fr 2fr" gap="1">
-              <Tooltip label={`+${wattFromFtpPercent(1, activeFTP)}W (1%)`}>
+              <Tooltip
+                label={`+${wattFromFtpPercent(1, activeFTP)}W (1%)`}
+                placement="top"
+              >
                 <Button
                   onClick={() => {
                     if (!smartTrainerIsConnected) return;
@@ -201,7 +204,10 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
                   1
                 </Button>
               </Tooltip>
-              <Tooltip label={`+${wattFromFtpPercent(5, activeFTP)}W (5%)`}>
+              <Tooltip
+                label={`+${wattFromFtpPercent(5, activeFTP)}W (5%)`}
+                placement="top"
+              >
                 <Button
                   onClick={() => {
                     if (!smartTrainerIsConnected) return;
@@ -215,7 +221,10 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
                   5
                 </Button>
               </Tooltip>
-              <Tooltip label={`+${wattFromFtpPercent(10, activeFTP)}W (10%)`}>
+              <Tooltip
+                label={`+${wattFromFtpPercent(10, activeFTP)}W (10%)`}
+                placement="top"
+              >
                 <Button
                   onClick={() => {
                     if (!smartTrainerIsConnected) return;
@@ -230,7 +239,10 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
                 </Button>
               </Tooltip>
 
-              <Tooltip label={`-${wattFromFtpPercent(1, activeFTP)}W (1%)`}>
+              <Tooltip
+                label={`-${wattFromFtpPercent(1, activeFTP)}W (1%)`}
+                placement="bottom"
+              >
                 <Button
                   onClick={() => {
                     if (!smartTrainerIsConnected) return;
@@ -246,7 +258,10 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
                   1
                 </Button>
               </Tooltip>
-              <Tooltip label={`-${wattFromFtpPercent(5, activeFTP)}W (5%)`}>
+              <Tooltip
+                label={`-${wattFromFtpPercent(5, activeFTP)}W (5%)`}
+                placement="bottom"
+              >
                 <Button
                   onClick={() => {
                     if (!smartTrainerIsConnected) return;
@@ -262,7 +277,10 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
                   5
                 </Button>
               </Tooltip>
-              <Tooltip label={`-${wattFromFtpPercent(10, activeFTP)}W (10%)`}>
+              <Tooltip
+                label={`-${wattFromFtpPercent(10, activeFTP)}W (10%)`}
+                placement="bottom"
+              >
                 <Button
                   onClick={() => {
                     if (!smartTrainerIsConnected) return;
@@ -300,31 +318,45 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
                         })
                       }
                     />
-                    <InputRightAddon children="W" />
+                    <Tooltip label="Watt" placement="top">
+                      <InputRightAddon children="W" />
+                    </Tooltip>
                   </InputGroup>
                 </FormControl>
               </GridItem>
               <GridItem colSpan={1} rowSpan={2}>
-                <Button
-                  isDisabled={
-                    !smartTrainerIsConnected || powerInputData.power === null
+                <Tooltip
+                  label={
+                    powerInputData.power !== null
+                      ? `Set resistance to ${wattFromFtpPercent(
+                          powerInputData.power,
+                          activeFTP
+                        )}W (${powerInputData.power}% of FTP)`
+                      : 'Set resistance'
                   }
-                  height="100%"
-                  width="100%"
-                  onClick={() => {
-                    if (
-                      !smartTrainerIsConnected ||
-                      powerInputData.power === null
-                    )
-                      return;
-
-                    setSmartTrainerResistance(
-                      wattFromFtpPercent(powerInputData.power, activeFTP)
-                    );
-                  }}
+                  placement="top"
                 >
-                  Set
-                </Button>
+                  <Button
+                    isDisabled={
+                      !smartTrainerIsConnected || powerInputData.power === null
+                    }
+                    height="100%"
+                    width="100%"
+                    onClick={() => {
+                      if (
+                        !smartTrainerIsConnected ||
+                        powerInputData.power === null
+                      )
+                        return;
+
+                      setSmartTrainerResistance(
+                        wattFromFtpPercent(powerInputData.power, activeFTP)
+                      );
+                    }}
+                  >
+                    Set
+                  </Button>
+                </Tooltip>
               </GridItem>
               <GridItem colSpan={2} rowSpan={1}>
                 <FormControl isInvalid={powerInputData.power === null}>
@@ -341,7 +373,12 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
                         })
                       }
                     />
-                    <InputRightAddon children="%" />
+                    <Tooltip
+                      label={`% of FTP (${activeFTP}W)`}
+                      placement="bottom"
+                    >
+                      <InputRightAddon children="%" />
+                    </Tooltip>
                   </InputGroup>
                 </FormControl>
               </GridItem>
