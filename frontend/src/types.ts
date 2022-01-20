@@ -25,8 +25,7 @@ export interface ActiveWorkout {
   workout: Workout | null;
   partElapsedTime: number;
   activePart: number;
-  isDone: boolean;
-  isActive: boolean;
+  status: 'not_started' | 'paused' | 'active' | 'finished';
 }
 
 export interface LoggedInUser {

@@ -13,7 +13,7 @@ export const WorkoutDisplay = () => {
     return null;
   }
 
-  const { activePart, isDone, partElapsedTime, workout } = activeWorkout;
+  const { activePart, status, partElapsedTime, workout } = activeWorkout;
 
   return (
     <Stack fontSize="sm">
@@ -21,7 +21,8 @@ export const WorkoutDisplay = () => {
       <Text>Based on {activeFTP}W FTP</Text>
       <Text>{secondsToHoursMinutesAndSecondsString(partElapsedTime)}</Text>
       {workout.parts.map((part, i) => {
-        const isActive = !isDone && i === activePart;
+        const isActive =
+          status !== 'finished' && status !== 'not_started' && i === activePart;
         return (
           <Text
             key={i}
@@ -36,7 +37,7 @@ export const WorkoutDisplay = () => {
           </Text>
         );
       })}
-      {isDone ? (
+      {status === 'finished' ? (
         <Text>DONE!</Text>
       ) : (
         <Text>{getTimeLeft(workout, partElapsedTime, activePart)}</Text>

@@ -45,7 +45,7 @@ export const App = ({ clockWorker }: Props) => {
     stop: stopGlobalClock,
   } = useGlobalClock((timeSinceLast) => {
     setTimeElapsed((prev) => prev + timeSinceLast);
-    if (activeWorkout && !activeWorkout.isDone) {
+    if (activeWorkout && activeWorkout.status !== 'finished') {
       increaseActiveWorkoutElapsedTime(timeSinceLast, () => {
         return setData((data) => [...data, { dataPoints: [] }]);
       });
