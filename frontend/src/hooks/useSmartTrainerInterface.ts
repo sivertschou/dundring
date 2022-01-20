@@ -9,6 +9,7 @@ export interface SmartTrainer {
   isConnected: boolean;
   disconnect: () => void;
   setResistance: (resistance: number) => void;
+  currentResistance: number;
 }
 
 interface SmartTrainerData {
@@ -26,6 +27,7 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
   const [isConnected, setIsConnected] = React.useState(false);
   const [device, setDevice] = React.useState<BluetoothDevice | null>(null);
   const { logEvent } = useLogs();
+  const [currentResistance, setCurrentResistance] = React.useState(0);
 
   const [fitnessMachineCharacteristic, setFitnessMachineCharacteristic] =
     React.useState<BluetoothRemoteGATTCharacteristic | null>(null);
@@ -106,6 +108,7 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
     power: data.power,
     cadence: data.cadence,
     speed: data.speed,
+    currentResistance,
     setResistance: React.useCallback(
       async (resistance: number) => {
         if (!isConnected) {
@@ -125,6 +128,7 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
                 new Uint8Array([0x05, 0])
               );
               logEvent(`set resistance: 0W`);
+              setCurrentResistance(0);
             } else {
               const resBuf = new Uint8Array(
                 new Uint16Array([resistance]).buffer
@@ -135,6 +139,7 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
               combined.set(resBuf, cmdBuf.length);
               await fitnessMachineCharacteristic.writeValue(combined);
               logEvent(`set resistance: ${resistance}W`);
+              setCurrentResistance(resistance);
             }
           }
         } catch (error) {
