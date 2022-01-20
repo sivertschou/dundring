@@ -1,5 +1,4 @@
 import { IconButton } from '@chakra-ui/button';
-import { useDisclosure } from '@chakra-ui/hooks';
 import { Icon } from '@chakra-ui/icon';
 import {
   Modal,
@@ -9,39 +8,27 @@ import {
   ModalOverlay,
 } from '@chakra-ui/modal';
 import * as React from 'react';
-import { ActionBarItem } from '../ActionBarItem';
-import {
-  ArrowLeft,
-  BarChartLine,
-  BarChartLineFill,
-} from 'react-bootstrap-icons';
+import { ArrowLeft } from 'react-bootstrap-icons';
 import { WorkoutOverview } from '../WorkoutMenu/WorkoutOverview';
 import { Workout } from '../../types';
 import { WorkoutEditor } from '../WorkoutMenu/WorkoutEditor';
 import { useActiveWorkout } from '../../context/WorkoutContext';
 import { useUser } from '../../context/UserContext';
+import { useWorkoutEditorModal } from '../../context/ModalContext';
 
 export interface WorkoutToEdit extends Workout {
   type: 'local' | 'remote' | 'new';
   previewFTP: number;
 }
 export const WorkoutEditorModal = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onClose } = useWorkoutEditorModal();
   const { refetchData: refetchUserData } = useUser();
   const [workoutToEdit, setWorkoutToEdit] =
     React.useState<WorkoutToEdit | null>(null);
 
-  const { setActiveWorkout, activeWorkout } = useActiveWorkout();
+  const { setActiveWorkout } = useActiveWorkout();
   return (
     <>
-      <ActionBarItem
-        text="Open workout editor"
-        icon={
-          <Icon as={activeWorkout.workout ? BarChartLineFill : BarChartLine} />
-        }
-        onClick={onOpen}
-      />
-
       <Modal isOpen={isOpen} onClose={onClose} size="4xl">
         <ModalOverlay />
         <ModalContent>

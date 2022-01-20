@@ -14,6 +14,7 @@ import { useWebsocket } from './context/WebsocketContext';
 import { TopBar } from './components/TopBar';
 import { BottomBar } from './components/BottomBar';
 import { useLogs } from './context/LogContext';
+import { Modals } from './components/Modals/Modals';
 interface Props {
   clockWorker: Worker;
 }
@@ -122,6 +123,7 @@ export const App = ({ clockWorker }: Props) => {
       <TopBar timeElapsed={timeElapsed} />
       <ActionBar />
       <BottomBar start={start} stop={stop} running={running} data={data} />
+      <Modals />
     </ChakraProvider>
   );
 };
