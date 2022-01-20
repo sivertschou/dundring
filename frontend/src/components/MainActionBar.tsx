@@ -87,7 +87,7 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
         case 'ftp': {
           const ftpPercent = parseFtpPercentInput(action.value);
 
-          if (ftpPercent === null)
+          if (ftpPercent === null || ftpPercent < 0)
             return {
               power: null,
               percentInput: action.value,
@@ -97,14 +97,14 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
           const watt = wattFromFtpPercent(ftpPercent, action.activeFtp);
           return {
             power: ftpPercent,
-            wattInput: '' + watt,
             percentInput: action.value,
+            wattInput: '' + watt,
           };
         }
         case 'watt': {
           const watt = parseWattInput(action.value);
 
-          if (watt === null)
+          if (watt === null || watt < 0)
             return {
               power: null,
               wattInput: action.value,
@@ -136,8 +136,6 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
 
     return currentResistance + watt < 0 ? false : true;
   };
-
-  // const bgColor = useColorModeValue('white', 'gray.800');
 
   const bgColor = useColorModeValue('gray.200', 'gray.900');
   return (
@@ -313,6 +311,17 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
                   }
                   height="100%"
                   width="100%"
+                  onClick={() => {
+                    if (
+                      !smartTrainerIsConnected ||
+                      powerInputData.power === null
+                    )
+                      return;
+
+                    setSmartTrainerResistance(
+                      wattFromFtpPercent(powerInputData.power, activeFTP)
+                    );
+                  }}
                 >
                   Set
                 </Button>
