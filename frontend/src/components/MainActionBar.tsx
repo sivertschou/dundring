@@ -23,6 +23,7 @@ import {
   ArrowRepeat,
   BarChartLine,
   Download,
+  BarChartLineFill,
 } from 'react-bootstrap-icons';
 import Icon from '@chakra-ui/icon';
 import { useActiveWorkout } from '../context/WorkoutContext';
@@ -35,6 +36,7 @@ import { FormControl } from '@chakra-ui/form-control';
 import { Lap } from '../types';
 import { toTCX } from '../createTcxFile';
 import { useSmartTrainer } from '../context/SmartTrainerContext';
+import { useWorkoutEditorModal } from '../context/ModalContext';
 
 const parseWattInput = (input: string) => {
   const parsed = parseFloat(input);
@@ -64,7 +66,7 @@ interface Props {
   data: Lap[];
 }
 export const MainActionBar = ({ start, stop, running, data }: Props) => {
-  const { activeFTP } = useActiveWorkout();
+  const { activeFTP, activeWorkout } = useActiveWorkout();
   const [showPowerControls, setShowPowerControls] = React.useState(false);
   const [showWorkoutControls, setShowWorkoutControls] = React.useState(false);
 
@@ -75,9 +77,14 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
     currentResistance,
   } = useSmartTrainer();
 
+  const { onOpen: onOpenWorkoutEditor } = useWorkoutEditorModal();
+
+  const workoutSelected = activeWorkout.workout !== null;
+
   const anyValidDataPoints = data.some((lap) =>
     lap.dataPoints.some((dataPoint) => dataPoint.heartRate || dataPoint.power)
   );
+
   const [powerInputData, dispatchPowerInputAction] = React.useReducer(
     (
       _currentData: PowerInputData,
@@ -149,6 +156,7 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
                   size="sm"
                   aria-label="Re-sync resistance"
                   icon={<Icon as={ArrowRepeat} />}
+                  isDisabled={!workoutSelected}
                 />
               </Tooltip>
               <Tooltip label="Previous part" placement="top">
@@ -156,6 +164,7 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
                   size="sm"
                   aria-label="Previous part"
                   icon={<Icon as={SkipBackwardFill} />}
+                  isDisabled={!workoutSelected}
                 />
               </Tooltip>
 
@@ -164,6 +173,7 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
                   size="sm"
                   aria-label="Go to start of the part"
                   icon={<Icon as={SkipStartFill} />}
+                  isDisabled={!workoutSelected}
                 />
               </Tooltip>
 
@@ -172,6 +182,7 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
                   size="sm"
                   aria-label="Pause workout timer"
                   icon={<Icon as={PauseFill} />}
+                  isDisabled={!workoutSelected}
                 />
               </Tooltip>
               <Tooltip label="Next part" placement="top">
@@ -179,6 +190,7 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
                   size="sm"
                   aria-label="Next part"
                   icon={<Icon as={SkipForwardFill} />}
+                  isDisabled={!workoutSelected}
                 />
               </Tooltip>
             </HStack>
@@ -397,7 +409,12 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
               <Tooltip label="Load workout">
                 <IconButton
                   aria-label="Load workout"
-                  icon={<Icon as={BarChartLine} />}
+                  icon={
+                    <Icon
+                      as={workoutSelected ? BarChartLineFill : BarChartLine}
+                    />
+                  }
+                  onClick={onOpenWorkoutEditor}
                 />
               </Tooltip>
               <Tooltip label="Show workout controls">
