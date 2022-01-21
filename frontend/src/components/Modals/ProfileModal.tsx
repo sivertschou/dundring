@@ -1,4 +1,3 @@
-import { useDisclosure } from '@chakra-ui/hooks';
 import {
   Modal,
   ModalCloseButton,
@@ -8,7 +7,7 @@ import {
 } from '@chakra-ui/modal';
 import * as React from 'react';
 import { Button } from '@chakra-ui/button';
-import { Stack, Text } from '@chakra-ui/layout';
+import { Stack } from '@chakra-ui/layout';
 import { useUser } from '../../context/UserContext';
 import {
   FormControl,
@@ -19,9 +18,10 @@ import { Input, InputGroup, InputRightAddon } from '@chakra-ui/input';
 import * as utils from '../../utils';
 import * as api from '../../api';
 import { useToast } from '@chakra-ui/toast';
+import { useProfileModal } from '../../context/ModalContext';
 
 export const ProfileModal = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onClose } = useProfileModal();
   const { user, setUser } = useUser();
   const [ftpInput, setFtpInput] = React.useState(
     '' + (user.loggedIn ? user.ftp : 250)
@@ -62,66 +62,54 @@ export const ProfileModal = () => {
     parseInt(input) !== 0;
 
   return (
-    <>
-      <Button
-        variant="link"
-        fontWeight="normal"
-        onClick={onOpen}
-        pointerEvents="auto"
-      >
-        <Text fontSize="xl" fontWeight="bold">
-          {user.username}
-        </Text>
-      </Button>
-      <Modal isOpen={isOpen} onClose={onClose} size="2xl">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Profile: {user.username}</ModalHeader>
-          <ModalCloseButton />
-          <Stack p="5">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                updateFTP(ftpInput);
-              }}
-            >
-              <Stack>
-                <FormControl isInvalid={!inputIsValid(ftpInput.trim())}>
-                  <FormLabel>Your FTP</FormLabel>
-                  <InputGroup>
-                    <Input
-                      placeholder="E.g. 250"
-                      type="ftp"
-                      name="ftp"
-                      value={ftpInput}
-                      onChange={(e) => {
-                        setFtpInput(e.target.value.replace(' ', ''));
-                      }}
-                      onBlur={(_e) => {
-                        setFtpInput((guestUsername) => guestUsername.trim());
-                      }}
-                    />
-                    <InputRightAddon children="Watt" />
-                  </InputGroup>
-                  <FormErrorMessage>
-                    The FTP needs to be a positive unsigned integer
-                  </FormErrorMessage>
-                </FormControl>
+    <Modal isOpen={isOpen} onClose={onClose} size="2xl">
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Profile: {user.username}</ModalHeader>
+        <ModalCloseButton />
+        <Stack p="5">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              updateFTP(ftpInput);
+            }}
+          >
+            <Stack>
+              <FormControl isInvalid={!inputIsValid(ftpInput.trim())}>
+                <FormLabel>Your FTP</FormLabel>
+                <InputGroup>
+                  <Input
+                    placeholder="E.g. 250"
+                    type="ftp"
+                    name="ftp"
+                    value={ftpInput}
+                    onChange={(e) => {
+                      setFtpInput(e.target.value.replace(' ', ''));
+                    }}
+                    onBlur={(_e) => {
+                      setFtpInput((guestUsername) => guestUsername.trim());
+                    }}
+                  />
+                  <InputRightAddon children="Watt" />
+                </InputGroup>
+                <FormErrorMessage>
+                  The FTP needs to be a positive unsigned integer
+                </FormErrorMessage>
+              </FormControl>
 
-                <FormControl isInvalid={errorMessage !== ''}>
-                  <Button
-                    type="submit"
-                    isDisabled={isLoading || ftpInput === '' + user.ftp}
-                  >
-                    Update FTP
-                  </Button>
-                  <FormErrorMessage>{errorMessage}</FormErrorMessage>
-                </FormControl>
-              </Stack>
-            </form>
-          </Stack>
-        </ModalContent>
-      </Modal>
-    </>
+              <FormControl isInvalid={errorMessage !== ''}>
+                <Button
+                  type="submit"
+                  isDisabled={isLoading || ftpInput === '' + user.ftp}
+                >
+                  Update FTP
+                </Button>
+                <FormErrorMessage>{errorMessage}</FormErrorMessage>
+              </FormControl>
+            </Stack>
+          </form>
+        </Stack>
+      </ModalContent>
+    </Modal>
   );
 };

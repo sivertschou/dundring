@@ -1,3 +1,4 @@
+import { Button } from '@chakra-ui/button';
 import { useColorMode } from '@chakra-ui/color-mode';
 import Icon from '@chakra-ui/icon';
 import { Stack, Text } from '@chakra-ui/layout';
@@ -16,14 +17,17 @@ import {
 } from 'react-bootstrap-icons';
 import { hrColor, powerColor } from '../colors';
 import { useHeartRateMonitor } from '../context/HeartRateContext';
-import { useLoginModal, useWorkoutEditorModal } from '../context/ModalContext';
+import {
+  useLoginModal,
+  useProfileModal,
+  useWorkoutEditorModal,
+} from '../context/ModalContext';
 import { useSmartTrainer } from '../context/SmartTrainerContext';
 import { useUser } from '../context/UserContext';
 import { useWebsocket } from '../context/WebsocketContext';
 import { useActiveWorkout } from '../context/WorkoutContext';
 import { ActionBarItem } from './ActionBarItem';
 import { GroupSessionModal } from './Modals/GroupSessionModal';
-import { ProfileModal } from './Modals/ProfileModal';
 
 export const ActionBar = () => {
   const { user, setUser } = useUser();
@@ -32,6 +36,7 @@ export const ActionBar = () => {
   const { colorMode, setColorMode } = useColorMode();
   const { onOpen: onOpenWorkoutEditorModal } = useWorkoutEditorModal();
   const { onOpen: onOpenLoginModal } = useLoginModal();
+  const { onOpen: onOpenProfileModal } = useProfileModal();
 
   const {
     isConnected: hrIsConnected,
@@ -55,7 +60,16 @@ export const ActionBar = () => {
       pointerEvents="none"
     >
       {user.loggedIn ? (
-        <ProfileModal />
+        <Button
+          variant="link"
+          fontWeight="normal"
+          onClick={onOpenProfileModal}
+          pointerEvents="auto"
+        >
+          <Text fontSize="xl" fontWeight="bold">
+            {user.username}
+          </Text>
+        </Button>
       ) : (
         <ActionBarItem
           text="Login"
