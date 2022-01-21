@@ -13,6 +13,7 @@ const ModalContext = React.createContext<{
   logModal: Modal;
   loginModal: Modal;
   profileModal: Modal;
+  groupSessionModal: Modal;
 } | null>(null);
 
 export const ModalContextProvider = ({
@@ -24,6 +25,7 @@ export const ModalContextProvider = ({
   const logModal: Modal = useDisclosure();
   const loginModal: Modal = useDisclosure();
   const profileModal: Modal = useDisclosure();
+  const groupSessionModal: Modal = useDisclosure();
 
   return (
     <ModalContext.Provider
@@ -32,6 +34,7 @@ export const ModalContextProvider = ({
         logModal,
         loginModal,
         profileModal,
+        groupSessionModal,
       }}
     >
       {children}
@@ -73,4 +76,14 @@ export const useProfileModal = () => {
     );
   }
   return context.profileModal;
+};
+
+export const useGroupSessionModal = () => {
+  const context = React.useContext(ModalContext);
+  if (context === null) {
+    throw new Error(
+      'useGroupSessionModal must be used within a ModalContextProvider'
+    );
+  }
+  return context.groupSessionModal;
 };

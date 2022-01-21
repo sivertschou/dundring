@@ -3,6 +3,7 @@ import * as React from 'react';
 import { LogModal } from './LogModal';
 import { LoginModal } from './LoginModal';
 import { ProfileModal } from './ProfileModal';
+import { GroupSessionModal } from './GroupSessionModal';
 
 export const Modals = () => {
   return (
@@ -11,6 +12,7 @@ export const Modals = () => {
       <LogModal />
       <LoginModal />
       <ProfileModal />
+      <GroupSessionModal />
     </>
   );
 };

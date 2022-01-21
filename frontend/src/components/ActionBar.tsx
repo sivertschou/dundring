@@ -12,12 +12,15 @@ import {
   LightningCharge,
   LightningChargeFill,
   Moon,
+  People,
+  PeopleFill,
   Person,
   Sun,
 } from 'react-bootstrap-icons';
 import { hrColor, powerColor } from '../colors';
 import { useHeartRateMonitor } from '../context/HeartRateContext';
 import {
+  useGroupSessionModal,
   useLoginModal,
   useProfileModal,
   useWorkoutEditorModal,
@@ -27,16 +30,16 @@ import { useUser } from '../context/UserContext';
 import { useWebsocket } from '../context/WebsocketContext';
 import { useActiveWorkout } from '../context/WorkoutContext';
 import { ActionBarItem } from './ActionBarItem';
-import { GroupSessionModal } from './Modals/GroupSessionModal';
 
 export const ActionBar = () => {
   const { user, setUser } = useUser();
-  const { activeGroupSession } = useWebsocket();
+  const { activeGroupSession, connect } = useWebsocket();
   const { activeWorkout } = useActiveWorkout();
   const { colorMode, setColorMode } = useColorMode();
   const { onOpen: onOpenWorkoutEditorModal } = useWorkoutEditorModal();
   const { onOpen: onOpenLoginModal } = useLoginModal();
   const { onOpen: onOpenProfileModal } = useProfileModal();
+  const { onOpen: onOpenGroupSessionModal } = useGroupSessionModal();
 
   const {
     isConnected: hrIsConnected,
@@ -110,7 +113,14 @@ export const ActionBar = () => {
           onClick={connectSmartTrainer}
         />
       )}
-      <GroupSessionModal />
+      <ActionBarItem
+        text="Open group session overview"
+        icon={<Icon as={activeGroupSession ? PeopleFill : People} />}
+        onClick={() => {
+          onOpenGroupSessionModal();
+          connect();
+        }}
+      />
       <ActionBarItem
         text="Open workout editor"
         icon={
