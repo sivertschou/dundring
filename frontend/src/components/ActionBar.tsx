@@ -11,18 +11,18 @@ import {
   LightningCharge,
   LightningChargeFill,
   Moon,
+  Person,
   Sun,
 } from 'react-bootstrap-icons';
 import { hrColor, powerColor } from '../colors';
 import { useHeartRateMonitor } from '../context/HeartRateContext';
-import { useWorkoutEditorModal } from '../context/ModalContext';
+import { useLoginModal, useWorkoutEditorModal } from '../context/ModalContext';
 import { useSmartTrainer } from '../context/SmartTrainerContext';
 import { useUser } from '../context/UserContext';
 import { useWebsocket } from '../context/WebsocketContext';
 import { useActiveWorkout } from '../context/WorkoutContext';
 import { ActionBarItem } from './ActionBarItem';
 import { GroupSessionModal } from './Modals/GroupSessionModal';
-import { LoginModal } from './Modals/LoginModal';
 import { ProfileModal } from './Modals/ProfileModal';
 
 export const ActionBar = () => {
@@ -30,7 +30,8 @@ export const ActionBar = () => {
   const { activeGroupSession } = useWebsocket();
   const { activeWorkout } = useActiveWorkout();
   const { colorMode, setColorMode } = useColorMode();
-  const { onOpen } = useWorkoutEditorModal();
+  const { onOpen: onOpenWorkoutEditorModal } = useWorkoutEditorModal();
+  const { onOpen: onOpenLoginModal } = useLoginModal();
 
   const {
     isConnected: hrIsConnected,
@@ -53,7 +54,15 @@ export const ActionBar = () => {
       spacing="1"
       pointerEvents="none"
     >
-      {user.loggedIn ? <ProfileModal /> : <LoginModal />}
+      {user.loggedIn ? (
+        <ProfileModal />
+      ) : (
+        <ActionBarItem
+          text="Login"
+          icon={<Icon as={Person} />}
+          onClick={onOpenLoginModal}
+        />
+      )}
       {activeGroupSession ? (
         <Text fontSize="lg" fontWeight="bold">
           #{activeGroupSession.id}
@@ -93,7 +102,7 @@ export const ActionBar = () => {
         icon={
           <Icon as={activeWorkout.workout ? BarChartLineFill : BarChartLine} />
         }
-        onClick={onOpen}
+        onClick={onOpenWorkoutEditorModal}
       />
       {colorMode === 'light' ? (
         <ActionBarItem
