@@ -1,30 +1,46 @@
+import { Button } from '@chakra-ui/button';
 import { useColorMode } from '@chakra-ui/color-mode';
 import Icon from '@chakra-ui/icon';
 import { Stack, Text } from '@chakra-ui/layout';
 import * as React from 'react';
 import {
+  BarChartLine,
+  BarChartLineFill,
   BoxArrowRight,
   Heart,
   HeartFill,
   LightningCharge,
   LightningChargeFill,
   Moon,
+  People,
+  PeopleFill,
+  Person,
   Sun,
 } from 'react-bootstrap-icons';
 import { hrColor, powerColor } from '../colors';
 import { useHeartRateMonitor } from '../context/HeartRateContext';
+import {
+  useGroupSessionModal,
+  useLoginModal,
+  useProfileModal,
+  useWorkoutEditorModal,
+} from '../context/ModalContext';
 import { useSmartTrainer } from '../context/SmartTrainerContext';
 import { useUser } from '../context/UserContext';
 import { useWebsocket } from '../context/WebsocketContext';
+import { useActiveWorkout } from '../context/WorkoutContext';
 import { ActionBarItem } from './ActionBarItem';
-import { GroupSessionModal } from './Modals/GroupSessionModal';
-import { LoginModal } from './Modals/LoginModal';
-import { ProfileModal } from './Modals/ProfileModal';
-import { WorkoutEditorModal } from './Modals/WorkoutEditorModal';
 
 export const ActionBar = () => {
   const { user, setUser } = useUser();
-  const { activeGroupSession } = useWebsocket();
+  const { activeGroupSession, connect } = useWebsocket();
+  const { activeWorkout } = useActiveWorkout();
+  const { colorMode, setColorMode } = useColorMode();
+  const { onOpen: onOpenWorkoutEditorModal } = useWorkoutEditorModal();
+  const { onOpen: onOpenLoginModal } = useLoginModal();
+  const { onOpen: onOpenProfileModal } = useProfileModal();
+  const { onOpen: onOpenGroupSessionModal } = useGroupSessionModal();
+
   const {
     isConnected: hrIsConnected,
     disconnect: disconnectHR,
@@ -37,7 +53,6 @@ export const ActionBar = () => {
     requestPermission: connectSmartTrainer,
   } = useSmartTrainer();
 
-  const { colorMode, setColorMode } = useColorMode();
   return (
     <Stack
       position="fixed"
@@ -47,7 +62,24 @@ export const ActionBar = () => {
       spacing="1"
       pointerEvents="none"
     >
-      {user.loggedIn ? <ProfileModal /> : <LoginModal />}
+      {user.loggedIn ? (
+        <Button
+          variant="link"
+          fontWeight="normal"
+          onClick={onOpenProfileModal}
+          pointerEvents="auto"
+        >
+          <Text fontSize="xl" fontWeight="bold">
+            {user.username}
+          </Text>
+        </Button>
+      ) : (
+        <ActionBarItem
+          text="Login"
+          icon={<Icon as={Person} />}
+          onClick={onOpenLoginModal}
+        />
+      )}
       {activeGroupSession ? (
         <Text fontSize="lg" fontWeight="bold">
           #{activeGroupSession.id}
@@ -81,8 +113,21 @@ export const ActionBar = () => {
           onClick={connectSmartTrainer}
         />
       )}
-      <GroupSessionModal />
-      <WorkoutEditorModal />
+      <ActionBarItem
+        text="Open group session overview"
+        icon={<Icon as={activeGroupSession ? PeopleFill : People} />}
+        onClick={() => {
+          onOpenGroupSessionModal();
+          connect();
+        }}
+      />
+      <ActionBarItem
+        text="Open workout editor"
+        icon={
+          <Icon as={activeWorkout.workout ? BarChartLineFill : BarChartLine} />
+        }
+        onClick={onOpenWorkoutEditorModal}
+      />
       {colorMode === 'light' ? (
         <ActionBarItem
           text="Enable darkmode"
