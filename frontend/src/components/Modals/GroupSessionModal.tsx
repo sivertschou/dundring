@@ -16,19 +16,17 @@ export const GroupSessionModal = () => {
 
   const { activeGroupSession } = useWebsocket();
   return (
-    <>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Group session</ModalHeader>
-          <ModalCloseButton />
-          {activeGroupSession ? (
-            <GroupSessionOverview />
-          ) : (
-            <CreateOrJoinGroupSession />
-          )}
-        </ModalContent>
-      </Modal>
-    </>
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Group session</ModalHeader>
+        <ModalCloseButton />
+        {activeGroupSession ? (
+          <GroupSessionOverview />
+        ) : (
+          <CreateOrJoinGroupSession />
+        )}
+      </ModalContent>
+    </Modal>
   );
 };
