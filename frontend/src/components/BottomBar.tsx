@@ -13,6 +13,7 @@ import { Icon, Tooltip, useColorModeValue } from '@chakra-ui/react';
 import { Logo } from './Logo';
 import { LogModal } from './Modals/LogModal';
 import { Github, Slack } from 'react-bootstrap-icons';
+import { Link as ReachLink } from 'react-router-dom';
 
 export const BottomBar = () => {
   const { available: bluetoothIsAvailable } = useAvailability();
@@ -26,7 +27,9 @@ export const BottomBar = () => {
           templateColumns="1fr 4fr 1fr"
         >
           <Flex p="1">
-            <Logo height="20px" />
+            <Link as={ReachLink} to="/">
+              <Logo height="20px" />
+            </Link>
           </Flex>
           <LogModal />
           <HStack justifyContent="flex-end" paddingX="2">
