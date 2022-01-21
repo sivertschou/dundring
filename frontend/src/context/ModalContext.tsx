@@ -9,7 +9,8 @@ interface Modal {
 }
 
 const ModalContext = React.createContext<{
-  workoutEditor: Modal;
+  workoutEditorModal: Modal;
+  logModal: Modal;
 } | null>(null);
 
 export const ModalContextProvider = ({
@@ -17,12 +18,14 @@ export const ModalContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const workoutEditor: Modal = useDisclosure();
+  const workoutEditorModal: Modal = useDisclosure();
+  const logModal: Modal = useDisclosure();
 
   return (
     <ModalContext.Provider
       value={{
-        workoutEditor,
+        workoutEditorModal,
+        logModal,
       }}
     >
       {children}
@@ -37,5 +40,13 @@ export const useWorkoutEditorModal = () => {
       'useWorkoutEditorModal must be used within a ModalContextProvider'
     );
   }
-  return context.workoutEditor;
+  return context.workoutEditorModal;
+};
+
+export const useLogModal = () => {
+  const context = React.useContext(ModalContext);
+  if (context === null) {
+    throw new Error('useLogModal must be used within a ModalContextProvider');
+  }
+  return context.logModal;
 };
