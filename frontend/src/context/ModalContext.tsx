@@ -21,35 +21,25 @@ export const ModalContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const workoutEditorModal: Modal = useDisclosure();
   const logModal: Modal = useDisclosure();
   const loginModal: Modal = useDisclosure();
   const profileModal: Modal = useDisclosure();
   const groupSessionModal: Modal = useDisclosure();
+  const workoutEditorModal: Modal = useDisclosure();
 
   return (
     <ModalContext.Provider
       value={{
-        workoutEditorModal,
         logModal,
         loginModal,
         profileModal,
         groupSessionModal,
+        workoutEditorModal,
       }}
     >
       {children}
     </ModalContext.Provider>
   );
-};
-
-export const useWorkoutEditorModal = () => {
-  const context = React.useContext(ModalContext);
-  if (context === null) {
-    throw new Error(
-      'useWorkoutEditorModal must be used within a ModalContextProvider'
-    );
-  }
-  return context.workoutEditorModal;
 };
 
 export const useLogModal = () => {
@@ -86,4 +76,14 @@ export const useGroupSessionModal = () => {
     );
   }
   return context.groupSessionModal;
+};
+
+export const useWorkoutEditorModal = () => {
+  const context = React.useContext(ModalContext);
+  if (context === null) {
+    throw new Error(
+      'useWorkoutEditorModal must be used within a ModalContextProvider'
+    );
+  }
+  return context.workoutEditorModal;
 };

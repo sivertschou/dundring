@@ -8,11 +8,11 @@ import { GroupSessionModal } from './GroupSessionModal';
 export const Modals = () => {
   return (
     <>
-      <WorkoutEditorModal />
       <LogModal />
       <LoginModal />
       <ProfileModal />
       <GroupSessionModal />
+      <WorkoutEditorModal />
     </>
   );
 };
