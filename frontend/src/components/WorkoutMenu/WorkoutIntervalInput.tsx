@@ -7,7 +7,11 @@ import { FormControl } from '@chakra-ui/react';
 import * as React from 'react';
 import { Files, List, X } from 'react-bootstrap-icons';
 import { WorkoutPart } from '../../types';
-import { parseInputAsInt } from '../../utils';
+import {
+  ftpPercentFromWatt,
+  parseInputAsInt,
+  wattFromFtpPercent,
+} from '../../utils';
 import { findZone } from '../../zones';
 
 interface Data {
@@ -71,12 +75,6 @@ const calculateNewDuration = (minutesInput: string, secondsInput: string) => {
   const seconds = Math.floor(duration % 60);
   return { duration, seconds, minutes };
 };
-
-const ftpPercentFromWatt = (watt: number, ftp: number) =>
-  Math.floor((watt / ftp) * 1000) / 10;
-
-const wattFromFtpPercent = (ftpPercent: number, ftp: number) =>
-  Math.floor((ftpPercent * ftp) / 100);
 
 const parseWattInput = (input: string) => {
   const parsed = parseFloat(input);
