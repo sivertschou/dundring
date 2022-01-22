@@ -8,8 +8,11 @@ import {
   WorkoutsResponseBody,
 } from '../../common/types/apiTypes';
 
+export const domain = process.env.REACT_APP_DOMAIN || 'http://localhost:3000';
+
 export const httpUrl =
   process.env.REACT_APP_HTTP_URL || 'http://localhost:8080/api';
+
 export const wsUrl = process.env.REACT_APP_WS_URL || 'ws://localhost:8080';
 
 const post = async <T, U>(url: string, body: U, token?: string): Promise<T> => {

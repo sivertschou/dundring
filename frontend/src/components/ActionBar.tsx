@@ -29,6 +29,7 @@ import { useSmartTrainer } from '../context/SmartTrainerContext';
 import { useUser } from '../context/UserContext';
 import { useWebsocket } from '../context/WebsocketContext';
 import { useActiveWorkout } from '../context/WorkoutContext';
+import { useLinkColor } from '../hooks/useLinkColor';
 import { ActionBarItem } from './ActionBarItem';
 
 export const ActionBar = () => {
@@ -39,6 +40,7 @@ export const ActionBar = () => {
   const { onOpen: onOpenWorkoutEditorModal } = useWorkoutEditorModal();
   const { onOpen: onOpenLoginModal } = useLoginModal();
   const { onOpen: onOpenProfileModal } = useProfileModal();
+  const linkColor = useLinkColor();
   const navigate = useNavigate();
 
   const {
@@ -68,6 +70,7 @@ export const ActionBar = () => {
           fontWeight="normal"
           onClick={onOpenProfileModal}
           pointerEvents="auto"
+          color={linkColor}
         >
           <Text fontSize="xl" fontWeight="bold">
             {user.username}
