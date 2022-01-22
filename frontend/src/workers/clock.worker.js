@@ -5,7 +5,6 @@ export default () => {
   let interval = null;
   // eslint-disable-next-line no-restricted-globals
   self.onmessage = (msg) => {
-    console.log('msg', msg);
     if (msg && msg.data === 'startTimer') {
       if (interval) clearInterval(interval);
       // eslint-disable-next-line no-restricted-globals

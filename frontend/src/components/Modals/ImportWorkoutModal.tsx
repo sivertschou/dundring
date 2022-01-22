@@ -8,7 +8,6 @@ import {
   InputGroup,
 } from '@chakra-ui/react';
 import { importWorkout } from '../../api';
-import { useUser } from '../../context/UserContext';
 import { WorkoutToEdit } from './WorkoutEditorModal';
 import { Text } from '@chakra-ui/layout';
 

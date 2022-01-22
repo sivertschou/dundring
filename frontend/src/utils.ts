@@ -97,10 +97,10 @@ export const stringIsValidUnsignedInt = (input: string) =>
   input.split('').every((char) => digits.includes(char));
 
 export const ftpPercentFromWatt = (watt: number, ftp: number) =>
-  Math.round(100 * (watt / ftp));
+  Math.floor(1000 * (watt / ftp)) / 10;
 
 export const wattFromFtpPercent = (ftpPercent: number, ftp: number) =>
-  Math.round((ftpPercent / 100) * ftp);
+  Math.floor((ftpPercent / 100) * ftp);
 
 export const parseInputAsInt = (input: string) => {
   const parsed = parseInt(input);

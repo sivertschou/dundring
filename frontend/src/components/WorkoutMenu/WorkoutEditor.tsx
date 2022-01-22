@@ -45,8 +45,10 @@ export const WorkoutEditor = ({
   const { activeFTP, setActiveFTP } = useActiveWorkout();
   const { user, saveLocalWorkout } = useUser();
   const token = user.loggedIn && user.token;
+
   const canSaveLocally =
     loadedWorkout.type === 'new' || loadedWorkout.type === 'local';
+
   const canSaveRemotely =
     token && (loadedWorkout.type === 'new' || loadedWorkout.type === 'remote');
 

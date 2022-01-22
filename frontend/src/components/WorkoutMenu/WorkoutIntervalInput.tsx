@@ -10,10 +10,51 @@ import { WorkoutPart } from '../../types';
 import {
   ftpPercentFromWatt,
   parseInputAsInt,
-  secondsToMinutesAndSeconds,
   wattFromFtpPercent,
 } from '../../utils';
 import { findZone } from '../../zones';
+
+interface Data {
+  seconds: number;
+  power: number;
+  secondsInput: string;
+  minutesInput: string;
+  powerPercentInput: string;
+  powerWattInput: string;
+}
+interface UpdateTimeSeconds {
+  type: 'UPDATE_TIME_SECONDS';
+  value: string;
+  setWorkoutPart: (workoutPart: WorkoutPart) => void;
+}
+interface UpdateTimeMinutes {
+  type: 'UPDATE_TIME_MINUTES';
+  value: string;
+  setWorkoutPart: (workoutPart: WorkoutPart) => void;
+}
+interface UpdateTime {
+  type: 'UPDATE_TIME';
+  setWorkoutPart: (workoutPart: WorkoutPart) => void;
+}
+interface UpdatePowerWatt {
+  type: 'UPDATE_POWER_WATT';
+  value: string;
+  ftp: number;
+  setWorkoutPart: (workoutPart: WorkoutPart) => void;
+}
+interface UpdatePowerPercent {
+  type: 'UPDATE_POWER_PERCENT';
+  value: string;
+  ftp: number;
+  setWorkoutPart: (workoutPart: WorkoutPart) => void;
+}
+
+type DataAction =
+  | UpdateTime
+  | UpdateTimeSeconds
+  | UpdateTimeMinutes
+  | UpdatePowerWatt
+  | UpdatePowerPercent;
 
 interface Props {
   workoutPart: WorkoutPart;
@@ -24,6 +65,33 @@ interface Props {
 }
 export const templateColumns = '1fr 4fr 4fr 1fr 5fr 5fr 1fr 1fr 1fr';
 
+const calculateNewDuration = (minutesInput: string, secondsInput: string) => {
+  const minutesAsSeconds = parseInputAsInt(minutesInput) * 60;
+  const secondsAsSeconds = parseInputAsInt(secondsInput);
+
+  const duration = Math.max(minutesAsSeconds + secondsAsSeconds, 0);
+
+  const minutes = Math.floor(duration / 60);
+  const seconds = Math.floor(duration % 60);
+  return { duration, seconds, minutes };
+};
+
+const parseWattInput = (input: string) => {
+  const parsed = parseFloat(input);
+
+  if (isNaN(parsed)) return null;
+
+  return Math.floor(parsed);
+};
+
+const parseFtpPercentInput = (input: string) => {
+  const parsed = parseFloat(input);
+
+  if (isNaN(parsed)) return null;
+
+  return Math.floor(parsed * 10) / 10;
+};
+
 export const WorkoutIntervalInput = ({
   setWorkoutPart,
   removeWorkoutPart,
@@ -31,63 +99,105 @@ export const WorkoutIntervalInput = ({
   workoutPart,
   ftp,
 }: Props) => {
-  const [ftpInput, setFtpInput] = React.useState('' + workoutPart.targetPower);
+  const updateWorkout = (
+    data: Data,
+    setWorkoutPart: (part: WorkoutPart) => void
+  ) => {
+    setWorkoutPart({ duration: data.seconds, targetPower: data.power });
+    return data;
+  };
+  const reducer = (currentData: Data, action: DataAction): Data => {
+    switch (action.type) {
+      case 'UPDATE_TIME': {
+        const { duration, seconds, minutes } = calculateNewDuration(
+          currentData.minutesInput,
+          currentData.secondsInput
+        );
 
-  const [tmpPowerInput, setTmpPowerInput] = React.useState(
-    '' + wattFromFtpPercent(parseInputAsInt(ftpInput), ftp)
-  );
+        const updatedData: Data = {
+          ...currentData,
+          secondsInput: '' + seconds,
+          minutesInput: '' + minutes,
+          seconds: duration,
+        };
 
-  const powerValue = wattFromFtpPercent(parseInputAsInt(ftpInput), ftp);
+        return updateWorkout(updatedData, action.setWorkoutPart);
+      }
 
-  const ftpPctValue = parseInputAsInt(ftpInput);
+      case 'UPDATE_TIME_SECONDS':
+        return { ...currentData, secondsInput: action.value };
 
-  React.useEffect(() => {
-    setTmpPowerInput('' + wattFromFtpPercent(ftpPctValue, ftp));
-  }, [ftp, ftpPctValue]);
+      case 'UPDATE_TIME_MINUTES':
+        return { ...currentData, minutesInput: action.value };
 
-  const [usingTmpPowerInput, setUsingTmpPowerInput] = React.useState(false);
+      case 'UPDATE_POWER_WATT': {
+        const parsed = parseWattInput(action.value);
 
-  const { minutes, seconds } = secondsToMinutesAndSeconds(workoutPart.duration);
+        if (parsed === null) {
+          return {
+            ...currentData,
+            powerWattInput: action.value,
+            powerPercentInput: '',
+            power: 0,
+          };
+        }
 
-  const [minutesInput, setMinutesInput] = React.useState('' + minutes);
-  const [secondsInput, setSecondsInput] = React.useState('' + seconds);
+        const updatedData: Data = {
+          ...currentData,
+          powerWattInput: '' + parsed,
+          powerPercentInput: '' + ftpPercentFromWatt(parsed, ftp),
+          power: ftpPercentFromWatt(parsed, ftp),
+        };
 
-  const calculateNewDuration = (minutesInput: string, secondsInput: string) => {
-    const minutesAsSeconds = parseInputAsInt(minutesInput) * 60;
-    const secondsAsSeconds = parseInputAsInt(secondsInput);
+        return updateWorkout(updatedData, action.setWorkoutPart);
+      }
 
-    const totalSeconds = minutesAsSeconds + secondsAsSeconds;
-    if (totalSeconds < 0) {
-      return 0;
+      case 'UPDATE_POWER_PERCENT': {
+        const parsed = parseFtpPercentInput(action.value);
+
+        if (parsed === null) {
+          return {
+            ...currentData,
+            powerWattInput: action.value,
+            powerPercentInput: '',
+            power: 0,
+          };
+        }
+
+        const updatedData: Data = {
+          ...currentData,
+          powerWattInput: '' + wattFromFtpPercent(parsed, ftp),
+          powerPercentInput: '' + parsed,
+          power: parsed,
+        };
+
+        return updateWorkout(updatedData, action.setWorkoutPart);
+      }
     }
-    return totalSeconds;
   };
 
-  const updateDurations = () => {
-    const newDuration = calculateNewDuration(minutesInput, secondsInput);
-    const { minutes, seconds } = secondsToMinutesAndSeconds(newDuration);
+  const secondsFromProps = Math.floor(workoutPart.duration % 60);
+  const minutesFromProps = Math.floor(workoutPart.duration / 60);
+  const { duration: durationFromProps } = calculateNewDuration(
+    '' + minutesFromProps,
+    '' + secondsFromProps
+  );
+  const ftpPercentFromProps = workoutPart.targetPower;
+  const wattFromProps = wattFromFtpPercent(ftpPercentFromProps, ftp);
 
-    setMinutesInput(minutes.toString());
-    setSecondsInput(seconds.toString());
+  const memoizedReducer = React.useCallback(reducer, [ftp]);
+  const [data, dispatchDataUpdate] = React.useReducer(memoizedReducer, {
+    seconds: durationFromProps,
+    secondsInput: '' + secondsFromProps,
+    minutesInput: '' + minutesFromProps,
+    power: ftpPercentFromProps,
+    powerPercentInput: '' + ftpPercentFromProps,
+    powerWattInput: '' + wattFromProps,
+  });
 
-    return newDuration;
-  };
+  const durationIsInvalid = false;
+  const powerIsInvalid = data.power <= 0;
 
-  const updateInputs = () => {
-    const newDuration = updateDurations();
-    const targetPower = parseInputAsInt(ftpInput);
-
-    setWorkoutPart({
-      duration: newDuration,
-      targetPower,
-    });
-  };
-
-  const durationIsInvalid =
-    calculateNewDuration(minutesInput, secondsInput) <= 0;
-  const powerIsInvalid = powerValue <= 0;
-
-  const ftpIsInvalid = parseInputAsInt(ftpInput) <= 0;
   return (
     <Grid templateColumns={templateColumns} gap="1" marginY="1">
       <Center>
@@ -98,9 +208,20 @@ export const WorkoutIntervalInput = ({
           <Input
             placeholder="minutes"
             type="number"
-            value={minutesInput}
-            onChange={(e) => setMinutesInput(e.target.value)}
-            onBlur={updateInputs}
+            value={data.minutesInput}
+            onChange={(e) =>
+              dispatchDataUpdate({
+                type: 'UPDATE_TIME_MINUTES',
+                value: e.target.value,
+                setWorkoutPart,
+              })
+            }
+            onBlur={() =>
+              dispatchDataUpdate({
+                type: 'UPDATE_TIME',
+                setWorkoutPart,
+              })
+            }
           />
           <InputRightAddon children="m" />
         </InputGroup>
@@ -110,11 +231,20 @@ export const WorkoutIntervalInput = ({
           <Input
             placeholder="seconds"
             type="number"
-            value={secondsInput}
+            value={data.secondsInput}
             onChange={(e) => {
-              setSecondsInput(e.target.value);
+              dispatchDataUpdate({
+                type: 'UPDATE_TIME_SECONDS',
+                value: e.target.value,
+                setWorkoutPart,
+              });
             }}
-            onBlur={updateInputs}
+            onBlur={() =>
+              dispatchDataUpdate({
+                type: 'UPDATE_TIME',
+                setWorkoutPart,
+              })
+            }
           />
           <InputRightAddon children="s" />
         </InputGroup>
@@ -124,53 +254,44 @@ export const WorkoutIntervalInput = ({
           @
         </Text>
       </Center>
-      <FormControl isInvalid={powerIsInvalid || ftpIsInvalid}>
+      <FormControl isInvalid={powerIsInvalid}>
         <InputGroup>
           <Input
             placeholder="power"
             type="number"
-            value={usingTmpPowerInput ? tmpPowerInput : powerValue + ''}
+            value={data.powerWattInput}
             onChange={(e) => {
-              setTmpPowerInput(e.target.value);
-            }}
-            onFocus={() => setUsingTmpPowerInput(true)}
-            onBlur={() => {
-              setUsingTmpPowerInput(false);
-              const powerAsFtpPercent = ftpPercentFromWatt(
-                parseInputAsInt(tmpPowerInput),
-                ftp
-              );
-              setFtpInput('' + powerAsFtpPercent);
-              setTmpPowerInput('' + wattFromFtpPercent(powerAsFtpPercent, ftp));
-              updateInputs();
+              dispatchDataUpdate({
+                type: 'UPDATE_POWER_WATT',
+                value: e.target.value,
+                ftp,
+                setWorkoutPart,
+              });
             }}
           />
           <InputRightAddon children="W" />
         </InputGroup>
       </FormControl>
-      <FormControl isInvalid={powerIsInvalid || ftpIsInvalid}>
+      <FormControl isInvalid={powerIsInvalid}>
         <InputGroup>
           <Input
             placeholder="%FTP"
             type="number"
-            value={
-              usingTmpPowerInput
-                ? '' + ftpPercentFromWatt(parseInputAsInt(tmpPowerInput), ftp)
-                : ftpInput
-            }
+            value={data.powerPercentInput}
             onChange={(e) => {
-              setFtpInput(e.target.value);
-              setTmpPowerInput(
-                '' + ftpPercentFromWatt(parseInputAsInt(e.target.value), ftp)
-              );
+              dispatchDataUpdate({
+                type: 'UPDATE_POWER_PERCENT',
+                value: e.target.value,
+                ftp,
+                setWorkoutPart,
+              });
             }}
-            onBlur={updateInputs}
           />
           <InputRightAddon children="%" />
         </InputGroup>
       </FormControl>
-      <Tooltip label="zone">
-        <Center>{findZone(ftpPctValue)}</Center>
+      <Tooltip label="Zone">
+        <Center>{findZone(data.power)}</Center>
       </Tooltip>
       <Tooltip label="Duplicate" placement="left">
         <Center>
