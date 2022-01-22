@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { ApiResponseBody, ApiStatus } from '../../../common/types/apiTypes';
+import * as core from 'express-serve-static-core';
 
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const tokenSecret = process.env.TOKEN_SECRET || 12345;
+const tokenSecret = process.env.TOKEN_SECRET || '12345';
 
 export const hash = (message: string) => {
   return crypto.createHash('md5').update(message).digest('hex');
@@ -20,7 +21,8 @@ export const generateAccessToken = (username: string) => {
     expiresIn: '120d',
   });
 };
-export interface AuthenticatedRequest<T> extends Request<T> {
+export interface AuthenticatedRequest<T = core.ParamsDictionary>
+  extends Request<T> {
   username?: string;
 }
 export const authenticateToken = <T, R>(

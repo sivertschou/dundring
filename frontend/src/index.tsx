@@ -1,4 +1,4 @@
-import { ColorModeScript } from '@chakra-ui/react';
+import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { App } from './App';
@@ -12,25 +12,34 @@ import { WebsocketContextProvider } from './context/WebsocketContext';
 import WorkerBuilder from './workers/workerBuilder';
 import clockWorker from './workers/clock.worker';
 import { LogContextProvider } from './context/LogContext';
+import theme from './theme';
+import { BrowserRouter } from 'react-router-dom';
+import { ModalContextProvider } from './context/ModalContext';
 
 const cw: Worker = new WorkerBuilder(clockWorker);
 cw && cw.postMessage('startTimer');
 ReactDOM.render(
   <React.StrictMode>
-    <LogContextProvider>
-      <UserContextProvider>
-        <HeartRateContextProvider>
-          <SmartTrainerContextProvider>
-            <ActiveWorkoutContextProvider>
-              <WebsocketContextProvider>
-                <ColorModeScript />
-                <App clockWorker={cw} />
-              </WebsocketContextProvider>
-            </ActiveWorkoutContextProvider>
-          </SmartTrainerContextProvider>
-        </HeartRateContextProvider>
-      </UserContextProvider>
-    </LogContextProvider>
+    <ChakraProvider theme={theme}>
+      <BrowserRouter>
+        <LogContextProvider>
+          <UserContextProvider>
+            <HeartRateContextProvider>
+              <SmartTrainerContextProvider>
+                <ActiveWorkoutContextProvider>
+                  <WebsocketContextProvider>
+                    <ModalContextProvider>
+                      <ColorModeScript />
+                      <App clockWorker={cw} />
+                    </ModalContextProvider>
+                  </WebsocketContextProvider>
+                </ActiveWorkoutContextProvider>
+              </SmartTrainerContextProvider>
+            </HeartRateContextProvider>
+          </UserContextProvider>
+        </LogContextProvider>
+      </BrowserRouter>
+    </ChakraProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

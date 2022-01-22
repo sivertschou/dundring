@@ -1,8 +1,5 @@
 import { WorkoutPart } from '../../common/types/workoutTypes';
-import {
-  formatMinutesAndSecondsAsString,
-  secondsToMinutesAndSeconds,
-} from './utils';
+import { secondsToHoursMinutesAndSecondsString } from './utils';
 
 export type Zone = 'Z1' | 'Z2' | 'Z3' | 'Z4' | 'Z5' | 'Z6' | 'Z7';
 
@@ -95,9 +92,7 @@ export const createZoneTableInfo = (
 
   return zonesWithDurations.map((zoneWithDurations) => ({
     ...zoneWithDurations,
-    duration: formatMinutesAndSecondsAsString(
-      secondsToMinutesAndSeconds(zoneWithDurations.duration)
-    ),
+    duration: secondsToHoursMinutesAndSecondsString(zoneWithDurations.duration),
     range: scaleRangeToFtp(getRange(zoneWithDurations.zone), ftp),
     rangePct: getRange(zoneWithDurations.zone),
     description: getDescription(zoneWithDurations.zone),

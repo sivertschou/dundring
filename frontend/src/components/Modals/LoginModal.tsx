@@ -4,9 +4,7 @@ import {
   FormErrorMessage,
   FormLabel,
 } from '@chakra-ui/form-control';
-import { useDisclosure } from '@chakra-ui/hooks';
 import { Input } from '@chakra-ui/input';
-import { Icon } from '@chakra-ui/icon';
 import { Link, Stack, Text } from '@chakra-ui/layout';
 import {
   Modal,
@@ -21,13 +19,12 @@ import { Spinner } from '@chakra-ui/react';
 import * as React from 'react';
 import * as api from '../../api';
 import { useUser } from '../../context/UserContext';
-import { ActionBarItem } from '../ActionBarItem';
 import { useToast } from '@chakra-ui/react';
-import { Person } from 'react-bootstrap-icons';
 import * as utils from '../../utils';
+import { useLoginModal } from '../../context/ModalContext';
 
 export const LoginModal = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onClose } = useLoginModal();
   const [username, setUsername] = React.useState('');
   const [mail, setMail] = React.useState('');
   const [mailIsTouched, setMailIsTouched] = React.useState(false);
@@ -120,193 +117,185 @@ export const LoginModal = () => {
   };
 
   return (
-    <>
-      <ActionBarItem
-        text="Login"
-        icon={<Icon as={Person} />}
-        onClick={onOpen}
-      />
-
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          {creatingUser ? (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                register();
-              }}
-            >
-              <ModalHeader>Register</ModalHeader>
-              <ModalCloseButton />
-              <ModalBody>
-                <Stack>
-                  <FormControl isInvalid={!mailIsValid && mailIsTouched}>
-                    <FormLabel>Mail</FormLabel>
-                    <Input
-                      placeholder="Mail"
-                      type="email"
-                      name="email"
-                      autoComplete="email"
-                      value={mail}
-                      onChange={(e) => {
-                        setMail(e.target.value);
-                        setMailIsTouched(false);
-                        setErrorMessage('');
-                      }}
-                      onBlur={(_e) => {
-                        setMailIsTouched(true);
-                        setMail((mail) => mail.replace(' ', ''));
-                      }}
-                    />
-                  </FormControl>
-
-                  <FormControl isInvalid={!usernameIsValid}>
-                    <FormLabel>Username</FormLabel>
-                    <Input
-                      placeholder="Username"
-                      name="username"
-                      autoComplete="username"
-                      value={username}
-                      onChange={(e) => {
-                        setErrorMessage('');
-                        setUsername(e.target.value.replace(' ', ''));
-                      }}
-                    />
-                    <FormErrorMessage>
-                      The username can't
-                      {usernameIsTooLong
-                        ? ` be more than ${maxUsernameLength} characters long`
-                        : ''}
-                      {usernameIsTooLong && usernameContainsIllegalCharacters
-                        ? ' or'
-                        : ''}
-                      {usernameContainsIllegalCharacters
-                        ? ` contain ${illegalCharacters.join(',')}`
-                        : ''}
-                      .
-                    </FormErrorMessage>
-                  </FormControl>
-
-                  <FormControl>
-                    <FormLabel>Password</FormLabel>
-                    <Input
-                      placeholder="Password"
-                      type="password"
-                      name="password"
-                      autoComplete="password"
-                      value={password}
-                      onChange={(e) => {
-                        setErrorMessage('');
-                        setPassword(e.target.value);
-                      }}
-                      onBlur={(_e) => {
-                        setPassword((password) => password.trim());
-                      }}
-                    />
-                  </FormControl>
-                  <Link
-                    onClick={() => {
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        {creatingUser ? (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              register();
+            }}
+          >
+            <ModalHeader>Register</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <Stack>
+                <FormControl isInvalid={!mailIsValid && mailIsTouched}>
+                  <FormLabel>Mail</FormLabel>
+                  <Input
+                    placeholder="Mail"
+                    type="email"
+                    name="email"
+                    autoComplete="email"
+                    value={mail}
+                    onChange={(e) => {
+                      setMail(e.target.value);
+                      setMailIsTouched(false);
                       setErrorMessage('');
-                      setCreatingUser(false);
                     }}
-                  >
-                    Already have an account? Login
-                  </Link>
-                  {errorMessage ? (
-                    <Text color="red.500">{errorMessage}</Text>
-                  ) : null}
-                </Stack>
-              </ModalBody>
+                    onBlur={(_e) => {
+                      setMailIsTouched(true);
+                      setMail((mail) => mail.replace(' ', ''));
+                    }}
+                  />
+                </FormControl>
 
-              <ModalFooter>
-                {!isLoading ? (
-                  <Button
-                    onClick={() => register()}
-                    isDisabled={
-                      !usernameIsValid || !mailIsValid || !passwordIsValid
-                    }
-                    type="submit"
-                  >
-                    Register
-                  </Button>
-                ) : (
-                  <Spinner />
-                )}
-              </ModalFooter>
-            </form>
-          ) : (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                login();
-              }}
-            >
-              <ModalHeader>Login</ModalHeader>
-              <ModalCloseButton />
-              <ModalBody>
-                <Stack>
-                  <FormControl>
-                    <FormLabel>Username</FormLabel>
-                    <Input
-                      placeholder="Username"
-                      name="username"
-                      autoComplete="username"
-                      value={username}
-                      onChange={(e) => {
-                        setErrorMessage('');
-                        setUsername(e.target.value);
-                      }}
-                      onBlur={(_e) => {
-                        setUsername((username) => username.trim());
-                      }}
-                    />
-                  </FormControl>
-
-                  <FormControl>
-                    <FormLabel>Password</FormLabel>
-                    <Input
-                      placeholder="Password"
-                      type="password"
-                      name="password"
-                      autoComplete="password"
-                      value={password}
-                      onChange={(e) => {
-                        setErrorMessage('');
-                        setPassword(e.target.value);
-                      }}
-                      onBlur={(_e) => {
-                        setPassword((password) => password.trim());
-                      }}
-                    />
-                  </FormControl>
-                  <Link
-                    onClick={() => {
+                <FormControl isInvalid={!usernameIsValid}>
+                  <FormLabel>Username</FormLabel>
+                  <Input
+                    placeholder="Username"
+                    name="username"
+                    autoComplete="username"
+                    value={username}
+                    onChange={(e) => {
                       setErrorMessage('');
-                      setCreatingUser(true);
+                      setUsername(e.target.value.replace(' ', ''));
                     }}
-                  >
-                    Create user
-                  </Link>
-                  {errorMessage ? (
-                    <Text color="red.500">{errorMessage}</Text>
-                  ) : null}
-                </Stack>
-              </ModalBody>
+                  />
+                  <FormErrorMessage>
+                    The username can't
+                    {usernameIsTooLong
+                      ? ` be more than ${maxUsernameLength} characters long`
+                      : ''}
+                    {usernameIsTooLong && usernameContainsIllegalCharacters
+                      ? ' or'
+                      : ''}
+                    {usernameContainsIllegalCharacters
+                      ? ` contain ${illegalCharacters.join(',')}`
+                      : ''}
+                    .
+                  </FormErrorMessage>
+                </FormControl>
 
-              <ModalFooter>
-                {!isLoading ? (
-                  <Button onClick={() => login()} type="submit">
-                    Login
-                  </Button>
-                ) : (
-                  <Spinner />
-                )}
-              </ModalFooter>
-            </form>
-          )}
-        </ModalContent>
-      </Modal>
-    </>
+                <FormControl>
+                  <FormLabel>Password</FormLabel>
+                  <Input
+                    placeholder="Password"
+                    type="password"
+                    name="password"
+                    autoComplete="password"
+                    value={password}
+                    onChange={(e) => {
+                      setErrorMessage('');
+                      setPassword(e.target.value);
+                    }}
+                    onBlur={(_e) => {
+                      setPassword((password) => password.trim());
+                    }}
+                  />
+                </FormControl>
+                <Link
+                  onClick={() => {
+                    setErrorMessage('');
+                    setCreatingUser(false);
+                  }}
+                >
+                  Already have an account? Login
+                </Link>
+                {errorMessage ? (
+                  <Text color="red.500">{errorMessage}</Text>
+                ) : null}
+              </Stack>
+            </ModalBody>
+
+            <ModalFooter>
+              {!isLoading ? (
+                <Button
+                  onClick={() => register()}
+                  isDisabled={
+                    !usernameIsValid || !mailIsValid || !passwordIsValid
+                  }
+                  type="submit"
+                >
+                  Register
+                </Button>
+              ) : (
+                <Spinner />
+              )}
+            </ModalFooter>
+          </form>
+        ) : (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              login();
+            }}
+          >
+            <ModalHeader>Login</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <Stack>
+                <FormControl>
+                  <FormLabel>Username</FormLabel>
+                  <Input
+                    placeholder="Username"
+                    name="username"
+                    autoComplete="username"
+                    value={username}
+                    onChange={(e) => {
+                      setErrorMessage('');
+                      setUsername(e.target.value);
+                    }}
+                    onBlur={(_e) => {
+                      setUsername((username) => username.trim());
+                    }}
+                  />
+                </FormControl>
+
+                <FormControl>
+                  <FormLabel>Password</FormLabel>
+                  <Input
+                    placeholder="Password"
+                    type="password"
+                    name="password"
+                    autoComplete="password"
+                    value={password}
+                    onChange={(e) => {
+                      setErrorMessage('');
+                      setPassword(e.target.value);
+                    }}
+                    onBlur={(_e) => {
+                      setPassword((password) => password.trim());
+                    }}
+                  />
+                </FormControl>
+                <Link
+                  onClick={() => {
+                    setErrorMessage('');
+                    setCreatingUser(true);
+                  }}
+                >
+                  Create user
+                </Link>
+                {errorMessage ? (
+                  <Text color="red.500">{errorMessage}</Text>
+                ) : null}
+              </Stack>
+            </ModalBody>
+
+            <ModalFooter>
+              {!isLoading ? (
+                <Button onClick={() => login()} type="submit">
+                  Login
+                </Button>
+              ) : (
+                <Spinner />
+              )}
+            </ModalFooter>
+          </form>
+        )}
+      </ModalContent>
+    </Modal>
   );
 };

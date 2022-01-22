@@ -39,7 +39,7 @@ export const LogContextProvider = ({
 export const useLogs = () => {
   const context = React.useContext(LogContext);
   if (context === null) {
-    throw new Error('useUser must be used within a UserContextProvider');
+    throw new Error('useLogs must be used within a LogContextProvider');
   }
   return context;
 };
