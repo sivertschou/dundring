@@ -65,10 +65,7 @@ const calculateNewDuration = (minutesInput: string, secondsInput: string) => {
   const minutesAsSeconds = parseInputAsInt(minutesInput) * 60;
   const secondsAsSeconds = parseInputAsInt(secondsInput);
 
-  const duration = minutesAsSeconds + secondsAsSeconds;
-  if (duration < 0) {
-    return { duration: 0, seconds: '0', minutes: '0' };
-  }
+  const duration = Math.max(minutesAsSeconds + secondsAsSeconds, 0);
 
   const minutes = Math.floor(duration / 60);
   const seconds = Math.floor(duration % 60);
