@@ -14,8 +14,9 @@ import { useGlobalClock } from '../hooks/useGlobalClock';
 import { ActionBar } from '../components/ActionBar';
 import { TopBar } from '../components/TopBar';
 import { toTCX } from '../createTcxFile';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useGroupSessionModal } from '../context/ModalContext';
+import { Modals } from '../components/Modals/Modals';
 
 interface Props {
   clockWorker: Worker;
@@ -23,6 +24,7 @@ interface Props {
 export const MainPage = ({ clockWorker }: Props) => {
   const { sendData, connect } = useWebsocket();
   const location = useLocation();
+  const params = useParams();
   const { onOpen: onOpenGroupSessionModal, onClose: onCloseGroupSessionModal } =
     useGroupSessionModal();
 
@@ -36,7 +38,13 @@ export const MainPage = ({ clockWorker }: Props) => {
       default:
         onCloseGroupSessionModal();
     }
-  }, [location, connect, onOpenGroupSessionModal, onCloseGroupSessionModal]);
+  }, [
+    location,
+    params,
+    connect,
+    onOpenGroupSessionModal,
+    onCloseGroupSessionModal,
+  ]);
 
   const {
     power,
@@ -175,6 +183,7 @@ export const MainPage = ({ clockWorker }: Props) => {
       </Center>
       <TopBar timeElapsed={timeElapsed} />
       <ActionBar />
+      <Modals />
     </>
   );
 };

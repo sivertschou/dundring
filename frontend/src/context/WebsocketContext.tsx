@@ -249,7 +249,7 @@ export const WebsocketContextProvider = ({
           }
         },
         joinGroupSession: (roomId: string, username: string) => {
-          if (socket) {
+          if (socket && joinStatus !== 'LOADING') {
             setJoinStatus('LOADING');
             setUsername(username);
             const data: JoinGroupSession = {

@@ -2,7 +2,6 @@ import * as React from 'react';
 import { MainPage } from './pages/MainPage';
 import { BottomBar } from './components/BottomBar';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { Modals } from './components/Modals/Modals';
 interface Props {
   clockWorker: Worker;
 }
@@ -17,7 +16,6 @@ export const App = (props: Props) => {
         </Route>
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
-      <Modals />
       <BottomBar />
     </>
   );

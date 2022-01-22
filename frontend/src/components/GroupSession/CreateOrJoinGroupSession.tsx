@@ -13,10 +13,18 @@ import {
   getIllegalUsernameCharacters,
   removeDuplicateWords,
 } from '../../utils';
+import { useParams } from 'react-router';
 
 export const CreateOrJoinGroupSession = () => {
-  const { startGroupSession, joinGroupSession, joinStatus, createStatus } =
-    useWebsocket();
+  const { groupId: groupIdParam } = useParams();
+  const [hasTriedToConnect, setHasTriedToConnect] = React.useState(false);
+  const {
+    activeGroupSession,
+    startGroupSession,
+    joinGroupSession,
+    joinStatus,
+    createStatus,
+  } = useWebsocket();
 
   const { user } = useUser();
   const [groupSessionId, setGroupSessionId] = React.useState('');
@@ -32,6 +40,22 @@ export const CreateOrJoinGroupSession = () => {
   const usernameIsTooLong = guestUsername.length > maxUsernameLength;
   const usernameIsValid =
     !usernameIsTooLong && !usernameContainsIllegalCharacters;
+
+  React.useEffect(() => {
+    if (!groupIdParam || activeGroupSession) return;
+    setGroupSessionId(groupIdParam);
+    if (user.loggedIn && !hasTriedToConnect) {
+      joinGroupSession(groupIdParam, user.username);
+      setHasTriedToConnect(true);
+    }
+  }, [
+    activeGroupSession,
+    groupIdParam,
+    user,
+    joinGroupSession,
+    hasTriedToConnect,
+    setHasTriedToConnect,
+  ]);
 
   return (
     <Stack p="5">
