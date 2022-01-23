@@ -12,7 +12,7 @@ export const WorkoutContext = React.createContext<{
   pause: () => void;
   activeFTP: number;
   setActiveFTP: (ftp: number) => void;
-  changeActivePart: (partNumber: number) => void;
+  changeActivePart: (partNumber: number, addLap: () => void) => void;
   syncResistance: () => void;
   syncResistanceIfActive: () => void;
 } | null>(null);
@@ -217,12 +217,12 @@ export const ActiveWorkoutContextProvider = ({
     setResistance(targetPowerAsWatt);
   };
 
-  const changeActivePart = (partNumber: number) => {
+  const changeActivePart = (partNumber: number, addLap: () => void) => {
     dispatchActiveWorkoutAction({
       type: 'CHANGE_ACTIVE_PART',
       setResistance,
       activeFTP,
-      addLap: () => {},
+      addLap,
       partNumber: partNumber,
     });
   };
@@ -253,7 +253,7 @@ export const ActiveWorkoutContextProvider = ({
         pause,
         activeFTP,
         setActiveFTP,
-        changeActivePart: changeActivePart,
+        changeActivePart,
         syncResistance,
         syncResistanceIfActive,
       }}

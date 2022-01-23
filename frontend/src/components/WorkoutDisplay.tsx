@@ -7,7 +7,11 @@ import {
   wattFromFtpPercent,
 } from '../utils';
 
-export const WorkoutDisplay = () => {
+interface Props {
+  addLaps: () => void;
+}
+
+export const WorkoutDisplay = ({ addLaps }: Props) => {
   const { activeWorkout, activeFTP, changeActivePart } = useActiveWorkout();
   if (!activeWorkout.workout) {
     return null;
@@ -28,7 +32,7 @@ export const WorkoutDisplay = () => {
             fontWeight={isActive ? 'bold' : 'normal'}
             color={isActive ? 'purple.500' : ''}
             cursor="pointer"
-            onClick={() => changeActivePart(i)}
+            onClick={() => changeActivePart(i, addLaps)}
           >
             {`${secondsToHoursMinutesAndSecondsString(part.duration)}@${
               part.targetPower

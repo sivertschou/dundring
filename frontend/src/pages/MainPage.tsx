@@ -38,6 +38,10 @@ export const MainPage = ({ clockWorker }: Props) => {
   const [timeElapsed, setTimeElapsed] = React.useState(0);
   const [startingTime, setStartingTime] = React.useState<Date | null>(null);
 
+  const addLaps = () => {
+    return setData((data) => [...data, { dataPoints: [] }]);
+  };
+
   const { sendData } = useWebsocket();
   const {
     running,
@@ -46,9 +50,7 @@ export const MainPage = ({ clockWorker }: Props) => {
   } = useGlobalClock((timeSinceLast) => {
     setTimeElapsed((prev) => prev + timeSinceLast);
     if (activeWorkout && !activeWorkout.isDone) {
-      increaseActiveWorkoutElapsedTime(timeSinceLast, () => {
-        return setData((data) => [...data, { dataPoints: [] }]);
-      });
+      increaseActiveWorkoutElapsedTime(timeSinceLast, addLaps);
     }
   });
   const { logEvent } = useLogs();
@@ -118,7 +120,7 @@ export const MainPage = ({ clockWorker }: Props) => {
         <Stack width="100%" pt={['30', '50', '100']}>
           <Center width="100%">
             <Center width="90%">
-              {activeWorkout ? <WorkoutDisplay /> : null}
+              {activeWorkout ? <WorkoutDisplay addLaps={addLaps} /> : null}
               <GraphContainer data={data.flatMap((x) => x.dataPoints)} />
             </Center>
           </Center>
