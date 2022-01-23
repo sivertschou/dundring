@@ -35,7 +35,9 @@ interface Data {
 interface AddData {
   type: 'ADD_DATA';
   dataPoint: DataPoint;
+  delta: number;
 }
+
 interface AddLap {
   type: 'ADD_LAP';
 }
@@ -88,6 +90,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
 
           return {
             ...currentData,
+            timeElapsed: currentData.timeElapsed + action.delta,
             graphData: [...currentData.graphData, dataPoint],
             laps: [
               ...laps.filter((_, i) => i !== laps.length - 1),
@@ -144,7 +147,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
             ...powerToInclude,
             ...cadenceToInclude,
           };
-          dispatch({ type: 'ADD_DATA', dataPoint });
+          dispatch({ type: 'ADD_DATA', dataPoint, delta: data.delta });
           sendData(dataPoint);
         }
       }
