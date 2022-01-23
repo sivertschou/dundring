@@ -1,6 +1,6 @@
 import { Text, Stack } from '@chakra-ui/layout';
 import * as React from 'react';
-import { useActiveWorkout } from '../context/WorkoutContext';
+import { useActiveWorkout } from '../context/ActiveWorkoutContext';
 import { Workout } from '../types';
 import {
   secondsToHoursMinutesAndSecondsString,

@@ -14,7 +14,6 @@ import { useAvailability } from '../hooks/useAvailability';
 import { Logo } from './Logo';
 import { Github, Slack } from 'react-bootstrap-icons';
 import { MainActionBar } from './MainActionBar';
-import { Lap } from '../types';
 import { Link as ReachLink } from 'react-router-dom';
 import { useColorModeValue } from '@chakra-ui/color-mode';
 import { useLogModal } from '../context/ModalContext';

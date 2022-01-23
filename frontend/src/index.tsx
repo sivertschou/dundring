@@ -7,7 +7,6 @@ import { HeartRateContextProvider } from './context/HeartRateContext';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorker from './serviceWorker';
 import { SmartTrainerContextProvider } from './context/SmartTrainerContext';
-import { ActiveWorkoutContextProvider } from './context/WorkoutContext';
 import { WebsocketContextProvider } from './context/WebsocketContext';
 import WorkerBuilder from './workers/workerBuilder';
 import clockWorker from './workers/clock.worker';
@@ -16,6 +15,7 @@ import theme from './theme';
 import { BrowserRouter } from 'react-router-dom';
 import { ModalContextProvider } from './context/ModalContext';
 import { DataContextProvider } from './context/DataContext';
+import { ActiveWorkoutContextProvider } from './context/ActiveWorkoutContext';
 
 const cw: Worker = new WorkerBuilder(clockWorker);
 cw.postMessage('startDataTimer');

@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { DataPoint, Lap } from '../types';
+import { useActiveWorkout } from './ActiveWorkoutContext';
 import { useHeartRateMonitor } from './HeartRateContext';
 import { useLogs } from './LogContext';
 import { useSmartTrainer } from './SmartTrainerContext';
 import { useWebsocket } from './WebsocketContext';
-import { useActiveWorkout } from './WorkoutContext';
 
 const DataContext = React.createContext<{
   data: Lap[];

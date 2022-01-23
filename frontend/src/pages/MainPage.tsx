@@ -2,14 +2,7 @@ import { Center, Stack } from '@chakra-ui/layout';
 import * as React from 'react';
 import { GraphContainer } from '../components/Graph/GraphContainer';
 import { WorkoutDisplay } from '../components/WorkoutDisplay';
-import { useHeartRateMonitor } from '../context/HeartRateContext';
-import { useLogs } from '../context/LogContext';
-import { useSmartTrainer } from '../context/SmartTrainerContext';
 import { useWebsocket } from '../context/WebsocketContext';
-import { useActiveWorkout } from '../context/WorkoutContext';
-import { Lap } from '../types';
-
-import { useGlobalClock } from '../hooks/useGlobalClock';
 import { ActionBar } from '../components/ActionBar';
 import { TopBar } from '../components/TopBar';
 import { useLocation, useParams } from 'react-router-dom';
@@ -42,15 +35,13 @@ export const MainPage = () => {
     onCloseGroupSessionModal,
   ]);
 
-  const { activeWorkout } = useActiveWorkout();
-
   return (
     <>
       <Center>
         <Stack width="100%" pt={['30', '50', '100']}>
           <Center width="100%">
             <Center width="90%">
-              {activeWorkout ? <WorkoutDisplay /> : null}
+              <WorkoutDisplay />
               <GraphContainer />
             </Center>
           </Center>

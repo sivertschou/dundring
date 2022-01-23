@@ -19,6 +19,7 @@ import {
 } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import { hrColor, powerColor } from '../colors';
+import { useActiveWorkout } from '../context/ActiveWorkoutContext';
 import { useHeartRateMonitor } from '../context/HeartRateContext';
 import {
   useLoginModal,
@@ -28,7 +29,6 @@ import {
 import { useSmartTrainer } from '../context/SmartTrainerContext';
 import { useUser } from '../context/UserContext';
 import { useWebsocket } from '../context/WebsocketContext';
-import { useActiveWorkout } from '../context/WorkoutContext';
 import { useLinkColor } from '../hooks/useLinkColor';
 import { ActionBarItem } from './ActionBarItem';
 

@@ -5,13 +5,13 @@ import { useSmartTrainer } from '../context/SmartTrainerContext';
 import { useHeartRateMonitor } from '../context/HeartRateContext';
 import { useColorModeValue } from '@chakra-ui/color-mode';
 import theme from '../theme';
+import { secondsToHoursMinutesAndSecondsString } from '../utils';
+import { useData } from '../context/DataContext';
 import {
   getRemainingTime,
   getTargetPower,
   useActiveWorkout,
-} from '../context/WorkoutContext';
-import { secondsToHoursMinutesAndSecondsString } from '../utils';
-import { useData } from '../context/DataContext';
+} from '../context/ActiveWorkoutContext';
 
 export const TopBar = () => {
   const { power, cadence } = useSmartTrainer();

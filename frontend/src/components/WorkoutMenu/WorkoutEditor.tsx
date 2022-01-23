@@ -14,7 +14,6 @@ import { saveWorkout } from '../../api';
 import { CloudUpload, Hdd } from 'react-bootstrap-icons';
 import Icon from '@chakra-ui/icon';
 import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
-import { useActiveWorkout } from '../../context/WorkoutContext';
 import {
   Table,
   Tbody,
@@ -26,6 +25,7 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import { createZoneTableInfo } from '../../zones';
+import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 interface Props {
   workout: WorkoutToEdit;
   closeEditor: () => void;
