@@ -223,7 +223,6 @@ export const ActiveWorkoutContextProvider = ({
   };
 
   const increaseElapsedTime = (millis: number, addLap: () => void) => {
-    console.log('increadse elapsed time');
     dispatchActiveWorkoutAction({
       type: 'INCREASE_PART_ELAPSED_TIME',
       millis,

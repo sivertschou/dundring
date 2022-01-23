@@ -8,12 +8,9 @@ import { useActiveWorkout } from './WorkoutContext';
 
 const DataContext = React.createContext<{
   data: Lap[];
-  // setData: React.Dispatch<React.SetStateAction<Lap[]>>;
   hasValidData: boolean;
   timeElapsed: number;
-  // setTimeElapsed: React.Dispatch<React.SetStateAction<number>>;
   startingTime: Date | null;
-  // setStartingTime: React.Dispatch<React.SetStateAction<Date | null>>;
   start: () => void;
   stop: () => void;
   isRunning: boolean;
@@ -35,11 +32,14 @@ interface Data {
 interface AddData {
   type: 'ADD_DATA';
   dataPoint: DataPoint;
-  delta: number;
 }
 
 interface AddLap {
   type: 'ADD_LAP';
+}
+interface IncreaseElapsedTime {
+  type: 'INCREASE_ELAPSED_TIME';
+  delta: number;
 }
 interface Pause {
   type: 'PAUSE';
@@ -47,10 +47,14 @@ interface Pause {
 interface Start {
   type: 'START';
 }
-type Action = AddData | AddLap | Start | Pause;
+type Action = AddData | AddLap | IncreaseElapsedTime | Start | Pause;
 
 export const DataContextProvider = ({ clockWorker, children }: Props) => {
-  const { syncResistance, start: startActiveWorkout } = useActiveWorkout();
+  const {
+    syncResistance,
+    start: startActiveWorkout,
+    increaseElapsedTime: increaseActiveWorkoutElapsedTime,
+  } = useActiveWorkout();
 
   const { sendData } = useWebsocket();
 
@@ -72,6 +76,12 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         case 'PAUSE': {
           return { ...currentData, state: 'paused' };
         }
+        case 'INCREASE_ELAPSED_TIME': {
+          return {
+            ...currentData,
+            timeElapsed: currentData.timeElapsed + action.delta,
+          };
+        }
         case 'ADD_LAP': {
           return {
             ...currentData,
@@ -90,7 +100,6 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
 
           return {
             ...currentData,
-            timeElapsed: currentData.timeElapsed + action.delta,
             graphData: [...currentData.graphData, dataPoint],
             laps: [
               ...laps.filter((_, i) => i !== laps.length - 1),
@@ -135,6 +144,10 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
       if (!data) return;
       switch (data.type) {
         case 'clockTick': {
+          dispatch({ type: 'INCREASE_ELAPSED_TIME', delta: data.delta });
+          increaseActiveWorkoutElapsedTime(data.delta, () =>
+            dispatch({ type: 'ADD_LAP' })
+          );
           break;
         }
         case 'dataTick': {
@@ -147,13 +160,20 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
             ...powerToInclude,
             ...cadenceToInclude,
           };
-          dispatch({ type: 'ADD_DATA', dataPoint, delta: data.delta });
+          dispatch({ type: 'ADD_DATA', dataPoint });
           sendData(dataPoint);
         }
       }
     };
     clockWorker.onerror = (e) => console.log('message recevied:', e);
-  }, [clockWorker, power, heartRate, sendData]);
+  }, [
+    clockWorker,
+    power,
+    heartRate,
+    cadence,
+    increaseActiveWorkoutElapsedTime,
+    sendData,
+  ]);
 
   const start = React.useCallback(async () => {
     if (!data.startingTime) {
@@ -182,7 +202,6 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
   ]);
 
   const stop = React.useCallback(async () => {
-    console.warn('stop');
     logEvent('workout paused');
     dispatch({ type: 'PAUSE' });
     if (smartTrainerIsConnected) {

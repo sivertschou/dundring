@@ -10,12 +10,9 @@ export default () => {
 
   // eslint-disable-next-line no-restricted-globals
   self.onmessage = (msg) => {
-    console.log('msg', msg);
-    console.log('msg.data', msg.data);
     if (!msg) return;
     switch (msg.data) {
       case 'startDataTimer': {
-        console.log('startDataTimer');
         if (dataInterval) clearInterval(dataInterval);
         lastDataTick = Date.now();
 
@@ -30,14 +27,12 @@ export default () => {
         break;
       }
       case 'stopDataTimer': {
-        console.log('stopDataTimer');
         clearInterval(dataInterval);
         dataInterval = null;
         break;
       }
 
       case 'startClockTimer': {
-        console.log('startClockTimer');
         if (clockInterval) clearInterval(clockInterval);
         lastClockTick = Date.now();
 
@@ -52,13 +47,12 @@ export default () => {
         break;
       }
       case 'stopClockTimer': {
-        console.log('stopClockTimer');
         clearInterval(clockInterval);
         clockInterval = null;
         break;
       }
       default:
-        console.log('not matching smh');
+      /* #justjsthings */
     }
   };
 };

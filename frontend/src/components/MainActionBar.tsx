@@ -33,7 +33,6 @@ import { Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/menu';
 import { Input, InputGroup, InputRightAddon } from '@chakra-ui/input';
 import { useColorModeValue } from '@chakra-ui/color-mode';
 import { FormControl } from '@chakra-ui/form-control';
-import { Lap } from '../types';
 import { useSmartTrainer } from '../context/SmartTrainerContext';
 import { useWorkoutEditorModal } from '../context/ModalContext';
 import { useData } from '../context/DataContext';
@@ -61,7 +60,6 @@ interface PowerInputData {
 }
 
 export const MainActionBar = () => {
-  console.log('rerender MainActionBar');
   const { activeFTP, activeWorkout } = useActiveWorkout();
   const [showPowerControls, setShowPowerControls] = React.useState(false);
   const [showWorkoutControls, setShowWorkoutControls] = React.useState(false);
