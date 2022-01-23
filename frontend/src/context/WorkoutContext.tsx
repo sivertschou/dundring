@@ -4,7 +4,7 @@ import { wattFromFtpPercent } from '../utils';
 import { useSmartTrainer } from './SmartTrainerContext';
 import { useUser } from './UserContext';
 
-export const WorkoutContext = React.createContext<{
+export const ActiveWorkoutContext = React.createContext<{
   activeWorkout: ActiveWorkout;
   setActiveWorkout: (workout: Workout) => void;
   increaseElapsedTime: (millis: number, addLap: () => void) => void;
@@ -237,7 +237,7 @@ export const ActiveWorkoutContextProvider = ({
     ? Math.floor(activeWorkout.partElapsedTime / 1000)
     : 0;
   return (
-    <WorkoutContext.Provider
+    <ActiveWorkoutContext.Provider
       value={{
         activeWorkout: {
           ...activeWorkout,
@@ -255,12 +255,12 @@ export const ActiveWorkoutContextProvider = ({
       }}
     >
       {children}
-    </WorkoutContext.Provider>
+    </ActiveWorkoutContext.Provider>
   );
 };
 
 export const useActiveWorkout = () => {
-  const context = React.useContext(WorkoutContext);
+  const context = React.useContext(ActiveWorkoutContext);
   if (context === null) {
     throw new Error(
       'useActiveWorkout must be used within a WorkoutContextProvider'
