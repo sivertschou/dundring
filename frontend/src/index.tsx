@@ -15,9 +15,10 @@ import { LogContextProvider } from './context/LogContext';
 import theme from './theme';
 import { BrowserRouter } from 'react-router-dom';
 import { ModalContextProvider } from './context/ModalContext';
+import { DataContextProvider } from './context/DataContext';
 
 const cw: Worker = new WorkerBuilder(clockWorker);
-cw && cw.postMessage('startTimer');
+cw.postMessage('startDataTimer');
 ReactDOM.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
@@ -28,10 +29,12 @@ ReactDOM.render(
               <SmartTrainerContextProvider>
                 <ActiveWorkoutContextProvider>
                   <WebsocketContextProvider>
-                    <ModalContextProvider>
-                      <ColorModeScript />
-                      <App clockWorker={cw} />
-                    </ModalContextProvider>
+                    <DataContextProvider clockWorker={cw}>
+                      <ModalContextProvider>
+                        <ColorModeScript />
+                        <App />
+                      </ModalContextProvider>
+                    </DataContextProvider>
                   </WebsocketContextProvider>
                 </ActiveWorkoutContextProvider>
               </SmartTrainerContextProvider>

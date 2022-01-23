@@ -29,6 +29,6 @@ export const useHeartRateMonitorMock = (): HeartRateMonitor => {
       logEvent('[mock] heart rate monitor disconnected');
     },
     isConnected,
-    heartRate,
+    heartRate: isConnected ? heartRate : 0,
   };
 };

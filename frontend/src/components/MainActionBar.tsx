@@ -22,8 +22,8 @@ import {
   SkipForwardFill,
   ArrowRepeat,
   BarChartLine,
-  Download,
   BarChartLineFill,
+  Download,
 } from 'react-bootstrap-icons';
 import Icon from '@chakra-ui/icon';
 import { useActiveWorkout } from '../context/WorkoutContext';
@@ -34,9 +34,10 @@ import { Input, InputGroup, InputRightAddon } from '@chakra-ui/input';
 import { useColorModeValue } from '@chakra-ui/color-mode';
 import { FormControl } from '@chakra-ui/form-control';
 import { Lap } from '../types';
-import { toTCX } from '../createTcxFile';
 import { useSmartTrainer } from '../context/SmartTrainerContext';
 import { useWorkoutEditorModal } from '../context/ModalContext';
+import { useData } from '../context/DataContext';
+import { toTCX } from '../createTcxFile';
 
 const parseWattInput = (input: string) => {
   const parsed = parseFloat(input);
@@ -59,13 +60,8 @@ interface PowerInputData {
   percentInput: string;
 }
 
-interface Props {
-  start: () => void;
-  stop: () => void;
-  running: boolean;
-  data: Lap[];
-}
-export const MainActionBar = ({ start, stop, running, data }: Props) => {
+export const MainActionBar = () => {
+  console.log('rerender MainActionBar');
   const { activeFTP, activeWorkout } = useActiveWorkout();
   const [showPowerControls, setShowPowerControls] = React.useState(false);
   const [showWorkoutControls, setShowWorkoutControls] = React.useState(false);
@@ -77,13 +73,11 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
     currentResistance,
   } = useSmartTrainer();
 
+  const { isRunning, hasValidData, data, start, stop } = useData();
+
   const { onOpen: onOpenWorkoutEditor } = useWorkoutEditorModal();
 
   const workoutSelected = activeWorkout.workout !== null;
-
-  const anyValidDataPoints = data.some((lap) =>
-    lap.dataPoints.some((dataPoint) => dataPoint.heartRate || dataPoint.power)
-  );
 
   const [powerInputData, dispatchPowerInputAction] = React.useReducer(
     (
@@ -428,7 +422,7 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
             </HStack>
           </Center>
           <Center width="8em">
-            {running ? (
+            {isRunning ? (
               <Button
                 width="100%"
                 size="lg"
@@ -444,7 +438,7 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
                 onClick={start}
                 leftIcon={<Icon as={PlayFill} />}
               >
-                {anyValidDataPoints ? 'Resume' : 'Start'}
+                {hasValidData ? 'Resume' : 'Start'}
               </Button>
             )}
           </Center>
@@ -490,7 +484,7 @@ export const MainActionBar = ({ start, stop, running, data }: Props) => {
             </HStack>
           </Center>
         </Grid>
-        {anyValidDataPoints && !running ? (
+        {hasValidData && !isRunning ? (
           <Grid templateColumns="1fr 1fr 1fr" gap="1" colStart={1}>
             <Text />
             <Center width="8em">

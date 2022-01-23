@@ -11,16 +11,13 @@ import {
   useActiveWorkout,
 } from '../context/WorkoutContext';
 import { secondsToHoursMinutesAndSecondsString } from '../utils';
+import { useData } from '../context/DataContext';
 
-interface Props {
-  timeElapsed: number;
-}
-
-export const TopBar = ({ timeElapsed }: Props) => {
+export const TopBar = () => {
   const { power, cadence } = useSmartTrainer();
   const { heartRate } = useHeartRateMonitor();
   const { activeWorkout, activeFTP } = useActiveWorkout();
-
+  const { timeElapsed } = useData();
   const remainingTime = getRemainingTime(activeWorkout);
   const targetPower = getTargetPower(activeWorkout, activeFTP);
 

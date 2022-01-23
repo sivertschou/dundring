@@ -1,4 +1,3 @@
-import { DataPoint } from '../../types';
 import * as React from 'react';
 import { Graphs } from '../Graphs';
 import { Center, HStack, Stack } from '@chakra-ui/layout';
@@ -13,16 +12,17 @@ import {
 } from 'react-bootstrap-icons';
 import { GraphCheckboxes } from './GraphCheckboxes';
 import { useWebsocket } from '../../context/WebsocketContext';
+import { useData } from '../../context/DataContext';
 
 export interface ShowData {
   hr: boolean;
   power: boolean;
 }
-interface Props {
-  data: DataPoint[];
-}
 
-export const GraphContainer = ({ data }: Props) => {
+export const GraphContainer = () => {
+  const { data: rawData } = useData();
+  const data = rawData.flatMap((x) => x.dataPoints);
+
   const [showFill, setShowFill] = React.useState(true);
   const toggleGraphFillButtonText = showFill
     ? 'Hide graph fill'

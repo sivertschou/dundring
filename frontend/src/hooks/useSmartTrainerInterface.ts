@@ -105,9 +105,9 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
     requestPermission,
     disconnect,
     isConnected,
-    power: data.power,
-    cadence: data.cadence,
-    speed: data.speed,
+    power: isConnected ? data.power : 0,
+    cadence: isConnected ? data.cadence : 0,
+    speed: isConnected ? data.speed : 0,
     currentResistance,
     setResistance: React.useCallback(
       async (resistance: number) => {

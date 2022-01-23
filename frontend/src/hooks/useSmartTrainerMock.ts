@@ -33,8 +33,8 @@ export const useSmartTrainerMock = (): SmartTrainer => {
       logEvent('[mock] smart trainer disconnected');
     },
     isConnected,
-    power,
-    cadence: cadence,
+    power: isConnected ? power : 0,
+    cadence: isConnected ? cadence : 0,
     speed: 0,
     currentResistance,
     setResistance: React.useCallback(

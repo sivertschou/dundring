@@ -3,7 +3,7 @@ import { useLogs } from '../context/LogContext';
 
 export interface HeartRateMonitor {
   requestPermission: () => void;
-  heartRate: number;
+  heartRate: number | null;
   isConnected: boolean;
   disconnect: () => void;
 }
@@ -20,7 +20,7 @@ const parseHeartRate = (value: DataView | ArrayBuffer) => {
   }
 };
 export const useHeartRateMonitorInterface = (): HeartRateMonitor => {
-  const [heartRate, setHeartRate] = React.useState(0);
+  const [heartRate, setHeartRate] = React.useState<number | null>(null);
   const [isConnected, setIsConnected] = React.useState(false);
   const [device, setDevice] = React.useState<BluetoothDevice | null>(null);
   const { logEvent } = useLogs();
@@ -80,6 +80,6 @@ export const useHeartRateMonitorInterface = (): HeartRateMonitor => {
     requestPermission,
     disconnect,
     isConnected,
-    heartRate,
+    heartRate: isConnected ? heartRate : null,
   };
 };

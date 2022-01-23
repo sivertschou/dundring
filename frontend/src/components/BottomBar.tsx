@@ -21,13 +21,7 @@ import { useLogModal } from '../context/ModalContext';
 import Icon from '@chakra-ui/icon';
 import { useLogs } from '../context/LogContext';
 
-interface Props {
-  start: () => void;
-  stop: () => void;
-  running: boolean;
-  data: Lap[];
-}
-export const BottomBar = (props: Props) => {
+export const BottomBar = () => {
   const { available: bluetoothIsAvailable } = useAvailability();
   const { onOpen } = useLogModal();
   const { loggedEvents } = useLogs();
@@ -42,7 +36,7 @@ export const BottomBar = (props: Props) => {
   return (
     <Center width="100%" position="fixed" bottom="0" pointerEvents="none">
       <Stack width="100%" spacing="0">
-        <MainActionBar {...props} />
+        <MainActionBar />
         <Grid
           backgroundColor={bgColor}
           width="100%"

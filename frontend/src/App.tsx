@@ -1,16 +1,14 @@
 import * as React from 'react';
 import { MainPage } from './pages/MainPage';
 import { Navigate, Route, Routes } from 'react-router-dom';
-interface Props {
-  clockWorker: Worker;
-}
-export const App = (props: Props) => {
+
+export const App = () => {
   return (
     <>
       <Routes>
-        <Route path="/" element={<MainPage {...props} />}>
-          <Route path="group" element={<MainPage {...props} />}>
-            <Route path=":groupId" element={<MainPage {...props} />} />
+        <Route path="/" element={<MainPage />}>
+          <Route path="group" element={<MainPage />}>
+            <Route path=":groupId" element={<MainPage />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/" />} />
