@@ -31,6 +31,7 @@ export const TopBar = ({ timeElapsed }: Props) => {
   const secondaryFontSize = ['m', 'xl', '2xl'];
   const bgColor = useColorModeValue(theme.colors.white, theme.colors.gray[800]);
   const textShadow = `0px 0px 1vh ${bgColor}`;
+
   return (
     <Center
       width="100%"

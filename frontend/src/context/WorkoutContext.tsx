@@ -117,6 +117,7 @@ export const ActiveWorkoutContextProvider = ({
         // Current part is not finished
         return { ...activeWorkout, partElapsedTime: newElapsed };
       case 'START': {
+        console.log('set active');
         const nextState: ActiveWorkout = { ...activeWorkout, status: 'active' };
         return nextState;
       }
@@ -164,6 +165,10 @@ export const ActiveWorkoutContextProvider = ({
       setResistance(targetPowerAsWatt);
     }
   }, [
+    /* NB: Only include the necessary attributes, since including the
+     *     whole activeWorkout object would lead to a re-render every
+     *     time activeWorkout.partElapsedTime is updated.
+     * */
     activeWorkout.status,
     activeWorkout.activePart,
     activeWorkout.workout,
@@ -218,6 +223,7 @@ export const ActiveWorkoutContextProvider = ({
   };
 
   const increaseElapsedTime = (millis: number, addLap: () => void) => {
+    console.log('increadse elapsed time');
     dispatchActiveWorkoutAction({
       type: 'INCREASE_PART_ELAPSED_TIME',
       millis,

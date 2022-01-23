@@ -9,7 +9,11 @@ interface Modal {
 }
 
 const ModalContext = React.createContext<{
-  workoutEditor: Modal;
+  workoutEditorModal: Modal;
+  logModal: Modal;
+  loginModal: Modal;
+  profileModal: Modal;
+  groupSessionModal: Modal;
 } | null>(null);
 
 export const ModalContextProvider = ({
@@ -17,17 +21,61 @@ export const ModalContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const workoutEditor: Modal = useDisclosure();
+  const logModal: Modal = useDisclosure();
+  const loginModal: Modal = useDisclosure();
+  const profileModal: Modal = useDisclosure();
+  const groupSessionModal: Modal = useDisclosure();
+  const workoutEditorModal: Modal = useDisclosure();
 
   return (
     <ModalContext.Provider
       value={{
-        workoutEditor,
+        logModal,
+        loginModal,
+        profileModal,
+        groupSessionModal,
+        workoutEditorModal,
       }}
     >
       {children}
     </ModalContext.Provider>
   );
+};
+
+export const useLogModal = () => {
+  const context = React.useContext(ModalContext);
+  if (context === null) {
+    throw new Error('useLogModal must be used within a ModalContextProvider');
+  }
+  return context.logModal;
+};
+
+export const useLoginModal = () => {
+  const context = React.useContext(ModalContext);
+  if (context === null) {
+    throw new Error('useLoginModal must be used within a ModalContextProvider');
+  }
+  return context.loginModal;
+};
+
+export const useProfileModal = () => {
+  const context = React.useContext(ModalContext);
+  if (context === null) {
+    throw new Error(
+      'useProfileModal must be used within a ModalContextProvider'
+    );
+  }
+  return context.profileModal;
+};
+
+export const useGroupSessionModal = () => {
+  const context = React.useContext(ModalContext);
+  if (context === null) {
+    throw new Error(
+      'useGroupSessionModal must be used within a ModalContextProvider'
+    );
+  }
+  return context.groupSessionModal;
 };
 
 export const useWorkoutEditorModal = () => {
@@ -37,5 +85,5 @@ export const useWorkoutEditorModal = () => {
       'useWorkoutEditorModal must be used within a ModalContextProvider'
     );
   }
-  return context.workoutEditor;
+  return context.workoutEditorModal;
 };

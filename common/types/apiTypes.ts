@@ -50,6 +50,10 @@ export interface WorkoutsResponseBody {
   workouts: Workout[];
 }
 
+export interface ImportWorkoutResponseBody {
+  workout: Workout;
+}
+
 export interface MessagesResponseBody {
   messages: Message[];
 }

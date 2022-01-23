@@ -14,7 +14,8 @@
     "react-beautiful-dnd": "^13.1.0",
     "react-bootstrap-icons": "^1.6.1",
     "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
+    "react-router-dom": "^6.2.1",
+    "react-scripts": "^5.0.0",
     "recharts": "^2.1.4",
     "swr": "^1.0.1",
     "typescript": "^4.4.4",
@@ -51,6 +52,7 @@
     "@types/react": "^16.9.0",
     "@types/react-beautiful-dnd": "^13.1.2",
     "@types/react-dom": "^16.9.0",
+    "@types/react-router-dom": "^5.3.3",
     "@types/recharts": "^1.8.21",
     "@types/web-bluetooth": "^0.0.11"
   }

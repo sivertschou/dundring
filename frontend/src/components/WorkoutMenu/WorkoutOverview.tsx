@@ -13,6 +13,7 @@ import { useUser } from '../../context/UserContext';
 import { useActiveWorkout } from '../../context/WorkoutContext';
 import { Workout } from '../../types';
 import { parseInputAsInt } from '../../utils';
+import { ImportWorkoutModal } from '../Modals/ImportWorkoutModal';
 import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
 import { WorkoutListItem } from './WorkoutListItem';
 
@@ -51,6 +52,10 @@ export const WorkoutOverview = ({
       >
         Create new workout
       </Button>
+      <ImportWorkoutModal
+        setWorkoutToEdit={setWorkoutToEdit}
+        previewFTP={previewFTPAsNumber}
+      />
       <Divider />
       <FormControl id="ftp">
         <FormLabel>Based on FTP</FormLabel>

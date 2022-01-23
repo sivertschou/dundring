@@ -28,46 +28,44 @@ export const WorkoutEditorModal = () => {
 
   const { setActiveWorkout } = useActiveWorkout();
   return (
-    <>
-      <Modal isOpen={isOpen} onClose={onClose} size="4xl">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
-            {workoutToEdit ? (
-              <>
-                <IconButton
-                  variant="ghost"
-                  aria-label="Back to overview"
-                  mr="1"
-                  onClick={() => setWorkoutToEdit(null)}
-                  icon={<Icon as={ArrowLeft} />}
-                />
-                Edit workout
-              </>
-            ) : (
-              <>Your workouts</>
-            )}
-          </ModalHeader>
-          <ModalCloseButton />
+    <Modal isOpen={isOpen} onClose={onClose} size="4xl">
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>
           {workoutToEdit ? (
-            <WorkoutEditor
-              workout={workoutToEdit}
-              closeEditor={() => {
-                refetchUserData();
-                setWorkoutToEdit(null);
-              }}
-            />
+            <>
+              <IconButton
+                variant="ghost"
+                aria-label="Back to overview"
+                mr="1"
+                onClick={() => setWorkoutToEdit(null)}
+                icon={<Icon as={ArrowLeft} />}
+              />
+              Edit workout
+            </>
           ) : (
-            <WorkoutOverview
-              setActiveWorkout={(workout: Workout) => {
-                setActiveWorkout(workout);
-                onClose();
-              }}
-              setWorkoutToEdit={setWorkoutToEdit}
-            />
+            <>Your workouts</>
           )}
-        </ModalContent>
-      </Modal>
-    </>
+        </ModalHeader>
+        <ModalCloseButton />
+        {workoutToEdit ? (
+          <WorkoutEditor
+            workout={workoutToEdit}
+            closeEditor={() => {
+              refetchUserData();
+              setWorkoutToEdit(null);
+            }}
+          />
+        ) : (
+          <WorkoutOverview
+            setActiveWorkout={(workout: Workout) => {
+              setActiveWorkout(workout);
+              onClose();
+            }}
+            setWorkoutToEdit={setWorkoutToEdit}
+          />
+        )}
+      </ModalContent>
+    </Modal>
   );
 };

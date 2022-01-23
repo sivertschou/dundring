@@ -1,5 +1,3 @@
-import { useDisclosure } from '@chakra-ui/hooks';
-import { Icon } from '@chakra-ui/icon';
 import {
   Modal,
   ModalCloseButton,
@@ -8,35 +6,35 @@ import {
   ModalOverlay,
 } from '@chakra-ui/modal';
 import * as React from 'react';
-import { ActionBarItem } from '../ActionBarItem';
-import { People, PeopleFill } from 'react-bootstrap-icons';
 import { useWebsocket } from '../../context/WebsocketContext';
 import { GroupSessionOverview } from '../GroupSession/GroupSessionOverview';
 import { CreateOrJoinGroupSession } from '../GroupSession/CreateOrJoinGroupSession';
+import { useGroupSessionModal } from '../../context/ModalContext';
+import { useNavigate } from 'react-router-dom';
 
 export const GroupSessionModal = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onClose } = useGroupSessionModal();
+  const navigate = useNavigate();
 
   const { activeGroupSession } = useWebsocket();
   return (
-    <>
-      <ActionBarItem
-        text="Open group session overview"
-        icon={<Icon as={activeGroupSession ? PeopleFill : People} />}
-        onClick={onOpen}
-      />
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Group session</ModalHeader>
-          <ModalCloseButton />
-          {activeGroupSession ? (
-            <GroupSessionOverview />
-          ) : (
-            <CreateOrJoinGroupSession />
-          )}
-        </ModalContent>
-      </Modal>
-    </>
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        navigate('/');
+        onClose();
+      }}
+    >
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Group session</ModalHeader>
+        <ModalCloseButton />
+        {activeGroupSession ? (
+          <GroupSessionOverview />
+        ) : (
+          <CreateOrJoinGroupSession />
+        )}
+      </ModalContent>
+    </Modal>
   );
 };
