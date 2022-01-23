@@ -56,6 +56,21 @@ export const updateUserFtp = (
   return setUser({ ...user, ftp });
 };
 
+export const importWorkout = (
+  workoutOwnerUsername: string,
+  workoutId: string
+): Status<
+  Workout,
+  'User not found' | 'File not found' | 'Workout not found'
+> => {
+  const user = getUser(workoutOwnerUsername);
+  if (!user) return { status: 'ERROR', type: 'User not found' };
+
+  const workout = user.workouts.find((w) => w.id == workoutId);
+  if (!workout) return { status: 'ERROR', type: 'Workout not found' };
+  return { status: 'SUCCESS', data: workout };
+};
+
 const updateWorkoutOrAppendIfNotFound = (
   workouts: Workout[],
   workout: Workout
