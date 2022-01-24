@@ -190,7 +190,6 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
     } catch (e) {
       console.warn('Could not acquire wakeLock');
     }
-    // setIsRunning(true);
     startActiveWorkout();
     clockWorker.postMessage('startClockTimer');
     dispatch({ type: 'START' });
@@ -209,7 +208,6 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
       setResistance(0);
     }
 
-    // setIsRunning(false);
     if (wakeLock) {
       await wakeLock.release();
       setWakeLock(null);

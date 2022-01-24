@@ -117,7 +117,6 @@ export const ActiveWorkoutContextProvider = ({
         // Current part is not finished
         return { ...activeWorkout, partElapsedTime: newElapsed };
       case 'START': {
-        console.log('set active');
         const nextState: ActiveWorkout = { ...activeWorkout, status: 'active' };
         return nextState;
       }
@@ -126,13 +125,20 @@ export const ActiveWorkoutContextProvider = ({
         return nextState;
       }
       case 'CHANGE_ACTIVE_PART': {
-        const nextState = {
+        if (!activeWorkout.workout) return activeWorkout;
+
+        action.addLap();
+
+        if (action.partNumber >= activeWorkout.workout.parts.length) {
+          return { ...activeWorkout, partElapsedTime: 0, status: 'finished' };
+        }
+
+        return {
           ...activeWorkout,
           partElapsedTime: 0,
           activePart: action.partNumber,
+          status: activeWorkout.status === 'paused' ? 'paused' : 'active',
         };
-        action.addLap();
-        return nextState;
       }
     }
   };
