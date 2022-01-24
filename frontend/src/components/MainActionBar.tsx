@@ -1,23 +1,20 @@
 import * as React from 'react';
 import { Center, Stack, Grid, HStack } from '@chakra-ui/layout';
 import { Button, IconButton } from '@chakra-ui/button';
-import {
-  Grid3x2GapFill,
-  BarChartLine,
-  BarChartLineFill,
-} from 'react-bootstrap-icons';
+import { Grid3x2GapFill } from 'react-bootstrap-icons';
 import Icon from '@chakra-ui/icon';
 import { Tooltip } from '@chakra-ui/tooltip';
 import { useColorModeValue } from '@chakra-ui/color-mode';
 import { useSmartTrainer } from '../context/SmartTrainerContext';
-import { useWorkoutEditorModal } from '../context/ModalContext';
 import { StartButton } from './MainActionBar/StartButton';
 import { PowerControls } from './MainActionBar/PowerControls';
 import { PausedWorkoutButtons } from './MainActionBar/PausedWorkoutButtons';
 import { QuickPowerButton } from './MainActionBar/QuickPowerButton';
 import { WorkoutControls } from './MainActionBar/WorkoutControls';
+import { LoadWorkoutButton } from './MainActionBar/LoadWorkoutButton';
 
 export const MainActionBar = () => {
+  console.log('MAINACTIONBAR');
   const [showPowerControls, setShowPowerControls] = React.useState(false);
   const [showWorkoutControls, setShowWorkoutControls] = React.useState(false);
 
@@ -25,8 +22,6 @@ export const MainActionBar = () => {
     isConnected: smartTrainerIsConnected,
     requestPermission: connectToSmartTrainer,
   } = useSmartTrainer();
-
-  const { onOpen: onOpenWorkoutEditor } = useWorkoutEditorModal();
 
   const bgColor = useColorModeValue('gray.200', 'gray.900');
   return (
@@ -43,13 +38,7 @@ export const MainActionBar = () => {
         <Grid templateColumns="1fr 1fr 1fr" gap="1" alignItems="end">
           <Center height="100%">
             <HStack>
-              <Tooltip label="Load workout">
-                <IconButton
-                  aria-label="Load workout"
-                  icon={<Icon as={true ? BarChartLineFill : BarChartLine} />}
-                  onClick={onOpenWorkoutEditor}
-                />
-              </Tooltip>
+              <LoadWorkoutButton />
               <Tooltip label="Show workout controls">
                 <IconButton
                   aria-label="Show workout controls"
