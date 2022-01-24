@@ -3,6 +3,8 @@ import {
   Button,
   FormControl,
   FormErrorMessage,
+  FormHelperText,
+  FormLabel,
   HStack,
   Input,
   InputGroup,
@@ -56,6 +58,7 @@ export const ImportWorkout = ({ setWorkoutToEdit, previewFtp }: Props) => {
       <FormControl
         isInvalid={!workoutIdInputIsValidFormat && workoutIdInput !== ''}
       >
+        <FormLabel>Import workout</FormLabel>
         <HStack>
           <InputGroup>
             <Input
@@ -79,6 +82,11 @@ export const ImportWorkout = ({ setWorkoutToEdit, previewFtp }: Props) => {
         <FormErrorMessage>
           Invalid workout id. Format : username-id
         </FormErrorMessage>
+        <FormHelperText>
+          You can import/clone an other user's workout by entering the workout
+          id. A workout's id can be found by pressing the copy button on a given
+          workout that is stored remotely.
+        </FormHelperText>
       </FormControl>
 
       {errorMessage ? <Text>{errorMessage}</Text> : null}
