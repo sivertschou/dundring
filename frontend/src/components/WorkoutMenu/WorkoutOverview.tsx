@@ -13,8 +13,8 @@ import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 import { useUser } from '../../context/UserContext';
 import { Workout } from '../../types';
 import { parseInputAsInt } from '../../utils';
-import { ImportWorkoutModal } from '../Modals/ImportWorkoutModal';
 import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
+import { ImportWorkout } from './ImportWorkout';
 import { WorkoutListItem } from './WorkoutListItem';
 
 interface Props {
@@ -58,7 +58,7 @@ export const WorkoutOverview = ({
       >
         Create new workout
       </Button>
-      <ImportWorkoutModal
+      <ImportWorkout
         setWorkoutToEdit={setWorkoutToEdit}
         previewFtp={previewFtpAsNumber}
       />

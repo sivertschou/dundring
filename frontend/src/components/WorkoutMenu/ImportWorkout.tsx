@@ -8,8 +8,8 @@ import {
   InputGroup,
 } from '@chakra-ui/react';
 import { importWorkout } from '../../api';
-import { WorkoutToEdit } from './WorkoutEditorModal';
 import { Text } from '@chakra-ui/layout';
+import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
 
 export enum ApiStatus {
   SUCCESS = 'SUCCESS',
@@ -22,7 +22,7 @@ interface Props {
   previewFtp: number;
 }
 
-export const ImportWorkoutModal = ({ setWorkoutToEdit, previewFtp }: Props) => {
+export const ImportWorkout = ({ setWorkoutToEdit, previewFtp }: Props) => {
   const [errorMessage, setErrorMessage] = React.useState('');
   const [workoutIdInput, setWorkoutIdInput] = React.useState('');
 
