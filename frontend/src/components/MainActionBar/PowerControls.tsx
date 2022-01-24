@@ -92,7 +92,7 @@ export const PowerControls = () => {
       }
     },
     {
-      power: activeFtp,
+      power: 100,
       wattInput: '' + activeFtp,
       percentInput: '100',
     }
@@ -101,16 +101,17 @@ export const PowerControls = () => {
   React.useEffect(() => {
     dispatchPowerInputAction({
       type: 'ftp',
-      value: '' + powerInputData.power,
+      value: '100',
       activeFtp,
     });
-  }, [activeFtp, powerInputData.power]);
+  }, [activeFtp]);
 
   const canAddResistanceValue = (value: number) => {
     const watt = wattFromFtpPercent(value, activeFtp);
 
     return currentResistance + watt < 0 ? false : true;
   };
+
   return (
     <Stack>
       <Text fontSize="xs" fontWeight="bold" opacity="0.5">
