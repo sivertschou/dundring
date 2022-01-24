@@ -18,7 +18,7 @@ export const WorkoutDisplay = () => {
   const { activePart, status, partElapsedTime, workout } = activeWorkout;
 
   return (
-    <Stack fontSize="sm" pb="20em">
+    <Stack fontSize="sm">
       <Text>{workout.name}</Text>
       <Text>Based on {activeFtp}W FTP</Text>
       <Text>{secondsToHoursMinutesAndSecondsString(partElapsedTime)}</Text>
