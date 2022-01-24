@@ -274,16 +274,6 @@ export const useActiveWorkout = () => {
   return context;
 };
 
-export const useActiveWorkoutIsSelected = () => {
-  const context = React.useContext(ActiveWorkoutContext);
-  if (context === null) {
-    throw new Error(
-      'useActiveWorkoutIsSelected must be used within a WorkoutContextProvider'
-    );
-  }
-  return context.activeWorkout !== null;
-};
-
 export const getRemainingTime = (activeWorkout: ActiveWorkout) => {
   const { workout, status, activePart, partElapsedTime } = activeWorkout;
   if (!workout || status === 'finished') return null;
