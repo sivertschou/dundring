@@ -104,14 +104,14 @@ export const ActionBar = () => {
       )}
       {smartTrainerIsConnected ? (
         <ActionBarItem
-          text="Disconnect Smart Trainer"
+          text="Disconnect smart trainer"
           icon={<Icon as={LightningChargeFill} />}
           onClick={disconnectSmartTrainer}
           iconColor={powerColor}
         />
       ) : (
         <ActionBarItem
-          text="Connect Smart Trainer"
+          text="Connect smart trainer"
           icon={<Icon as={LightningCharge} />}
           onClick={connectSmartTrainer}
         />

@@ -12,11 +12,13 @@ import { PausedWorkoutButtons } from './MainActionBar/PausedWorkoutButtons';
 import { QuickPowerButton } from './MainActionBar/QuickPowerButton';
 import { WorkoutControls } from './MainActionBar/WorkoutControls';
 import { LoadWorkoutButton } from './MainActionBar/LoadWorkoutButton';
+import { useLinkColor } from '../hooks/useLinkColor';
 
 export const MainActionBar = () => {
-  console.log('MAINACTIONBAR');
   const [showPowerControls, setShowPowerControls] = React.useState(false);
   const [showWorkoutControls, setShowWorkoutControls] = React.useState(false);
+
+  const linkColor = useLinkColor();
 
   const {
     isConnected: smartTrainerIsConnected,
@@ -31,9 +33,17 @@ export const MainActionBar = () => {
         {showPowerControls ? <PowerControls /> : null}
 
         {!smartTrainerIsConnected ? (
-          <Button variant="link" onClick={() => connectToSmartTrainer()}>
-            Connect to Smart Trainer
-          </Button>
+          <Center>
+            <HStack>
+              <Button
+                variant="link"
+                color={linkColor}
+                onClick={() => connectToSmartTrainer()}
+              >
+                Connect smart trainer
+              </Button>
+            </HStack>
+          </Center>
         ) : null}
         <Grid templateColumns="1fr 1fr 1fr" gap="1" alignItems="end">
           <Center height="100%">

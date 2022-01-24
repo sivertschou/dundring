@@ -1,5 +1,7 @@
 import {
+  Button,
   Center,
+  Divider,
   HStack,
   Icon,
   IconButton,
@@ -18,6 +20,8 @@ import {
 } from 'react-bootstrap-icons';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 import { useData } from '../../context/DataContext';
+import { useWorkoutEditorModal } from '../../context/ModalContext';
+import { useLinkColor } from '../../hooks/useLinkColor';
 import { ActiveWorkout } from '../../types';
 
 const getPlayButtonText = (activeWorkout: ActiveWorkout) => {
@@ -38,6 +42,8 @@ export const WorkoutControls = () => {
   const { activeWorkout, syncResistance, changeActivePart, pause, start } =
     useActiveWorkout();
   const { addLap } = useData();
+  const { onOpen: onOpenWorkoutEditor } = useWorkoutEditorModal();
+  const linkColor = useLinkColor();
 
   const workoutSelected = activeWorkout.workout !== null;
   const activeWorkoutPart = activeWorkout.activePart;
@@ -48,107 +54,134 @@ export const WorkoutControls = () => {
       <Text fontSize="xs" fontWeight="bold" opacity="0.5">
         Workout controls
       </Text>
-      <Center>
-        <HStack>
-          <Tooltip label="Re-sync resistance" placement="top">
-            <IconButton
-              size="sm"
-              aria-label="Re-sync resistance"
-              icon={<Icon as={ArrowRepeat} />}
-              isDisabled={!workoutSelected}
-              onClick={syncResistance}
-            />
-          </Tooltip>
-          <Tooltip label="Previous part" placement="top">
-            <IconButton
-              size="sm"
-              aria-label="Previous part"
-              icon={<Icon as={SkipBackwardFill} />}
-              isDisabled={
-                !workoutSelected ||
-                (activeWorkoutPart === 0 && activeWorkout.status !== 'finished')
-              }
-              onClick={() => {
-                if (!activeWorkout.workout) return;
 
-                if (activeWorkout.status === 'finished') {
-                  changeActivePart(
-                    activeWorkout.workout.parts.length - 1,
-                    addLap
-                  );
-                  return;
+      <Tooltip
+        label="You need to select a workout to use this functionality."
+        isDisabled={workoutSelected}
+        placement="top"
+      >
+        <Center>
+          <HStack>
+            <Tooltip label="Re-sync resistance" placement="top">
+              <IconButton
+                size="sm"
+                aria-label="Re-sync resistance"
+                icon={<Icon as={ArrowRepeat} />}
+                isDisabled={!workoutSelected}
+                onClick={syncResistance}
+              />
+            </Tooltip>
+            <Tooltip label="Previous part" placement="top">
+              <IconButton
+                size="sm"
+                aria-label="Previous part"
+                icon={<Icon as={SkipBackwardFill} />}
+                isDisabled={
+                  !workoutSelected ||
+                  (activeWorkoutPart === 0 &&
+                    activeWorkout.status !== 'finished')
                 }
-                if (activeWorkoutPart <= 0) return;
+                onClick={() => {
+                  if (!activeWorkout.workout) return;
 
-                changeActivePart(activeWorkoutPart - 1, addLap);
-              }}
-            />
-          </Tooltip>
+                  if (activeWorkout.status === 'finished') {
+                    changeActivePart(
+                      activeWorkout.workout.parts.length - 1,
+                      addLap
+                    );
+                    return;
+                  }
+                  if (activeWorkoutPart <= 0) return;
 
-          <Tooltip label="Go to start of the part" placement="top">
-            <IconButton
-              size="sm"
-              aria-label="Go to start of the part"
-              icon={<Icon as={SkipStartFill} />}
-              isDisabled={!workoutSelected}
-              onClick={() => {
-                if (!activeWorkout.workout) return;
+                  changeActivePart(activeWorkoutPart - 1, addLap);
+                }}
+              />
+            </Tooltip>
 
-                changeActivePart(activeWorkoutPart, addLap);
-              }}
-            />
-          </Tooltip>
+            <Tooltip label="Go to start of the part" placement="top">
+              <IconButton
+                size="sm"
+                aria-label="Go to start of the part"
+                icon={<Icon as={SkipStartFill} />}
+                isDisabled={!workoutSelected}
+                onClick={() => {
+                  if (!activeWorkout.workout) return;
 
-          <Tooltip label={playButtonText} placement="top">
-            <IconButton
-              size="sm"
-              aria-label={playButtonText}
-              icon={
-                <Icon
-                  as={activeWorkout.status === 'active' ? PauseFill : PlayFill}
-                />
-              }
-              isDisabled={!workoutSelected}
-              onClick={() => {
-                if (!activeWorkout.workout) return;
+                  changeActivePart(activeWorkoutPart, addLap);
+                }}
+              />
+            </Tooltip>
 
-                switch (activeWorkout.status) {
-                  case 'finished': {
+            <Tooltip label={playButtonText} placement="top">
+              <IconButton
+                size="sm"
+                aria-label={playButtonText}
+                icon={
+                  <Icon
+                    as={
+                      activeWorkout.status === 'active' ? PauseFill : PlayFill
+                    }
+                  />
+                }
+                isDisabled={!workoutSelected}
+                onClick={() => {
+                  if (!activeWorkout.workout) return;
+
+                  switch (activeWorkout.status) {
+                    case 'finished': {
+                      changeActivePart(0, addLap);
+                      return;
+                    }
+
+                    case 'active': {
+                      pause();
+                      return;
+                    }
+                    default: {
+                      start();
+                      return;
+                    }
+                  }
+                }}
+              />
+            </Tooltip>
+            <Tooltip label="Next part" placement="top">
+              <IconButton
+                size="sm"
+                aria-label="Next part"
+                icon={<Icon as={SkipForwardFill} />}
+                isDisabled={!workoutSelected}
+                onClick={() => {
+                  if (!activeWorkout.workout) return;
+
+                  if (activeWorkout.status === 'finished') {
                     changeActivePart(0, addLap);
-                    return;
+                  } else {
+                    changeActivePart(activeWorkoutPart + 1, addLap);
                   }
+                }}
+              />
+            </Tooltip>
+          </HStack>
+        </Center>
+      </Tooltip>
 
-                  case 'active': {
-                    pause();
-                    return;
-                  }
-                  default: {
-                    start();
-                    return;
-                  }
-                }
-              }}
-            />
-          </Tooltip>
-          <Tooltip label="Next part" placement="top">
-            <IconButton
-              size="sm"
-              aria-label="Next part"
-              icon={<Icon as={SkipForwardFill} />}
-              isDisabled={!workoutSelected}
-              onClick={() => {
-                if (!activeWorkout.workout) return;
-
-                if (activeWorkout.status === 'finished') {
-                  changeActivePart(0, addLap);
-                } else {
-                  changeActivePart(activeWorkoutPart + 1, addLap);
-                }
-              }}
-            />
-          </Tooltip>
-        </HStack>
-      </Center>
+      {!workoutSelected ? (
+        <>
+          <Center>
+            <HStack>
+              <Button
+                variant="link"
+                color={linkColor}
+                onClick={() => onOpenWorkoutEditor()}
+              >
+                Select workout
+              </Button>
+            </HStack>
+          </Center>
+          <Divider />
+        </>
+      ) : null}
     </Stack>
   );
 };
