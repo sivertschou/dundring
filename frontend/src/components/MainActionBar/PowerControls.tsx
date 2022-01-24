@@ -98,6 +98,14 @@ export const PowerControls = () => {
     }
   );
 
+  React.useEffect(() => {
+    dispatchPowerInputAction({
+      type: 'ftp',
+      value: '' + powerInputData.power,
+      activeFtp: activeFTP,
+    });
+  }, [activeFTP]);
+
   const canAddResistanceValue = (value: number) => {
     const watt = wattFromFtpPercent(value, activeFTP);
 
