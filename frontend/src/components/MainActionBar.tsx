@@ -11,7 +11,7 @@ import { PowerControls } from './MainActionBar/PowerControls';
 import { PausedWorkoutButtons } from './MainActionBar/PausedWorkoutButtons';
 import { QuickPowerButton } from './MainActionBar/QuickPowerButton';
 import { WorkoutControls } from './MainActionBar/WorkoutControls';
-import { LoadWorkoutButton } from './MainActionBar/LoadWorkoutButton';
+import { SelectWorkoutButton } from './MainActionBar/SelectWorkoutButton';
 import { useLinkColor } from '../hooks/useLinkColor';
 
 export const MainActionBar = () => {
@@ -48,7 +48,7 @@ export const MainActionBar = () => {
         <Grid templateColumns="1fr 1fr 1fr" gap="1" alignItems="end">
           <Center height="100%">
             <HStack>
-              <LoadWorkoutButton />
+              <SelectWorkoutButton />
               <Tooltip label="Show workout controls">
                 <IconButton
                   aria-label="Show workout controls"
