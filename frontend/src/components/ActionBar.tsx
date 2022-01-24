@@ -17,10 +17,10 @@ import {
   Person,
   Sun,
 } from 'react-bootstrap-icons';
+import { useNavigate } from 'react-router-dom';
 import { hrColor, powerColor } from '../colors';
 import { useHeartRateMonitor } from '../context/HeartRateContext';
 import {
-  useGroupSessionModal,
   useLoginModal,
   useProfileModal,
   useWorkoutEditorModal,
@@ -29,17 +29,19 @@ import { useSmartTrainer } from '../context/SmartTrainerContext';
 import { useUser } from '../context/UserContext';
 import { useWebsocket } from '../context/WebsocketContext';
 import { useActiveWorkout } from '../context/WorkoutContext';
+import { useLinkColor } from '../hooks/useLinkColor';
 import { ActionBarItem } from './ActionBarItem';
 
 export const ActionBar = () => {
   const { user, setUser } = useUser();
-  const { activeGroupSession, connect } = useWebsocket();
+  const { activeGroupSession } = useWebsocket();
   const { activeWorkout } = useActiveWorkout();
   const { colorMode, setColorMode } = useColorMode();
   const { onOpen: onOpenWorkoutEditorModal } = useWorkoutEditorModal();
   const { onOpen: onOpenLoginModal } = useLoginModal();
   const { onOpen: onOpenProfileModal } = useProfileModal();
-  const { onOpen: onOpenGroupSessionModal } = useGroupSessionModal();
+  const linkColor = useLinkColor();
+  const navigate = useNavigate();
 
   const {
     isConnected: hrIsConnected,
@@ -68,6 +70,7 @@ export const ActionBar = () => {
           fontWeight="normal"
           onClick={onOpenProfileModal}
           pointerEvents="auto"
+          color={linkColor}
         >
           <Text fontSize="xl" fontWeight="bold">
             {user.username}
@@ -117,8 +120,7 @@ export const ActionBar = () => {
         text="Open group session overview"
         icon={<Icon as={activeGroupSession ? PeopleFill : People} />}
         onClick={() => {
-          onOpenGroupSessionModal();
-          connect();
+          navigate('/group');
         }}
       />
       <ActionBarItem
