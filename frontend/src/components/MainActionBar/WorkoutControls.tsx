@@ -10,8 +10,8 @@ import {
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 
 export const WorkoutControls = () => {
-  const { activeWorkout } = useActiveWorkout();
-  const workoutSelected = activeWorkout !== null;
+  const { activeWorkout, syncResistance } = useActiveWorkout();
+  const workoutSelected = activeWorkout.workout !== null;
 
   return (
     <Center>
@@ -22,6 +22,7 @@ export const WorkoutControls = () => {
             aria-label="Re-sync resistance"
             icon={<Icon as={ArrowRepeat} />}
             isDisabled={!workoutSelected}
+            onClick={syncResistance}
           />
         </Tooltip>
         <Tooltip label="Previous part" placement="top">

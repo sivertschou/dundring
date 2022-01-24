@@ -1,6 +1,7 @@
 import { Text, Stack } from '@chakra-ui/layout';
 import * as React from 'react';
 import { useActiveWorkout } from '../context/ActiveWorkoutContext';
+import { useData } from '../context/DataContext';
 import { Workout } from '../types';
 import {
   secondsToHoursMinutesAndSecondsString,
@@ -9,6 +10,7 @@ import {
 
 export const WorkoutDisplay = () => {
   const { activeWorkout, activeFTP, changeActivePart } = useActiveWorkout();
+  const { addLap } = useData();
   if (!activeWorkout.workout) {
     return null;
   }
@@ -29,7 +31,7 @@ export const WorkoutDisplay = () => {
             fontWeight={isActive ? 'bold' : 'normal'}
             color={isActive ? 'purple.500' : ''}
             cursor="pointer"
-            onClick={() => changeActivePart(i)}
+            onClick={() => changeActivePart(i, addLap)}
           >
             {`${secondsToHoursMinutesAndSecondsString(part.duration)}@${
               part.targetPower

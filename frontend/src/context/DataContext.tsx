@@ -13,6 +13,7 @@ const DataContext = React.createContext<{
   startingTime: Date | null;
   start: () => void;
   stop: () => void;
+  addLap: () => void;
   isRunning: boolean;
 } | null>(null);
 
@@ -226,6 +227,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         startingTime: data.startingTime,
         start,
         stop,
+        addLap: () => dispatch({ type: 'ADD_LAP' }),
         isRunning: data.state === 'running',
       }}
     >
