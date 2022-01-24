@@ -123,8 +123,9 @@ export const PowerControls = () => {
               isDisabled={!smartTrainerIsConnected}
               size="sm"
               leftIcon={<Icon as={ArrowUp} />}
+              paddingX="2"
             >
-              1
+              1%
             </Button>
           </Tooltip>
           <Tooltip
@@ -140,8 +141,9 @@ export const PowerControls = () => {
               isDisabled={!smartTrainerIsConnected}
               size="sm"
               leftIcon={<Icon as={ArrowUp} />}
+              paddingX="2"
             >
-              5
+              5%
             </Button>
           </Tooltip>
           <Tooltip
@@ -157,8 +159,9 @@ export const PowerControls = () => {
               isDisabled={!smartTrainerIsConnected}
               size="sm"
               leftIcon={<Icon as={ArrowUp} />}
+              paddingX="2"
             >
-              10
+              10%
             </Button>
           </Tooltip>
 
@@ -177,8 +180,9 @@ export const PowerControls = () => {
               }
               size="sm"
               leftIcon={<Icon as={ArrowDown} />}
+              paddingX="2"
             >
-              1
+              1%
             </Button>
           </Tooltip>
           <Tooltip
@@ -196,8 +200,9 @@ export const PowerControls = () => {
               }
               size="sm"
               leftIcon={<Icon as={ArrowDown} />}
+              paddingX="2"
             >
-              5
+              5%
             </Button>
           </Tooltip>
           <Tooltip
@@ -215,8 +220,9 @@ export const PowerControls = () => {
               }
               size="sm"
               leftIcon={<Icon as={ArrowDown} />}
+              paddingX="2"
             >
-              10
+              10%
             </Button>
           </Tooltip>
         </Grid>
