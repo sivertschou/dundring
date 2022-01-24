@@ -9,6 +9,8 @@ import {
   Input,
   InputGroup,
   InputRightAddon,
+  Stack,
+  Text,
   Tooltip,
 } from '@chakra-ui/react';
 import { ftpPercentFromWatt, wattFromFtpPercent } from '../../utils';
@@ -102,7 +104,10 @@ export const PowerControls = () => {
     return currentResistance + watt < 0 ? false : true;
   };
   return (
-    <>
+    <Stack>
+      <Text fontSize="xs" fontWeight="bold" opacity="0.5">
+        Power controls
+      </Text>
       <Center justifyContent="space-between">
         <Grid templateColumns="2fr 2fr 2fr" gap="1">
           <Tooltip
@@ -296,6 +301,6 @@ export const PowerControls = () => {
           </GridItem>
         </Grid>
       </Center>
-    </>
+    </Stack>
   );
 };
