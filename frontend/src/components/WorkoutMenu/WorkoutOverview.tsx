@@ -25,10 +25,16 @@ export const WorkoutOverview = ({
   setWorkoutToEdit,
   setActiveWorkout,
 }: Props) => {
-  const { workouts, localWorkouts } = useUser();
+  const { user, workouts, localWorkouts } = useUser();
   const { activeFtp, setActiveFtp } = useActiveWorkout();
   const [previewFtp, setPreviewFtp] = React.useState('' + activeFtp);
   const previewFtpAsNumber = parseInputAsInt(previewFtp);
+
+  const allWorkouts = [
+    ...workouts.map((workout) => ({ workout, locallyStored: false })),
+    ...localWorkouts.map((workout) => ({ workout, locallyStored: true })),
+  ];
+
   return (
     <Stack p="5">
       <Button
@@ -74,10 +80,11 @@ export const WorkoutOverview = ({
       </FormControl>
 
       <Divider />
-      {workouts.map((workout, i) => (
+      {allWorkouts.map(({ workout, locallyStored }, i) => (
         <WorkoutListItem
-          key={`${i}-${workout.name}`}
-          isLocallyStored={false}
+          key={i}
+          username={user.loggedIn ? user.username : null}
+          isLocallyStored={locallyStored}
           workout={workout}
           setActiveWorkout={(workout: Workout) =>
             setActiveWorkout(workout, previewFtpAsNumber)
@@ -85,24 +92,7 @@ export const WorkoutOverview = ({
           onClickEdit={() => {
             setWorkoutToEdit({
               ...workout,
-              type: 'remote',
-              previewFtp: previewFtpAsNumber,
-            });
-          }}
-        />
-      ))}
-      {localWorkouts.map((workout, i) => (
-        <WorkoutListItem
-          key={`${i}-${workout.name}`}
-          isLocallyStored={true}
-          workout={workout}
-          setActiveWorkout={(workout: Workout) =>
-            setActiveWorkout(workout, previewFtpAsNumber)
-          }
-          onClickEdit={() => {
-            setWorkoutToEdit({
-              ...workout,
-              type: 'local',
+              type: locallyStored ? 'local' : 'remote',
               previewFtp: previewFtpAsNumber,
             });
           }}

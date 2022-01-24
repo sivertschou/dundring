@@ -120,8 +120,6 @@ export const ActionBar = () => {
         text="Open group session overview"
         icon={<Icon as={activeGroupSession ? PeopleFill : People} />}
         onClick={() => {
-          // onOpenGroupSessionModal();
-          // connect();
           navigate('/group');
         }}
       />

@@ -1,9 +1,10 @@
 import { Button, IconButton } from '@chakra-ui/button';
 import Icon from '@chakra-ui/icon';
 import { Center, Grid, Heading, HStack, Stack, Text } from '@chakra-ui/layout';
+import { useClipboard, useToast } from '@chakra-ui/react';
 import { Tooltip } from '@chakra-ui/tooltip';
 import * as React from 'react';
-import { Cloud, Gear, Hdd } from 'react-bootstrap-icons';
+import { Cloud, Gear, Hdd, Clipboard } from 'react-bootstrap-icons';
 import { Workout } from '../../types';
 import {
   getTotalWorkoutTime,
@@ -11,18 +12,22 @@ import {
 } from '../../utils';
 
 interface Props {
+  username: string | null;
   workout: Workout;
   setActiveWorkout: (workout: Workout) => void;
   onClickEdit: () => void;
   isLocallyStored: boolean;
 }
 export const WorkoutListItem = ({
+  username,
   workout,
   setActiveWorkout,
   onClickEdit,
   isLocallyStored,
 }: Props) => {
   const workoutDuration = getTotalWorkoutTime(workout);
+  const { onCopy } = useClipboard(`${username}-${workout.id}`);
+  const toast = useToast();
 
   return (
     <Grid templateColumns="1fr 10fr 3fr">
@@ -45,6 +50,24 @@ export const WorkoutListItem = ({
         </Text>
       </Stack>
       <HStack>
+        {isLocallyStored ? null : (
+          <Tooltip label="Copy id to clipboard. Share this id to allow other people to import this workout.">
+            <IconButton
+              aria-label="copy"
+              icon={<Icon as={Clipboard} />}
+              onClick={() => {
+                onCopy();
+                toast({
+                  title: `Copied workout id to clipboard!`,
+                  isClosable: true,
+                  duration: 2000,
+                  status: 'success',
+                });
+              }}
+            />
+          </Tooltip>
+        )}
+
         <Button width="100%" onClick={() => setActiveWorkout(workout)}>
           Use workout
         </Button>

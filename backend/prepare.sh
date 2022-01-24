@@ -1,6 +1,18 @@
+config="\
+PORT=8080
+NODE_ENV=development
+TOKEN_SECRET=12345
+DATA_PATH=data
+SLACK_USER_CREATION=
+SLACK_ERRORS=
+SLACK_GROUP_SESSION=
+SLACK_FEEDBACK=
+"
 if [ ! -f .env ]; then
-    echo ".env does not exist; creating it ⚡️"
-    printf "PORT=\nNODE_ENV=development\nTOKEN_SECRET=\nDATA_PATH=\nSLACK_USER_CREATION=\nSLACK_ERRORS=\nSLACK_GROUP_SESSION=\nSLACK_FEEDBACK=\n" > .env
+    echo ".env does not exist. Create it with default values: ⚡️"
+    printf "$config" > .env
+    echo "$config"
+    echo ".env created ⚡️"
 fi
 
 if [ ! -d data ]; then
