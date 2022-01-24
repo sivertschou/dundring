@@ -58,11 +58,6 @@ export const WorkoutOverview = ({
       >
         Create new workout
       </Button>
-      <ImportWorkout
-        setWorkoutToEdit={setWorkoutToEdit}
-        previewFtp={previewFtpAsNumber}
-      />
-      <Divider />
       <FormControl id="ftp">
         <FormLabel>Based on Ftp</FormLabel>
         <InputGroup>
@@ -98,6 +93,12 @@ export const WorkoutOverview = ({
           }}
         />
       ))}
+
+      <Divider />
+      <ImportWorkout
+        setWorkoutToEdit={setWorkoutToEdit}
+        previewFtp={previewFtpAsNumber}
+      />
     </Stack>
   );
 };
