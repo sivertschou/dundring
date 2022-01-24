@@ -26,9 +26,9 @@ export const WorkoutOverview = ({
   setActiveWorkout,
 }: Props) => {
   const { workouts, localWorkouts } = useUser();
-  const { activeFTP, setActiveFTP } = useActiveWorkout();
-  const [previewFTP, setPreviewFTP] = React.useState('' + activeFTP);
-  const previewFTPAsNumber = parseInputAsInt(previewFTP);
+  const { activeFtp, setActiveFtp } = useActiveWorkout();
+  const [previewFtp, setPreviewFtp] = React.useState('' + activeFtp);
+  const previewFtpAsNumber = parseInputAsInt(previewFtp);
   return (
     <Stack p="5">
       <Button
@@ -46,7 +46,7 @@ export const WorkoutOverview = ({
             ],
             id: '',
             type: 'new',
-            previewFTP: previewFTPAsNumber,
+            previewFtp: previewFtpAsNumber,
           })
         }
       >
@@ -54,22 +54,22 @@ export const WorkoutOverview = ({
       </Button>
       <ImportWorkoutModal
         setWorkoutToEdit={setWorkoutToEdit}
-        previewFTP={previewFTPAsNumber}
+        previewFtp={previewFtpAsNumber}
       />
       <Divider />
       <FormControl id="ftp">
-        <FormLabel>Based on FTP</FormLabel>
+        <FormLabel>Based on Ftp</FormLabel>
         <InputGroup>
           <Input
-            value={previewFTP}
-            onChange={(e) => setPreviewFTP(e.target.value)}
-            onBlur={(_) => setActiveFTP(parseInputAsInt(previewFTP))}
+            value={previewFtp}
+            onChange={(e) => setPreviewFtp(e.target.value)}
+            onBlur={(_) => setActiveFtp(parseInputAsInt(previewFtp))}
           />
           <InputRightAddon children="W" />
         </InputGroup>
         <FormHelperText>
           This value will be used as your FTP for this session. You can change
-          your actual FTP on your profile page
+          your actual Ftp on your profile page
         </FormHelperText>
       </FormControl>
 
@@ -80,13 +80,13 @@ export const WorkoutOverview = ({
           isLocallyStored={false}
           workout={workout}
           setActiveWorkout={(workout: Workout) =>
-            setActiveWorkout(workout, previewFTPAsNumber)
+            setActiveWorkout(workout, previewFtpAsNumber)
           }
           onClickEdit={() => {
             setWorkoutToEdit({
               ...workout,
               type: 'remote',
-              previewFTP: previewFTPAsNumber,
+              previewFtp: previewFtpAsNumber,
             });
           }}
         />
@@ -97,13 +97,13 @@ export const WorkoutOverview = ({
           isLocallyStored={true}
           workout={workout}
           setActiveWorkout={(workout: Workout) =>
-            setActiveWorkout(workout, previewFTPAsNumber)
+            setActiveWorkout(workout, previewFtpAsNumber)
           }
           onClickEdit={() => {
             setWorkoutToEdit({
               ...workout,
               type: 'local',
-              previewFTP: previewFTPAsNumber,
+              previewFtp: previewFtpAsNumber,
             });
           }}
         />

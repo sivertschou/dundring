@@ -22,7 +22,7 @@ export const QuickPowerButton = () => {
     setResistance: setSmartTrainerResistance,
     isConnected: smartTrainerIsConnected,
   } = useSmartTrainer();
-  const { activeFTP } = useActiveWorkout();
+  const { activeFtp } = useActiveWorkout();
 
   return (
     <Menu placement="top">
@@ -33,11 +33,11 @@ export const QuickPowerButton = () => {
               key={i}
               onClick={() =>
                 setSmartTrainerResistance(
-                  wattFromFtpPercent(percentage, activeFTP)
+                  wattFromFtpPercent(percentage, activeFtp)
                 )
               }
             >
-              {wattFromFtpPercent(percentage, activeFTP)}W ({percentage}
+              {wattFromFtpPercent(percentage, activeFtp)}W ({percentage}
               %)
             </MenuItem>
           ))}

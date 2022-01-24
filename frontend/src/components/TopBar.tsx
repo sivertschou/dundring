@@ -16,10 +16,10 @@ import {
 export const TopBar = () => {
   const { power, cadence } = useSmartTrainer();
   const { heartRate } = useHeartRateMonitor();
-  const { activeWorkout, activeFTP } = useActiveWorkout();
+  const { activeWorkout, activeFtp } = useActiveWorkout();
   const { timeElapsed } = useData();
   const remainingTime = getRemainingTime(activeWorkout);
-  const targetPower = getTargetPower(activeWorkout, activeFTP);
+  const targetPower = getTargetPower(activeWorkout, activeFtp);
 
   const secondsElapsed = Math.floor(timeElapsed / 1000);
 

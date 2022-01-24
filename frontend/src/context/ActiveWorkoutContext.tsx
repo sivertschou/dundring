@@ -10,8 +10,8 @@ export const ActiveWorkoutContext = React.createContext<{
   increaseElapsedTime: (millis: number, addLap: () => void) => void;
   start: () => void;
   pause: () => void;
-  activeFTP: number;
-  setActiveFTP: (ftp: number) => void;
+  activeFtp: number;
+  setActiveFtp: (ftp: number) => void;
   changeActivePart: (partNumber: number, addLap: () => void) => void;
   syncResistance: () => void;
   syncResistanceIfActive: () => void;
@@ -21,7 +21,7 @@ interface IncreasePartElapsedTimeAction {
   type: 'INCREASE_PART_ELAPSED_TIME';
   millis: number;
   setResistance: (resistance: number) => void;
-  activeFTP: number;
+  activeFtp: number;
   addLap: () => void;
 }
 
@@ -33,18 +33,18 @@ interface SetWorkoutAction {
 interface StartAction {
   type: 'START';
   setResistance: (resistance: number) => void;
-  activeFTP: number;
+  activeFtp: number;
 }
 interface PauseAction {
   type: 'PAUSE';
   setResistance: (resistance: number) => void;
-  activeFTP: number;
+  activeFtp: number;
 }
 
 interface ChangeActivePartAction {
   type: 'CHANGE_ACTIVE_PART';
   setResistance: (resistance: number) => void;
-  activeFTP: number;
+  activeFtp: number;
   addLap: () => void;
   partNumber: number;
 }
@@ -61,13 +61,13 @@ export const ActiveWorkoutContextProvider = ({
   children: React.ReactNode;
 }) => {
   const { user } = useUser();
-  const [activeFTP, setActiveFTP] = React.useState(
+  const [activeFtp, setActiveFtp] = React.useState(
     (user.loggedIn && user.ftp) || 250
   );
   React.useEffect(() => {
     // TODO: This might get triggered when other updates are made to user.
     if (user.loggedIn && user.ftp) {
-      setActiveFTP(user.ftp);
+      setActiveFtp(user.ftp);
     }
   }, [user]);
 
@@ -166,7 +166,7 @@ export const ActiveWorkoutContextProvider = ({
       const activeWorkoutPart = workout.parts[activeWorkout.activePart];
       const targetPowerAsWatt = wattFromFtpPercent(
         activeWorkoutPart.targetPower,
-        activeFTP
+        activeFtp
       );
       setResistance(targetPowerAsWatt);
     }
@@ -180,7 +180,7 @@ export const ActiveWorkoutContextProvider = ({
     activeWorkout.workout,
     setResistance,
     isConnected,
-    activeFTP,
+    activeFtp,
   ]);
 
   const setWorkout = (workout: Workout) => {
@@ -188,11 +188,11 @@ export const ActiveWorkoutContextProvider = ({
   };
 
   const start = () => {
-    dispatchActiveWorkoutAction({ type: 'START', setResistance, activeFTP });
+    dispatchActiveWorkoutAction({ type: 'START', setResistance, activeFtp });
   };
 
   const pause = () => {
-    dispatchActiveWorkoutAction({ type: 'PAUSE', setResistance, activeFTP });
+    dispatchActiveWorkoutAction({ type: 'PAUSE', setResistance, activeFtp });
   };
 
   const syncResistanceIfActive = () => {
@@ -213,7 +213,7 @@ export const ActiveWorkoutContextProvider = ({
     const activeWorkoutPart = workout.parts[activeWorkout.activePart];
     const targetPowerAsWatt = wattFromFtpPercent(
       activeWorkoutPart.targetPower,
-      activeFTP
+      activeFtp
     );
     setResistance(targetPowerAsWatt);
   };
@@ -222,7 +222,7 @@ export const ActiveWorkoutContextProvider = ({
     dispatchActiveWorkoutAction({
       type: 'CHANGE_ACTIVE_PART',
       setResistance,
-      activeFTP,
+      activeFtp,
       addLap,
       partNumber,
     });
@@ -233,7 +233,7 @@ export const ActiveWorkoutContextProvider = ({
       type: 'INCREASE_PART_ELAPSED_TIME',
       millis,
       setResistance,
-      activeFTP,
+      activeFtp,
       addLap,
     });
   };
@@ -252,8 +252,8 @@ export const ActiveWorkoutContextProvider = ({
         increaseElapsedTime,
         start,
         pause,
-        activeFTP,
-        setActiveFTP,
+        activeFtp,
+        setActiveFtp,
         changeActivePart,
         syncResistance,
         syncResistanceIfActive,
@@ -293,9 +293,9 @@ export const getRemainingTime = (activeWorkout: ActiveWorkout) => {
 
 export const getTargetPower = (
   activeWorkout: ActiveWorkout,
-  activeFTP: number
+  activeFtp: number
 ) => {
   const { workout, status, activePart } = activeWorkout;
   if (!workout || status === 'finished') return null;
-  return Math.floor((workout.parts[activePart].targetPower * activeFTP) / 100);
+  return Math.floor((workout.parts[activePart].targetPower * activeFtp) / 100);
 };

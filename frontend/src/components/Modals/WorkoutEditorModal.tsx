@@ -18,7 +18,7 @@ import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 
 export interface WorkoutToEdit extends Workout {
   type: 'local' | 'remote' | 'new';
-  previewFTP: number;
+  previewFtp: number;
 }
 export const WorkoutEditorModal = () => {
   const { isOpen, onClose } = useWorkoutEditorModal();

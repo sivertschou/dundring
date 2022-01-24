@@ -42,7 +42,7 @@ export const WorkoutEditor = ({
   workout: loadedWorkout,
   closeEditor,
 }: Props) => {
-  const { activeFTP, setActiveFTP } = useActiveWorkout();
+  const { activeFtp, setActiveFtp } = useActiveWorkout();
   const { user, saveLocalWorkout } = useUser();
   const token = user.loggedIn && user.token;
 
@@ -60,7 +60,7 @@ export const WorkoutEditor = ({
     return parsed;
   };
 
-  const [ftp, setFtp] = React.useState('' + activeFTP);
+  const [ftp, setFtp] = React.useState('' + activeFtp);
 
   const ftpValue = parseInputAsInt(ftp);
 
@@ -120,7 +120,7 @@ export const WorkoutEditor = ({
           <Input
             value={ftp}
             onChange={(e) => setFtp(e.target.value)}
-            onBlur={() => setActiveFTP(parseInputAsInt(ftp))}
+            onBlur={() => setActiveFtp(parseInputAsInt(ftp))}
           />
           <InputRightAddon children="W" />
         </InputGroup>

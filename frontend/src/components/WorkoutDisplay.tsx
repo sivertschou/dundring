@@ -9,7 +9,7 @@ import {
 } from '../utils';
 
 export const WorkoutDisplay = () => {
-  const { activeWorkout, activeFTP, changeActivePart } = useActiveWorkout();
+  const { activeWorkout, activeFtp, changeActivePart } = useActiveWorkout();
   const { addLap } = useData();
   if (!activeWorkout.workout) {
     return null;
@@ -20,7 +20,7 @@ export const WorkoutDisplay = () => {
   return (
     <Stack fontSize="sm" pb="20em">
       <Text>{workout.name}</Text>
-      <Text>Based on {activeFTP}W FTP</Text>
+      <Text>Based on {activeFtp}W FTP</Text>
       <Text>{secondsToHoursMinutesAndSecondsString(partElapsedTime)}</Text>
       {workout.parts.map((part, i) => {
         const isActive =
@@ -35,7 +35,7 @@ export const WorkoutDisplay = () => {
           >
             {`${secondsToHoursMinutesAndSecondsString(part.duration)}@${
               part.targetPower
-            }% (${wattFromFtpPercent(part.targetPower, activeFTP)}W)`}
+            }% (${wattFromFtpPercent(part.targetPower, activeFtp)}W)`}
           </Text>
         );
       })}

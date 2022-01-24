@@ -47,7 +47,7 @@ export const PowerControls = () => {
     currentResistance,
   } = useSmartTrainer();
 
-  const { activeFTP } = useActiveWorkout();
+  const { activeFtp } = useActiveWorkout();
 
   const [powerInputData, dispatchPowerInputAction] = React.useReducer(
     (
@@ -92,8 +92,8 @@ export const PowerControls = () => {
       }
     },
     {
-      power: activeFTP,
-      wattInput: '' + activeFTP,
+      power: activeFtp,
+      wattInput: '' + activeFtp,
       percentInput: '100',
     }
   );
@@ -102,12 +102,12 @@ export const PowerControls = () => {
     dispatchPowerInputAction({
       type: 'ftp',
       value: '' + powerInputData.power,
-      activeFtp: activeFTP,
+      activeFtp,
     });
-  }, [activeFTP]);
+  }, [activeFtp, powerInputData.power]);
 
   const canAddResistanceValue = (value: number) => {
-    const watt = wattFromFtpPercent(value, activeFTP);
+    const watt = wattFromFtpPercent(value, activeFtp);
 
     return currentResistance + watt < 0 ? false : true;
   };
@@ -119,13 +119,13 @@ export const PowerControls = () => {
       <Center justifyContent="space-between">
         <Grid templateColumns="2fr 2fr 2fr" gap="1">
           <Tooltip
-            label={`+${wattFromFtpPercent(1, activeFTP)}W (1%)`}
+            label={`+${wattFromFtpPercent(1, activeFtp)}W (1%)`}
             placement="top"
           >
             <Button
               onClick={() => {
                 if (!smartTrainerIsConnected) return;
-                const addWatt = wattFromFtpPercent(1, activeFTP);
+                const addWatt = wattFromFtpPercent(1, activeFtp);
                 setSmartTrainerResistance(currentResistance + addWatt);
               }}
               isDisabled={!smartTrainerIsConnected}
@@ -137,13 +137,13 @@ export const PowerControls = () => {
             </Button>
           </Tooltip>
           <Tooltip
-            label={`+${wattFromFtpPercent(5, activeFTP)}W (5%)`}
+            label={`+${wattFromFtpPercent(5, activeFtp)}W (5%)`}
             placement="top"
           >
             <Button
               onClick={() => {
                 if (!smartTrainerIsConnected) return;
-                const addWatt = wattFromFtpPercent(5, activeFTP);
+                const addWatt = wattFromFtpPercent(5, activeFtp);
                 setSmartTrainerResistance(currentResistance + addWatt);
               }}
               isDisabled={!smartTrainerIsConnected}
@@ -155,13 +155,13 @@ export const PowerControls = () => {
             </Button>
           </Tooltip>
           <Tooltip
-            label={`+${wattFromFtpPercent(10, activeFTP)}W (10%)`}
+            label={`+${wattFromFtpPercent(10, activeFtp)}W (10%)`}
             placement="top"
           >
             <Button
               onClick={() => {
                 if (!smartTrainerIsConnected) return;
-                const addWatt = wattFromFtpPercent(10, activeFTP);
+                const addWatt = wattFromFtpPercent(10, activeFtp);
                 setSmartTrainerResistance(currentResistance + addWatt);
               }}
               isDisabled={!smartTrainerIsConnected}
@@ -174,13 +174,13 @@ export const PowerControls = () => {
           </Tooltip>
 
           <Tooltip
-            label={`-${wattFromFtpPercent(1, activeFTP)}W (1%)`}
+            label={`-${wattFromFtpPercent(1, activeFtp)}W (1%)`}
             placement="bottom"
           >
             <Button
               onClick={() => {
                 if (!smartTrainerIsConnected) return;
-                const addWatt = wattFromFtpPercent(1, activeFTP);
+                const addWatt = wattFromFtpPercent(1, activeFtp);
                 setSmartTrainerResistance(currentResistance - addWatt);
               }}
               isDisabled={
@@ -194,13 +194,13 @@ export const PowerControls = () => {
             </Button>
           </Tooltip>
           <Tooltip
-            label={`-${wattFromFtpPercent(5, activeFTP)}W (5%)`}
+            label={`-${wattFromFtpPercent(5, activeFtp)}W (5%)`}
             placement="bottom"
           >
             <Button
               onClick={() => {
                 if (!smartTrainerIsConnected) return;
-                const addWatt = wattFromFtpPercent(5, activeFTP);
+                const addWatt = wattFromFtpPercent(5, activeFtp);
                 setSmartTrainerResistance(currentResistance - addWatt);
               }}
               isDisabled={
@@ -214,13 +214,13 @@ export const PowerControls = () => {
             </Button>
           </Tooltip>
           <Tooltip
-            label={`-${wattFromFtpPercent(10, activeFTP)}W (10%)`}
+            label={`-${wattFromFtpPercent(10, activeFtp)}W (10%)`}
             placement="bottom"
           >
             <Button
               onClick={() => {
                 if (!smartTrainerIsConnected) return;
-                const addWatt = wattFromFtpPercent(10, activeFTP);
+                const addWatt = wattFromFtpPercent(10, activeFtp);
                 setSmartTrainerResistance(currentResistance - addWatt);
               }}
               isDisabled={
@@ -251,7 +251,7 @@ export const PowerControls = () => {
                     dispatchPowerInputAction({
                       type: 'watt',
                       value: e.target.value,
-                      activeFtp: activeFTP,
+                      activeFtp: activeFtp,
                     })
                   }
                 />
@@ -267,7 +267,7 @@ export const PowerControls = () => {
                 powerInputData.power !== null
                   ? `Set resistance to ${wattFromFtpPercent(
                       powerInputData.power,
-                      activeFTP
+                      activeFtp
                     )}W (${powerInputData.power}% of FTP)`
                   : 'Set resistance'
               }
@@ -284,7 +284,7 @@ export const PowerControls = () => {
                     return;
 
                   setSmartTrainerResistance(
-                    wattFromFtpPercent(powerInputData.power, activeFTP)
+                    wattFromFtpPercent(powerInputData.power, activeFtp)
                   );
                 }}
               >
@@ -303,11 +303,11 @@ export const PowerControls = () => {
                     dispatchPowerInputAction({
                       type: 'ftp',
                       value: e.target.value,
-                      activeFtp: activeFTP,
+                      activeFtp: activeFtp,
                     })
                   }
                 />
-                <Tooltip label={`% of FTP (${activeFTP}W)`} placement="bottom">
+                <Tooltip label={`% of FTP (${activeFtp}W)`} placement="bottom">
                   <InputRightAddon children="%" />
                 </Tooltip>
               </InputGroup>
