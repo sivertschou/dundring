@@ -9,7 +9,9 @@ import { Files, List, X } from 'react-bootstrap-icons';
 import { WorkoutPart } from '../../types';
 import {
   ftpPercentFromWatt,
+  parseFtpPercentInput,
   parseInputAsInt,
+  parseWattInput,
   wattFromFtpPercent,
 } from '../../utils';
 import { findZone } from '../../zones';
@@ -74,22 +76,6 @@ const calculateNewDuration = (minutesInput: string, secondsInput: string) => {
   const minutes = Math.floor(duration / 60);
   const seconds = Math.floor(duration % 60);
   return { duration, seconds, minutes };
-};
-
-const parseWattInput = (input: string) => {
-  const parsed = parseFloat(input);
-
-  if (isNaN(parsed)) return null;
-
-  return Math.floor(parsed);
-};
-
-const parseFtpPercentInput = (input: string) => {
-  const parsed = parseFloat(input);
-
-  if (isNaN(parsed)) return null;
-
-  return Math.floor(parsed * 10) / 10;
 };
 
 export const WorkoutIntervalInput = ({

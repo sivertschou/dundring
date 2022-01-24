@@ -13,7 +13,12 @@ import {
   Text,
   Tooltip,
 } from '@chakra-ui/react';
-import { ftpPercentFromWatt, wattFromFtpPercent } from '../../utils';
+import {
+  ftpPercentFromWatt,
+  parseFtpPercentInput,
+  parseWattInput,
+  wattFromFtpPercent,
+} from '../../utils';
 import { useSmartTrainer } from '../../context/SmartTrainerContext';
 import { ArrowDown, ArrowUp } from 'react-bootstrap-icons';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
@@ -23,22 +28,6 @@ interface PowerInputData {
   wattInput: string;
   percentInput: string;
 }
-
-const parseWattInput = (input: string) => {
-  const parsed = parseFloat(input);
-
-  if (isNaN(parsed)) return null;
-
-  return Math.floor(parsed);
-};
-
-const parseFtpPercentInput = (input: string) => {
-  const parsed = parseFloat(input);
-
-  if (isNaN(parsed)) return null;
-
-  return Math.floor(parsed * 10) / 10;
-};
 
 export const PowerControls = () => {
   const {
