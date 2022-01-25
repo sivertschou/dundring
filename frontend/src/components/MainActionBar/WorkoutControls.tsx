@@ -45,7 +45,7 @@ export const WorkoutControls = () => {
   const { onOpen: onOpenWorkoutEditor } = useWorkoutEditorModal();
   const linkColor = useLinkColor();
 
-  const workoutSelected = activeWorkout.workout !== null;
+  const isWorkoutSelected = activeWorkout.workout !== null;
   const activeWorkoutPart = activeWorkout.activePart;
   const playButtonText = getPlayButtonText(activeWorkout);
 
@@ -57,7 +57,7 @@ export const WorkoutControls = () => {
 
       <Tooltip
         label="You need to select a workout to use this functionality."
-        isDisabled={workoutSelected}
+        isDisabled={isWorkoutSelected}
         placement="top"
       >
         <Center>
@@ -67,7 +67,7 @@ export const WorkoutControls = () => {
                 size="sm"
                 aria-label="Re-sync resistance"
                 icon={<Icon as={ArrowRepeat} />}
-                isDisabled={!workoutSelected}
+                isDisabled={!isWorkoutSelected}
                 onClick={syncResistance}
               />
             </Tooltip>
@@ -77,7 +77,7 @@ export const WorkoutControls = () => {
                 aria-label="Previous part"
                 icon={<Icon as={SkipBackwardFill} />}
                 isDisabled={
-                  !workoutSelected ||
+                  !isWorkoutSelected ||
                   (activeWorkoutPart === 0 &&
                     activeWorkout.status !== 'finished')
                 }
@@ -103,7 +103,7 @@ export const WorkoutControls = () => {
                 size="sm"
                 aria-label="Go to start of the part"
                 icon={<Icon as={SkipStartFill} />}
-                isDisabled={!workoutSelected}
+                isDisabled={!isWorkoutSelected}
                 onClick={() => {
                   if (!activeWorkout.workout) return;
 
@@ -123,7 +123,7 @@ export const WorkoutControls = () => {
                     }
                   />
                 }
-                isDisabled={!workoutSelected}
+                isDisabled={!isWorkoutSelected}
                 onClick={() => {
                   if (!activeWorkout.workout) return;
 
@@ -150,7 +150,7 @@ export const WorkoutControls = () => {
                 size="sm"
                 aria-label="Next part"
                 icon={<Icon as={SkipForwardFill} />}
-                isDisabled={!workoutSelected}
+                isDisabled={!isWorkoutSelected}
                 onClick={() => {
                   if (!activeWorkout.workout) return;
 
@@ -166,7 +166,7 @@ export const WorkoutControls = () => {
         </Center>
       </Tooltip>
 
-      {!workoutSelected ? (
+      {!isWorkoutSelected ? (
         <>
           <Center>
             <HStack>
