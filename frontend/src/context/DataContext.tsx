@@ -65,8 +65,8 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         case 'START': {
           if (currentData.state === 'not_started') {
             return {
-              laps: [{ dataPoints: [] as DataPoint[] }] as Lap[],
-              graphData: [] as DataPoint[],
+              laps: [{ dataPoints: [] }],
+              graphData: [],
               timeElapsed: 0,
               startingTime: new Date(),
               state: 'running',
@@ -86,7 +86,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         case 'ADD_LAP': {
           return {
             ...currentData,
-            laps: [...currentData.laps, { dataPoints: [] as DataPoint[] }],
+            laps: [...currentData.laps, { dataPoints: [] }],
           };
         }
         case 'ADD_DATA': {
