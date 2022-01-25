@@ -73,14 +73,10 @@ export const TopBar = () => {
                 <Text fontSize={secondaryFontSize}>@{targetPower}w</Text>
               ) : null}
               <Center>
-                <Text fontSize={mainFontSize}>
-                  {power !== null ? power : '0'}
-                </Text>
+                <Text fontSize={mainFontSize}>{power || '0'}</Text>
                 <Text fontSize={unitFontSize}>w</Text>
               </Center>
-              <Text fontSize={secondaryFontSize}>
-                {cadence !== null ? cadence : '0'} rpm
-              </Text>
+              <Text fontSize={secondaryFontSize}>{cadence || '0'} rpm</Text>
             </Stack>
           </Grid>
         </Center>
