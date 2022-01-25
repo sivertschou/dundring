@@ -3,13 +3,15 @@ import {
   Button,
   FormControl,
   FormErrorMessage,
+  FormHelperText,
+  FormLabel,
   HStack,
   Input,
   InputGroup,
 } from '@chakra-ui/react';
 import { importWorkout } from '../../api';
-import { WorkoutToEdit } from './WorkoutEditorModal';
 import { Text } from '@chakra-ui/layout';
+import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
 
 export enum ApiStatus {
   SUCCESS = 'SUCCESS',
@@ -22,7 +24,7 @@ interface Props {
   previewFtp: number;
 }
 
-export const ImportWorkoutModal = ({ setWorkoutToEdit, previewFtp }: Props) => {
+export const ImportWorkout = ({ setWorkoutToEdit, previewFtp }: Props) => {
   const [errorMessage, setErrorMessage] = React.useState('');
   const [workoutIdInput, setWorkoutIdInput] = React.useState('');
 
@@ -56,6 +58,7 @@ export const ImportWorkoutModal = ({ setWorkoutToEdit, previewFtp }: Props) => {
       <FormControl
         isInvalid={!workoutIdInputIsValidFormat && workoutIdInput !== ''}
       >
+        <FormLabel>Import workout</FormLabel>
         <HStack>
           <InputGroup>
             <Input
@@ -79,6 +82,11 @@ export const ImportWorkoutModal = ({ setWorkoutToEdit, previewFtp }: Props) => {
         <FormErrorMessage>
           Invalid workout id. Format : username-id
         </FormErrorMessage>
+        <FormHelperText>
+          You can import/clone an other user's workout by entering the workout
+          id. A workout's id can be found by pressing the copy button on a given
+          workout that is stored remotely.
+        </FormHelperText>
       </FormControl>
 
       {errorMessage ? <Text>{errorMessage}</Text> : null}
