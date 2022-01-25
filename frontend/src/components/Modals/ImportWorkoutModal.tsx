@@ -19,10 +19,10 @@ export enum ApiStatus {
 
 interface Props {
   setWorkoutToEdit: (workout: WorkoutToEdit) => void;
-  previewFTP: number;
+  previewFtp: number;
 }
 
-export const ImportWorkoutModal = ({ setWorkoutToEdit, previewFTP }: Props) => {
+export const ImportWorkoutModal = ({ setWorkoutToEdit, previewFtp }: Props) => {
   const [errorMessage, setErrorMessage] = React.useState('');
   const [workoutIdInput, setWorkoutIdInput] = React.useState('');
 
@@ -37,7 +37,7 @@ export const ImportWorkoutModal = ({ setWorkoutToEdit, previewFTP }: Props) => {
         setWorkoutToEdit({
           ...workoutResponse.data.workout,
           type: 'new',
-          previewFTP,
+          previewFtp,
         });
         return;
       }

@@ -1,6 +1,7 @@
 import { Text, Stack } from '@chakra-ui/layout';
 import * as React from 'react';
-import { useActiveWorkout } from '../context/WorkoutContext';
+import { useActiveWorkout } from '../context/ActiveWorkoutContext';
+import { useData } from '../context/DataContext';
 import { Workout } from '../types';
 import {
   secondsToHoursMinutesAndSecondsString,
@@ -8,35 +9,36 @@ import {
 } from '../utils';
 
 export const WorkoutDisplay = () => {
-  const { activeWorkout, activeFTP, changeActivePart } = useActiveWorkout();
+  const { activeWorkout, activeFtp, changeActivePart } = useActiveWorkout();
+  const { addLap } = useData();
   if (!activeWorkout.workout) {
     return null;
   }
 
-  const { activePart, isDone, partElapsedTime, workout } = activeWorkout;
+  const { activePart, status, partElapsedTime, workout } = activeWorkout;
 
   return (
     <Stack fontSize="sm">
       <Text>{workout.name}</Text>
-      <Text>Based on {activeFTP}W FTP</Text>
+      <Text>Based on {activeFtp}W FTP</Text>
       <Text>{secondsToHoursMinutesAndSecondsString(partElapsedTime)}</Text>
       {workout.parts.map((part, i) => {
-        const isActive = !isDone && i === activePart;
+        const isActive = status === 'active' && i === activePart;
         return (
           <Text
             key={i}
             fontWeight={isActive ? 'bold' : 'normal'}
             color={isActive ? 'purple.500' : ''}
             cursor="pointer"
-            onClick={() => changeActivePart(i)}
+            onClick={() => changeActivePart(i, addLap)}
           >
             {`${secondsToHoursMinutesAndSecondsString(part.duration)}@${
               part.targetPower
-            }% (${wattFromFtpPercent(part.targetPower, activeFTP)}W)`}
+            }% (${wattFromFtpPercent(part.targetPower, activeFtp)}W)`}
           </Text>
         );
       })}
-      {isDone ? (
+      {status === 'finished' ? (
         <Text>DONE!</Text>
       ) : (
         <Text>{getTimeLeft(workout, partElapsedTime, activePart)}</Text>

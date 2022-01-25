@@ -13,6 +13,7 @@ import { Tooltip } from '@chakra-ui/tooltip';
 import { useAvailability } from '../hooks/useAvailability';
 import { Logo } from './Logo';
 import { Github, Slack } from 'react-bootstrap-icons';
+import { MainActionBar } from './MainActionBar';
 import { Link as ReachLink } from 'react-router-dom';
 import { useColorModeValue } from '@chakra-ui/color-mode';
 import { useLogModal } from '../context/ModalContext';
@@ -32,12 +33,14 @@ export const BottomBar = () => {
       ? true
       : false;
   return (
-    <Center width="100%" position="fixed" bottom="0">
+    <Center width="100%" position="fixed" bottom="0" pointerEvents="none">
       <Stack width="100%" spacing="0">
+        <MainActionBar />
         <Grid
           backgroundColor={bgColor}
           width="100%"
           templateColumns="1fr 4fr 1fr"
+          pointerEvents="auto"
         >
           <Flex p="1">
             <Link as={ReachLink} to="/">

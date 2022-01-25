@@ -7,6 +7,7 @@ export const useSmartTrainerMock = (): SmartTrainer => {
   const [power, setPower] = React.useState(0);
   const [cadence, setCadence] = React.useState(0);
   const [isConnected, setIsConnected] = React.useState(false);
+  const [currentResistance, setCurrentResistance] = React.useState(0);
   const [targetPower, setTargetPower] = React.useState(0);
 
   const { logEvent } = useLogs();
@@ -47,13 +48,15 @@ export const useSmartTrainerMock = (): SmartTrainer => {
       logEvent('[mock] smart trainer disconnected');
     },
     isConnected,
-    power,
-    cadence: cadence,
+    power: isConnected ? power : 0,
+    cadence: isConnected ? cadence : 0,
     speed: 0,
+    currentResistance,
     setResistance: React.useCallback(
       (resistance: number) => {
         console.log('MOCK: set resistance: ', resistance);
         logEvent(`[mock] set resistance: ${resistance}W`);
+        setCurrentResistance(resistance);
         setTargetPower(resistance);
       },
       [logEvent]

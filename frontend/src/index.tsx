@@ -7,7 +7,6 @@ import { HeartRateContextProvider } from './context/HeartRateContext';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorker from './serviceWorker';
 import { SmartTrainerContextProvider } from './context/SmartTrainerContext';
-import { ActiveWorkoutContextProvider } from './context/WorkoutContext';
 import { WebsocketContextProvider } from './context/WebsocketContext';
 import WorkerBuilder from './workers/workerBuilder';
 import clockWorker from './workers/clock.worker';
@@ -15,9 +14,11 @@ import { LogContextProvider } from './context/LogContext';
 import theme from './theme';
 import { BrowserRouter } from 'react-router-dom';
 import { ModalContextProvider } from './context/ModalContext';
+import { DataContextProvider } from './context/DataContext';
+import { ActiveWorkoutContextProvider } from './context/ActiveWorkoutContext';
 
 const cw: Worker = new WorkerBuilder(clockWorker);
-cw && cw.postMessage('startTimer');
+cw.postMessage('startDataTimer');
 ReactDOM.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
@@ -28,10 +29,12 @@ ReactDOM.render(
               <SmartTrainerContextProvider>
                 <ActiveWorkoutContextProvider>
                   <WebsocketContextProvider>
-                    <ModalContextProvider>
-                      <ColorModeScript />
-                      <App clockWorker={cw} />
-                    </ModalContextProvider>
+                    <DataContextProvider clockWorker={cw}>
+                      <ModalContextProvider>
+                        <ColorModeScript />
+                        <App />
+                      </ModalContextProvider>
+                    </DataContextProvider>
                   </WebsocketContextProvider>
                 </ActiveWorkoutContextProvider>
               </SmartTrainerContextProvider>

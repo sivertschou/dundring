@@ -5,24 +5,21 @@ import { useSmartTrainer } from '../context/SmartTrainerContext';
 import { useHeartRateMonitor } from '../context/HeartRateContext';
 import { useColorModeValue } from '@chakra-ui/color-mode';
 import theme from '../theme';
+import { secondsToHoursMinutesAndSecondsString } from '../utils';
+import { useData } from '../context/DataContext';
 import {
   getRemainingTime,
   getTargetPower,
   useActiveWorkout,
-} from '../context/WorkoutContext';
-import { secondsToHoursMinutesAndSecondsString } from '../utils';
+} from '../context/ActiveWorkoutContext';
 
-interface Props {
-  timeElapsed: number;
-}
-
-export const TopBar = ({ timeElapsed }: Props) => {
+export const TopBar = () => {
   const { power, cadence } = useSmartTrainer();
   const { heartRate } = useHeartRateMonitor();
-  const { activeWorkout, activeFTP } = useActiveWorkout();
-
+  const { activeWorkout, activeFtp } = useActiveWorkout();
+  const { timeElapsed } = useData();
   const remainingTime = getRemainingTime(activeWorkout);
-  const targetPower = getTargetPower(activeWorkout, activeFTP);
+  const targetPower = getTargetPower(activeWorkout, activeFtp);
 
   const secondsElapsed = Math.floor(timeElapsed / 1000);
 
@@ -31,6 +28,7 @@ export const TopBar = ({ timeElapsed }: Props) => {
   const secondaryFontSize = ['m', 'xl', '2xl'];
   const bgColor = useColorModeValue(theme.colors.white, theme.colors.gray[800]);
   const textShadow = `0px 0px 1vh ${bgColor}`;
+
   return (
     <Center
       width="100%"
@@ -48,7 +46,9 @@ export const TopBar = ({ timeElapsed }: Props) => {
           <Grid width="90%" templateColumns="repeat(3, 1fr)">
             <Stack>
               <Center color={hrColor}>
-                <Text fontSize={mainFontSize}>{heartRate}</Text>
+                <Text fontSize={mainFontSize}>
+                  {heartRate !== null ? heartRate : '0'}
+                </Text>
                 <Text fontSize={unitFontSize}>bpm</Text>
               </Center>
             </Stack>
@@ -73,10 +73,10 @@ export const TopBar = ({ timeElapsed }: Props) => {
                 <Text fontSize={secondaryFontSize}>@{targetPower}w</Text>
               ) : null}
               <Center>
-                <Text fontSize={mainFontSize}>{power}</Text>
+                <Text fontSize={mainFontSize}>{power || '0'}</Text>
                 <Text fontSize={unitFontSize}>w</Text>
               </Center>
-              <Text fontSize={secondaryFontSize}>{cadence} rpm</Text>
+              <Text fontSize={secondaryFontSize}>{cadence || '0'} rpm</Text>
             </Stack>
           </Grid>
         </Center>

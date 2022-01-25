@@ -12,13 +12,13 @@ import { ArrowLeft } from 'react-bootstrap-icons';
 import { WorkoutOverview } from '../WorkoutMenu/WorkoutOverview';
 import { Workout } from '../../types';
 import { WorkoutEditor } from '../WorkoutMenu/WorkoutEditor';
-import { useActiveWorkout } from '../../context/WorkoutContext';
 import { useUser } from '../../context/UserContext';
 import { useWorkoutEditorModal } from '../../context/ModalContext';
+import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 
 export interface WorkoutToEdit extends Workout {
   type: 'local' | 'remote' | 'new';
-  previewFTP: number;
+  previewFtp: number;
 }
 export const WorkoutEditorModal = () => {
   const { isOpen, onClose } = useWorkoutEditorModal();

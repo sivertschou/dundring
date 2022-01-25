@@ -32,7 +32,7 @@ export const ProfileModal = () => {
 
   if (!user.loggedIn) return null;
 
-  const updateFTP = async (input: string) => {
+  const updateFtp = async (input: string) => {
     if (isLoading || !inputIsValid(input.trim())) {
       return;
     }
@@ -71,7 +71,7 @@ export const ProfileModal = () => {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              updateFTP(ftpInput);
+              updateFtp(ftpInput);
             }}
           >
             <Stack>

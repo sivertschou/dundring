@@ -19,6 +19,7 @@ import {
 } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import { hrColor, powerColor } from '../colors';
+import { useActiveWorkout } from '../context/ActiveWorkoutContext';
 import { useHeartRateMonitor } from '../context/HeartRateContext';
 import {
   useLoginModal,
@@ -28,7 +29,6 @@ import {
 import { useSmartTrainer } from '../context/SmartTrainerContext';
 import { useUser } from '../context/UserContext';
 import { useWebsocket } from '../context/WebsocketContext';
-import { useActiveWorkout } from '../context/WorkoutContext';
 import { useLinkColor } from '../hooks/useLinkColor';
 import { ActionBarItem } from './ActionBarItem';
 
@@ -104,14 +104,14 @@ export const ActionBar = () => {
       )}
       {smartTrainerIsConnected ? (
         <ActionBarItem
-          text="Disconnect Smart Trainer"
+          text="Disconnect smart trainer"
           icon={<Icon as={LightningChargeFill} />}
           onClick={disconnectSmartTrainer}
           iconColor={powerColor}
         />
       ) : (
         <ActionBarItem
-          text="Connect Smart Trainer"
+          text="Connect smart trainer"
           icon={<Icon as={LightningCharge} />}
           onClick={connectSmartTrainer}
         />
