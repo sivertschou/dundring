@@ -98,7 +98,7 @@ export const PowerControls = () => {
   const canAddResistanceValue = (value: number) => {
     const watt = wattFromFtpPercent(value, activeFtp);
 
-    return currentResistance + watt < 0 ? false : true;
+    return currentResistance + watt >= 0;
   };
 
   return (
