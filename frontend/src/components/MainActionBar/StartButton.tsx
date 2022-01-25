@@ -1,5 +1,4 @@
 import { Button, Icon } from '@chakra-ui/react';
-import * as React from 'react';
 import { PauseFill, PlayFill } from 'react-bootstrap-icons';
 import { useData } from '../../context/DataContext';
 

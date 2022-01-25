@@ -1,8 +1,7 @@
-import * as React from 'react';
-
 import { useData } from '../../context/DataContext';
 import { Center, Grid, Text } from '@chakra-ui/react';
 import { DownloadTCXButton } from './DownloadTCXButton';
+
 export const PausedWorkoutButtons = () => {
   const { hasValidData, isRunning } = useData();
   if (isRunning || !hasValidData) return null;
