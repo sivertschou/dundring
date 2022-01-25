@@ -2,11 +2,9 @@ import { Button } from '@chakra-ui/button';
 import { useColorMode } from '@chakra-ui/color-mode';
 import Icon from '@chakra-ui/icon';
 import { Stack, Text } from '@chakra-ui/layout';
-import * as React from 'react';
 import {
   BarChartLine,
   BarChartLineFill,
-  BoxArrowRight,
   Heart,
   HeartFill,
   LightningCharge,
@@ -33,7 +31,7 @@ import { useLinkColor } from '../hooks/useLinkColor';
 import { ActionBarItem } from './ActionBarItem';
 
 export const ActionBar = () => {
-  const { user, setUser } = useUser();
+  const { user } = useUser();
   const { activeGroupSession } = useWebsocket();
   const { activeWorkout } = useActiveWorkout();
   const { colorMode, setColorMode } = useColorMode();
@@ -143,13 +141,6 @@ export const ActionBar = () => {
           onClick={() => setColorMode('light')}
         />
       )}
-      {user.loggedIn ? (
-        <ActionBarItem
-          text="Logout"
-          icon={<Icon as={BoxArrowRight} />}
-          onClick={() => setUser({ loggedIn: false })}
-        />
-      ) : null}
     </Stack>
   );
 };

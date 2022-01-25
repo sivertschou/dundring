@@ -108,6 +108,20 @@ export const ProfileModal = () => {
               </FormControl>
             </Stack>
           </form>
+          <Button
+            onClick={() => {
+              toast({
+                title: `Signed out of ${user.username}`,
+                isClosable: true,
+                duration: 5000,
+                status: 'success',
+              });
+              setUser({ loggedIn: false });
+              onClose();
+            }}
+          >
+            Sign out
+          </Button>
         </Stack>
       </ModalContent>
     </Modal>
