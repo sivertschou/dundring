@@ -5,7 +5,6 @@ import {
   FormControl,
   Grid,
   GridItem,
-  Icon,
   Input,
   InputGroup,
   InputRightAddon,
@@ -20,8 +19,8 @@ import {
   wattFromFtpPercent,
 } from '../../utils';
 import { useSmartTrainer } from '../../context/SmartTrainerContext';
-import { ArrowDown, ArrowUp } from 'react-bootstrap-icons';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
+import { PowerControlButton } from './PowerControlButton';
 
 interface PowerInputData {
   power: number | null;
@@ -33,7 +32,6 @@ export const PowerControls = () => {
   const {
     isConnected: smartTrainerIsConnected,
     setResistance: setSmartTrainerResistance,
-    currentResistance,
   } = useSmartTrainer();
 
   const { activeFtp } = useActiveWorkout();
@@ -95,12 +93,7 @@ export const PowerControls = () => {
     });
   }, [activeFtp]);
 
-  const canAddResistanceValue = (value: number) => {
-    const watt = wattFromFtpPercent(value, activeFtp);
-
-    return currentResistance + watt >= 0;
-  };
-
+  const controlValues = [1, 5, 10, -1, -5, -10];
   return (
     <Stack>
       <Text fontSize="xs" fontWeight="bold" opacity="0.5">
@@ -113,121 +106,9 @@ export const PowerControls = () => {
       >
         <Center justifyContent="space-between">
           <Grid templateColumns="2fr 2fr 2fr" gap="1">
-            <Tooltip
-              label={`+${wattFromFtpPercent(1, activeFtp)}W (1%)`}
-              placement="top"
-            >
-              <Button
-                onClick={() => {
-                  if (!smartTrainerIsConnected) return;
-                  const addWatt = wattFromFtpPercent(1, activeFtp);
-                  setSmartTrainerResistance(currentResistance + addWatt);
-                }}
-                isDisabled={!smartTrainerIsConnected}
-                size="sm"
-                leftIcon={<Icon as={ArrowUp} />}
-                paddingX="2"
-              >
-                1%
-              </Button>
-            </Tooltip>
-            <Tooltip
-              label={`+${wattFromFtpPercent(5, activeFtp)}W (5%)`}
-              placement="top"
-            >
-              <Button
-                onClick={() => {
-                  if (!smartTrainerIsConnected) return;
-                  const addWatt = wattFromFtpPercent(5, activeFtp);
-                  setSmartTrainerResistance(currentResistance + addWatt);
-                }}
-                isDisabled={!smartTrainerIsConnected}
-                size="sm"
-                leftIcon={<Icon as={ArrowUp} />}
-                paddingX="2"
-              >
-                5%
-              </Button>
-            </Tooltip>
-            <Tooltip
-              label={`+${wattFromFtpPercent(10, activeFtp)}W (10%)`}
-              placement="top"
-            >
-              <Button
-                onClick={() => {
-                  if (!smartTrainerIsConnected) return;
-                  const addWatt = wattFromFtpPercent(10, activeFtp);
-                  setSmartTrainerResistance(currentResistance + addWatt);
-                }}
-                isDisabled={!smartTrainerIsConnected}
-                size="sm"
-                leftIcon={<Icon as={ArrowUp} />}
-                paddingX="2"
-              >
-                10%
-              </Button>
-            </Tooltip>
-
-            <Tooltip
-              label={`-${wattFromFtpPercent(1, activeFtp)}W (1%)`}
-              placement="bottom"
-            >
-              <Button
-                onClick={() => {
-                  if (!smartTrainerIsConnected) return;
-                  const addWatt = wattFromFtpPercent(1, activeFtp);
-                  setSmartTrainerResistance(currentResistance - addWatt);
-                }}
-                isDisabled={
-                  !smartTrainerIsConnected || !canAddResistanceValue(-1)
-                }
-                size="sm"
-                leftIcon={<Icon as={ArrowDown} />}
-                paddingX="2"
-              >
-                1%
-              </Button>
-            </Tooltip>
-            <Tooltip
-              label={`-${wattFromFtpPercent(5, activeFtp)}W (5%)`}
-              placement="bottom"
-            >
-              <Button
-                onClick={() => {
-                  if (!smartTrainerIsConnected) return;
-                  const addWatt = wattFromFtpPercent(5, activeFtp);
-                  setSmartTrainerResistance(currentResistance - addWatt);
-                }}
-                isDisabled={
-                  !smartTrainerIsConnected || !canAddResistanceValue(-5)
-                }
-                size="sm"
-                leftIcon={<Icon as={ArrowDown} />}
-                paddingX="2"
-              >
-                5%
-              </Button>
-            </Tooltip>
-            <Tooltip
-              label={`-${wattFromFtpPercent(10, activeFtp)}W (10%)`}
-              placement="bottom"
-            >
-              <Button
-                onClick={() => {
-                  if (!smartTrainerIsConnected) return;
-                  const addWatt = wattFromFtpPercent(10, activeFtp);
-                  setSmartTrainerResistance(currentResistance - addWatt);
-                }}
-                isDisabled={
-                  !smartTrainerIsConnected || !canAddResistanceValue(-10)
-                }
-                size="sm"
-                leftIcon={<Icon as={ArrowDown} />}
-                paddingX="2"
-              >
-                10%
-              </Button>
-            </Tooltip>
+            {controlValues.map((value, i) => (
+              <PowerControlButton key={i} value={value} activeFtp={activeFtp} />
+            ))}
           </Grid>
           <Grid
             templateColumns="1fr 1fr 1fr"
