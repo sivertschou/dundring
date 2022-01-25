@@ -23,8 +23,7 @@ export const WorkoutDisplay = () => {
       <Text>Based on {activeFtp}W FTP</Text>
       <Text>{secondsToHoursMinutesAndSecondsString(partElapsedTime)}</Text>
       {workout.parts.map((part, i) => {
-        const isActive =
-          status !== 'finished' && status !== 'not_started' && i === activePart;
+        const isActive = status === 'active' && i === activePart;
         return (
           <Text
             key={i}
