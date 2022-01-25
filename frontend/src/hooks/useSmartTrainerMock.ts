@@ -8,20 +8,35 @@ export const useSmartTrainerMock = (): SmartTrainer => {
   const [cadence, setCadence] = React.useState(0);
   const [isConnected, setIsConnected] = React.useState(false);
   const [currentResistance, setCurrentResistance] = React.useState(0);
+  const [targetPower, setTargetPower] = React.useState(0);
+
   const { logEvent } = useLogs();
+
   React.useEffect(() => {
     const interval = setInterval(() => {
       if (isConnected) {
-        setPower((prev) =>
-          randomIntFromIntervalBasedOnPrev(100, 400, prev, 50)
-        );
         setCadence((prev) =>
-          randomIntFromIntervalBasedOnPrev(50, 100, prev, 10)
+          randomIntFromIntervalBasedOnPrev(80, 100, prev, 5)
         );
+
+        if (targetPower) {
+          setPower((prev) =>
+            randomIntFromIntervalBasedOnPrev(
+              targetPower,
+              targetPower + 5,
+              prev,
+              5
+            )
+          );
+        } else {
+          setPower((prev) =>
+            randomIntFromIntervalBasedOnPrev(100, 400, prev, 50)
+          );
+        }
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [isConnected]);
+  }, [isConnected, targetPower]);
 
   return {
     requestPermission: () => {
@@ -42,6 +57,7 @@ export const useSmartTrainerMock = (): SmartTrainer => {
         console.log('MOCK: set resistance: ', resistance);
         logEvent(`[mock] set resistance: ${resistance}W`);
         setCurrentResistance(resistance);
+        setTargetPower(resistance);
       },
       [logEvent]
     ),

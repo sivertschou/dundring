@@ -2,6 +2,7 @@ import { Button } from '@chakra-ui/button';
 import {
   FormControl,
   FormErrorMessage,
+  FormHelperText,
   FormLabel,
 } from '@chakra-ui/form-control';
 import { Input } from '@chakra-ui/input';
@@ -15,13 +16,18 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
-import { Spinner } from '@chakra-ui/react';
+import { Spinner, Tooltip } from '@chakra-ui/react';
 import * as React from 'react';
 import * as api from '../../api';
 import { useUser } from '../../context/UserContext';
 import { useToast } from '@chakra-ui/react';
 import * as utils from '../../utils';
 import { useLoginModal } from '../../context/ModalContext';
+import sha256 from 'crypto-js/sha256';
+import Base64 from 'crypto-js/enc-base64';
+
+export const hash = (message: string) =>
+  Base64.stringify(sha256('yehaw' + message));
 
 export const LoginModal = () => {
   const { isOpen, onClose } = useLoginModal();
@@ -58,7 +64,7 @@ export const LoginModal = () => {
     setIsLoading(true);
     const response = await api.login({
       username: trimmedUsername,
-      password: trimmedPassword,
+      password: hash(trimmedPassword),
     });
     setIsLoading(false);
 
@@ -89,7 +95,7 @@ export const LoginModal = () => {
     setIsLoading(true);
     const response = await api.register({
       username: trimmedUsername,
-      password: trimmedPassword,
+      password: hash(trimmedPassword),
       mail: trimmedMail,
     });
     setIsLoading(false);
@@ -117,7 +123,7 @@ export const LoginModal = () => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
       <ModalContent>
         {creatingUser ? (
@@ -138,6 +144,7 @@ export const LoginModal = () => {
                     type="email"
                     name="email"
                     autoComplete="email"
+                    id="email"
                     value={mail}
                     onChange={(e) => {
                       setMail(e.target.value);
@@ -157,6 +164,7 @@ export const LoginModal = () => {
                     placeholder="Username"
                     name="username"
                     autoComplete="username"
+                    id="username"
                     value={username}
                     onChange={(e) => {
                       setErrorMessage('');
@@ -184,6 +192,7 @@ export const LoginModal = () => {
                     placeholder="Password"
                     type="password"
                     name="password"
+                    id="password"
                     autoComplete="password"
                     value={password}
                     onChange={(e) => {
@@ -194,6 +203,20 @@ export const LoginModal = () => {
                       setPassword((password) => password.trim());
                     }}
                   />
+                  <Tooltip
+                    label={
+                      `Although this might seem like a shady message, ` +
+                      `we do hash your password both before sending it ` +
+                      `from the browser, and before storing it on our servers. ` +
+                      `Currently this hash would be sent as your password: ${hash(
+                        password
+                      )}`
+                    }
+                  >
+                    <FormHelperText>
+                      As always; use a unique password.
+                    </FormHelperText>
+                  </Tooltip>
                 </FormControl>
                 <Link
                   onClick={() => {
