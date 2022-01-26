@@ -7,7 +7,7 @@ export const PausedWorkoutButtons = () => {
   if (isRunning || !hasValidData) return null;
 
   return (
-    <Grid templateColumns="1fr 1fr 1fr" gap="1">
+    <Grid templateColumns="1fr 1fr 1fr" gap="1" height="2.5em">
       <Text />
       <Center width="8em">
         <DownloadTCXButton />

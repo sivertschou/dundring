@@ -27,7 +27,7 @@ export const MainActionBar = () => {
 
   const bgColor = useColorModeValue('gray.200', 'gray.900');
   return (
-    <Center mb="5">
+    <Center mb="5" mx="2">
       <Stack p="5" borderRadius="1em" bgColor={bgColor} pointerEvents="auto">
         {showWorkoutControls ? <WorkoutControls /> : null}
         {showPowerControls ? <PowerControls /> : null}
@@ -45,7 +45,7 @@ export const MainActionBar = () => {
             </HStack>
           </Center>
         ) : null}
-        <Grid templateColumns="1fr 1fr 1fr" gap="1" alignItems="end">
+        <Grid templateColumns="1fr 1fr 1fr" gap="1" height="3em">
           <Center height="100%">
             <HStack>
               <SelectWorkoutButton />
