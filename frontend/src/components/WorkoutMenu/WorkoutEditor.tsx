@@ -115,7 +115,7 @@ export const WorkoutEditor = ({
         />
       </FormControl>
       <FormControl id="ftp">
-        <FormLabel>FTP</FormLabel>
+        <FormLabel>Active FTP</FormLabel>
         <InputGroup>
           <Input
             value={ftp}

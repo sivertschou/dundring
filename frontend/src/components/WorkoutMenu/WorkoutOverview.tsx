@@ -59,7 +59,7 @@ export const WorkoutOverview = ({
         Create new workout
       </Button>
       <FormControl id="ftp">
-        <FormLabel>Based on Ftp</FormLabel>
+        <FormLabel>Active Ftp</FormLabel>
         <InputGroup>
           <Input
             value={previewFtp}
@@ -70,7 +70,7 @@ export const WorkoutOverview = ({
         </InputGroup>
         <FormHelperText>
           This value will be used as your FTP for this session. You can change
-          your actual Ftp on your profile page
+          your actual FTP on your profile page
         </FormHelperText>
       </FormControl>
 
