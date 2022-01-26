@@ -4,7 +4,6 @@ import { Stack, Text } from '@chakra-ui/layout';
 import {
   BarChartLine,
   BarChartLineFill,
-  BoxArrowRight,
   Heart,
   HeartFill,
   LightningCharge,
@@ -29,7 +28,7 @@ import { useLinkColor } from '../hooks/useLinkColor';
 import { ActionBarItem } from './ActionBarItem';
 
 export const ActionBar = () => {
-  const { user, setUser } = useUser();
+  const { user } = useUser();
   const { activeGroupSession } = useWebsocket();
   const { activeWorkout } = useActiveWorkout();
   const { onOpen: onOpenWorkoutEditorModal } = useWorkoutEditorModal();
@@ -125,13 +124,6 @@ export const ActionBar = () => {
         }
         onClick={onOpenWorkoutEditorModal}
       />
-      {user.loggedIn ? (
-        <ActionBarItem
-          text="Logout"
-          icon={<Icon as={BoxArrowRight} />}
-          onClick={() => setUser({ loggedIn: false })}
-        />
-      ) : null}
     </Stack>
   );
 };
