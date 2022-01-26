@@ -51,12 +51,18 @@ interface UpdatePowerPercent {
   setWorkoutPart: (workoutPart: WorkoutPart) => void;
 }
 
+interface FtpUpdated {
+  type: 'FTP_UPDATED';
+  ftp: number;
+}
+
 type DataAction =
   | UpdateTime
   | UpdateTimeSeconds
   | UpdateTimeMinutes
   | UpdatePowerWatt
-  | UpdatePowerPercent;
+  | UpdatePowerPercent
+  | FtpUpdated;
 
 interface Props {
   workoutPart: WorkoutPart;
@@ -144,8 +150,8 @@ export const WorkoutIntervalInput = ({
         if (parsed === null) {
           return {
             ...currentData,
-            powerWattInput: action.value,
-            powerPercentInput: '',
+            powerWattInput: '',
+            powerPercentInput: action.value,
             power: 0,
           };
         }
@@ -159,8 +165,21 @@ export const WorkoutIntervalInput = ({
 
         return updateWorkout(updatedData, action.setWorkoutPart);
       }
+      case 'FTP_UPDATED': {
+        return {
+          ...currentData,
+          powerWattInput: '' + wattFromFtpPercent(currentData.power, ftp),
+        };
+      }
     }
   };
+
+  React.useEffect(() => {
+    dispatchDataUpdate({
+      type: 'FTP_UPDATED',
+      ftp,
+    });
+  }, [ftp]);
 
   const secondsFromProps = Math.floor(workoutPart.duration % 60);
   const minutesFromProps = Math.floor(workoutPart.duration / 60);

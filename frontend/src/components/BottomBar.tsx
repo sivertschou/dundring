@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   Center,
   Link,
@@ -12,19 +11,24 @@ import { Button } from '@chakra-ui/button';
 import { Tooltip } from '@chakra-ui/tooltip';
 import { useAvailability } from '../hooks/useAvailability';
 import { Logo } from './Logo';
-import { Github, Slack } from 'react-bootstrap-icons';
+import { Github, MoonFill, Slack, SunFill } from 'react-bootstrap-icons';
 import { MainActionBar } from './MainActionBar';
 import { Link as ReachLink } from 'react-router-dom';
-import { useColorModeValue } from '@chakra-ui/color-mode';
+import { useColorMode, useColorModeValue } from '@chakra-ui/color-mode';
 import { useLogModal } from '../context/ModalContext';
 import Icon from '@chakra-ui/icon';
 import { useLogs } from '../context/LogContext';
 
 export const BottomBar = () => {
+  const { colorMode, setColorMode } = useColorMode();
   const { available: bluetoothIsAvailable } = useAvailability();
   const { onOpen } = useLogModal();
   const { loggedEvents } = useLogs();
   const bgColor = useColorModeValue('gray.200', 'gray.900');
+  const isDarkmode = colorMode !== 'light';
+  const colorModeButtonText = isDarkmode
+    ? 'Toggle light mode'
+    : 'Toggle dark mode';
 
   const now = new Date();
   const lastMessageShouldBeVisible =
@@ -57,6 +61,17 @@ export const BottomBar = () => {
             </Text>
           </Button>
           <HStack justifyContent="flex-end" paddingX="2">
+            <Center>
+              <Tooltip label={colorModeButtonText}>
+                <Link>
+                  <Icon
+                    as={isDarkmode ? SunFill : MoonFill}
+                    aria-label={colorModeButtonText}
+                    onClick={() => setColorMode(isDarkmode ? 'light' : 'dark')}
+                  />
+                </Link>
+              </Tooltip>
+            </Center>
             <Tooltip label="Visit the workspace on Slack">
               <Link
                 href="https://join.slack.com/t/dundring/shared_invite/zt-10g7cx905-6ugYR~UdMEFBAkwdSWOAew"

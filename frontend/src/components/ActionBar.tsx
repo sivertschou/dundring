@@ -1,5 +1,4 @@
 import { Button } from '@chakra-ui/button';
-import { useColorMode } from '@chakra-ui/color-mode';
 import Icon from '@chakra-ui/icon';
 import { Stack, Text } from '@chakra-ui/layout';
 import {
@@ -9,11 +8,9 @@ import {
   HeartFill,
   LightningCharge,
   LightningChargeFill,
-  Moon,
   People,
   PeopleFill,
   Person,
-  Sun,
 } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import { hrColor, powerColor } from '../colors';
@@ -34,7 +31,6 @@ export const ActionBar = () => {
   const { user } = useUser();
   const { activeGroupSession } = useWebsocket();
   const { activeWorkout } = useActiveWorkout();
-  const { colorMode, setColorMode } = useColorMode();
   const { onOpen: onOpenWorkoutEditorModal } = useWorkoutEditorModal();
   const { onOpen: onOpenLoginModal } = useLoginModal();
   const { onOpen: onOpenProfileModal } = useProfileModal();
@@ -128,19 +124,6 @@ export const ActionBar = () => {
         }
         onClick={onOpenWorkoutEditorModal}
       />
-      {colorMode === 'light' ? (
-        <ActionBarItem
-          text="Enable darkmode"
-          icon={<Icon as={Moon} />}
-          onClick={() => setColorMode('dark')}
-        />
-      ) : (
-        <ActionBarItem
-          text="Enable lightmode"
-          icon={<Icon as={Sun} />}
-          onClick={() => setColorMode('light')}
-        />
-      )}
     </Stack>
   );
 };
