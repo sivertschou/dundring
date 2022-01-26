@@ -48,6 +48,8 @@ const lapToTCX = (lap: Lap) => {
   const filtererdDataPoints = lap.dataPoints.filter(
     (data) => data.heartRate || data.power
   );
+
+  if (filtererdDataPoints.length === 0) return '';
   return [
     `      <Lap StartTime="${filtererdDataPoints[0].timeStamp.toISOString()}">`,
     `        <Track>`,
