@@ -1,5 +1,9 @@
 import { Button } from '@chakra-ui/button';
-import { FormControl, FormLabel } from '@chakra-ui/form-control';
+import {
+  FormControl,
+  FormHelperText,
+  FormLabel,
+} from '@chakra-ui/form-control';
 import { Input, InputGroup, InputRightAddon } from '@chakra-ui/input';
 import { Grid, HStack, Stack, Text } from '@chakra-ui/layout';
 import * as React from 'react';
@@ -196,6 +200,44 @@ export const WorkoutEditor = ({
       >
         Add part
       </Button>
+
+      <Text fontWeight="bold">
+        Total duration {secondsToHoursMinutesAndSecondsString(totalDuration)}
+      </Text>
+      <FormControl>
+        <HStack>
+          {canSaveRemotely ? (
+            <Button
+              onClick={() => {
+                saveWorkout(token, { workout });
+                closeEditor();
+              }}
+              leftIcon={<Icon as={CloudUpload} />}
+            >
+              Save
+            </Button>
+          ) : null}
+          {canSaveLocally ? (
+            <Button
+              onClick={() => {
+                saveLocalWorkout(workout);
+                closeEditor();
+              }}
+              leftIcon={<Icon as={Hdd} />}
+            >
+              Save locally
+            </Button>
+          ) : null}
+          <Button onClick={closeEditor}>Cancel</Button>
+        </HStack>
+        {!user.loggedIn ? (
+          <FormHelperText>
+            You can create an account to store your workouts remotely, making
+            them accessible from any browser you use.
+          </FormHelperText>
+        ) : null}
+      </FormControl>
+
       <Table variant="simple">
         <Thead>
           <Tr>
@@ -238,32 +280,6 @@ export const WorkoutEditor = ({
           </Tr>
         </Tfoot>
       </Table>
-
-      <HStack>
-        {canSaveRemotely ? (
-          <Button
-            onClick={() => {
-              saveWorkout(token, { workout });
-              closeEditor();
-            }}
-            leftIcon={<Icon as={CloudUpload} />}
-          >
-            Save
-          </Button>
-        ) : null}
-        {canSaveLocally ? (
-          <Button
-            onClick={() => {
-              saveLocalWorkout(workout);
-              closeEditor();
-            }}
-            leftIcon={<Icon as={Hdd} />}
-          >
-            Save locally
-          </Button>
-        ) : null}
-        <Button onClick={closeEditor}>Cancel</Button>
-      </HStack>
     </Stack>
   );
 };

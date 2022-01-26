@@ -12,7 +12,7 @@ export const useHeartRateMonitorMock = (): HeartRateMonitor => {
     const interval = setInterval(() => {
       if (isConnected) {
         setHeartRate((prev) =>
-          randomIntFromIntervalBasedOnPrev(50, 200, prev, 20)
+          randomIntFromIntervalBasedOnPrev(130, 150, prev, 5)
         );
       }
     }, 1000);
