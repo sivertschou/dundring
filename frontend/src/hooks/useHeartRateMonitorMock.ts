@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { useLogs } from '../context/LogContext';
 import { randomIntFromIntervalBasedOnPrev } from '../utils';
-import { HeartRateMonitor } from './useHeartRateMonitorInterface';
+import { HeartRateMonitorInterface } from './useHeartRateMonitorInterface';
 
-export const useHeartRateMonitorMock = (): HeartRateMonitor => {
+export const useHeartRateMonitorMock = (): HeartRateMonitorInterface => {
   const [heartRate, setHeartRate] = React.useState(0);
   const [isConnected, setIsConnected] = React.useState(false);
   const { logEvent } = useLogs();
@@ -29,6 +29,7 @@ export const useHeartRateMonitorMock = (): HeartRateMonitor => {
       logEvent('[mock] heart rate monitor disconnected');
     },
     isConnected,
+    status: isConnected ? 'connected' : 'not_connected',
     heartRate: isConnected ? heartRate : 0,
   };
 };

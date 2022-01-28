@@ -39,6 +39,7 @@ export const ActionBar = () => {
 
   const {
     isConnected: hrIsConnected,
+    status: hrStatus,
     disconnect: disconnectHR,
     requestPermission: connectHR,
   } = useHeartRateMonitor();
@@ -93,8 +94,10 @@ export const ActionBar = () => {
       ) : (
         <ActionBarItem
           text="Connect HR"
+          isLoading={hrStatus === 'connecting'}
           icon={<Icon as={Heart} mt="1" />}
           onClick={connectHR}
+          iconColor={hrStatus === 'error' ? 'red.500' : undefined}
         />
       )}
       {smartTrainerIsConnected ? (
