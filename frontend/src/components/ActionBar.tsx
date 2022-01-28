@@ -45,6 +45,7 @@ export const ActionBar = () => {
 
   const {
     isConnected: smartTrainerIsConnected,
+    status: smartTrainerStatus,
     disconnect: disconnectSmartTrainer,
     requestPermission: connectSmartTrainer,
   } = useSmartTrainer();
@@ -106,8 +107,10 @@ export const ActionBar = () => {
       ) : (
         <ActionBarItem
           text="Connect smart trainer"
+          isLoading={smartTrainerStatus === 'connecting'}
           icon={<Icon as={LightningCharge} />}
           onClick={connectSmartTrainer}
+          iconColor={smartTrainerStatus === 'error' ? 'red.500' : undefined}
         />
       )}
       <ActionBarItem

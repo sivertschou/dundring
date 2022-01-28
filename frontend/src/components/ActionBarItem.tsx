@@ -7,11 +7,26 @@ interface Props {
   icon: React.ReactElement;
   onClick: () => void;
   iconColor?: string;
+  isLoading?: boolean;
 }
 
-export const ActionBarItem = ({ text, icon, onClick, iconColor }: Props) => {
+export const ActionBarItem = ({
+  text,
+  icon,
+  onClick,
+  iconColor,
+  isLoading = false,
+}: Props) => {
   const [hover, setHover] = React.useState(false);
   const color = iconColor ? { color: iconColor } : {};
+
+  React.useEffect(() => {
+    /* The onMouseLeave was not triggered when isLoading
+     * got enabled/the button got disabled. */
+
+    setHover(false);
+  }, [isLoading]);
+
   return (
     <HStack spacing="0">
       <Center overflow="hidden" paddingRight="2">
@@ -27,6 +42,7 @@ export const ActionBarItem = ({ text, icon, onClick, iconColor }: Props) => {
       </Center>
 
       <IconButton
+        isLoading={isLoading}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
         onClick={onClick}

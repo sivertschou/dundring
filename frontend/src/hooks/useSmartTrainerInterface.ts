@@ -1,16 +1,68 @@
+import { useToast } from '@chakra-ui/toast';
 import * as React from 'react';
 import { useLogs } from '../context/LogContext';
 
-export interface SmartTrainer {
+export interface SmartTrainerInterface {
   requestPermission: () => void;
   power: number | null;
   cadence: number | null;
   speed: number | null;
   isConnected: boolean;
+  status: 'not_connected' | 'connecting' | 'connected' | 'error';
   disconnect: () => void;
   setResistance: (resistance: number) => void;
   currentResistance: number;
 }
+
+interface SetFitnessMachineCharacteristicsAction {
+  type: 'set_fitness_machine_characteristics';
+  device: BluetoothDevice;
+  fitnessMachineControlPointCharacteristic: BluetoothRemoteGATTCharacteristic;
+  indoorBikeDataCharacteristic: BluetoothRemoteGATTCharacteristic;
+}
+
+interface SetCyclingPowerCharacteristicsAction {
+  type: 'set_cycling_power_characteristics';
+  device: BluetoothDevice;
+  cyclingPowerMeasurementCharacteristic: BluetoothRemoteGATTCharacteristic;
+}
+
+interface SetConnectingAction {
+  type: 'set_connecting';
+}
+
+interface SetErrorAction {
+  type: 'set_error';
+  errorMessage: string;
+}
+
+interface ResetAction {
+  type: 'reset';
+}
+type Action =
+  | SetFitnessMachineCharacteristicsAction
+  | SetCyclingPowerCharacteristicsAction
+  | SetConnectingAction
+  | SetErrorAction
+  | ResetAction;
+
+interface FitnessMachineService {
+  type: 'fitness_machine';
+  fitnessMachineControlPointCharacteristic: BluetoothRemoteGATTCharacteristic;
+  indoorBikeDataCharacteristic: BluetoothRemoteGATTCharacteristic;
+}
+interface CyclingPowerService {
+  type: 'cycling_power';
+  cyclingPowerMeasurementCharacteristic: BluetoothRemoteGATTCharacteristic;
+}
+
+type Service = FitnessMachineService | CyclingPowerService;
+
+type SmartTrainer =
+  | { status: 'not_connected' }
+  | { status: 'connecting' }
+  | { status: 'error'; errorMessage: string }
+  | { status: 'connected'; device: BluetoothDevice; service: Service };
 
 interface SmartTrainerData {
   power: number | null;
@@ -18,23 +70,62 @@ interface SmartTrainerData {
   speed: number | null;
 }
 /* Information about the Bluetooth services: https://www.bluetooth.com/specifications/specs/fitness-machine-service-1-0/ */
-export const useSmartTrainerInterface = (): SmartTrainer => {
+export const useSmartTrainerInterface = (): SmartTrainerInterface => {
   const [data, setData] = React.useState<SmartTrainerData>({
     power: 0,
     cadence: 0,
     speed: 0,
   });
-  const [isConnected, setIsConnected] = React.useState(false);
-  const [device, setDevice] = React.useState<BluetoothDevice | null>(null);
   const { logEvent } = useLogs();
   const [currentResistance, setCurrentResistance] = React.useState(0);
+  const toast = useToast();
 
-  const [fitnessMachineCharacteristic, setFitnessMachineCharacteristic] =
-    React.useState<BluetoothRemoteGATTCharacteristic | null>(null);
+  const [smartTrainer, dispatch] = React.useReducer(
+    (_current: SmartTrainer, action: Action): SmartTrainer => {
+      switch (action.type) {
+        case 'reset': {
+          return { status: 'not_connected' };
+        }
+        case 'set_connecting': {
+          return { status: 'connecting' };
+        }
+        case 'set_error': {
+          return { status: 'error', errorMessage: action.errorMessage };
+        }
+        case 'set_cycling_power_characteristics': {
+          return {
+            status: 'connected',
+            device: action.device,
+            service: {
+              type: 'cycling_power',
+              cyclingPowerMeasurementCharacteristic:
+                action.cyclingPowerMeasurementCharacteristic,
+            },
+          };
+        }
+        case 'set_fitness_machine_characteristics': {
+          return {
+            status: 'connected',
+            device: action.device,
+            service: {
+              type: 'fitness_machine',
+              fitnessMachineControlPointCharacteristic:
+                action.fitnessMachineControlPointCharacteristic,
+              indoorBikeDataCharacteristic: action.indoorBikeDataCharacteristic,
+            },
+          };
+        }
+      }
+    },
+    { status: 'not_connected' }
+  );
 
-  const [indoorBikeDataCharacteristic, setIndoorBikeDataCharacteristic] =
-    React.useState<BluetoothRemoteGATTCharacteristic | null>(null);
+  const handleCyclingPowerUpdate = (event: any) => {
+    const data = event.target.value as DataView;
 
+    const power = data.getUint8(2) + (data.getUint8(3) << 8);
+    setData({ power, cadence: null, speed: null });
+  };
   const handleIndoorBikeDataUpdate = (event: any) => {
     const data = event.target.value as DataView;
 
@@ -49,61 +140,158 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
   };
 
   const requestPermission = async () => {
-    const device = await navigator.bluetooth.requestDevice({
-      filters: [{ services: ['fitness_machine'] }], // Fitness machine 0x1826
-    });
+    dispatch({ type: 'set_connecting' });
 
-    setDevice(device);
+    const device = await navigator.bluetooth
+      .requestDevice({
+        filters: [{ services: ['cycling_power'] }],
+        optionalServices: ['fitness_machine'],
+      })
+      .catch((_e) => {
+        dispatch({ type: 'reset' });
+        return null;
+      });
 
-    const server = await device?.gatt?.connect();
+    if (!device) return;
 
-    const fitnessMachineService = await server?.getPrimaryService(
-      'fitness_machine'
-    );
-    const fitnessMachineCharacteristic =
-      await fitnessMachineService?.getCharacteristic(
-        'fitness_machine_control_point'
+    const server = await device.gatt?.connect();
+    try {
+      const fitnessMachineService = await server?.getPrimaryService(
+        'fitness_machine'
       );
-    await fitnessMachineCharacteristic?.writeValue(new Uint8Array([0x01]));
 
-    await fitnessMachineCharacteristic?.writeValue(new Uint8Array([0x01]));
+      if (!fitnessMachineService) {
+        return dispatch({
+          type: 'set_error',
+          errorMessage: 'Could not connect to fitness machine service.',
+        });
+      }
+      const fitnessMachineControlPointCharacteristic =
+        await fitnessMachineService?.getCharacteristic(
+          'fitness_machine_control_point'
+        );
 
-    fitnessMachineCharacteristic &&
-      setFitnessMachineCharacteristic(fitnessMachineCharacteristic);
+      if (!fitnessMachineControlPointCharacteristic) {
+        return dispatch({
+          type: 'set_error',
+          errorMessage:
+            'Could not connect to fitness machine control point characteristic.',
+        });
+      }
 
-    const indoorBikeDataCharacteristic =
-      await fitnessMachineService?.getCharacteristic('indoor_bike_data');
+      await fitnessMachineControlPointCharacteristic?.writeValue(
+        new Uint8Array([0x01])
+      );
 
-    await indoorBikeDataCharacteristic?.startNotifications();
-    indoorBikeDataCharacteristic?.addEventListener(
-      'characteristicvaluechanged',
-      handleIndoorBikeDataUpdate
-    );
-    indoorBikeDataCharacteristic &&
-      setIndoorBikeDataCharacteristic(indoorBikeDataCharacteristic);
+      const indoorBikeDataCharacteristic =
+        await fitnessMachineService?.getCharacteristic('indoor_bike_data');
 
-    setIsConnected(true);
-    logEvent('smart trainer connected');
-  };
-  const disconnect = async () => {
-    if (indoorBikeDataCharacteristic) {
-      await indoorBikeDataCharacteristic.stopNotifications();
-      console.log('> Indoor bike data notifications stopped');
-      indoorBikeDataCharacteristic.removeEventListener(
+      if (!indoorBikeDataCharacteristic) {
+        return dispatch({
+          type: 'set_error',
+          errorMessage: 'Could not connect to indoor bike data characteristic.',
+        });
+      }
+
+      await indoorBikeDataCharacteristic?.startNotifications();
+      indoorBikeDataCharacteristic?.addEventListener(
         'characteristicvaluechanged',
         handleIndoorBikeDataUpdate
       );
-      setIndoorBikeDataCharacteristic(null);
+
+      dispatch({
+        type: 'set_fitness_machine_characteristics',
+        device,
+        indoorBikeDataCharacteristic,
+        fitnessMachineControlPointCharacteristic,
+      });
+    } catch (e) {
+      logEvent(
+        'Could not connect to device as Fitness Machine. Trying to connect to cycling power.'
+      );
+      const cyclingPowerService = await server?.getPrimaryService(
+        'cycling_power'
+      );
+      if (!cyclingPowerService) {
+        return dispatch({
+          type: 'set_error',
+          errorMessage: 'Could not connect to cycling power service.',
+        });
+      }
+
+      const cyclingPowerMeasurementCharacteristic =
+        await cyclingPowerService.getCharacteristic(
+          'cycling_power_measurement'
+        );
+
+      if (!cyclingPowerMeasurementCharacteristic) {
+        return dispatch({
+          type: 'set_error',
+          errorMessage:
+            'Could not connect to cycling power measurement characteristic.',
+        });
+      }
+
+      await cyclingPowerMeasurementCharacteristic?.startNotifications();
+      cyclingPowerMeasurementCharacteristic?.addEventListener(
+        'characteristicvaluechanged',
+        handleCyclingPowerUpdate
+      );
+
+      dispatch({
+        type: 'set_cycling_power_characteristics',
+        device,
+        cyclingPowerMeasurementCharacteristic,
+      });
+
+      toast({
+        title:
+          'Could not connect to your smart trainer as a fitness machine. ' +
+          'This means that Dundring will only be able to read the power ' +
+          'data, but not set resistance. If you have a smart trainer ' +
+          'that should be capable of this, please ensure that you have ' +
+          'the latest firmware update, and try again. If that does not ' +
+          'work, please contact us at our Slack workspace.',
+        isClosable: true,
+        duration: 20000,
+        status: 'warning',
+      });
     }
-    device?.gatt?.disconnect();
-    setDevice(null);
-    setIsConnected(false);
+    logEvent('smart trainer connected');
+  };
+
+  const disconnect = async () => {
+    if (smartTrainer.status === 'connected') {
+      switch (smartTrainer.service.type) {
+        case 'fitness_machine': {
+          await smartTrainer.service.indoorBikeDataCharacteristic.stopNotifications();
+          smartTrainer.service.indoorBikeDataCharacteristic.removeEventListener(
+            'characteristicvaluechanged',
+            handleIndoorBikeDataUpdate
+          );
+          break;
+        }
+        case 'cycling_power': {
+          await smartTrainer.service.cyclingPowerMeasurementCharacteristic.stopNotifications();
+          smartTrainer.service.cyclingPowerMeasurementCharacteristic.removeEventListener(
+            'characteristicvaluechanged',
+            handleCyclingPowerUpdate
+          );
+          break;
+        }
+      }
+      smartTrainer.device.gatt?.disconnect();
+      dispatch({ type: 'reset' });
+    }
+
     logEvent('smart trainer disconnected');
   };
 
+  const isConnected = smartTrainer.status === 'connected';
   return {
     requestPermission,
     disconnect,
+    status: smartTrainer.status,
     isConnected,
     power: isConnected ? data.power : null,
     cadence: isConnected ? data.cadence : null,
@@ -117,39 +305,45 @@ export const useSmartTrainerInterface = (): SmartTrainer => {
           );
           return;
         }
-        try {
-          if (fitnessMachineCharacteristic) {
-            if (!resistance) {
-              // Reset
-              await fitnessMachineCharacteristic.writeValue(
-                new Uint8Array([0x01])
-              );
-              await fitnessMachineCharacteristic.writeValue(
-                new Uint8Array([0x05, 0])
-              );
-              logEvent(`set resistance: 0W`);
-              setCurrentResistance(0);
-            } else {
-              const resBuf = new Uint8Array(
-                new Uint16Array([resistance]).buffer
-              );
-              const cmdBuf = new Uint8Array([0x05]);
-              const combined = new Uint8Array(cmdBuf.length + resBuf.length);
-              combined.set(cmdBuf);
-              combined.set(resBuf, cmdBuf.length);
-              await fitnessMachineCharacteristic.writeValue(combined);
-              logEvent(`set resistance: ${resistance}W`);
-              setCurrentResistance(resistance);
+        if (smartTrainer.service.type === 'fitness_machine') {
+          try {
+            const fitnessMachineControlPointCharacteristic =
+              smartTrainer.service.fitnessMachineControlPointCharacteristic;
+            if (fitnessMachineControlPointCharacteristic) {
+              if (!resistance) {
+                // Reset
+                await fitnessMachineControlPointCharacteristic.writeValue(
+                  new Uint8Array([0x01])
+                );
+                await fitnessMachineControlPointCharacteristic.writeValue(
+                  new Uint8Array([0x05, 0])
+                );
+                logEvent(`set resistance: 0W`);
+                setCurrentResistance(0);
+              } else {
+                const resBuf = new Uint8Array(
+                  new Uint16Array([resistance]).buffer
+                );
+                const cmdBuf = new Uint8Array([0x05]);
+                const combined = new Uint8Array(cmdBuf.length + resBuf.length);
+                combined.set(cmdBuf);
+                combined.set(resBuf, cmdBuf.length);
+                await fitnessMachineControlPointCharacteristic.writeValue(
+                  combined
+                );
+                logEvent(`set resistance: ${resistance}W`);
+                setCurrentResistance(resistance);
+              }
             }
-          }
-        } catch (error) {
-          if (error) {
-            console.error(`Tried setting resistance, but got error:`, error);
-            logEvent(`failed to set resistance: ${resistance}W`);
+          } catch (error) {
+            if (error) {
+              console.error(`Tried setting resistance, but got error:`, error);
+              logEvent(`failed to set resistance: ${resistance}W`);
+            }
           }
         }
       },
-      [isConnected, logEvent, fitnessMachineCharacteristic]
+      [isConnected, logEvent, smartTrainer]
     ),
   };
 };
