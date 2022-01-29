@@ -150,6 +150,7 @@ export const useHeartRateMonitorInterface = (): HeartRateMonitorInterface => {
         handleHRUpdate
       );
       heartRateMonitor.device.gatt?.disconnect();
+      dispatch({ type: 'reset' });
     }
     logEvent('heart rate monitor disconnected');
   };
