@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { useLogs } from '../context/LogContext';
 import { randomIntFromIntervalBasedOnPrev } from '../utils';
-import { SmartTrainer } from './useSmartTrainerInterface';
+import { SmartTrainerInterface } from './useSmartTrainerInterface';
 
-export const useSmartTrainerMock = (): SmartTrainer => {
+export const useSmartTrainerMock = (): SmartTrainerInterface => {
   const [power, setPower] = React.useState(0);
   const [cadence, setCadence] = React.useState(0);
   const [isConnected, setIsConnected] = React.useState(false);
@@ -48,6 +48,7 @@ export const useSmartTrainerMock = (): SmartTrainer => {
       logEvent('[mock] smart trainer disconnected');
     },
     isConnected,
+    status: isConnected ? 'connected' : 'not_connected',
     power: isConnected ? power : 0,
     cadence: isConnected ? cadence : 0,
     speed: 0,

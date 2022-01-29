@@ -1,11 +1,13 @@
 import * as React from 'react';
 import {
-  HeartRateMonitor,
+  HeartRateMonitorInterface,
   useHeartRateMonitorInterface,
 } from '../hooks/useHeartRateMonitorInterface';
 import { useHeartRateMonitorMock } from '../hooks/useHeartRateMonitorMock';
 
-const HeartRateContext = React.createContext<HeartRateMonitor | null>(null);
+const HeartRateContext = React.createContext<HeartRateMonitorInterface | null>(
+  null
+);
 
 export const HeartRateRealContextProvider = ({
   children,

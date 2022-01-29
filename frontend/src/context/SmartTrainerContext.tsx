@@ -1,11 +1,13 @@
 import * as React from 'react';
 import {
-  SmartTrainer,
+  SmartTrainerInterface,
   useSmartTrainerInterface,
 } from '../hooks/useSmartTrainerInterface';
 import { useSmartTrainerMock } from '../hooks/useSmartTrainerMock';
 
-const SmartTrainerContext = React.createContext<SmartTrainer | null>(null);
+const SmartTrainerContext = React.createContext<SmartTrainerInterface | null>(
+  null
+);
 
 export const SmartTrainerRealContextProvider = ({
   children,
