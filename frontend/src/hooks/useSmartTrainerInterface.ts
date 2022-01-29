@@ -72,9 +72,9 @@ interface SmartTrainerData {
 /* Information about the Bluetooth services: https://www.bluetooth.com/specifications/specs/fitness-machine-service-1-0/ */
 export const useSmartTrainerInterface = (): SmartTrainerInterface => {
   const [data, setData] = React.useState<SmartTrainerData>({
-    power: 0,
-    cadence: 0,
-    speed: 0,
+    power: null,
+    cadence: null,
+    speed: null,
   });
   const { logEvent } = useLogs();
   const [currentResistance, setCurrentResistance] = React.useState(0);
