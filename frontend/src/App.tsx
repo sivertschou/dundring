@@ -10,6 +10,9 @@ export const App = () => {
           <Route path="group" element={<MainPage />}>
             <Route path=":groupId" element={<MainPage />} />
           </Route>
+          <Route path="profile" element={<MainPage />} />
+          <Route path="logs" element={<MainPage />} />
+          <Route path="login" element={<MainPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

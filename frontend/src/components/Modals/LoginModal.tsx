@@ -25,22 +25,28 @@ import * as utils from '../../utils';
 import { useLoginModal } from '../../context/ModalContext';
 import sha256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
+import { useNavigate } from 'react-router-dom';
 
 export const hash = (message: string) =>
   Base64.stringify(sha256('yehaw' + message));
 
 export const LoginModal = () => {
-  const { isOpen, onClose } = useLoginModal();
+  const { isOpen } = useLoginModal();
   const [username, setUsername] = React.useState('');
   const [mail, setMail] = React.useState('');
   const [mailIsTouched, setMailIsTouched] = React.useState(false);
   const [password, setPassword] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
+  const navigate = useNavigate();
 
   const [creatingUser, setCreatingUser] = React.useState(false);
   const { setUser } = useUser();
   const toast = useToast();
+
+  const onClose = () => {
+    navigate('/');
+  };
 
   const illegalCharacters = utils.removeDuplicateWords(
     utils.getIllegalUsernameCharacters(username)

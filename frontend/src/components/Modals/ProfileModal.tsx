@@ -19,9 +19,10 @@ import * as utils from '../../utils';
 import * as api from '../../api';
 import { useToast } from '@chakra-ui/toast';
 import { useProfileModal } from '../../context/ModalContext';
+import { useNavigate } from 'react-router-dom';
 
 export const ProfileModal = () => {
-  const { isOpen, onClose } = useProfileModal();
+  const { isOpen } = useProfileModal();
   const { user, setUser } = useUser();
   const [ftpInput, setFtpInput] = React.useState(
     '' + (user.loggedIn ? user.ftp : 250)
@@ -29,6 +30,10 @@ export const ProfileModal = () => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const toast = useToast();
+  const navigate = useNavigate();
+  const onClose = () => {
+    navigate('/');
+  };
 
   if (!user.loggedIn) return null;
 
