@@ -63,7 +63,6 @@ const zap: Waypoint[] = [
 ];
 
 const lerp = (from: number, to: number, amount: number) => {
-  console.log('lerp from', from, 'to', to, 'amount:', amount);
   return from + (to - from) * Math.max(Math.min(1, amount), 0);
 };
 
