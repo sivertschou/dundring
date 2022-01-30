@@ -16,11 +16,6 @@ import { useNavigate } from 'react-router-dom';
 import { hrColor, powerColor } from '../colors';
 import { useActiveWorkout } from '../context/ActiveWorkoutContext';
 import { useHeartRateMonitor } from '../context/HeartRateContext';
-import {
-  useLoginModal,
-  useProfileModal,
-  useWorkoutEditorModal,
-} from '../context/ModalContext';
 import { useSmartTrainer } from '../context/SmartTrainerContext';
 import { useUser } from '../context/UserContext';
 import { useWebsocket } from '../context/WebsocketContext';
@@ -31,9 +26,6 @@ export const ActionBar = () => {
   const { user } = useUser();
   const { activeGroupSession } = useWebsocket();
   const { activeWorkout } = useActiveWorkout();
-  const { onOpen: onOpenWorkoutEditorModal } = useWorkoutEditorModal();
-  const { onOpen: onOpenLoginModal } = useLoginModal();
-  const { onOpen: onOpenProfileModal } = useProfileModal();
   const linkColor = useLinkColor();
   const navigate = useNavigate();
 
@@ -64,7 +56,7 @@ export const ActionBar = () => {
         <Button
           variant="link"
           fontWeight="normal"
-          onClick={onOpenProfileModal}
+          onClick={() => navigate('/profile')}
           pointerEvents="auto"
           color={linkColor}
         >
@@ -76,7 +68,7 @@ export const ActionBar = () => {
         <ActionBarItem
           text="Login"
           icon={<Icon as={Person} />}
-          onClick={onOpenLoginModal}
+          onClick={() => navigate('/login')}
         />
       )}
       {activeGroupSession ? (
@@ -128,7 +120,7 @@ export const ActionBar = () => {
         icon={
           <Icon as={activeWorkout.workout ? BarChartLineFill : BarChartLine} />
         }
-        onClick={onOpenWorkoutEditorModal}
+        onClick={() => navigate('/workout')}
       />
     </Stack>
   );
