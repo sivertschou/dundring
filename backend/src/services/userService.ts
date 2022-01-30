@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import { Workout } from '../../../common/types/workoutTypes';
 import * as validationService from './validationService';
 import * as slackService from './slackService';
+import { generateRandomString } from './groupSessionService';
 
 const dataPath = process.env.DATA_PATH || 'data';
 const usersPath = `${dataPath}/users.json`;
@@ -71,39 +72,64 @@ export const importWorkout = (
   return { status: 'SUCCESS', data: workout };
 };
 
+const getNewWorkoutId = (workouts: Workout[]) => {
+  const defaultLength = 5;
+  const numRetriesPerLength = 20;
+  const numLengthIncreases = 5;
+
+  for (let i = 0; i < numLengthIncreases; i++) {
+    for (let j = 0; j < numRetriesPerLength; j++) {
+      const id = generateRandomString(defaultLength + i);
+      if (!workouts.find((w) => w.id === id)) {
+        return id;
+      }
+    }
+  }
+
+  return null;
+};
+
 const updateWorkoutOrAppendIfNotFound = (
   workouts: Workout[],
   workout: Workout
-) => {
+): Status<Workout[], 'Could not generate available id'> => {
   const workoutExists = workouts.find((w) => w.id === workout.id);
   if (workoutExists) {
-    return [...workouts.map((w) => (w.id === workout.id ? workout : w))];
+    return {
+      status: 'SUCCESS',
+      data: [...workouts.map((w) => (w.id === workout.id ? workout : w))],
+    };
   } else {
-    const newId = `${workouts.length + 1}`;
-    return [...workouts, { ...workout, id: newId }];
+    const newId = getNewWorkoutId(workouts);
+    if (newId === null)
+      return { status: 'ERROR', type: 'Could not generate available id' };
+
+    return {
+      status: 'SUCCESS',
+      data: [...workouts, { ...workout, id: newId }],
+    };
   }
 };
 
 export const saveWorkout = (
   username: string,
   workout: Workout
-): Status<Workout[], 'User not found' | 'File not found'> => {
+): Status<
+  Workout[],
+  'User not found' | 'File not found' | 'Could not generate available id'
+> => {
   const user = getUser(username);
   if (!user) {
     return { status: 'ERROR', type: 'User not found' };
   }
   const workouts = user.workouts;
-  const newId = `${workouts.length + 1}`;
+  const updatedWorkouts = updateWorkoutOrAppendIfNotFound(workouts, workout);
+  if (updatedWorkouts.status === 'ERROR') return updatedWorkouts;
 
-  const ret = workout.id
-    ? setUser({
-        ...user,
-        workouts: updateWorkoutOrAppendIfNotFound(workouts, workout),
-      })
-    : setUser({
-        ...user,
-        workouts: [...workouts, { ...workout, id: newId }],
-      });
+  const ret = setUser({
+    ...user,
+    workouts: updatedWorkouts.data,
+  });
 
   if (ret.status === 'ERROR') {
     return ret;
