@@ -8,14 +8,16 @@ import {
 import { useLogs } from '../../context/LogContext';
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/table';
 import { useLogModal } from '../../context/ModalContext';
+import { useNavigate } from 'react-router-dom';
 import { timestampToFormattedHHMMSS } from '../../utils/time';
 
 export const LogModal = () => {
-  const { isOpen, onClose } = useLogModal();
+  const { isOpen } = useLogModal();
   const { loggedEvents } = useLogs();
+  const navigate = useNavigate();
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="2xl">
+    <Modal isOpen={isOpen} onClose={() => navigate('/')} size="2xl">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Logs</ModalHeader>

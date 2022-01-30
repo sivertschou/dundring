@@ -25,22 +25,27 @@ import {
   Button,
   HStack,
 } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 
 export interface WorkoutToEdit extends Workout {
   type: 'local' | 'remote' | 'new';
   previewFtp: number;
 }
 export const WorkoutEditorModal = () => {
-  const { isOpen, onClose } = useWorkoutEditorModal();
+  const { isOpen } = useWorkoutEditorModal();
   const { refetchData: refetchUserData } = useUser();
   const [workoutToEdit, setWorkoutToEdit] =
     React.useState<WorkoutToEdit | null>(null);
-
   const { setActiveWorkout } = useActiveWorkout();
   const [isWorkoutUnsaved, setIsWorkoutUnsaved] = React.useState(false);
   const [showDiscardDialog, setShowDiscardDialog] = React.useState(false);
   const cancelRef = React.useRef<HTMLButtonElement>(null);
 
+  const navigate = useNavigate();
+
+  const onClose = () => {
+    navigate('/');
+  };
   return (
     <Modal
       isOpen={isOpen}
