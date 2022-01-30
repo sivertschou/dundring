@@ -176,8 +176,9 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
           }
 
           const speed = 8.34; // m/s
-          // const speed = 100; // m/s
-          const deltaDistance = (speed * action.delta) / 1000;
+          const deltaDistance = dataPoint.power
+            ? (speed * action.delta) / 1000
+            : 0;
           const totalDistance = currentData.distance + deltaDistance;
           const coordinates = distanceToCoordinates(zap, totalDistance);
           const dataPointWithPosition: DataPoint = {
