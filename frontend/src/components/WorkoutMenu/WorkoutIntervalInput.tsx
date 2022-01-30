@@ -13,8 +13,8 @@ import {
   parseInputAsInt,
   parseWattInput,
   wattFromFtpPercent,
-} from '../../utils';
-import { findZone } from '../../zones';
+} from '../../utils/general';
+import { findZone } from '../../utils/zones';
 
 interface Data {
   seconds: number;

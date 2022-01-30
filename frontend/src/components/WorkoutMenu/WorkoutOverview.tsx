@@ -12,7 +12,7 @@ import { PencilSquare } from 'react-bootstrap-icons';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 import { useUser } from '../../context/UserContext';
 import { Workout } from '../../types';
-import { parseInputAsInt } from '../../utils';
+import { parseInputAsInt } from '../../utils/general';
 import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
 import { ImportWorkout } from './ImportWorkout';
 import { WorkoutListItem } from './WorkoutListItem';

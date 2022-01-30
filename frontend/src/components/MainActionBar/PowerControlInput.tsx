@@ -16,7 +16,7 @@ import {
   parseFtpPercentInput,
   parseWattInput,
   wattFromFtpPercent,
-} from '../../utils';
+} from '../../utils/general';
 
 interface PowerInputData {
   power: number | null;

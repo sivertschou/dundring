@@ -7,9 +7,9 @@ import {
 } from '@chakra-ui/modal';
 import { useLogs } from '../../context/LogContext';
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/table';
-import { timestampToFormattedHHMMSS } from '../../utils';
 import { useLogModal } from '../../context/ModalContext';
 import { useNavigate } from 'react-router-dom';
+import { timestampToFormattedHHMMSS } from '../../utils/time';
 
 export const LogModal = () => {
   const { isOpen } = useLogModal();

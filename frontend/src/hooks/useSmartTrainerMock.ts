@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useLogs } from '../context/LogContext';
-import { randomIntFromIntervalBasedOnPrev } from '../utils';
+import { randomIntFromIntervalBasedOnPrev } from '../utils/general';
 import { SmartTrainerInterface } from './useSmartTrainerInterface';
 
 export const useSmartTrainerMock = (): SmartTrainerInterface => {

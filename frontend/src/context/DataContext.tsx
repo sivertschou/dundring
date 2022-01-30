@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { DataPoint, Lap } from '../types';
+import { DataPoint, Lap, Waypoint } from '../types';
+import { distanceToCoordinates } from '../utils/gps';
 import { useActiveWorkout } from './ActiveWorkoutContext';
 import { useHeartRateMonitor } from './HeartRateContext';
 import { useLogs } from './LogContext';
@@ -11,6 +12,7 @@ const DataContext = React.createContext<{
   hasValidData: boolean;
   timeElapsed: number;
   startingTime: Date | null;
+  distance: number;
   start: () => void;
   stop: () => void;
   addLap: () => void;
@@ -26,6 +28,7 @@ interface Data {
   laps: Lap[];
   graphData: DataPoint[];
   timeElapsed: number;
+  distance: number;
   startingTime: Date | null;
   state: 'not_started' | 'running' | 'paused';
 }
@@ -33,6 +36,7 @@ interface Data {
 interface AddData {
   type: 'ADD_DATA';
   dataPoint: DataPoint;
+  delta: number;
 }
 
 interface AddLap {
@@ -50,6 +54,15 @@ interface Start {
 }
 type Action = AddData | AddLap | IncreaseElapsedTime | Start | Pause;
 
+const zap: Waypoint[] = [
+  { lat: 59.90347154, lon: 10.6590337, distance: 2400 },
+  { lat: 59.88396124, lon: 10.64085992, distance: 600 },
+  { lat: 59.88389387, lon: 10.65213867, distance: 2000 },
+  { lat: 59.86610453, lon: 10.64629091, distance: 2400 },
+  { lat: 59.88561483, lon: 10.6644647, distance: 600 },
+  { lat: 59.8856822, lon: 10.65318595, distance: 2000 },
+];
+
 export const DataContextProvider = ({ clockWorker, children }: Props) => {
   const {
     syncResistance,
@@ -65,9 +78,10 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         case 'START': {
           if (currentData.state === 'not_started') {
             return {
-              laps: [{ dataPoints: [] }],
+              laps: [{ dataPoints: [], distance: 0 }],
               graphData: [],
               timeElapsed: 0,
+              distance: 0,
               startingTime: new Date(),
               state: 'running',
             };
@@ -86,26 +100,48 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         case 'ADD_LAP': {
           return {
             ...currentData,
-            laps: [...currentData.laps, { dataPoints: [] }],
+            laps: [...currentData.laps, { dataPoints: [], distance: 0 }],
           };
         }
         case 'ADD_DATA': {
           const laps = currentData.laps;
           const { dataPoint } = action;
 
-          if (currentData.state !== 'running')
+          if (currentData.state !== 'running') {
             return {
               ...currentData,
               graphData: [...currentData.graphData, dataPoint],
             };
+          }
 
+          const speed = 8.34; // m/s
+          const deltaDistance = dataPoint.power
+            ? (speed * action.delta) / 1000
+            : 0;
+          const totalDistance = currentData.distance + deltaDistance;
+          const coordinates = distanceToCoordinates(zap, totalDistance);
+          const dataPointWithPosition: DataPoint = {
+            ...dataPoint,
+            ...(coordinates
+              ? {
+                  position: {
+                    lat: coordinates.lat,
+                    lon: coordinates.lon,
+                    distance: totalDistance,
+                  },
+                }
+              : undefined),
+          };
+          const currentLap = laps[laps.length - 1];
           return {
             ...currentData,
             graphData: [...currentData.graphData, dataPoint],
+            distance: currentData.distance + deltaDistance,
             laps: [
               ...laps.filter((_, i) => i !== laps.length - 1),
               {
-                dataPoints: [...laps[laps.length - 1].dataPoints, dataPoint],
+                dataPoints: [...currentLap.dataPoints, dataPointWithPosition],
+                distance: currentLap.distance + deltaDistance,
               },
             ],
           };
@@ -116,6 +152,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
       laps: [],
       graphData: [],
       timeElapsed: 0,
+      distance: 0,
       startingTime: null,
       state: 'not_started',
     }
@@ -161,7 +198,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
             ...powerToInclude,
             ...cadenceToInclude,
           };
-          dispatch({ type: 'ADD_DATA', dataPoint });
+          dispatch({ type: 'ADD_DATA', dataPoint, delta: data.delta });
           sendData(dataPoint);
         }
       }
@@ -223,6 +260,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         hasValidData,
         timeElapsed: data.timeElapsed,
         startingTime: data.startingTime,
+        distance: data.distance,
         start,
         stop,
         addLap: () => dispatch({ type: 'ADD_LAP' }),

@@ -15,7 +15,7 @@ import {
   FormLabel,
 } from '@chakra-ui/form-control';
 import { Input, InputGroup, InputRightAddon } from '@chakra-ui/input';
-import * as utils from '../../utils';
+import utils from '../../utils';
 import * as api from '../../api';
 import { useToast } from '@chakra-ui/toast';
 import { useProfileModal } from '../../context/ModalContext';
@@ -63,7 +63,7 @@ export const ProfileModal = () => {
 
   const inputIsValid = (input: string) =>
     input !== '' &&
-    utils.stringIsValidUnsignedInt(input) &&
+    utils.general.stringIsValidUnsignedInt(input) &&
     parseInt(input) !== 0;
 
   return (

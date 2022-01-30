@@ -12,7 +12,6 @@ import { templateColumns, WorkoutIntervalInput } from './WorkoutIntervalInput';
 import { DropResult } from 'react-beautiful-dnd';
 import { DraggableList } from './DraggableList';
 import { DraggableItem } from './DraggableItem';
-import { secondsToHoursMinutesAndSecondsString } from '../../utils';
 import { useUser } from '../../context/UserContext';
 import { saveWorkout } from '../../api';
 import { CloudUpload, Hdd } from 'react-bootstrap-icons';
@@ -28,8 +27,9 @@ import {
   Tooltip,
   Tr,
 } from '@chakra-ui/react';
-import { createZoneTableInfo } from '../../zones';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
+import { createZoneTableInfo } from '../../utils/zones';
+import { secondsToHoursMinutesAndSecondsString } from '../../utils/time';
 interface Props {
   workout: WorkoutToEdit;
   closeEditor: () => void;

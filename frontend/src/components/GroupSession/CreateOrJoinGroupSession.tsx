@@ -9,11 +9,11 @@ import {
   FormLabel,
 } from '@chakra-ui/form-control';
 import { Input } from '@chakra-ui/input';
+import { useParams } from 'react-router';
 import {
   getIllegalUsernameCharacters,
   removeDuplicateWords,
-} from '../../utils';
-import { useParams } from 'react-router';
+} from '../../utils/general';
 
 export const CreateOrJoinGroupSession = () => {
   const { groupId: groupIdParam } = useParams();

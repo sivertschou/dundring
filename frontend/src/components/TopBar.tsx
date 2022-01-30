@@ -1,23 +1,22 @@
-import * as React from 'react';
 import { Center, Grid, Stack, Text } from '@chakra-ui/layout';
 import { hrColor, powerColor } from '../colors';
 import { useSmartTrainer } from '../context/SmartTrainerContext';
 import { useHeartRateMonitor } from '../context/HeartRateContext';
 import { useColorModeValue } from '@chakra-ui/color-mode';
 import theme from '../theme';
-import { secondsToHoursMinutesAndSecondsString } from '../utils';
 import { useData } from '../context/DataContext';
 import {
   getRemainingTime,
   getTargetPower,
   useActiveWorkout,
 } from '../context/ActiveWorkoutContext';
+import { secondsToHoursMinutesAndSecondsString } from '../utils/time';
 
 export const TopBar = () => {
   const { power, cadence } = useSmartTrainer();
   const { heartRate } = useHeartRateMonitor();
   const { activeWorkout, activeFtp } = useActiveWorkout();
-  const { timeElapsed } = useData();
+  const { timeElapsed, distance } = useData();
   const remainingTime = getRemainingTime(activeWorkout);
   const targetPower = getTargetPower(activeWorkout, activeFtp);
 
@@ -53,6 +52,7 @@ export const TopBar = () => {
               </Center>
             </Stack>
             <Stack spacing="0">
+              <Text fontSize={secondaryFontSize}>{distance.toFixed(1)}m</Text>
               {remainingTime !== null ? (
                 <>
                   <Text fontSize={secondaryFontSize}>
@@ -72,6 +72,7 @@ export const TopBar = () => {
               {targetPower !== null ? (
                 <Text fontSize={secondaryFontSize}>@{targetPower}w</Text>
               ) : null}
+
               <Center>
                 <Text fontSize={mainFontSize}>{power || '0'}</Text>
                 <Text fontSize={unitFontSize}>w</Text>

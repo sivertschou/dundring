@@ -1,7 +1,7 @@
 import { Button, Icon, Tooltip } from '@chakra-ui/react';
 import { ArrowDown, ArrowUp } from 'react-bootstrap-icons';
 import { useSmartTrainer } from '../../context/SmartTrainerContext';
-import { wattFromFtpPercent } from '../../utils';
+import { wattFromFtpPercent } from '../../utils/general';
 
 interface Props {
   value: number;

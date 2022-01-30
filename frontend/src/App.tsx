@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { MainPage } from './pages/MainPage';
 import { Navigate, Route, Routes } from 'react-router-dom';
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ActiveWorkout, Workout } from '../types';
-import { wattFromFtpPercent } from '../utils';
+import { wattFromFtpPercent } from '../utils/general';
 import { useSmartTrainer } from './SmartTrainerContext';
 import { useUser } from './UserContext';
 

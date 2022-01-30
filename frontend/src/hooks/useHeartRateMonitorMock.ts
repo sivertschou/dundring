@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useLogs } from '../context/LogContext';
-import { randomIntFromIntervalBasedOnPrev } from '../utils';
+import { randomIntFromIntervalBasedOnPrev } from '../utils/general';
 import { HeartRateMonitorInterface } from './useHeartRateMonitorInterface';
 
 export const useHeartRateMonitorMock = (): HeartRateMonitorInterface => {
