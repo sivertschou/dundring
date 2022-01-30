@@ -52,7 +52,9 @@ export const TopBar = () => {
               </Center>
             </Stack>
             <Stack spacing="0">
-              <Text fontSize={secondaryFontSize}>{distance.toFixed(1)}m</Text>
+              <Text fontSize={secondaryFontSize}>
+                {(distance / 1000).toFixed(1)} km
+              </Text>
               {remainingTime !== null ? (
                 <>
                   <Text fontSize={secondaryFontSize}>
