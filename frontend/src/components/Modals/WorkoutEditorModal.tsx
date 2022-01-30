@@ -63,7 +63,10 @@ export const WorkoutEditorModal = () => {
                 variant="ghost"
                 aria-label="Back to overview"
                 mr="1"
-                onClick={() => setWorkoutToEdit(null)}
+                onClick={() => {
+                  navigate('/workout');
+                  setWorkoutToEdit(null);
+                }}
                 icon={<Icon as={ArrowLeft} />}
               />
               Edit workout
