@@ -30,9 +30,29 @@ import {
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 import { createZoneTableInfo } from '../../utils/zones';
 import { secondsToHoursMinutesAndSecondsString } from '../../utils/time';
+
+const editableWorkoutIsEqualToLoaded = (
+  editable: EditableWorkout,
+  loaded: WorkoutToEdit
+) => {
+  if (editable.name !== loaded.name) return false;
+  if (editable.parts.length !== loaded.parts.length) return false;
+
+  for (let i = 0; i < editable.parts.length; i++) {
+    const editablePart = editable.parts[i];
+    const loadedPart = loaded.parts[i];
+
+    if (editablePart.duration !== loadedPart.duration) return false;
+    if (editablePart.targetPower !== loadedPart.targetPower) return false;
+  }
+
+  return true;
+};
+
 interface Props {
   workout: WorkoutToEdit;
   closeEditor: () => void;
+  setIsWorkoutUnsaved: (isUnsaved: boolean) => void;
 }
 
 interface EditableWorkoutPart extends WorkoutPart {
@@ -45,6 +65,7 @@ interface EditableWorkout extends Workout {
 export const WorkoutEditor = ({
   workout: loadedWorkout,
   closeEditor,
+  setIsWorkoutUnsaved,
 }: Props) => {
   const { activeFtp, setActiveFtp, setActiveWorkout } = useActiveWorkout();
   const { user, saveLocalWorkout } = useUser();
@@ -72,6 +93,14 @@ export const WorkoutEditor = ({
     ...loadedWorkout,
     parts: loadedWorkout.parts.map((part, i) => ({ ...part, id: i })),
   });
+
+  const workoutIsUnsaved =
+    loadedWorkout.type === 'new' ||
+    !editableWorkoutIsEqualToLoaded(workout, loadedWorkout);
+
+  React.useEffect(() => {
+    setIsWorkoutUnsaved(workoutIsUnsaved);
+  }, [workoutIsUnsaved, setIsWorkoutUnsaved]);
   const totalDuration = workout.parts.reduce(
     (sum, part) => sum + part.duration,
     0

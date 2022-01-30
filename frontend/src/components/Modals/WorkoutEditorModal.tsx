@@ -15,6 +15,16 @@ import { WorkoutEditor } from '../WorkoutMenu/WorkoutEditor';
 import { useUser } from '../../context/UserContext';
 import { useWorkoutEditorModal } from '../../context/ModalContext';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
+import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  Button,
+  HStack,
+} from '@chakra-ui/react';
 
 export interface WorkoutToEdit extends Workout {
   type: 'local' | 'remote' | 'new';
@@ -27,8 +37,18 @@ export const WorkoutEditorModal = () => {
     React.useState<WorkoutToEdit | null>(null);
 
   const { setActiveWorkout } = useActiveWorkout();
+  const [isWorkoutUnsaved, setIsWorkoutUnsaved] = React.useState(false);
+  const [showDiscardDialog, setShowDiscardDialog] = React.useState(false);
+  const cancelRef = React.useRef<HTMLButtonElement>(null);
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="4xl">
+    <Modal
+      isOpen={isOpen}
+      onClose={() =>
+        isWorkoutUnsaved ? setShowDiscardDialog(true) : onClose()
+      }
+      size="4xl"
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
@@ -55,6 +75,7 @@ export const WorkoutEditorModal = () => {
               refetchUserData();
               setWorkoutToEdit(null);
             }}
+            setIsWorkoutUnsaved={setIsWorkoutUnsaved}
           />
         ) : (
           <WorkoutOverview
@@ -66,6 +87,45 @@ export const WorkoutEditorModal = () => {
           />
         )}
       </ModalContent>
+      <AlertDialog
+        isOpen={showDiscardDialog}
+        leastDestructiveRef={cancelRef}
+        onClose={() => setShowDiscardDialog(false)}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Discard workout changes
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              You have unsaved changes in this workout. Closing this would
+              discard the changes.
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <HStack>
+                <Button
+                  colorScheme="red"
+                  onClick={() => {
+                    setShowDiscardDialog(false);
+                    onClose();
+                  }}
+                  ml={3}
+                >
+                  Yes, discard the changes
+                </Button>
+                <Button
+                  ref={cancelRef}
+                  onClick={() => setShowDiscardDialog(false)}
+                >
+                  Cancel
+                </Button>
+              </HStack>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Modal>
   );
 };
