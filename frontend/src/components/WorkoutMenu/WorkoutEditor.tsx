@@ -46,7 +46,7 @@ export const WorkoutEditor = ({
   workout: loadedWorkout,
   closeEditor,
 }: Props) => {
-  const { activeFtp, setActiveFtp } = useActiveWorkout();
+  const { activeFtp, setActiveFtp, setActiveWorkout } = useActiveWorkout();
   const { user, saveLocalWorkout } = useUser();
   const token = user.loggedIn && user.token;
 
@@ -228,6 +228,10 @@ export const WorkoutEditor = ({
               Save locally
             </Button>
           ) : null}
+          <Button onClick={() => setActiveWorkout(workout)}>
+            Use without saving
+          </Button>
+
           <Button onClick={closeEditor}>Cancel</Button>
         </HStack>
         {!user.loggedIn ? (
