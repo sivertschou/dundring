@@ -5,11 +5,11 @@ import { toTCX } from '../../createTcxFile';
 import { useData } from '../../context/DataContext';
 
 export const DownloadTCXButton = () => {
-  const { data } = useData();
+  const { data, distance } = useData();
   return (
     <Button
       width="100%"
-      onClick={() => toTCX(data)}
+      onClick={() => toTCX(data, distance)}
       leftIcon={<Icon as={Download} />}
     >
       Save TCX

@@ -1,7 +1,7 @@
 import { Lap } from './types';
 import { padLeadingZero } from './utils';
 
-export const toTCX = (laps: Lap[]) => {
+export const toTCX = (laps: Lap[], distance: number) => {
   const startTime = laps[0].dataPoints[0].timeStamp;
   const output = [
     `<?xml version="1.0" encoding="UTF-8"?>`,
@@ -9,6 +9,7 @@ export const toTCX = (laps: Lap[]) => {
     `  <Activities>`,
     `    <Activity Sport="Biking">`,
     `      <Id>${startTime.toISOString()}</Id>`,
+    `      <DistanceMeters>${distance}</DistanceMeters>`,
     laps.map((lap) => lapToTCX(lap)).join('\n'),
     `    </Activity>`,
     `  </Activities>`,
@@ -64,6 +65,16 @@ const lapToTCX = (lap: Lap) => {
                 `            <HeartRateBpm>`,
                 `              <Value>${data.heartRate}</Value>`,
                 `            </HeartRateBpm>`,
+              ].join('\n')
+            : '',
+
+          data.position !== undefined
+            ? [
+                `            <Position>`,
+                `              <LatitudeDegrees>${data.position.lat}</LatitudeDegrees>`,
+                `              <LongitudeDegrees>${data.position.lon}</LongitudeDegrees>`,
+                `            </Position>`,
+                `            <DistanceMeters>${data.position.distance}</DistanceMeters>`,
               ].join('\n')
             : '',
           data.cadence !== undefined
