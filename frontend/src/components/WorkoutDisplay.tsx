@@ -3,10 +3,8 @@ import * as React from 'react';
 import { useActiveWorkout } from '../context/ActiveWorkoutContext';
 import { useData } from '../context/DataContext';
 import { Workout } from '../types';
-import {
-  secondsToHoursMinutesAndSecondsString,
-  wattFromFtpPercent,
-} from '../utils';
+import { wattFromFtpPercent } from '../utils/general';
+import { secondsToHoursMinutesAndSecondsString } from '../utils/time';
 
 export const WorkoutDisplay = () => {
   const { activeWorkout, activeFtp, changeActivePart } = useActiveWorkout();

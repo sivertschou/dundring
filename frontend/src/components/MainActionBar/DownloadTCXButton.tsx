@@ -4,12 +4,16 @@ import { Download } from 'react-bootstrap-icons';
 import { toTCX } from '../../createTcxFile';
 import { useData } from '../../context/DataContext';
 
-export const DownloadTCXButton = () => {
-  const { data } = useData();
+export const DownloadTCXButton = ({
+  includeGPSData,
+}: {
+  includeGPSData: boolean;
+}) => {
+  const { data, distance } = useData();
   return (
     <Button
       width="100%"
-      onClick={() => toTCX(data)}
+      onClick={() => toTCX(data, distance, includeGPSData)}
       leftIcon={<Icon as={Download} />}
     >
       Save TCX

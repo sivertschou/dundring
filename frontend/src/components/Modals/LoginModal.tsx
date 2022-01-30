@@ -21,7 +21,7 @@ import * as React from 'react';
 import * as api from '../../api';
 import { useUser } from '../../context/UserContext';
 import { useToast } from '@chakra-ui/react';
-import * as utils from '../../utils';
+import utils from '../../utils';
 import { useLoginModal } from '../../context/ModalContext';
 import sha256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
@@ -42,15 +42,15 @@ export const LoginModal = () => {
   const { setUser } = useUser();
   const toast = useToast();
 
-  const illegalCharacters = utils.removeDuplicateWords(
-    utils.getIllegalUsernameCharacters(username)
+  const illegalCharacters = utils.general.removeDuplicateWords(
+    utils.general.getIllegalUsernameCharacters(username)
   );
   const maxUsernameLength = 20;
   const usernameContainsIllegalCharacters = illegalCharacters.length > 0;
   const usernameIsTooLong = username.length > maxUsernameLength;
   const usernameIsValid =
     !usernameIsTooLong && !usernameContainsIllegalCharacters;
-  const mailIsValid = utils.mailIsValid(mail);
+  const mailIsValid = utils.general.mailIsValid(mail);
   const passwordIsValid = password.length > 0;
   const login = async () => {
     const trimmedUsername = username.trim();
@@ -86,7 +86,7 @@ export const LoginModal = () => {
       setErrorMessage('Enter mail, username and password.');
       return;
     }
-    const mailIsValid = utils.mailIsValid(mail);
+    const mailIsValid = utils.general.mailIsValid(mail);
 
     if (!mailIsValid) {
       setErrorMessage('Please enter a valid email address.');

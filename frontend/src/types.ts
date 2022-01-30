@@ -2,12 +2,20 @@ import { UserRole } from '../../common/types/userTypes';
 
 export interface Lap {
   dataPoints: DataPoint[];
+  distance: number;
 }
 export interface DataPoint {
   heartRate?: number;
   power?: number;
   cadence?: number;
   timeStamp: Date;
+  position?: Waypoint;
+}
+
+export interface Waypoint {
+  lat: number;
+  lon: number;
+  distance: number;
 }
 
 export interface Workout {

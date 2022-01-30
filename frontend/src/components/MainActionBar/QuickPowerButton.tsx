@@ -11,7 +11,7 @@ import {
 import { LightningChargeFill } from 'react-bootstrap-icons';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 import { useSmartTrainer } from '../../context/SmartTrainerContext';
-import { wattFromFtpPercent } from '../../utils';
+import { wattFromFtpPercent } from '../../utils/general';
 
 const defaultResistancePercentages = [
   50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150,

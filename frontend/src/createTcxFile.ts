@@ -1,7 +1,11 @@
 import { Lap } from './types';
-import { padLeadingZero } from './utils';
+import { padLeadingZero } from './utils/general';
 
-export const toTCX = (laps: Lap[]) => {
+export const toTCX = (
+  laps: Lap[],
+  distance: number,
+  includeGPSData: boolean
+) => {
   const startTime = laps[0].dataPoints[0].timeStamp;
   const output = [
     `<?xml version="1.0" encoding="UTF-8"?>`,
@@ -9,7 +13,9 @@ export const toTCX = (laps: Lap[]) => {
     `  <Activities>`,
     `    <Activity Sport="Biking">`,
     `      <Id>${startTime.toISOString()}</Id>`,
-    laps.map((lap) => lapToTCX(lap)).join('\n'),
+
+    includeGPSData ? `      <DistanceMeters>${distance}</DistanceMeters>` : '',
+    laps.map((lap) => lapToTCX(lap, includeGPSData)).join('\n'),
     `    </Activity>`,
     `  </Activities>`,
     `  <Author xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="Application_t">`,
@@ -44,7 +50,7 @@ export const toTCX = (laps: Lap[]) => {
   link.parentNode?.removeChild(link);
 };
 
-const lapToTCX = (lap: Lap) => {
+const lapToTCX = (lap: Lap, includeGPSData: boolean) => {
   const filtererdDataPoints = lap.dataPoints.filter(
     (data) => data.heartRate || data.power
   );
@@ -64,6 +70,16 @@ const lapToTCX = (lap: Lap) => {
                 `            <HeartRateBpm>`,
                 `              <Value>${data.heartRate}</Value>`,
                 `            </HeartRateBpm>`,
+              ].join('\n')
+            : '',
+
+          includeGPSData && data.position !== undefined
+            ? [
+                `            <Position>`,
+                `              <LatitudeDegrees>${data.position.lat}</LatitudeDegrees>`,
+                `              <LongitudeDegrees>${data.position.lon}</LongitudeDegrees>`,
+                `            </Position>`,
+                `            <DistanceMeters>${data.position.distance}</DistanceMeters>`,
               ].join('\n')
             : '',
           data.cadence !== undefined
