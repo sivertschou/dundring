@@ -5,11 +5,10 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
-import * as React from 'react';
 import { useLogs } from '../../context/LogContext';
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/table';
-import { timestampToFormattedHHMMSS } from '../../utils';
 import { useLogModal } from '../../context/ModalContext';
+import { timestampToFormattedHHMMSS } from '../../utils/time';
 
 export const LogModal = () => {
   const { isOpen, onClose } = useLogModal();

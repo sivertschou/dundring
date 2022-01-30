@@ -1,4 +1,3 @@
-import { Status } from '../../../common/types/serviceTypes';
 import {
   CreateGroupSessionResponse,
   DataReceivedResponse,
@@ -11,8 +10,8 @@ import {
   WebSocketResponseType,
 } from '../../../common/types/wsTypes';
 import * as slackService from './slackService';
+import { WebSocket } from 'ws';
 
-import { Server, WebSocket } from 'ws';
 export interface ServerMember {
   username: string;
   ftp: number;

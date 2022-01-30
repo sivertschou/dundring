@@ -3,13 +3,12 @@ import Icon from '@chakra-ui/icon';
 import { Center, Grid, Heading, HStack, Stack, Text } from '@chakra-ui/layout';
 import { useClipboard, useToast } from '@chakra-ui/react';
 import { Tooltip } from '@chakra-ui/tooltip';
-import * as React from 'react';
 import { Cloud, Gear, Hdd, Clipboard } from 'react-bootstrap-icons';
 import { Workout } from '../../types';
 import {
   getTotalWorkoutTime,
   secondsToHoursMinutesAndSecondsString,
-} from '../../utils';
+} from '../../utils/time';
 
 interface Props {
   username: string | null;

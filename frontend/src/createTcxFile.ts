@@ -1,5 +1,5 @@
 import { Lap } from './types';
-import { padLeadingZero } from './utils';
+import { padLeadingZero } from './utils/general';
 
 export const toTCX = (
   laps: Lap[],

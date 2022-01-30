@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { DataPoint, Lap, Waypoint } from '../types';
+import { distanceToCoordinates } from '../utils/gps';
 import { useActiveWorkout } from './ActiveWorkoutContext';
 import { useHeartRateMonitor } from './HeartRateContext';
 import { useLogs } from './LogContext';
@@ -61,67 +62,6 @@ const zap: Waypoint[] = [
   { lat: 59.88561483, lon: 10.6644647, distance: 600 },
   { lat: 59.8856822, lon: 10.65318595, distance: 2000 },
 ];
-
-const lerp = (from: number, to: number, amount: number) => {
-  return from + (to - from) * Math.max(Math.min(1, amount), 0);
-};
-
-const distanceToCoordinates = (path: Waypoint[], totalDistance: number) => {
-  // TODO: Memoize this
-  const totalPathDistance = path.reduce(
-    (sum, waypoint) => sum + waypoint.distance,
-    0
-  );
-  const lapDistance = totalDistance % totalPathDistance;
-
-  const { currentWaypoint, index, accDistance } = path.reduce(
-    (
-      {
-        accDistance,
-        currentWaypoint,
-        index,
-      }: {
-        accDistance: number;
-        currentWaypoint: Waypoint | null;
-        index: number | null;
-      },
-      waypoint: Waypoint,
-      i
-    ): {
-      accDistance: number;
-      currentWaypoint: Waypoint | null;
-      index: number | null;
-    } => {
-      if (currentWaypoint !== null)
-        return { accDistance, currentWaypoint, index };
-
-      if (accDistance + waypoint.distance > lapDistance) {
-        return { accDistance, currentWaypoint: waypoint, index: i };
-      }
-
-      return {
-        accDistance: accDistance + waypoint.distance,
-        currentWaypoint,
-        index,
-      };
-    },
-    { accDistance: 0, currentWaypoint: null, index: null }
-  );
-
-  if (!currentWaypoint || index === null) return null;
-  const distanceThisSegment = lapDistance - accDistance;
-  const lat = lerp(
-    currentWaypoint.lat,
-    path[(index + 1) % path.length].lat,
-    distanceThisSegment / currentWaypoint.distance
-  );
-  const lon = lerp(
-    currentWaypoint.lon,
-    path[(index + 1) % path.length].lon,
-    distanceThisSegment / currentWaypoint.distance
-  );
-  return { lat, lon };
-};
 
 export const DataContextProvider = ({ clockWorker, children }: Props) => {
   const {

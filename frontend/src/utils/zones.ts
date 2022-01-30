@@ -1,5 +1,5 @@
-import { WorkoutPart } from '../../common/types/workoutTypes';
-import { secondsToHoursMinutesAndSecondsString } from './utils';
+import { WorkoutPart } from '../types';
+import { secondsToHoursMinutesAndSecondsString } from './time';
 
 export type Zone = 'Z1' | 'Z2' | 'Z3' | 'Z4' | 'Z5' | 'Z6' | 'Z7';
 
