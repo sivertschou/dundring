@@ -6,7 +6,13 @@ import { useWebsocket } from '../context/WebsocketContext';
 import { ActionBar } from '../components/ActionBar';
 import { TopBar } from '../components/TopBar';
 import { useLocation, useParams } from 'react-router-dom';
-import { useGroupSessionModal } from '../context/ModalContext';
+import {
+  useGroupSessionModal,
+  useLoginModal,
+  useLogModal,
+  useProfileModal,
+  useWorkoutEditorModal,
+} from '../context/ModalContext';
 import { Modals } from '../components/Modals/Modals';
 import { BottomBar } from '../components/BottomBar';
 
@@ -14,8 +20,17 @@ export const MainPage = () => {
   const { connect } = useWebsocket();
   const location = useLocation();
   const params = useParams();
+  const {
+    onOpen: onOpenWorkoutEditorModal,
+    onClose: onCloseWorkoutEditorModal,
+  } = useWorkoutEditorModal();
   const { onOpen: onOpenGroupSessionModal, onClose: onCloseGroupSessionModal } =
     useGroupSessionModal();
+  const { onOpen: onOpenProfileModal, onClose: onCloseProfileModal } =
+    useProfileModal();
+  const { onOpen: onOpenLogModal, onClose: onCloseLogModal } = useLogModal();
+  const { onOpen: onOpenLoginModal, onClose: onCloseLoginModal } =
+    useLoginModal();
 
   React.useEffect(() => {
     const path = location.pathname.split('/')[1];
@@ -24,15 +39,44 @@ export const MainPage = () => {
         onOpenGroupSessionModal();
         connect();
         return;
+
+      case 'workout':
+        onOpenWorkoutEditorModal();
+        return;
+
+      case 'profile':
+        onOpenProfileModal();
+        return;
+
+      case 'login':
+        onOpenLoginModal();
+        return;
+
+      case 'logs':
+        onOpenLogModal();
+        return;
+
       default:
         onCloseGroupSessionModal();
+        onCloseLogModal();
+        onCloseLoginModal();
+        onCloseProfileModal();
+        onCloseWorkoutEditorModal();
     }
   }, [
     location,
     params,
     connect,
+    onOpenLogModal,
+    onCloseLogModal,
+    onOpenLoginModal,
+    onCloseLoginModal,
+    onOpenProfileModal,
+    onCloseProfileModal,
     onOpenGroupSessionModal,
     onCloseGroupSessionModal,
+    onOpenWorkoutEditorModal,
+    onCloseWorkoutEditorModal,
   ]);
 
   return (

@@ -15,18 +15,23 @@ import { WorkoutEditor } from '../WorkoutMenu/WorkoutEditor';
 import { useUser } from '../../context/UserContext';
 import { useWorkoutEditorModal } from '../../context/ModalContext';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
+import { useNavigate } from 'react-router-dom';
 
 export interface WorkoutToEdit extends Workout {
   type: 'local' | 'remote' | 'new';
   previewFtp: number;
 }
 export const WorkoutEditorModal = () => {
-  const { isOpen, onClose } = useWorkoutEditorModal();
+  const { isOpen } = useWorkoutEditorModal();
   const { refetchData: refetchUserData } = useUser();
   const [workoutToEdit, setWorkoutToEdit] =
     React.useState<WorkoutToEdit | null>(null);
-
   const { setActiveWorkout } = useActiveWorkout();
+  const navigate = useNavigate();
+
+  const onClose = () => {
+    navigate('/');
+  };
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="4xl">
       <ModalOverlay />
