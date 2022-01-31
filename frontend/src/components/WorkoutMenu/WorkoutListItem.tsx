@@ -9,6 +9,7 @@ import {
   getTotalWorkoutTime,
   secondsToHoursMinutesAndSecondsString,
 } from '../../utils/time';
+import * as api from '../../api';
 
 interface Props {
   username: string | null;
@@ -25,7 +26,9 @@ export const WorkoutListItem = ({
   isLocallyStored,
 }: Props) => {
   const workoutDuration = getTotalWorkoutTime(workout);
-  const { onCopy } = useClipboard(`${username}-${workout.id}`);
+  const { onCopy } = useClipboard(
+    `${api.domain}/workout/${username}-${workout.id}`
+  );
   const toast = useToast();
 
   return (
@@ -50,14 +53,14 @@ export const WorkoutListItem = ({
       </Stack>
       <HStack>
         {isLocallyStored ? null : (
-          <Tooltip label="Copy id to clipboard. Share this id to allow other people to import this workout.">
+          <Tooltip label="Copy import link to clipboard. Share this id to allow other people to import this workout.">
             <IconButton
               aria-label="copy"
               icon={<Icon as={Clipboard} />}
               onClick={() => {
                 onCopy();
                 toast({
-                  title: `Copied workout id to clipboard!`,
+                  title: `Copied workout link to clipboard!`,
                   isClosable: true,
                   duration: 2000,
                   status: 'success',

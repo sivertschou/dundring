@@ -9,6 +9,9 @@ export const App = () => {
           <Route path="group" element={<MainPage />}>
             <Route path=":groupId" element={<MainPage />} />
           </Route>
+          <Route path="workout" element={<MainPage />}>
+            <Route path=":workoutId" element={<MainPage />} />
+          </Route>
           <Route path="profile" element={<MainPage />} />
           <Route path="logs" element={<MainPage />} />
           <Route path="login" element={<MainPage />} />
