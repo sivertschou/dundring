@@ -11,15 +11,15 @@ interface Payload {
 
 interface Props {
   active?: boolean;
-  label?: string;
   payload?: Payload[];
 }
 
-const formatLine = (name: string, value: number) => {
-  const unit = name.split(' ')[1] === 'HR' ? ' bpm' : ' W';
-  return [`${name.split(' ')[0]}`, value, unit];
+const formatLine = (label: string, value: number) => {
+  const unit = label.split(' ')[1] === 'HR' ? ' bpm' : ' W';
+  const name = label.split(' ')[0];
+  return [`${name === 'You-Untracked' ? 'You' : name}`, value, unit];
 };
-export const CustomGraphTooltip = ({ active, payload, label }: Props) => {
+export const CustomGraphTooltip = ({ active, payload }: Props) => {
   const bgColor = useColorModeValue('white', 'gray.800');
   if (active && payload && payload.length) {
     return (

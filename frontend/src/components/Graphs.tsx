@@ -10,15 +10,14 @@ import {
   Tooltip,
   YAxis,
 } from 'recharts';
-import { hrColors, powerColors } from '../colors';
+import { hrColors, powerColors, untrackedColor } from '../colors';
+import { useData } from '../context/DataContext';
 import { LocalRoom, Member } from '../context/WebsocketContext';
-import { DataPoint } from '../types';
 import { CustomChartTooltip } from './Graph/CustomChartTooltip';
 import { CustomGraphTooltip } from './Graph/CustomGraphTooltip';
 import { ShowData } from './Graph/GraphContainer';
 
 interface Props {
-  data: DataPoint[];
   otherUsers: Member[];
   activeGroupSession: LocalRoom | null;
   showFill: boolean;
@@ -32,19 +31,26 @@ const mergeArrays = (arr1: any[], arr2: any[]) => {
 };
 
 export const Graphs = ({
-  data: rawData,
   otherUsers,
   showFill,
   showUserData,
   showOtherUsersData,
   activeGroupSession,
 }: Props) => {
+  const { data: laps, untrackedData: rawUntrackedData } = useData();
+  const rawData = laps.flatMap((x) => x.dataPoints);
   const numPoints = 500;
   const [allMerged, myAvgPower, otherPeoplesAvgPower] = React.useMemo(() => {
-    const data = rawData.map((dp) => ({
-      'You HR': dp.heartRate,
-      'You Power': dp.power,
+    const data = rawData.map((dataPoint) => ({
+      'You HR': dataPoint.heartRate,
+      'You Power': dataPoint.power,
     }));
+
+    const untrackedData = rawUntrackedData.map((dataPoint) => ({
+      'You-Untracked HR': dataPoint.heartRate,
+      'You-Untracked Power': dataPoint.power,
+    }));
+
     const otherPeoplesDataMerged = otherUsers
       .map((user) => {
         const data = activeGroupSession?.workoutData[user.username];
@@ -79,6 +85,14 @@ export const Graphs = ({
       ...data,
     ].splice(-numPoints);
 
+    const filledUntrackedData = [
+      ...new Array(numPoints).fill({
+        'You-Untracked HR': undefined,
+        'You-Untracked Power': undefined,
+      }),
+      ...untrackedData,
+    ].splice(-numPoints);
+
     const otherPeoplesAvgPower = otherUsers.map((user) => {
       const data = activeGroupSession?.workoutData[user.username];
       if (!data) return null;
@@ -98,21 +112,29 @@ export const Graphs = ({
     );
 
     return [
-      mergeArrays(filledData, otherPeoplesDataMerged),
+      mergeArrays(
+        mergeArrays(filledData, otherPeoplesDataMerged),
+        filledUntrackedData
+      ),
       myAvgPower,
       otherPeoplesAvgPower,
     ];
-  }, [activeGroupSession?.workoutData, otherUsers, rawData]);
+  }, [activeGroupSession?.workoutData, otherUsers, rawData, rawUntrackedData]);
 
   const fillAreaChart = (
     dataPrefix: string,
     checked: ShowData,
     index: number,
     showFill: boolean,
-    type: 'hr' | 'power'
+    type: 'hr' | 'power',
+    isUntracked: boolean = false
   ) => {
-    const hrColor = hrColors[index % hrColors.length];
-    const powerColor = powerColors[index % powerColors.length];
+    const hrColor = isUntracked
+      ? untrackedColor
+      : hrColors[index % hrColors.length];
+    const powerColor = isUntracked
+      ? untrackedColor
+      : powerColors[index % powerColors.length];
     const hrGradientId = dataPrefix + 'colorHR';
     const powerGradientId = dataPrefix + 'colorPower';
     const showHr = type === 'hr' && checked.hr;
@@ -218,6 +240,14 @@ export const Graphs = ({
                   'power'
                 )
               )}
+              {fillAreaChart(
+                'You-Untracked',
+                showUserData,
+                0,
+                showFill,
+                'power',
+                true
+              )}
               {fillAreaChart('You', showUserData, 0, showFill, 'power')}
               {otherUsers.map((user, i) =>
                 fillAreaChart(
@@ -232,6 +262,14 @@ export const Graphs = ({
                 )
               )}
               {fillAreaChart('You', showUserData, 0, showFill, 'hr')}
+              {fillAreaChart(
+                'You-Untracked',
+                showUserData,
+                0,
+                showFill,
+                'hr',
+                true
+              )}
 
               <YAxis />
               <Tooltip content={<CustomGraphTooltip />} />
