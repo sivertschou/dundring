@@ -12,7 +12,6 @@ import {
 } from 'react-bootstrap-icons';
 import { GraphCheckboxes } from './GraphCheckboxes';
 import { useWebsocket } from '../../context/WebsocketContext';
-import { useData } from '../../context/DataContext';
 
 export interface ShowData {
   hr: boolean;
@@ -20,9 +19,6 @@ export interface ShowData {
 }
 
 export const GraphContainer = () => {
-  const { data: rawData } = useData();
-  const data = rawData.flatMap((x) => x.dataPoints);
-
   const [showFill, setShowFill] = React.useState(true);
   const toggleGraphFillButtonText = showFill
     ? 'Hide graph fill'
@@ -54,7 +50,6 @@ export const GraphContainer = () => {
   const graphs = React.useMemo(
     () => (
       <Graphs
-        data={data}
         showFill={showFill}
         showUserData={showUserData}
         showOtherUsersData={showOtherUsersData}
@@ -62,14 +57,7 @@ export const GraphContainer = () => {
         otherUsers={otherUsers}
       />
     ),
-    [
-      data,
-      showFill,
-      showUserData,
-      showOtherUsersData,
-      activeGroupSession,
-      otherUsers,
-    ]
+    [showFill, showUserData, showOtherUsersData, activeGroupSession, otherUsers]
   );
   return (
     <Stack width="100%" mb={showOptions ? '20em' : '0'}>

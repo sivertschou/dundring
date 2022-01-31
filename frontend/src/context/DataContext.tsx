@@ -9,6 +9,7 @@ import { useWebsocket } from './WebsocketContext';
 
 const DataContext = React.createContext<{
   data: Lap[];
+  untrackedData: DataPoint[];
   hasValidData: boolean;
   timeElapsed: number;
   startingTime: Date | null;
@@ -26,7 +27,7 @@ interface Props {
 
 interface Data {
   laps: Lap[];
-  graphData: DataPoint[];
+  untrackedData: DataPoint[];
   timeElapsed: number;
   distance: number;
   startingTime: Date | null;
@@ -79,7 +80,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
           if (currentData.state === 'not_started') {
             return {
               laps: [{ dataPoints: [], distance: 0 }],
-              graphData: [],
+              untrackedData: currentData.untrackedData,
               timeElapsed: 0,
               distance: 0,
               startingTime: new Date(),
@@ -106,11 +107,24 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         case 'ADD_DATA': {
           const laps = currentData.laps;
           const { dataPoint } = action;
+          const currentLap = laps[laps.length - 1];
 
           if (currentData.state !== 'running') {
             return {
               ...currentData,
-              graphData: [...currentData.graphData, dataPoint],
+              untrackedData: [...currentData.untrackedData, dataPoint],
+              laps: currentLap
+                ? [
+                    ...laps.filter((_, i) => i !== laps.length - 1),
+                    {
+                      dataPoints: [
+                        ...currentLap.dataPoints,
+                        { timeStamp: dataPoint.timeStamp },
+                      ],
+                      distance: currentLap.distance,
+                    },
+                  ]
+                : [],
             };
           }
 
@@ -132,10 +146,12 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
                 }
               : undefined),
           };
-          const currentLap = laps[laps.length - 1];
           return {
             ...currentData,
-            graphData: [...currentData.graphData, dataPoint],
+            untrackedData: [
+              ...currentData.untrackedData,
+              { timeStamp: dataPoint.timeStamp },
+            ],
             distance: currentData.distance + deltaDistance,
             laps: [
               ...laps.filter((_, i) => i !== laps.length - 1),
@@ -150,7 +166,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
     },
     {
       laps: [],
-      graphData: [],
+      untrackedData: [],
       timeElapsed: 0,
       distance: 0,
       startingTime: null,
@@ -257,6 +273,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
     <DataContext.Provider
       value={{
         data: data.laps,
+        untrackedData: data.untrackedData,
         hasValidData,
         timeElapsed: data.timeElapsed,
         startingTime: data.startingTime,
