@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { DataPoint, Lap, Waypoint } from '../types';
 import { distanceToCoordinates } from '../utils/gps';
+import { powerSpeed } from '../utils/speed';
 import { useActiveWorkout } from './ActiveWorkoutContext';
 import { useHeartRateMonitor } from './HeartRateContext';
 import { useLogs } from './LogContext';
@@ -127,11 +128,10 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
                 : [],
             };
           }
+          const speed = dataPoint.power ? powerSpeed[dataPoint.power] : 0;
 
-          const speed = 8.34; // m/s
-          const deltaDistance = dataPoint.power
-            ? (speed * action.delta) / 1000
-            : 0;
+          const deltaDistance = (speed * action.delta) / 1000;
+
           const totalDistance = currentData.distance + deltaDistance;
           const coordinates = distanceToCoordinates(zap, totalDistance);
           const dataPointWithPosition: DataPoint = {
