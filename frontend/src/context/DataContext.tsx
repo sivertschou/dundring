@@ -76,9 +76,6 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
 
   const { sendData } = useWebsocket();
 
-  const weight = 80;
-  const powerSpeed = React.useMemo(() => getPowerToSpeedMap(weight), [weight]);
-
   const [data, dispatch] = React.useReducer(
     (currentData: Data, action: Action): Data => {
       switch (action.type) {
@@ -135,6 +132,8 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
             };
           }
 
+          const weight = 80;
+          const powerSpeed = getPowerToSpeedMap(weight);
           const speed = dataPoint.power ? powerSpeed[dataPoint.power] : 0;
 
           const deltaDistance = (speed * action.delta) / 1000;

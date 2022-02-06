@@ -1,5 +1,10 @@
-export const getPowerToSpeedMap = (weight: number) => {
-  const powerSpeed: Record<number, number> = {};
+const memoizedPowerSpeed: Record<number, Record<number, number>> = {};
+
+export const getPowerToSpeedMap = (weight: number): Record<number, number> => {
+  const powerSpeed = memoizedPowerSpeed[weight];
+  if (powerSpeed !== undefined) return powerSpeed;
+
+  const newPowerSpeed: Record<number, number> = {};
   for (let i = 0; i < 40000; i++) {
     const speedMs = i / 1000;
     const totalWeight = weight + 8; // person + bike
@@ -15,7 +20,8 @@ export const getPowerToSpeedMap = (weight: number) => {
       ((rollingResistance + dragResistance) * 100) / 95
     );
 
-    powerSpeed[totalPower] = speedMs;
+    newPowerSpeed[totalPower] = speedMs;
   }
-  return powerSpeed;
+  memoizedPowerSpeed[weight] = newPowerSpeed;
+  return newPowerSpeed;
 };
