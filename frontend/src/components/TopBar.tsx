@@ -16,7 +16,7 @@ export const TopBar = () => {
   const { power, cadence } = useSmartTrainer();
   const { heartRate } = useHeartRateMonitor();
   const { activeWorkout, activeFtp } = useActiveWorkout();
-  const { timeElapsed, distance } = useData();
+  const { timeElapsed, distance, speed } = useData();
   const remainingTime = getRemainingTime(activeWorkout);
   const targetPower = getTargetPower(activeWorkout, activeFtp);
 
@@ -54,6 +54,9 @@ export const TopBar = () => {
               </Center>
             </Stack>
             <Stack spacing="0">
+              <Text fontSize={secondaryFontSize}>
+                {((3600 * speed) / 1000).toFixed(1)} km/h
+              </Text>
               <Text fontSize={secondaryFontSize}>
                 {flooredDistance.toFixed(1)} km
               </Text>

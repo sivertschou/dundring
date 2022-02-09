@@ -15,6 +15,7 @@ const DataContext = React.createContext<{
   timeElapsed: number;
   startingTime: Date | null;
   distance: number;
+  speed: number;
   start: () => void;
   stop: () => void;
   addLap: () => void;
@@ -31,6 +32,7 @@ interface Data {
   untrackedData: DataPoint[];
   timeElapsed: number;
   distance: number;
+  speed: number;
   startingTime: Date | null;
   state: 'not_started' | 'running' | 'paused';
 }
@@ -84,6 +86,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
               untrackedData: currentData.untrackedData,
               timeElapsed: 0,
               distance: 0,
+              speed: 0,
               startingTime: new Date(),
               state: 'running',
             };
@@ -152,6 +155,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
               ...currentData.untrackedData,
               { timeStamp: dataPoint.timeStamp },
             ],
+            speed: speed,
             distance: currentData.distance + deltaDistance,
             laps: [
               ...laps.filter((_, i) => i !== laps.length - 1),
@@ -169,6 +173,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
       untrackedData: [],
       timeElapsed: 0,
       distance: 0,
+      speed: 0,
       startingTime: null,
       state: 'not_started',
     }
@@ -278,6 +283,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         timeElapsed: data.timeElapsed,
         startingTime: data.startingTime,
         distance: data.distance,
+        speed: data.speed,
         start,
         stop,
         addLap: () => dispatch({ type: 'ADD_LAP' }),
