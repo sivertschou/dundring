@@ -28,6 +28,8 @@ export const TopBar = () => {
   const bgColor = useColorModeValue(theme.colors.white, theme.colors.gray[800]);
   const textShadow = `0px 0px 1vh ${bgColor}`;
 
+  const flooredDistance = Math.floor(distance / 100) / 10;
+
   return (
     <Center
       width="100%"
@@ -53,7 +55,7 @@ export const TopBar = () => {
             </Stack>
             <Stack spacing="0">
               <Text fontSize={secondaryFontSize}>
-                {(distance / 1000).toFixed(1)} km
+                {flooredDistance.toFixed(1)} km
               </Text>
               {remainingTime !== null ? (
                 <>
