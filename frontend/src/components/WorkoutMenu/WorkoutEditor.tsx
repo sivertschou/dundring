@@ -52,6 +52,7 @@ const editableWorkoutIsEqualToLoaded = (
 interface Props {
   workout: WorkoutToEdit;
   closeEditor: () => void;
+  closeModal: () => void;
   setIsWorkoutUnsaved: (isUnsaved: boolean) => void;
 }
 
@@ -65,6 +66,7 @@ interface EditableWorkout extends Workout {
 export const WorkoutEditor = ({
   workout: loadedWorkout,
   closeEditor,
+  closeModal,
   setIsWorkoutUnsaved,
 }: Props) => {
   const { activeFtp, setActiveFtp, setActiveWorkout } = useActiveWorkout();
@@ -257,7 +259,13 @@ export const WorkoutEditor = ({
               Save locally
             </Button>
           ) : null}
-          <Button onClick={() => setActiveWorkout(workout)}>
+          <Button
+            onClick={() => {
+              setActiveWorkout(workout);
+              closeEditor();
+              closeModal();
+            }}
+          >
             Use without saving
           </Button>
 

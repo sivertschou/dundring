@@ -83,6 +83,7 @@ export const WorkoutEditorModal = () => {
               refetchUserData();
               setWorkoutToEdit(null);
             }}
+            closeModal={onClose}
             setIsWorkoutUnsaved={setIsWorkoutUnsaved}
           />
         ) : (
