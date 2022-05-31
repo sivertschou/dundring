@@ -156,6 +156,19 @@ export const useSmartTrainerInterface = (): SmartTrainerInterface => {
 
     const server = await device.gatt?.connect();
     try {
+      const intervalId = setInterval(() => {
+        if (server?.connected === false) {
+          dispatch({ type: 'reset' });
+          toast({
+            title: 'DISC',
+            isClosable: true,
+            duration: 20000,
+            status: 'warning',
+          });
+          clearInterval(intervalId);
+        }
+      }, 1000);
+
       const fitnessMachineService = await server?.getPrimaryService(
         'fitness_machine'
       );
