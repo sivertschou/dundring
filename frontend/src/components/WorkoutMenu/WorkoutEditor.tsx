@@ -310,16 +310,6 @@ export const WorkoutEditor = ({
             )
           )}
         </Tbody>
-        <Tfoot>
-          <Tr>
-            <Td fontWeight="bold">Total</Td>
-            <Td></Td>
-            <Td></Td>
-            <Td fontWeight="bold" textAlign="right">
-              {secondsToHoursMinutesAndSecondsString(totalDuration)}
-            </Td>
-          </Tr>
-        </Tfoot>
       </Table>
     </Stack>
   );
