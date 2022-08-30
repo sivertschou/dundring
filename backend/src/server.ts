@@ -26,8 +26,11 @@ import * as WebSocket from 'ws';
 import cors from 'cors';
 import http from 'http';
 import { default as strava, Strava } from 'strava-v3';
+import fs from 'fs';
 
 require('dotenv').config();
+
+//let codes = ""
 
 // Create a new express app instance
 const app = express.default();
@@ -201,21 +204,56 @@ router.get<null, ApiResponseBody<MessagesResponseBody>>(
   }
 );
 
-router.get<null>('/strava', (req, res) => {
+const conf = {
+  client_id: process.env.STRAVA_CLIENT_ID || 'NOO',
+  client_secret: process.env.STRAVA_CLIENT_SECRET || 'NOO',
+  redirect_uri: 'http://localhost:8092/api/strava/red',
+};
+
+router.get<null>('/strava/auth', (req, res) => {
   // const messages = messageService.getMessages();
-  // console.log("STRAVA123");
+  console.log('STRAVA123');
 
-  // strava.config({
-  //   "access_token": "Your apps access token (Required for Quickstart)",
-  //   "client_id": "Your apps Client ID (Required for oauth)",
-  //   "client_secret": "Your apps Client Secret (Required for oauth)",
-  //   "redirect_uri": "Your apps Authorization Redirection URI (Required for oauth)",
-  // });
+  console.log(conf);
 
-  res.send({
-    status: ApiStatus.SUCCESS,
-    data: {},
+  strava.config({ ...conf, access_token: 'TEMP STUPID' });
+  const url = strava.oauth.getRequestAccessURL({}) as unknown as string;
+
+  res.redirect(url);
+});
+
+router.get<null>('/strava/red', (req, res) => {
+  const code = (req.query.code || 'noo') as string;
+  const r = strava.oauth.getToken(code).then((w) => {
+    w;
+    strava.config({ ...conf, access_token: w.access_token });
+
+    console.log(strava);
+    res.send({
+      status: ApiStatus.SUCCESS,
+      data: {},
+    });
   });
+});
+
+router.get<null>('/strava/upload', (req, res) => {
+  const file = fs.readFileSync('data/mak.tcx');
+  console.log(file);
+
+  strava.uploads
+    .post({
+      data_type: 'tcx',
+      file: 'data/mak.tcx' as unknown as Buffer,
+      name: 'Epic times',
+      external_id: 'external',
+    })
+    .then((w) => {
+      console.log(w);
+      res.send({
+        status: ApiStatus.SUCCESS,
+        data: {},
+      });
+    });
 });
 
 router.post<null, ApiResponseBody<LoginResponseBody>, LoginRequestBody>(
