@@ -25,6 +25,7 @@ import {
 import * as WebSocket from 'ws';
 import cors from 'cors';
 import http from 'http';
+import { default as strava, Strava } from 'strava-v3';
 
 require('dotenv').config();
 
@@ -200,6 +201,23 @@ router.get<null, ApiResponseBody<MessagesResponseBody>>(
   }
 );
 
+router.get<null>('/strava', (req, res) => {
+  // const messages = messageService.getMessages();
+  // console.log("STRAVA123");
+
+  // strava.config({
+  //   "access_token": "Your apps access token (Required for Quickstart)",
+  //   "client_id": "Your apps Client ID (Required for oauth)",
+  //   "client_secret": "Your apps Client Secret (Required for oauth)",
+  //   "redirect_uri": "Your apps Authorization Redirection URI (Required for oauth)",
+  // });
+
+  res.send({
+    status: ApiStatus.SUCCESS,
+    data: {},
+  });
+});
+
 router.post<null, ApiResponseBody<LoginResponseBody>, LoginRequestBody>(
   '/login',
   async (req, res) => {
@@ -360,3 +378,5 @@ wss.on('connection', (ws) => {
 httpServer.listen(httpPort, () => {
   console.log(`App is listening on port ${httpPort}!:)`);
 });
+
+console.log('HEIHEI');
