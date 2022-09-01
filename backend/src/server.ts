@@ -5,6 +5,7 @@ import * as validationService from './services/validationService';
 import * as slackService from './services/slackService';
 import * as express from 'express';
 import * as core from 'express-serve-static-core';
+import fetch from 'node-fetch';
 import {
   ApiResponseBody,
   ApiStatus,
@@ -45,6 +46,16 @@ app.use('/api', router);
 
 const httpServer = http.createServer(app);
 const wss = new WebSocket.Server({ server: httpServer });
+
+const tokens: Record<string, StravaTokenResponse> = {};
+
+type StravaTokenResponse = {
+  token_type: string;
+  expires_at: string;
+  expires_in: string;
+  refresh_token: string;
+  access_token: string;
+};
 
 const checkEnvConfig = () => {
   if (!process.env.PORT) {
@@ -210,30 +221,45 @@ const conf = {
   redirect_uri: 'http://localhost:8092/api/strava/red',
 };
 
+console.log(conf);
+
 router.get<null>('/strava/auth', (req, res) => {
-  // const messages = messageService.getMessages();
-  console.log('STRAVA123');
-
-  console.log(conf);
-
-  strava.config({ ...conf, access_token: 'TEMP STUPID' });
-  const url = strava.oauth.getRequestAccessURL({}) as unknown as string;
-
+  const url = `http://www.strava.com/oauth/authorize?client_id=${conf.client_id}&response_type=code&redirect_uri=${conf.redirect_uri}&approval_prompt=force&scope=read`;
   res.redirect(url);
 });
 
 router.get<null>('/strava/red', (req, res) => {
   const code = (req.query.code || 'noo') as string;
-  const r = strava.oauth.getToken(code).then((w) => {
-    w;
-    strava.config({ ...conf, access_token: w.access_token });
 
-    console.log(strava);
-    res.send({
-      status: ApiStatus.SUCCESS,
-      data: {},
-    });
+  const url = `https://www.strava.com/oauth/token`;
+
+  console.log(':)))', {
+    client_id: conf.client_id,
+    client_secret: conf.client_secret,
+    grant_type: 'authorization_code',
+    code: code,
   });
+
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      // "client_secret": conf.client_secret,
+      // "grant_type": "authorization_code",
+      // "code": code
+    },
+  })
+    .then((resp) => {
+      console.log(resp);
+      return resp.json();
+    })
+    .then((json) => {
+      tokens['token'] = json as StravaTokenResponse;
+      console.log('added token : ', json);
+      res.send({
+        status: ApiStatus.SUCCESS,
+        data: json,
+      });
+    });
 });
 
 router.get<null>('/strava/upload', (req, res) => {

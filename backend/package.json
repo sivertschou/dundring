@@ -19,7 +19,7 @@
     "express": "^4.17.1",
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^8.5.1",
-    "node-fetch": "^2.6.6",
+    "node-fetch": "^2.6.7",
     "strava-v3": "^2.1.0",
     "ws": "^8.3.0"
   },
