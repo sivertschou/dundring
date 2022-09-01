@@ -79,6 +79,13 @@ export const login = async (loginData: LoginRequestBody) => {
   );
 };
 
+export const stravatoken = async (code: string) => {
+  return post<ApiResponseBody<LoginResponseBody>, null>(
+    `${httpUrl}/stravatoken?code=${code}`,
+    null
+  );
+};
+
 export const register = async (registerData: RegisterRequestBody) => {
   return post<ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
     `${httpUrl}/register`,

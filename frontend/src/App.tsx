@@ -1,14 +1,12 @@
 import { MainPage } from './pages/MainPage';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { StravaLogin } from './components/Modals/StravaLogin';
 
 export const App = () => {
   return (
     <>
       <Routes>
-        <Route
-          path="strava"
-          element={<Navigate to="https://www.strava2.com" />}
-        />
+        <Route path="strava" element={<StravaLogin />} />
         <Route path="/" element={<MainPage />}>
           <Route path="group" element={<MainPage />}>
             <Route path=":groupId" element={<MainPage />} />

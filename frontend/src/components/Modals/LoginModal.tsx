@@ -25,7 +25,7 @@ import utils from '../../utils';
 import { useLoginModal } from '../../context/ModalContext';
 import sha256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 export const hash = (message: string) =>
   Base64.stringify(sha256('yehaw' + message));
@@ -58,29 +58,36 @@ export const LoginModal = () => {
     !usernameIsTooLong && !usernameContainsIllegalCharacters;
   const mailIsValid = utils.general.mailIsValid(mail);
   const passwordIsValid = password.length > 0;
-  const login = async () => {
-    const trimmedUsername = username.trim();
-    const trimmedPassword = password.trim();
+  // const login = async () => {
+  //   const trimmedUsername = username.trim();
+  //   const trimmedPassword = password.trim();
 
-    if (!trimmedUsername || !trimmedPassword) {
-      setErrorMessage('Enter username and password.');
-      return;
-    }
+  //   if (!trimmedUsername || !trimmedPassword) {
+  //     setErrorMessage('Enter username and password.');
+  //     return;
+  //   }
 
-    setIsLoading(true);
-    const response = await api.login({
-      username: trimmedUsername,
-      password: hash(trimmedPassword),
-    });
-    setIsLoading(false);
+  //   setIsLoading(true);
+  //   const response = await api.login({
+  //     username: trimmedUsername,
+  //     password: hash(trimmedPassword),
+  //   });
+  //   setIsLoading(false);
 
-    if (response.status === 'FAILURE') {
-      setErrorMessage(response.message);
-    } else if (response.status === 'SUCCESS') {
-      const { roles, token, username, ftp } = response.data;
-      setUser({ loggedIn: true, token, roles, username, ftp, workouts: [] });
-      onClose();
-    }
+  //   if (response.status === 'FAILURE') {
+  //     setErrorMessage(response.message);
+  //   } else if (response.status === 'SUCCESS') {
+  //     const { roles, token, username, ftp } = response.data;
+  //     setUser({ loggedIn: true, token, roles, username, ftp, workouts: [] });
+  //     onClose();
+  //   }
+  // };
+
+  const loginStrava = () => {
+    const client_id = '39382';
+    const redirect_uri = 'http://localhost:3000/strava';
+    const url = `https://www.strava.com/oauth/authorize?client_id=${client_id}&response_type=code&redirect_uri=${redirect_uri}&approval_prompt=force&scope=read`;
+    window.location.href = url;
   };
 
   const register = async () => {
@@ -258,7 +265,7 @@ export const LoginModal = () => {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              login();
+              // login();
             }}
           >
             <ModalHeader>Login</ModalHeader>
@@ -315,8 +322,8 @@ export const LoginModal = () => {
 
             <ModalFooter>
               {!isLoading ? (
-                <Button onClick={() => login()} type="submit">
-                  Login
+                <Button onClick={() => loginStrava()} type="submit">
+                  Login strava
                 </Button>
               ) : (
                 <Spinner />

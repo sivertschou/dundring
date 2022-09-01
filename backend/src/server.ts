@@ -223,64 +223,57 @@ const conf = {
 
 console.log(conf);
 
-router.get<null>('/strava/auth', (req, res) => {
-  const url = `http://www.strava.com/oauth/authorize?client_id=${conf.client_id}&response_type=code&redirect_uri=${conf.redirect_uri}&approval_prompt=force&scope=read`;
-  res.redirect(url);
-});
-
-router.get<null>('/strava/red', (req, res) => {
+router.post<null>('/stravatoken', (req, res) => {
   const code = (req.query.code || 'noo') as string;
 
   const url = `https://www.strava.com/oauth/token`;
 
-  console.log(':)))', {
-    client_id: conf.client_id,
-    client_secret: conf.client_secret,
-    grant_type: 'authorization_code',
-    code: code,
-  });
-
-  fetch(url, {
-    method: 'POST',
-    headers: {
-      // "client_secret": conf.client_secret,
-      // "grant_type": "authorization_code",
-      // "code": code
-    },
-  })
-    .then((resp) => {
-      console.log(resp);
-      return resp.json();
-    })
+  fetch(
+    url +
+      '?' +
+      new URLSearchParams({
+        client_id: conf.client_id,
+        client_secret: conf.client_secret,
+        grant_type: 'authorization_code',
+        code: code,
+      }),
+    {
+      method: 'POST',
+    }
+  )
+    .then((resp) => resp.json())
     .then((json) => {
-      tokens['token'] = json as StravaTokenResponse;
+      tokens['token'] = json;
       console.log('added token : ', json);
       res.send({
         status: ApiStatus.SUCCESS,
         data: json,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
       });
     });
 });
 
-router.get<null>('/strava/upload', (req, res) => {
-  const file = fs.readFileSync('data/mak.tcx');
-  console.log(file);
+// router.get<null>('/strava/upload', (req, res) => {
+//   const file = fs.readFileSync('data/mak.tcx');
+//   console.log(file);
 
-  strava.uploads
-    .post({
-      data_type: 'tcx',
-      file: 'data/mak.tcx' as unknown as Buffer,
-      name: 'Epic times',
-      external_id: 'external',
-    })
-    .then((w) => {
-      console.log(w);
-      res.send({
-        status: ApiStatus.SUCCESS,
-        data: {},
-      });
-    });
-});
+//   strava.uploads
+//     .post({
+//       data_type: 'tcx',
+//       file: 'data/mak.tcx' as unknown as Buffer,
+//       name: 'Epic times',
+//       external_id: 'external',
+//     })
+//     .then((w) => {
+//       console.log(w);
+//       res.send({
+//         status: ApiStatus.SUCCESS,
+//         data: {},
+//       });
+//     });
+// });
 
 router.post<null, ApiResponseBody<LoginResponseBody>, LoginRequestBody>(
   '/login',
