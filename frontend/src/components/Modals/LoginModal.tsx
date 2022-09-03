@@ -59,30 +59,30 @@ export const LoginModal = () => {
     !usernameIsTooLong && !usernameContainsIllegalCharacters;
   const mailIsValid = utils.general.mailIsValid(mail);
   const passwordIsValid = password.length > 0;
-  // const login = async () => {
-  //   const trimmedUsername = username.trim();
-  //   const trimmedPassword = password.trim();
+  const login = async () => {
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
 
-  //   if (!trimmedUsername || !trimmedPassword) {
-  //     setErrorMessage('Enter username and password.');
-  //     return;
-  //   }
+    if (!trimmedUsername || !trimmedPassword) {
+      setErrorMessage('Enter username and password.');
+      return;
+    }
 
-  //   setIsLoading(true);
-  //   const response = await api.login({
-  //     username: trimmedUsername,
-  //     password: hash(trimmedPassword),
-  //   });
-  //   setIsLoading(false);
+    setIsLoading(true);
+    const response = await api.login({
+      username: trimmedUsername,
+      password: hash(trimmedPassword),
+    });
+    setIsLoading(false);
 
-  //   if (response.status === 'FAILURE') {
-  //     setErrorMessage(response.message);
-  //   } else if (response.status === 'SUCCESS') {
-  //     const { roles, token, username, ftp } = response.data;
-  //     setUser({ loggedIn: true, token, roles, username, ftp, workouts: [] });
-  //     onClose();
-  //   }
-  // };
+    if (response.status === 'FAILURE') {
+      setErrorMessage(response.message);
+    } else if (response.status === 'SUCCESS') {
+      const { roles, token, username, ftp } = response.data;
+      setUser({ loggedIn: true, token, roles, username, ftp, workouts: [] });
+      onClose();
+    }
+  };
 
   const loginStrava = () => {
     window.location.href = stravaAuthUrl;
