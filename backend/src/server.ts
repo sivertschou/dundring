@@ -30,8 +30,6 @@ import fs from 'fs';
 
 require('dotenv').config();
 
-//let codes = ""
-
 // Create a new express app instance
 const app = express.default();
 const router = express.Router();
@@ -218,50 +216,6 @@ const stravaConfig = {
   client_id: process.env.STRAVA_CLIENT_ID || 'NOO',
   client_secret: process.env.STRAVA_CLIENT_SECRET || 'NOO',
 };
-
-router.post('/stravatoken', (req, res) => {
-  const code = (req.query.code || '') as string;
-
-  const url = `https://www.strava.com/oauth/token`;
-
-  fetch(
-    url +
-      '?' +
-      new URLSearchParams({
-        client_id: stravaConfig.client_id,
-        client_secret: stravaConfig.client_secret,
-        grant_type: 'authorization_code',
-        code: code,
-      }),
-    {
-      method: 'POST',
-    }
-  )
-    .then((resp) => {
-      if (resp.ok) {
-        return resp.json();
-      } else {
-        console.log('Strava token gone wrong : ', resp);
-        return Promise.reject();
-      }
-    })
-    .then((json) => {
-      tokens['token'] = json;
-      console.log('added token : ', json);
-
-      //This should probably not be sent to the frontend?
-      res.send({
-        status: ApiStatus.SUCCESS,
-        data: json,
-      });
-    })
-    .catch(() =>
-      res.send({
-        status: ApiStatus.FAILURE,
-        message: 'Strava error',
-      })
-    );
-});
 
 router.post('/stravatoken', async (req, res) => {
   const code = (req.query.code || '') as string;
