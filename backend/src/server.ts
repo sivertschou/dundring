@@ -255,26 +255,6 @@ router.post('/stravatoken', async (req, res) => {
   });
 });
 
-// router.get<null>('/strava/upload', (req, res) => {
-//   const file = fs.readFileSync('data/mak.tcx');
-//   console.log(file);
-
-//   strava.uploads
-//     .post({
-//       data_type: 'tcx',
-//       file: 'data/mak.tcx' as unknown as Buffer,
-//       name: 'Epic times',
-//       external_id: 'external',
-//     })
-//     .then((w) => {
-//       console.log(w);
-//       res.send({
-//         status: ApiStatus.SUCCESS,
-//         data: {},
-//       });
-//     });
-// });
-
 router.post<null, ApiResponseBody<LoginResponseBody>, LoginRequestBody>(
   '/login',
   async (req, res) => {
