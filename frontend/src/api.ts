@@ -94,7 +94,11 @@ export const register = async (registerData: RegisterRequestBody) => {
 };
 
 export const validateToken = async (token: string) => {
-  return authPost<ApiResponseBody<any>, {}>(`${httpUrl}/validate`, token, {});
+  return authPost<ApiResponseBody<LoginResponseBody>, {}>(
+    `${httpUrl}/validate`,
+    token,
+    {}
+  );
 };
 
 export const fetchMyWorkouts = async (token: string) => {
