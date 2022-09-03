@@ -94,7 +94,13 @@ export const MainPage = () => {
       <TopBar />
       <ActionBar />
       <Modals />
+      <a href="https://google.com" target="_blank" rel="noreferrer">
+        Google.com
+      </a>
       <BottomBar />
+      <a href="https://google.com" target="_blank" rel="noreferrer">
+        Google.com
+      </a>
     </>
   );
 };

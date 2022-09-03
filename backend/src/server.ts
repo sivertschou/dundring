@@ -5,6 +5,7 @@ import * as validationService from './services/validationService';
 import * as slackService from './services/slackService';
 import * as express from 'express';
 import * as core from 'express-serve-static-core';
+import fetch from 'node-fetch';
 import {
   ApiResponseBody,
   ApiStatus,
@@ -25,6 +26,7 @@ import {
 import * as WebSocket from 'ws';
 import cors from 'cors';
 import http from 'http';
+import fs from 'fs';
 
 require('dotenv').config();
 
@@ -41,6 +43,16 @@ app.use('/api', router);
 
 const httpServer = http.createServer(app);
 const wss = new WebSocket.Server({ server: httpServer });
+
+const tokens: Record<string, StravaTokenResponse> = {};
+
+type StravaTokenResponse = {
+  token_type: string;
+  expires_at: string;
+  expires_in: string;
+  refresh_token: string;
+  access_token: string;
+};
 
 const checkEnvConfig = () => {
   if (!process.env.PORT) {
@@ -199,6 +211,49 @@ router.get<null, ApiResponseBody<MessagesResponseBody>>(
     });
   }
 );
+
+const stravaConfig = {
+  client_id: process.env.STRAVA_CLIENT_ID || 'NOO',
+  client_secret: process.env.STRAVA_CLIENT_SECRET || 'NOO',
+};
+
+router.post('/stravatoken', async (req, res) => {
+  const code = (req.query.code || '') as string;
+
+  const url = `https://www.strava.com/oauth/token`;
+
+  const tokenResponse = await fetch(
+    url +
+      '?' +
+      new URLSearchParams({
+        client_id: stravaConfig.client_id,
+        client_secret: stravaConfig.client_secret,
+        grant_type: 'authorization_code',
+        code: code,
+      }),
+    {
+      method: 'POST',
+    }
+  );
+
+  if (!tokenResponse.ok) {
+    console.log('Strava token gone wrong : ', tokenResponse);
+    res.send({
+      status: ApiStatus.FAILURE,
+      message: 'Strava error',
+    });
+    return;
+  }
+  const json = await tokenResponse.json();
+  tokens['token'] = json;
+  console.log('added token : ', json);
+
+  //This should probably not be sent to the frontend?
+  res.send({
+    status: ApiStatus.SUCCESS,
+    data: json,
+  });
+});
 
 router.post<null, ApiResponseBody<LoginResponseBody>, LoginRequestBody>(
   '/login',
@@ -360,3 +415,5 @@ wss.on('connection', (ws) => {
 httpServer.listen(httpPort, () => {
   console.log(`App is listening on port ${httpPort}!:)`);
 });
+
+console.log('HEIHEI');

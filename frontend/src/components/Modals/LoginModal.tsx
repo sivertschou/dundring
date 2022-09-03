@@ -25,7 +25,8 @@ import utils from '../../utils';
 import { useLoginModal } from '../../context/ModalContext';
 import sha256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { stravaAuthUrl } from './StravaLogin';
 
 export const hash = (message: string) =>
   Base64.stringify(sha256('yehaw' + message));
@@ -81,6 +82,10 @@ export const LoginModal = () => {
       setUser({ loggedIn: true, token, roles, username, ftp, workouts: [] });
       onClose();
     }
+  };
+
+  const loginStrava = () => {
+    window.location.href = stravaAuthUrl;
   };
 
   const register = async () => {
@@ -258,7 +263,7 @@ export const LoginModal = () => {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              login();
+              // login();
             }}
           >
             <ModalHeader>Login</ModalHeader>
@@ -315,8 +320,8 @@ export const LoginModal = () => {
 
             <ModalFooter>
               {!isLoading ? (
-                <Button onClick={() => login()} type="submit">
-                  Login
+                <Button onClick={() => loginStrava()} type="submit">
+                  Login strava
                 </Button>
               ) : (
                 <Spinner />

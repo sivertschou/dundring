@@ -1,10 +1,12 @@
 import { MainPage } from './pages/MainPage';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { StravaLogin } from './components/Modals/StravaLogin';
 
 export const App = () => {
   return (
     <>
       <Routes>
+        <Route path="strava" element={<StravaLogin />} />
         <Route path="/" element={<MainPage />}>
           <Route path="group" element={<MainPage />}>
             <Route path=":groupId" element={<MainPage />} />
@@ -16,7 +18,7 @@ export const App = () => {
           <Route path="logs" element={<MainPage />} />
           <Route path="login" element={<MainPage />} />
         </Route>
-        <Route path="*" element={<Navigate to="/" />} />
+        {/* <Route path="*" element={<Navigate to="/" />} /> */}
       </Routes>
     </>
   );
