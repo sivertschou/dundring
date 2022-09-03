@@ -80,9 +80,9 @@ export const login = async (loginData: LoginRequestBody) => {
 };
 
 export const stravatoken = async (code: string) => {
-  return post<ApiResponseBody<LoginResponseBody>, null>(
+  return post<ApiResponseBody<LoginResponseBody>, {}>(
     `${httpUrl}/stravatoken?code=${code}`,
-    null
+    {}
   );
 };
 
@@ -94,11 +94,7 @@ export const register = async (registerData: RegisterRequestBody) => {
 };
 
 export const validateToken = async (token: string) => {
-  return authPost<ApiResponseBody<LoginResponseBody>, {}>(
-    `${httpUrl}/validate`,
-    token,
-    {}
-  );
+  return authPost<ApiResponseBody<any>, {}>(`${httpUrl}/validate`, token, {});
 };
 
 export const fetchMyWorkouts = async (token: string) => {

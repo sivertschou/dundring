@@ -26,7 +26,6 @@ import {
 import * as WebSocket from 'ws';
 import cors from 'cors';
 import http from 'http';
-import { default as strava, Strava } from 'strava-v3';
 import fs from 'fs';
 
 require('dotenv').config();
@@ -215,16 +214,13 @@ router.get<null, ApiResponseBody<MessagesResponseBody>>(
   }
 );
 
-const conf = {
+const stravaConfig = {
   client_id: process.env.STRAVA_CLIENT_ID || 'NOO',
   client_secret: process.env.STRAVA_CLIENT_SECRET || 'NOO',
-  redirect_uri: 'http://localhost:8092/api/strava/red',
 };
 
-console.log(conf);
-
-router.post<null>('/stravatoken', (req, res) => {
-  const code = (req.query.code || 'noo') as string;
+router.post('/stravatoken', (req, res) => {
+  const code = (req.query.code || '') as string;
 
   const url = `https://www.strava.com/oauth/token`;
 
@@ -232,8 +228,8 @@ router.post<null>('/stravatoken', (req, res) => {
     url +
       '?' +
       new URLSearchParams({
-        client_id: conf.client_id,
-        client_secret: conf.client_secret,
+        client_id: stravaConfig.client_id,
+        client_secret: stravaConfig.client_secret,
         grant_type: 'authorization_code',
         code: code,
       }),
@@ -241,18 +237,68 @@ router.post<null>('/stravatoken', (req, res) => {
       method: 'POST',
     }
   )
-    .then((resp) => resp.json())
+    .then((resp) => {
+      if (resp.ok) {
+        return resp.json();
+      } else {
+        console.log('Strava token gone wrong : ', resp);
+        return Promise.reject();
+      }
+    })
     .then((json) => {
       tokens['token'] = json;
       console.log('added token : ', json);
+
+      //This should probably not be sent to the frontend?
       res.send({
         status: ApiStatus.SUCCESS,
         data: json,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
       });
+    })
+    .catch(() =>
+      res.send({
+        status: ApiStatus.FAILURE,
+        message: 'Strava error',
+      })
+    );
+});
+
+router.post('/stravatoken', async (req, res) => {
+  const code = (req.query.code || '') as string;
+
+  const url = `https://www.strava.com/oauth/token`;
+
+  const tokenResponse = await fetch(
+    url +
+      '?' +
+      new URLSearchParams({
+        client_id: stravaConfig.client_id,
+        client_secret: stravaConfig.client_secret,
+        grant_type: 'authorization_code',
+        code: code,
+      }),
+    {
+      method: 'POST',
+    }
+  );
+
+  if (!tokenResponse.ok) {
+    console.log('Strava token gone wrong : ', tokenResponse);
+    res.send({
+      status: ApiStatus.FAILURE,
+      message: 'Strava error',
     });
+    return;
+  }
+  const json = await tokenResponse.json();
+  tokens['token'] = json;
+  console.log('added token : ', json);
+
+  //This should probably not be sent to the frontend?
+  res.send({
+    status: ApiStatus.SUCCESS,
+    data: json,
+  });
 });
 
 // router.get<null>('/strava/upload', (req, res) => {

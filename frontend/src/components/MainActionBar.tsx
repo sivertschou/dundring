@@ -25,14 +25,6 @@ export const MainActionBar = () => {
     requestPermission: connectToSmartTrainer,
   } = useSmartTrainer();
 
-  const stravaUrl = `https://www.strava.com/oauth/authorize?client_id=39382&redirect_uri=http://localhost:3000&response_type=code&scope=activity:write,read&approval_prompt=auto`;
-
-  // .appendQueryParameter("client_id", "1234321")
-  // .appendQueryParameter("redirect_uri", "https://www.yourapp.com")
-  // .appendQueryParameter("response_type", "code")
-  // .appendQueryParameter("approval_prompt", "auto")
-  // .appendQueryParameter("scope", "activity:write,read")
-
   const bgColor = useColorModeValue('gray.200', 'gray.900');
   return (
     <Center mb="5" mx="2">
@@ -48,9 +40,7 @@ export const MainActionBar = () => {
                 color={linkColor}
                 onClick={() => connectToSmartTrainer()}
               >
-                <a href={stravaUrl} target="_blank" rel="noreferrer">
-                  Google.com
-                </a>
+                Connect smart trainer
               </Button>
             </HStack>
           </Center>

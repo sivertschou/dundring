@@ -26,6 +26,7 @@ import { useLoginModal } from '../../context/ModalContext';
 import sha256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { stravaAuthUrl } from './StravaLogin';
 
 export const hash = (message: string) =>
   Base64.stringify(sha256('yehaw' + message));
@@ -84,10 +85,7 @@ export const LoginModal = () => {
   // };
 
   const loginStrava = () => {
-    const client_id = '39382';
-    const redirect_uri = 'http://localhost:3000/strava';
-    const url = `https://www.strava.com/oauth/authorize?client_id=${client_id}&response_type=code&redirect_uri=${redirect_uri}&approval_prompt=force&scope=read`;
-    window.location.href = url;
+    window.location.href = stravaAuthUrl;
   };
 
   const register = async () => {
