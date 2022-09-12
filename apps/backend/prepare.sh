@@ -8,6 +8,8 @@ SLACK_ERRORS=
 SLACK_GROUP_SESSION=
 SLACK_FEEDBACK=
 "
+
+echo "backend/prepare.sh – Starting ⚡️"
 if [ ! -f .env ]; then
     echo ".env does not exist. Create it with default values: ⚡️"
     printf "$config" > .env
@@ -21,8 +23,4 @@ if [ ! -d data ]; then
     printf "[]" > data/users.json
     printf "[]" > data/messages.json
 fi
-
-# Make sure parent preparations are done
-echo "Make sure project configs are installed ⚡️"
-cd .. && npm install
-echo "Done configuring project ⚡️"
+echo "backend/prepare.sh – Done ⚡️"

@@ -1,10 +1,10 @@
 {
-  "name": "dundring-backend",
+  "name": "@dundring/backend",
   "version": "0.0.1",
   "description": "",
   "main": "server.js",
   "scripts": {
-    "preinstall": "bash prepare.sh",
+    "prepare": "bash prepare.sh",
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
     "start-server": "tsc && node build/backend/src/server.js",
