@@ -1,4 +1,4 @@
-import { Message } from '../../../common/types/messageTypes';
+import { Message } from '@dundring/types';
 require('dotenv').config();
 const fs = require('fs');
 

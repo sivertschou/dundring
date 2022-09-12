@@ -1,8 +1,7 @@
-import { StoredUser, UserRole } from '../../../common/types/userTypes';
-import { Status } from '../../../common/types/serviceTypes';
+import { StoredUser, UserRole, Status, Workout } from '@dundring/types';
+import {} from '@dundring/types';
 require('dotenv').config();
 import * as fs from 'fs';
-import { Workout } from '../../../common/types/workoutTypes';
 import * as validationService from './validationService';
 import * as slackService from './slackService';
 import { generateRandomString } from './groupSessionService';

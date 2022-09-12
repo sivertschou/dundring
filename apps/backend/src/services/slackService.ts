@@ -1,6 +1,5 @@
-import { User } from '../../../common/types/userTypes';
+import { User, Room } from '@dundring/types';
 import fetch from 'node-fetch';
-import { Room } from '../../../common/types/wsTypes';
 
 require('dotenv').config();
 

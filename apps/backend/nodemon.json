@@ -1,11 +1,6 @@
 {
-    "watch": [
-        "src",
-        "../common"
-    ],
-    "ext": "ts,json",
-    "ignore": [
-        "src/**/*.spec.ts"
-    ],
-    "exec": "npm run start-server"
+  "watch": ["src"],
+  "ext": "ts,json",
+  "ignore": ["src/**/*.spec.ts"],
+  "exec": "npm run start-server"
 }

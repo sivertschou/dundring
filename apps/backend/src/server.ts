@@ -16,12 +16,10 @@ import {
   UserUpdateRequestBody,
   WorkoutRequestBody,
   WorkoutsResponseBody,
-} from '../../common/types/apiTypes';
-import { UserRole } from '../../common/types/userTypes';
-import {
+  UserRole,
   WebSocketRequest,
   WebSocketRequestType,
-} from '../../common/types/wsTypes';
+} from '@dundring/types';
 import * as WebSocket from 'ws';
 import cors from 'cors';
 import http from 'http';

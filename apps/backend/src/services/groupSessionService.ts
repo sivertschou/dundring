@@ -8,7 +8,7 @@ import {
   Room,
   WebSocketResponse,
   WebSocketResponseType,
-} from '../../../common/types/wsTypes';
+} from '@dundring/types';
 import * as slackService from './slackService';
 import { WebSocket } from 'ws';
 

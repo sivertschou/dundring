@@ -7,8 +7,8 @@
     "prepare": "bash prepare.sh",
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
-    "start-server": "tsc && node build/backend/src/server.js",
-    "start": "nodemon",
+    "start-server": "ts-node",
+    "start": "nodemon src/server.ts",
     "build": "tsc"
   },
   "author": "",
@@ -28,6 +28,7 @@
     "@types/node-fetch": "^2.5.12",
     "@types/ws": "^8.2.1",
     "nodemon": "^2.0.14",
-    "typescript": "^4.4.4"
+    "typescript": "^4.4.4",
+    "ts-node": "^10.9.1"
   }
 }
