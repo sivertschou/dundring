@@ -56,7 +56,7 @@ const imageInlineSizeLimit = parseInt(
 );
 
 // Check if TypeScript is setup
-const useTypeScript = fs.existsSync(paths.appTsConfig);
+const useTypeScript = true;
 
 // Check if Tailwind config exists
 const useTailwind = fs.existsSync(
@@ -222,12 +222,13 @@ module.exports = function (webpackEnv) {
       publicPath: paths.publicUrlOrPath,
       // Point sourcemap entries to original disk location (format as URL on Windows)
       devtoolModuleFilenameTemplate: isEnvProduction
-        ? info =>
+        ? (info) =>
             path
               .relative(paths.appSrc, info.absoluteResourcePath)
               .replace(/\\/g, '/')
         : isEnvDevelopment &&
-          (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
+          ((info) =>
+            path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
     },
     cache: {
       type: 'filesystem',
@@ -237,7 +238,7 @@ module.exports = function (webpackEnv) {
       buildDependencies: {
         defaultWebpack: ['webpack/lib/'],
         config: [__filename],
-        tsconfig: [paths.appTsConfig, paths.appJsConfig].filter(f =>
+        tsconfig: [paths.appTsConfig, paths.appJsConfig].filter((f) =>
           fs.existsSync(f)
         ),
       },
@@ -307,8 +308,8 @@ module.exports = function (webpackEnv) {
       // `web` extension prefixes have been added for better support
       // for React Native Web.
       extensions: paths.moduleFileExtensions
-        .map(ext => `.${ext}`)
-        .filter(ext => useTypeScript || !ext.includes('ts')),
+        .map((ext) => `.${ext}`)
+        .filter((ext) => useTypeScript || !ext.includes('ts')),
       alias: {
         // Support React Native Web
         // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
@@ -326,14 +327,17 @@ module.exports = function (webpackEnv) {
         // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
         // please link the files into your node_modules/ and let module-resolution kick in.
         // Make sure your source files are compiled, as they will not be processed in any way.
-        new ModuleScopePlugin(paths.appSrc, [
-          paths.appPackageJson,
-          reactRefreshRuntimeEntry,
-          reactRefreshWebpackPluginRuntimeEntry,
-          babelRuntimeEntry,
-          babelRuntimeEntryHelpers,
-          babelRuntimeRegenerator,
-        ]),
+        new ModuleScopePlugin(
+          [paths.appSrc, paths.packagesSrc],
+          [
+            paths.appPackageJson,
+            reactRefreshRuntimeEntry,
+            reactRefreshWebpackPluginRuntimeEntry,
+            babelRuntimeEntry,
+            babelRuntimeEntryHelpers,
+            babelRuntimeRegenerator,
+          ]
+        ),
       ],
     },
     module: {
@@ -405,7 +409,7 @@ module.exports = function (webpackEnv) {
             // The preset includes JSX, Flow, TypeScript, and some ESnext features.
             {
               test: /\.(js|mjs|jsx|ts|tsx)$/,
-              include: paths.appSrc,
+              include: [paths.appSrc, paths.packagesSrc],
               loader: require.resolve('babel-loader'),
               options: {
                 customize: require.resolve(
@@ -419,7 +423,7 @@ module.exports = function (webpackEnv) {
                     },
                   ],
                 ],
-                
+
                 plugins: [
                   isEnvDevelopment &&
                     shouldUseReactRefresh &&
@@ -453,7 +457,7 @@ module.exports = function (webpackEnv) {
                 cacheDirectory: true,
                 // See #6846 for context on why cacheCompression is disabled
                 cacheCompression: false,
-                
+
                 // Babel sourcemaps are needed for debugging into node_modules
                 // code.  Without the options below, debuggers like VSCode
                 // show incorrect code and set breakpoints on the wrong lines.
@@ -643,7 +647,7 @@ module.exports = function (webpackEnv) {
             return manifest;
           }, seed);
           const entrypointFiles = entrypoints.main.filter(
-            fileName => !fileName.endsWith('.map')
+            (fileName) => !fileName.endsWith('.map')
           );
 
           return {

@@ -22,6 +22,6 @@
     "apps/*"
   ],
   "lint-staged": {
-    "*.{ts,tsx,md,svg,html,json}": "prettier --write"
+    "*.{ts,tsx,js,md,svg,html,json}": "prettier --write"
   }
 }
