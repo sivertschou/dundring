@@ -1,5 +1,6 @@
 import { AspectRatio, Grid, Stack } from '@chakra-ui/layout';
 import { useBreakpointValue } from '@chakra-ui/media-query';
+import { Member } from '@dundring/types';
 import * as React from 'react';
 import {
   Area,
@@ -12,7 +13,7 @@ import {
 } from 'recharts';
 import { hrColors, powerColors, untrackedColor } from '../colors';
 import { useData } from '../context/DataContext';
-import { LocalRoom, Member } from '../context/WebsocketContext';
+import { LocalRoom } from '../context/WebsocketContext';
 import { CustomChartTooltip } from './Graph/CustomChartTooltip';
 import { CustomGraphTooltip } from './Graph/CustomGraphTooltip';
 import { ShowData } from './Graph/GraphContainer';
