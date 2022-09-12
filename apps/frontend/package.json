@@ -2,6 +2,14 @@
   "name": "@dundring/frontend",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "mock": "export REACT_APP_USE_MOCK_DATA=true ; node scripts/start.js",
+    "prepare": "bash prepare.sh",
+    "dev": "node scripts/start.js",
+    "build": "node scripts/build.js",
+    "build:mock": "export REACT_APP_USE_MOCK_DATA=true ; node scripts/build.js",
+    "test": "node scripts/test.js"
+  },
   "dependencies": {
     "@babel/core": "^7.16.0",
     "@chakra-ui/react": "^1.0.0",
@@ -67,14 +75,6 @@
     "webpack-dev-server": "^4.6.0",
     "webpack-manifest-plugin": "^4.0.2",
     "workbox-webpack-plugin": "^6.4.1"
-  },
-  "scripts": {
-    "mock": "export REACT_APP_USE_MOCK_DATA=true ; node scripts/start.js",
-    "prepare": "bash prepare.sh",
-    "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
-    "build-mock": "export REACT_APP_USE_MOCK_DATA=true ; node scripts/build.js",
-    "test": "node scripts/test.js"
   },
   "eslintConfig": {
     "extends": "react-app"

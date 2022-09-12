@@ -22,3 +22,5 @@ yarn-error.log*
 apps/backend/data
 
 *.swp
+
+.turbo

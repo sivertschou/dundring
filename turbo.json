@@ -5,10 +5,17 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "build:mock": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
     "lint": {
       "outputs": []
     },
-    "start": {
+    "dev": {
+      "cache": false
+    },
+    "mock": {
       "cache": false
     }
   }
