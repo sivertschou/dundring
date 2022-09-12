@@ -7,8 +7,7 @@ import {
   UserUpdateRequestBody,
   WorkoutRequestBody,
   WorkoutsResponseBody,
-} from '../../common/types/apiTypes';
-
+} from '@dundring/types';
 export const domain = process.env.REACT_APP_DOMAIN || 'http://localhost:3000';
 
 export const httpUrl =

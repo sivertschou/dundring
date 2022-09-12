@@ -2,5 +2,7 @@
   "name": "@dundring/types",
   "version": "0.1.0",
   "description": "",
-  "author": ""
+  "author": "",
+  "types": "src/index.ts",
+  "main": "src/index.ts"
 }

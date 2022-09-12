@@ -1,4 +1,4 @@
-import { UserRole } from '../../common/types/userTypes';
+import { UserRole } from '@dundring/types';
 
 export interface Lap {
   dataPoints: DataPoint[];

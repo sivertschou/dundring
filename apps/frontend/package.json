@@ -35,7 +35,11 @@
     "extends": "react-app"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
@@ -43,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "@dundring/types": "*",
     "@types/crypto-js": "^4.1.0",
     "@types/dom-screen-wake-lock": "^1.0.0",
     "@types/jest": "^25.0.0",
