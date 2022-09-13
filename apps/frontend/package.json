@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "mock": "export REACT_APP_USE_MOCK_DATA=true ; node scripts/start.js",
     "prepare": "bash prepare.sh",
     "dev": "node scripts/start.js",
+    "mock": "export REACT_APP_USE_MOCK_DATA=true ; node scripts/start.js",
     "build": "node scripts/build.js",
     "build:mock": "export REACT_APP_USE_MOCK_DATA=true ; node scripts/build.js",
     "test": "node scripts/test.js"

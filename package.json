@@ -5,7 +5,7 @@
   "author": "sivertschou",
   "private": true,
   "scripts": {
-    "prepare": "husky install && yarn --cwd apps/frontend prepare && yarn --cwd apps/backend prepare",
+    "prepare": "husky install && turbo run prepare",
     "start": "turbo run dev --parallel",
     "mock": "turbo run mock --parallel",
     "build:mock": "turbo run build:mock --parallel",
@@ -13,7 +13,7 @@
     "frontend": "yarn --cwd apps/frontend start",
     "frontend:mock": "yarn --cwd apps/frontend mock",
     "backend": "yarn --cwd apps/backend start",
-    "clean": "rm -rf node_modules */**/node_modules"
+    "clean": "rm -rf node_modules */**/node_modules */**/.turbo"
   },
   "devDependencies": {
     "husky": "^7.0.0",
