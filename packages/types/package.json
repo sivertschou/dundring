@@ -1,0 +1,9 @@
+{
+  "name": "@dundring/types",
+  "version": "0.1.0",
+  "private": true,
+  "description": "",
+  "author": "",
+  "types": "src/index.ts",
+  "main": "src/index.ts"
+}

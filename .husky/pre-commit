@@ -1,4 +1,5 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
-echo "Formatting ⚡️"
-./node_modules/.bin/git-format-staged -f './node_modules/.bin/prettier --ignore-unknown --stdin-filepath "{}"' '*'
+echo "Formatting the code ⚡️"
+yarn lint-staged
+echo "Done formatting the code ⚡️"

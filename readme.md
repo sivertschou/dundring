@@ -47,38 +47,37 @@ You can create or join a group session to workout together with your friends.
 
 The project is separated into `frontend` and `backend`, with more in-depth instructions in each directory. The frontend is created with [React](https://reactjs.org/), [TypeScript](https://www.typescriptlang.org/) and [Chakra-UI](https://chakra-ui.com/), and the backend is created with [Express](https://expressjs.com/) and [TypeScript](https://www.typescriptlang.org/).
 
-### Running the frontend
-
 Install dependencies and do the required config.
 
 ```
-$ cd frontend && npm i
+$ yarn
 ```
 
-Run the app
+You can either run both the frontend and backend in parallel, or separately.
+
+### In parallel
 
 ```
-$ npm start
+$ yarn start
 ```
 
 If you would like to get mocked HR and Power data, you can run the app with
 
 ```
-$ npm run mock
+$ yarn mock
 ```
 
-### Running the backend
-
-Install dependencies and do the required config.
+### Separately
 
 ```
-$ cd backend && npm i
-```
+# Run the frontend
+$ yarn frontend
 
-Run the app
+# Run the frontend with mock-data
+$ yarn frontend:mock
 
-```
-$ npm start
+# Run the backend
+$ yarn backend
 ```
 
 ## Contribution
