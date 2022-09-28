@@ -6,8 +6,8 @@
   "private": true,
   "scripts": {
     "prepare": "husky install && turbo run prepare",
-    "start": "turbo run dev --parallel",
-    "mock": "turbo run mock --parallel",
+    "start": "FORCE_COLOR=1 turbo run start --parallel",
+    "mock": "FORCE_COLOR=1 turbo run mock --parallel",
     "build:mock": "turbo run build:mock --parallel",
     "build": "turbo run build --parallel",
     "frontend": "yarn --cwd apps/frontend start",
