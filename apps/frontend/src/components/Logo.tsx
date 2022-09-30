@@ -5,8 +5,8 @@ import {
   forwardRef,
   useColorModeValue,
 } from '@chakra-ui/react';
-import logoBlack from '../assets/LogoBlackGradient.svg';
-import logoWhite from '../assets/LogoWhiteGradient.svg';
+import logoBlack from '../assets/LogoBlack.svg';
+import logoWhite from '../assets/LogoWhite.svg';
 
 type LogoVariant = 'black' | 'white';
 
