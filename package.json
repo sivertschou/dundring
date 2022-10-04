@@ -5,7 +5,7 @@
   "author": "sivertschou",
   "private": true,
   "scripts": {
-    "prepare": "husky install && turbo run prepare",
+    "prepare": "husky install && turbo run prepare && bash scripts/print_dundring.sh",
     "start": "FORCE_COLOR=1 turbo run start --parallel",
     "mock": "FORCE_COLOR=1 turbo run mock --parallel",
     "build:mock": "turbo run build:mock --parallel",
