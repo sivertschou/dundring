@@ -23,6 +23,7 @@ interface Data {
   minutesInput: string;
   powerPercentInput: string;
   powerWattInput: string;
+  type: 'steady';
 }
 interface UpdateTimeSeconds {
   type: 'UPDATE_TIME_SECONDS';
@@ -95,7 +96,11 @@ export const WorkoutIntervalInput = ({
     data: Data,
     setWorkoutPart: (part: WorkoutPart) => void
   ) => {
-    setWorkoutPart({ duration: data.seconds, targetPower: data.power });
+    setWorkoutPart({
+      duration: data.seconds,
+      targetPower: data.power,
+      type: data.type,
+    });
     return data;
   };
   const reducer = (currentData: Data, action: DataAction): Data => {
@@ -198,6 +203,7 @@ export const WorkoutIntervalInput = ({
     power: ftpPercentFromProps,
     powerPercentInput: '' + ftpPercentFromProps,
     powerWattInput: '' + wattFromProps,
+    type: 'steady',
   });
 
   const durationIsInvalid = false;

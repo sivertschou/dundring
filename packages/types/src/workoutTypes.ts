@@ -7,4 +7,5 @@ export interface Workout {
 export interface WorkoutPart {
   duration: number;
   targetPower: number;
+  type: 'steady';
 }
