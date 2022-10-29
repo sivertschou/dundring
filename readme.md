@@ -1,4 +1,4 @@
-![](docs/logo_gradient.svg)
+![](docs/logo.svg)
 
 **[Dundring](https://dundring.com) is an in-browser training application created to control and track you training with a smart bike trainer.**
 
