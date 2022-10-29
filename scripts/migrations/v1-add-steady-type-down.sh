@@ -1,11 +1,9 @@
 #!/bin/sh
 
-# uses jq, can be installed by npm i -g node-jq
-
-echo "creating backup users.backup.json"
+echo "creating backup users.backup.down.json"
 cp apps/backend/data/users.json apps/backend/data/users.backup.down.json
 
-jq 'del(.[].workouts[].parts[].type)' apps/backend/data/users.backup.down.json > apps/backend/data/users.json
+npm exec --yes --package=node-jq "jq 'del(.[].workouts[].parts[].type)' apps/backend/data/users.backup.down.json > apps/backend/data/users.json"
 
 echo "Done. Remember to check result and delete backup if OK :))"
 echo "Result:"
