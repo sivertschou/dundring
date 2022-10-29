@@ -4,11 +4,11 @@
     "prepare": {},
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["build/**"]
+      "outputs": ["build/**", "dist/**"]
     },
     "build:mock": {
       "dependsOn": ["^build"],
-      "outputs": ["build/**"]
+      "outputs": ["build/**", "dist/**"]
     },
     "lint": {
       "outputs": []
