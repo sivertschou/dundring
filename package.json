@@ -10,6 +10,8 @@
     "mock": "FORCE_COLOR=1 turbo run mock --parallel",
     "build:mock": "turbo run build:mock --parallel",
     "build": "turbo run build --parallel",
+    "build:backend": "yarn --cwd apps/backend build",
+    "build:frontend": "yarn --cwd apps/frontend build",
     "frontend": "yarn --cwd apps/frontend start",
     "frontend:mock": "yarn --cwd apps/frontend mock",
     "backend": "yarn --cwd apps/backend start",
