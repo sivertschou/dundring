@@ -238,6 +238,7 @@ export const WorkoutEditor = ({
                   ? workout.parts[workout.parts.length - 1]
                   : {}),
                 id: getNextWorkoutPartsId(workout.parts),
+                type: 'steady',
               },
             ],
           }))

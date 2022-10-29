@@ -48,6 +48,7 @@ export const WorkoutOverview = ({
               {
                 duration: 5 * 60,
                 targetPower: 70,
+                type: 'steady',
               },
             ],
             id: '',
