@@ -19,6 +19,7 @@
     "@prettier/plugin-xml": "^2.2.0",
     "husky": "^7.0.0",
     "lint-staged": "^13.0.3",
+    "node-jq": "^2.3.4",
     "prettier": "2.5.1",
     "turbo": "^1.4.4"
   },
