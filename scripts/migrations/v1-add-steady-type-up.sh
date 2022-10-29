@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# uses jq, can be installed by npm i -g node-jq
+
 echo "creating backup users.backup.json"
 cp apps/backend/data/users.json apps/backend/data/users.backup.up.json
 
