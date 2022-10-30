@@ -8,6 +8,7 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "tsc -w",
+    "prepare": "echo \"Building types ⚡️\" && yarn build",
     "build": "tsc"
   },
   "devDependencies": {
