@@ -6,8 +6,8 @@
   "private": true,
   "scripts": {
     "prepare": "husky install && turbo run prepare && bash scripts/print_dundring.sh",
-    "start": "FORCE_COLOR=1 turbo run start --parallel",
-    "mock": "FORCE_COLOR=1 turbo run mock --parallel",
+    "start": "FORCE_COLOR=1 turbo run start",
+    "mock": "FORCE_COLOR=1 turbo run mock",
     "build:mock": "turbo run build:mock",
     "build": "turbo run build",
     "build:backend": "yarn --cwd apps/backend build",
