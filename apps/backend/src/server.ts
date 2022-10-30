@@ -93,9 +93,10 @@ router.get<core.ParamsDictionary, ApiResponseBody<ImportWorkoutResponseBody>>(
 
 router.get<null, ApiResponseBody<WorkoutsResponseBody>>(
   '/me/workouts',
-  validationService.authenticateToken,
-  (req: validationService.AuthenticatedRequest<null>, res) => {
-    const workouts = userService.getUserWorkouts(req.username || '');
+  (req, res) => {
+    if (!validationService.authenticateToken(req, res)) return;
+
+    const workouts = userService.getUserWorkouts(req.username);
     res.send({
       status: ApiStatus.SUCCESS,
       data: { workouts },
@@ -105,16 +106,9 @@ router.get<null, ApiResponseBody<WorkoutsResponseBody>>(
 
 router.post<WorkoutRequestBody, ApiResponseBody<WorkoutsResponseBody>>(
   '/me/workout',
-  validationService.authenticateToken,
-  (req: validationService.AuthenticatedRequest<WorkoutRequestBody>, res) => {
+  (req, res) => {
+    if (!validationService.authenticateToken(req, res)) return;
     const workout = req.body.workout;
-    if (!req.username) {
-      res.send({
-        status: ApiStatus.FAILURE,
-        message: 'Unathorized',
-      });
-      return;
-    }
 
     const ret = userService.saveWorkout(req.username, workout);
 
@@ -137,15 +131,9 @@ router.post<WorkoutRequestBody, ApiResponseBody<WorkoutsResponseBody>>(
 
 router.post<UserUpdateRequestBody, ApiResponseBody<UserUpdateRequestBody>>(
   '/me',
-  validationService.authenticateToken,
-  (req: validationService.AuthenticatedRequest<UserUpdateRequestBody>, res) => {
-    if (!req.username) {
-      res.send({
-        status: ApiStatus.FAILURE,
-        message: 'Unathorized',
-      });
-      return;
-    }
+  (req, res) => {
+    if (!validationService.authenticateToken(req, res)) return;
+
     const { ftp } = req.body;
 
     const ret = userService.updateUserFtp(req.username, ftp);
@@ -169,8 +157,9 @@ router.post<UserUpdateRequestBody, ApiResponseBody<UserUpdateRequestBody>>(
 
 router.post<null, ApiResponseBody<LoginResponseBody>>(
   '/validate',
-  validationService.authenticateToken,
-  async (req: validationService.AuthenticatedRequest<null>, res) => {
+  async (req, res) => {
+    if (!validationService.authenticateToken(req, res)) return;
+
     const username = req.username;
     const user = userService.getUser(username || '');
     const authHeader = req.headers['authorization'];

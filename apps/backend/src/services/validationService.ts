@@ -1,9 +1,8 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { ApiResponseBody, ApiStatus } from '@dundring/types';
-import * as core from 'express-serve-static-core';
 
-const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 const tokenSecret = process.env.TOKEN_SECRET || '12345';
 
 export const hash = (message: string) => {
@@ -21,41 +20,62 @@ export const generateAccessToken = (username: string) => {
     expiresIn: '120d',
   });
 };
-export interface AuthenticatedRequest<T = core.ParamsDictionary>
-  extends Request<T> {
+
+export type AuthenticatedRequest<T> = {
+  username: string;
+  jwtPayload: JwtExpPayload;
+} & Request<T>;
+
+interface UnauthenticatedRequest<T> extends Request<T> {
   username?: string;
+  jwtPayload?: JwtExpPayload;
 }
-export const authenticateToken = <T, R>(
-  req: AuthenticatedRequest<T>,
-  res: Response<ApiResponseBody<R>>,
-  next: NextFunction
-) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
 
-  if (!token) {
-    const statusMessage = 'No token provided.';
-    res.statusMessage = statusMessage;
-    res.statusCode = 401;
-    res.send({
-      status: ApiStatus.FAILURE,
-      message: statusMessage,
-    });
-    return;
-  }
+interface UserPayload {
+  username: string;
+}
+interface JwtExpPayload {
+  expiresIn: string;
+  exp: number;
+}
+export const authenticateToken = <Res, Req>(
+  req: UnauthenticatedRequest<Req>,
+  res: Response<ApiResponseBody<Res>>
+): req is AuthenticatedRequest<Req> => {
+  try {
+    const jwtPayload = jwt.decode(
+      req.header('authorization')!
+    ) as JwtExpPayload;
 
-  jwt.verify(token, tokenSecret, (err: Error, user: { username: string }) => {
-    if (err) {
-      const statusMessage = 'Could not verify token.';
+    req.jwtPayload = jwtPayload;
+
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+      const statusMessage = 'No token provided.';
       res.statusMessage = statusMessage;
       res.statusCode = 401;
       res.send({
         status: ApiStatus.FAILURE,
         message: statusMessage,
       });
-      return;
+      return false;
     }
+
+    const user = jwt.verify(token, tokenSecret) as UserPayload;
+
     req.username = user.username;
-    next();
-  });
+
+    return true;
+  } catch (error) {
+    const statusMessage = 'Could not verify token.';
+    res.statusMessage = statusMessage;
+    res.statusCode = 401;
+    res.send({
+      status: ApiStatus.FAILURE,
+      message: statusMessage,
+    });
+    return false;
+  }
 };

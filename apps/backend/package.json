@@ -26,6 +26,7 @@
     "@dundring/types": "*",
     "@types/cors": "^2.8.9",
     "@types/express": "^4.17.11",
+    "@types/jsonwebtoken": "^8.5.9",
     "@types/node": "^18.7.23",
     "@types/node-fetch": "^2.5.12",
     "@types/nodemailer": "^6.4.6",
