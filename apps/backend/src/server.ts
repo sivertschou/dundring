@@ -3,6 +3,7 @@ import * as userService from './services/userService';
 import * as groupSessionService from './services/groupSessionService';
 import * as validationService from './services/validationService';
 import * as slackService from './services/slackService';
+import * as mailService from './services/mailService';
 import * as express from 'express';
 import * as core from 'express-serve-static-core';
 import {
@@ -19,6 +20,7 @@ import {
   UserRole,
   WebSocketRequest,
   WebSocketRequestType,
+  MailLoginRequestBody,
 } from '@dundring/types';
 import * as WebSocket from 'ws';
 import cors from 'cors';
@@ -60,6 +62,7 @@ const checkEnvConfig = () => {
   }
 
   slackService.checkSlackConfig();
+  mailService.checkMailConfig();
 };
 
 checkEnvConfig();
@@ -186,9 +189,27 @@ router.post<null, ApiResponseBody<LoginResponseBody>>(
   }
 );
 
+router.post<null, ApiResponseBody<string>, MailLoginRequestBody>(
+  '/mailtest',
+  async (req, res) => {
+    const { mail } = req.body;
+
+    const ret = await mailService.sendLoginEmail(mail);
+
+    switch (ret.status) {
+      case 'SUCCESS':
+        res.send({ status: ApiStatus.SUCCESS, data: 'Mail sent' });
+        return;
+      case 'ERROR':
+        res.send({ status: ApiStatus.FAILURE, message: ret.type });
+        return;
+    }
+  }
+);
+
 router.get<null, ApiResponseBody<MessagesResponseBody>>(
   '/messages',
-  (req, res) => {
+  (_req, res) => {
     const messages = messageService.getMessages();
 
     res.send({

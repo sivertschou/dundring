@@ -24,6 +24,10 @@ export type ApiResponseBody<T> =
   | ApiErrorResponseBody
   | ApiLoading;
 
+export interface MailLoginRequestBody {
+  mail: string;
+}
+
 export interface LoginRequestBody {
   username: string;
   password: string;
