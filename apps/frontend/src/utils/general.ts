@@ -65,4 +65,4 @@ export const ftpPercentFromWatt = (watt: number, ftp: number) =>
   Math.floor(1000 * (watt / ftp)) / 10;
 
 export const wattFromFtpPercent = (ftpPercent: number, ftp: number) =>
-  Math.floor((ftpPercent / 100) * ftp);
+  Math.floor((ftpPercent * ftp) / 100);
