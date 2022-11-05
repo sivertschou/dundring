@@ -13,6 +13,7 @@ import { importWorkout } from '../../api';
 import { Text } from '@chakra-ui/layout';
 import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
 import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export enum ApiStatus {
   SUCCESS = 'SUCCESS',
@@ -31,6 +32,8 @@ export const ImportWorkout = ({ setWorkoutToEdit, previewFtp }: Props) => {
   const [workoutIdInput, setWorkoutIdInput] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
 
+  const navigate = useNavigate();
+
   const workoutIdInputIsValidFormat =
     workoutIdInput.match('([a-zA-Z0-9]+-[0-9]+)') !== null;
 
@@ -47,6 +50,7 @@ export const ImportWorkout = ({ setWorkoutToEdit, previewFtp }: Props) => {
             type: 'new',
             previewFtp,
           });
+          navigate('workout');
           return;
         }
         case ApiStatus.FAILURE: {
@@ -58,7 +62,7 @@ export const ImportWorkout = ({ setWorkoutToEdit, previewFtp }: Props) => {
         }
       }
     },
-    [setIsLoading, previewFtp, setWorkoutToEdit]
+    [setIsLoading, previewFtp, setWorkoutToEdit, navigate]
   );
 
   React.useEffect(() => {
