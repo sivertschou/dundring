@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DataPoint, Lap, Waypoint } from '../types';
+import { DataPoint, Lap } from '../types';
 import { distanceToCoordinates } from '../utils/gps';
 import { getPowerToSpeedMap } from '../utils/speed';
 import { useActiveWorkout } from './ActiveWorkoutContext';
@@ -57,15 +57,6 @@ interface Start {
   type: 'START';
 }
 type Action = AddData | AddLap | IncreaseElapsedTime | Start | Pause;
-
-const zap: Waypoint[] = [
-  { lat: 59.90347154, lon: 10.6590337, distance: 2400 },
-  { lat: 59.88396124, lon: 10.64085992, distance: 600 },
-  { lat: 59.88389387, lon: 10.65213867, distance: 2000 },
-  { lat: 59.86610453, lon: 10.64629091, distance: 2400 },
-  { lat: 59.88561483, lon: 10.6644647, distance: 600 },
-  { lat: 59.8856822, lon: 10.65318595, distance: 2000 },
-];
 
 export const DataContextProvider = ({ clockWorker, children }: Props) => {
   const {
@@ -139,7 +130,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
           const deltaDistance = (speed * action.delta) / 1000;
 
           const totalDistance = currentData.distance + deltaDistance;
-          const coordinates = distanceToCoordinates(zap, totalDistance);
+          const coordinates = distanceToCoordinates(totalDistance);
           const dataPointWithPosition: DataPoint = {
             ...dataPoint,
             ...(coordinates
