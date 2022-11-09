@@ -1,4 +1,4 @@
-import { Status, mapStatus } from '@dundring/types';
+import { Status, mapStatusSuccess } from '@dundring/types';
 import nodemailer from 'nodemailer';
 import { generateMailToken } from '../validationService';
 import * as userService from '../userService';
@@ -106,7 +106,7 @@ export const sendLoginOrRegisterMail = async (
       return { status: 'SUCCESS', data: 'Login link sent' };
     }
 
-    return mapStatus(
+    return mapStatusSuccess(
       await sendMail({
         to: mail,
         subject: 'Sign in link',
@@ -120,7 +120,7 @@ export const sendLoginOrRegisterMail = async (
       return { status: 'SUCCESS', data: 'Register link sent' };
     }
 
-    return mapStatus(
+    return mapStatusSuccess(
       await sendMail({
         to: mail,
         subject: 'Create a user for dundring.com',
