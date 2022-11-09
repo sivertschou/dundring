@@ -21,6 +21,9 @@ import {
   WebSocketRequest,
   WebSocketRequestType,
   MailLoginRequestBody,
+  MailAuthenticationRequestBody,
+  MailAuthenticationResponseBody,
+  MailAuthenticationRegisterRequestBody,
 } from '@dundring/types';
 import * as WebSocket from 'ws';
 import cors from 'cors';
@@ -179,15 +182,15 @@ router.post<null, ApiResponseBody<LoginResponseBody>>(
 );
 
 router.post<null, ApiResponseBody<string>, MailLoginRequestBody>(
-  '/mailtest',
+  '/login/mail',
   async (req, res) => {
     const { mail } = req.body;
 
-    const ret = await mailService.sendLoginEmail(mail);
+    const ret = await mailService.sendLoginOrRegisterMail(mail);
 
     switch (ret.status) {
       case 'SUCCESS':
-        res.send({ status: ApiStatus.SUCCESS, data: 'Mail sent' });
+        res.send({ status: ApiStatus.SUCCESS, data: ret.data });
         return;
       case 'ERROR':
         res.send({ status: ApiStatus.FAILURE, message: ret.type });
@@ -195,6 +198,139 @@ router.post<null, ApiResponseBody<string>, MailLoginRequestBody>(
     }
   }
 );
+
+router.post<
+  null,
+  ApiResponseBody<LoginResponseBody>,
+  MailAuthenticationRegisterRequestBody
+>('/register/mail', async (req, res) => {
+  const { username, ticket } = req.body;
+
+  const mailTokenRet = validationService.getMailTokenData(ticket);
+
+  if (mailTokenRet.status === 'ERROR') {
+    res.send({ status: ApiStatus.FAILURE, message: mailTokenRet.type });
+    return;
+  }
+
+  const ret = userService.createUser({
+    username: username,
+    mail: mailTokenRet.data.mail,
+    password: '',
+    salt: '',
+    roles: [UserRole.DEFAULT],
+    workouts: [],
+    ftp: 250,
+  });
+
+  if (ret.status === 'ERROR') {
+    const message = ret.type;
+    let statusMessage = 'Something went wrong.';
+    let statusCode = 500;
+    switch (message) {
+      case 'User already exists':
+        statusMessage = 'A user with that username already exists.';
+        statusCode = 400;
+        break;
+      case 'Mail is already in use':
+        statusMessage = 'The e-mail address is already in use.';
+        statusCode = 400;
+        break;
+      case 'File not found':
+      default:
+        break;
+    }
+    res.statusMessage = statusMessage;
+    res.statusCode = statusCode;
+    res.send({
+      status: ApiStatus.FAILURE,
+      message: statusMessage,
+    });
+    return;
+  }
+
+  const token = validationService.generateAccessToken(username);
+  const user = userService.getUser(username);
+  if (user) {
+    const { roles, ftp } = user;
+    res.send({
+      status: ApiStatus.SUCCESS,
+      data: {
+        username,
+        token,
+        roles,
+        ftp,
+      },
+    });
+    return;
+  }
+
+  res.statusMessage = 'Something went wrong. Try again later.';
+  res.statusCode = 401;
+  res.send({
+    status: ApiStatus.FAILURE,
+    message: 'Something went wrong. Try again later.',
+  });
+});
+
+router.post<
+  null,
+  ApiResponseBody<MailAuthenticationResponseBody>,
+  MailAuthenticationRequestBody
+>('/auth/mail', async (req, res) => {
+  const { ticket } = req.body;
+  const ret = validationService.getMailTokenData(ticket);
+
+  if (ret.status === 'ERROR') {
+    res.send({ status: ApiStatus.FAILURE, message: ret.type });
+    return;
+  }
+  const data = ret.data;
+  const user = userService.getUserByMail(data.mail);
+  if (!user) {
+    res.send({
+      status: ApiStatus.SUCCESS,
+      data: { type: 'user_does_not_exist', mail: data.mail },
+    });
+    return;
+  }
+  const username = user.username;
+
+  const token = validationService.generateAccessToken(username);
+  const { roles, ftp } = user;
+
+  res.send({
+    status: ApiStatus.SUCCESS,
+    data: {
+      type: 'user_exists',
+      data: {
+        username,
+        token,
+        roles,
+        ftp,
+      },
+    },
+  });
+  return;
+});
+
+// router.post<null, ApiResponseBody<string>, MailLoginRequestBody>(
+//   '/login/authorize_mail',
+//   async (req, res) => {
+//     const { mail } = req.body;
+
+//     const ret = await mailService.sendLoginEmail(mail);
+
+//     switch (ret.status) {
+//       case 'SUCCESS':
+//         res.send({ status: ApiStatus.SUCCESS, data: 'Mail sent' });
+//         return;
+//       case 'ERROR':
+//         res.send({ status: ApiStatus.FAILURE, message: ret.type });
+//         return;
+//     }
+//   }
+// );
 
 router.get<null, ApiResponseBody<MessagesResponseBody>>(
   '/messages',

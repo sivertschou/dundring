@@ -1,5 +1,14 @@
-import { Workout } from '../types';
-import { padLeadingZero } from './general';
+import { padLeadingZero } from './string';
+
+export const SECOND = 1000;
+export const MINUTE = 60 * SECOND;
+export const HOUR = 60 * MINUTE;
+export const DAY = 24 * HOUR;
+
+export const seconds = (seconds: number) => seconds * SECOND;
+export const minutes = (minutes: number) => minutes * MINUTE;
+export const hours = (hours: number) => hours * HOUR;
+export const days = (days: number) => days * DAY;
 
 export interface MinutesAndSeconds {
   minutes: number;
@@ -58,6 +67,3 @@ export const timestampToFormattedHHMMSS = (timestamp: Date) => {
     minutes < 10 ? '0' + minutes : minutes
   }:${seconds < 10 ? '0' + seconds : seconds}`;
 };
-
-export const getTotalWorkoutTime = (workout: Workout) =>
-  workout.parts.reduce((sum, part) => sum + part.duration, 0);

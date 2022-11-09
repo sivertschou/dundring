@@ -3,7 +3,12 @@ import {
   ImportWorkoutResponseBody,
   LoginRequestBody,
   LoginResponseBody,
+  MailAuthenticationRegisterRequestBody,
+  MailAuthenticationRequestBody,
+  MailAuthenticationResponseBody,
+  MailLoginRequestBody,
   RegisterRequestBody,
+  RequestLoginLinkMailResponseBody,
   UserUpdateRequestBody,
   WorkoutRequestBody,
   WorkoutsResponseBody,
@@ -76,6 +81,31 @@ export const login = async (loginData: LoginRequestBody) => {
     `${httpUrl}/login`,
     loginData
   );
+};
+
+export const requestLoginLinkMail = async (data: MailLoginRequestBody) => {
+  return post<
+    ApiResponseBody<RequestLoginLinkMailResponseBody>,
+    MailLoginRequestBody
+  >(`${httpUrl}/login/mail`, data);
+};
+
+export const authenticateMailLogin = async (
+  body: MailAuthenticationRequestBody
+) => {
+  return post<
+    ApiResponseBody<MailAuthenticationResponseBody>,
+    MailAuthenticationRequestBody
+  >(`${httpUrl}/auth/mail`, body);
+};
+
+export const registerMailLogin = async (
+  body: MailAuthenticationRegisterRequestBody
+) => {
+  return post<
+    ApiResponseBody<LoginResponseBody>,
+    MailAuthenticationRegisterRequestBody
+  >(`${httpUrl}/register/mail`, body);
 };
 
 export const register = async (registerData: RegisterRequestBody) => {

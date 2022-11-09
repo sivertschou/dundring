@@ -21,12 +21,28 @@ export interface ApiLoading {
 
 export type ApiResponseBody<T> =
   | ApiSuccessResponseBody<T>
-  | ApiErrorResponseBody
-  | ApiLoading;
+  | ApiErrorResponseBody;
 
 export interface MailLoginRequestBody {
   mail: string;
 }
+
+export type RequestLoginLinkMailResponseBody =
+  | 'Login link sent'
+  | 'Register link sent';
+
+export interface MailAuthenticationRequestBody {
+  ticket: string;
+}
+
+export interface MailAuthenticationRegisterRequestBody {
+  ticket: string;
+  username: string;
+}
+
+export type MailAuthenticationResponseBody =
+  | { type: 'user_exists'; data: LoginResponseBody }
+  | { type: 'user_does_not_exist'; mail: string };
 
 export interface LoginRequestBody {
   username: string;

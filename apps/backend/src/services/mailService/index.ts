@@ -1,6 +1,8 @@
-import { Status } from '@dundring/types';
+import { Status, mapStatus } from '@dundring/types';
 import nodemailer from 'nodemailer';
-import { signInMailTemplate } from './signInHtmlTemplate';
+import { generateMailToken } from '../validationService';
+import * as userService from '../userService';
+import { registerMailTemplate, signInMailTemplate } from './htmlTemplates';
 require('dotenv').config();
 
 export const checkMailConfig = () => {
@@ -85,19 +87,46 @@ const sendMail = async ({
   }
 };
 
-export const sendLoginEmail = async (
+export const sendLoginOrRegisterMail = async (
   mail: string
-): Promise<Status<'', 'Something went wrong while sending the e-mail'>> => {
-  const loginLink = 'https://dundring.com';
+): Promise<
+  Status<
+    'Login link sent' | 'Register link sent',
+    'Something went wrong while sending the e-mail'
+  >
+> => {
+  const token = generateMailToken(mail);
+  const frontendBaseUrl =
+    process.env.FRONTEND_BASE_URL || 'https://dundring.com';
 
-  if (!transporter) {
-    console.log(`[mail]: To: ${mail}\n[mail]: Login link: ${loginLink}`);
-    return { status: 'SUCCESS', data: '' };
+  const loginLink = `${frontendBaseUrl}/auth?ticket=${token}`;
+  if (userService.getUserByMail(mail)) {
+    if (!transporter) {
+      console.log(`[mail]: To: ${mail}\n[mail]: Login link: ${loginLink}`);
+      return { status: 'SUCCESS', data: 'Login link sent' };
+    }
+
+    return mapStatus(
+      await sendMail({
+        to: mail,
+        subject: 'Sign in link',
+        htmlContent: signInMailTemplate(loginLink),
+      }),
+      (_) => 'Login link sent'
+    );
+  } else {
+    if (!transporter) {
+      console.log(`[mail]: To: ${mail}\n[mail]: Register link: ${loginLink}`);
+      return { status: 'SUCCESS', data: 'Register link sent' };
+    }
+
+    return mapStatus(
+      await sendMail({
+        to: mail,
+        subject: 'Create a user for dundring.com',
+        htmlContent: registerMailTemplate(loginLink),
+      }),
+      (_) => 'Register link sent'
+    );
   }
-
-  return sendMail({
-    to: mail,
-    subject: 'Sign in link',
-    htmlContent: signInMailTemplate('https://dundring.com'),
-  });
 };

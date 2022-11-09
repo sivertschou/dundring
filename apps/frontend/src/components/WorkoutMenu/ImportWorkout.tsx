@@ -53,9 +53,6 @@ export const ImportWorkout = ({ setWorkoutToEdit, previewFtp }: Props) => {
           setErrorMessage(workoutResponse.message);
           return;
         }
-        case ApiStatus.LOADING: {
-          return;
-        }
       }
     },
     [setIsLoading, previewFtp, setWorkoutToEdit]

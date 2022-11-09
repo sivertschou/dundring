@@ -97,6 +97,7 @@
   },
   "devDependencies": {
     "@dundring/types": "*",
+    "@dundring/utils": "*",
     "@types/crypto-js": "^4.1.0",
     "@types/dom-screen-wake-lock": "^1.0.0",
     "@types/jest": "^25.0.0",

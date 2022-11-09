@@ -4,7 +4,7 @@ require('dotenv').config();
 import * as fs from 'fs';
 import * as validationService from './validationService';
 import * as slackService from './slackService';
-import { generateRandomString } from './groupSessionService';
+import { generateRandomString } from '@dundring/utils';
 
 const dataPath = process.env.DATA_PATH || 'data';
 const usersPath = `${dataPath}/users.json`;

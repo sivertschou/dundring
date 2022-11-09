@@ -14,25 +14,6 @@ export const randomIntFromIntervalBasedOnPrev = (
   );
 };
 
-const legalUsernameCharacters = 'abcdefghifjklmnopqrstuvwxyz0123456789'.split(
-  ''
-);
-
-export const getIllegalUsernameCharacters = (username: string): string[] => {
-  return username.split('').filter((x) => !legalUsernameCharacters.includes(x));
-};
-
-export const removeDuplicateWords = (words: string[]) =>
-  words.reduce(
-    (entries, curr) =>
-      entries.every((entry) => entry !== curr) ? [...entries, curr] : entries,
-    [] as string[]
-  );
-
-export const mailIsValid = (mail: string) => /.+@.+\..+/.test(mail.trim());
-
-export const padLeadingZero = (nr: number) => (nr < 10 ? '0' + nr : nr);
-
 export const parseInputAsInt = (input: string) => {
   const parsed = parseInt(input);
   if (isNaN(parsed)) {

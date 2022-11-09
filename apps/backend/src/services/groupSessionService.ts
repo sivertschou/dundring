@@ -9,6 +9,7 @@ import {
   WebSocketResponse,
   WebSocketResponseType,
 } from '@dundring/types';
+import { generateRandomString } from '@dundring/utils';
 import * as slackService from './slackService';
 import { WebSocket } from 'ws';
 
@@ -179,13 +180,4 @@ export const leaveRoom = (username: string) => {
         });
     }
   }
-};
-
-export const generateRandomString = (length: number) => {
-  const alphabet = '0123456789';
-  const generatedString = new Array(length).fill(0).reduce((result) => {
-    return result + alphabet.substr(Math.random() * alphabet.length, 1);
-  }, '') as string;
-
-  return generatedString;
 };

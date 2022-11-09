@@ -15,7 +15,7 @@
     "frontend": "yarn --cwd apps/frontend start",
     "frontend:mock": "yarn --cwd apps/frontend mock",
     "backend": "yarn --cwd apps/backend start",
-    "clean": "rm -rf node_modules */**/node_modules */**/.turbo"
+    "clean": "rm -rf node_modules */**/node_modules */**/.turbo */**/dist */**/build"
   },
   "devDependencies": {
     "@prettier/plugin-xml": "^2.2.0",
