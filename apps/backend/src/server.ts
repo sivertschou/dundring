@@ -214,8 +214,6 @@ router.post<
   const ret = userService.createUser({
     username: username,
     mail: mailTokenRet.data.mail,
-    password: '',
-    salt: '',
     roles: [UserRole.DEFAULT],
     workouts: [],
     ftp: 250,
