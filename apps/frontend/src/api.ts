@@ -1,13 +1,11 @@
 import {
   ApiResponseBody,
   ImportWorkoutResponseBody,
-  LoginRequestBody,
   LoginResponseBody,
   MailAuthenticationRegisterRequestBody,
   MailAuthenticationRequestBody,
   MailAuthenticationResponseBody,
   MailLoginRequestBody,
-  RegisterRequestBody,
   RequestLoginLinkMailResponseBody,
   UserUpdateRequestBody,
   WorkoutRequestBody,
@@ -76,13 +74,6 @@ const authPost = async <T, U>(
   return response.json();
 };
 
-export const login = async (loginData: LoginRequestBody) => {
-  return post<ApiResponseBody<LoginResponseBody>, LoginRequestBody>(
-    `${httpUrl}/login`,
-    loginData
-  );
-};
-
 export const requestLoginLinkMail = async (data: MailLoginRequestBody) => {
   return post<
     ApiResponseBody<RequestLoginLinkMailResponseBody>,
@@ -106,13 +97,6 @@ export const registerMailLogin = async (
     ApiResponseBody<LoginResponseBody>,
     MailAuthenticationRegisterRequestBody
   >(`${httpUrl}/register/mail`, body);
-};
-
-export const register = async (registerData: RegisterRequestBody) => {
-  return post<ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
-    `${httpUrl}/register`,
-    registerData
-  );
 };
 
 export const validateToken = async (token: string) => {

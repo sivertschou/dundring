@@ -2,7 +2,6 @@ import { StoredUser, UserRole, Status, Workout } from '@dundring/types';
 import {} from '@dundring/types';
 require('dotenv').config();
 import * as fs from 'fs';
-import * as validationService from './validationService';
 import * as slackService from './slackService';
 import { generateRandomString } from '@dundring/utils';
 
@@ -23,15 +22,6 @@ export const getUser = (username: string): StoredUser | null =>
 
 export const getUserByMail = (mail: string): StoredUser | null =>
   getUsers().find((user) => user.mail === mail) || null;
-
-export const validateUser = (username: string, password: string): boolean => {
-  const user = getUser(username);
-  if (!user) return false;
-
-  const hashedPassword = validationService.hash(user.salt + password);
-
-  return user?.password === hashedPassword;
-};
 
 export const getUserRoles = (username: string): UserRole[] => {
   const user = getUser(username);

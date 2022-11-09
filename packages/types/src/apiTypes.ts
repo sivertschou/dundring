@@ -44,22 +44,11 @@ export type MailAuthenticationResponseBody =
   | { type: 'user_exists'; data: LoginResponseBody }
   | { type: 'user_does_not_exist'; mail: string };
 
-export interface LoginRequestBody {
-  username: string;
-  password: string;
-}
-
 export interface LoginResponseBody {
   username: string;
   roles: UserRole[];
   token: string;
   ftp: number;
-}
-
-export interface RegisterRequestBody {
-  username: string;
-  mail: string;
-  password: string;
 }
 
 export interface UserUpdateRequestBody {

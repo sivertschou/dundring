@@ -10,10 +10,8 @@ import {
   ApiResponseBody,
   ApiStatus,
   ImportWorkoutResponseBody,
-  LoginRequestBody,
   LoginResponseBody,
   MessagesResponseBody,
-  RegisterRequestBody,
   UserUpdateRequestBody,
   WorkoutRequestBody,
   WorkoutsResponseBody,
@@ -314,24 +312,6 @@ router.post<
   return;
 });
 
-// router.post<null, ApiResponseBody<string>, MailLoginRequestBody>(
-//   '/login/authorize_mail',
-//   async (req, res) => {
-//     const { mail } = req.body;
-
-//     const ret = await mailService.sendLoginEmail(mail);
-
-//     switch (ret.status) {
-//       case 'SUCCESS':
-//         res.send({ status: ApiStatus.SUCCESS, data: 'Mail sent' });
-//         return;
-//       case 'ERROR':
-//         res.send({ status: ApiStatus.FAILURE, message: ret.type });
-//         return;
-//     }
-//   }
-// );
-
 router.get<null, ApiResponseBody<MessagesResponseBody>>(
   '/messages',
   (_req, res) => {
@@ -340,111 +320,6 @@ router.get<null, ApiResponseBody<MessagesResponseBody>>(
     res.send({
       status: ApiStatus.SUCCESS,
       data: { messages },
-    });
-  }
-);
-
-router.post<null, ApiResponseBody<LoginResponseBody>, LoginRequestBody>(
-  '/login',
-  async (req, res) => {
-    const { username, password } = req.body;
-
-    if (userService.validateUser(username, password)) {
-      const token = validationService.generateAccessToken(username);
-      const user = userService.getUser(username);
-      if (user) {
-        const { roles, ftp } = user;
-
-        res.send({
-          status: ApiStatus.SUCCESS,
-          data: {
-            username,
-            token,
-            roles,
-            ftp,
-          },
-        });
-        return;
-      }
-    }
-
-    res.statusMessage = 'Invalid username or password.';
-    res.statusCode = 401;
-    res.send({
-      status: ApiStatus.FAILURE,
-      message: 'Invalid username or password',
-    });
-  }
-);
-
-router.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
-  '/register',
-  async (req, res) => {
-    const { username, password, mail } = req.body;
-
-    const salt = validationService.generateSalt();
-
-    const hashedPassword = validationService.hash(salt + password);
-
-    const ret = userService.createUser({
-      username: username,
-      mail: mail,
-      password: hashedPassword,
-      salt,
-      roles: [UserRole.DEFAULT],
-      workouts: [],
-      ftp: 250,
-    });
-
-    if (ret.status === 'ERROR') {
-      const message = ret.type;
-      let statusMessage = 'Something went wrong.';
-      let statusCode = 500;
-      switch (message) {
-        case 'User already exists':
-          statusMessage = 'User already exists';
-          statusCode = 400;
-          break;
-        case 'Mail is already in use':
-          statusMessage = 'Mail is already in use';
-          statusCode = 400;
-          break;
-        case 'File not found':
-        default:
-          break;
-      }
-      res.statusMessage = statusMessage;
-      res.statusCode = statusCode;
-      res.send({
-        status: ApiStatus.FAILURE,
-        message: statusMessage,
-      });
-      return;
-    }
-
-    if (userService.validateUser(username, password)) {
-      const token = validationService.generateAccessToken(username);
-      const user = userService.getUser(username);
-      if (user) {
-        const { roles, ftp } = user;
-        res.send({
-          status: ApiStatus.SUCCESS,
-          data: {
-            username,
-            token,
-            roles,
-            ftp,
-          },
-        });
-        return;
-      }
-    }
-
-    res.statusMessage = 'Invalid username or password.';
-    res.statusCode = 401;
-    res.send({
-      status: ApiStatus.FAILURE,
-      message: 'Invalid username or password',
     });
   }
 );
