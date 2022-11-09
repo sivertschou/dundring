@@ -8,7 +8,7 @@ import { Workout } from '../../types';
 import {
   getTotalWorkoutTime,
   secondsToHoursMinutesAndSecondsString,
-} from '../../utils/time';
+} from '@dundring/utils';
 import * as api from '../../api';
 
 interface Props {

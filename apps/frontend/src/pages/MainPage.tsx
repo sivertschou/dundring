@@ -49,6 +49,7 @@ export const MainPage = () => {
         return;
 
       case 'login':
+      case 'auth':
         onOpenLoginModal();
         return;
 

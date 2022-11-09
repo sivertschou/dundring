@@ -10,7 +10,7 @@ import {
   getTargetPower,
   useActiveWorkout,
 } from '../context/ActiveWorkoutContext';
-import { secondsToHoursMinutesAndSecondsString } from '../utils/time';
+import { secondsToHoursMinutesAndSecondsString } from '@dundring/utils';
 
 export const TopBar = () => {
   const { power, cadence } = useSmartTrainer();

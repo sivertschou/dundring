@@ -10,10 +10,7 @@ import {
 } from '@chakra-ui/form-control';
 import { Input } from '@chakra-ui/input';
 import { useParams } from 'react-router';
-import {
-  getIllegalUsernameCharacters,
-  removeDuplicateWords,
-} from '../../utils/general';
+import { illegalCharactersInUsername } from '@dundring/utils';
 
 export const CreateOrJoinGroupSession = () => {
   const { groupId: groupIdParam } = useParams();
@@ -32,9 +29,7 @@ export const CreateOrJoinGroupSession = () => {
 
   const username = user.loggedIn ? user.username : guestUsername;
   const usernameAvailable = user.loggedIn || guestUsername ? true : false;
-  const illegalCharacters = removeDuplicateWords(
-    getIllegalUsernameCharacters(username)
-  );
+  const illegalCharacters = illegalCharactersInUsername(username);
   const maxUsernameLength = 20;
   const usernameContainsIllegalCharacters = illegalCharacters.length > 0;
   const usernameIsTooLong = guestUsername.length > maxUsernameLength;

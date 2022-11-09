@@ -29,7 +29,7 @@ import {
 } from '@chakra-ui/react';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 import { createZoneTableInfo } from '../../utils/zones';
-import { secondsToHoursMinutesAndSecondsString } from '../../utils/time';
+import { secondsToHoursMinutesAndSecondsString } from '@dundring/utils';
 import { getPowerToSpeedMap } from '../../utils/speed';
 
 const editableWorkoutIsEqualToLoaded = (

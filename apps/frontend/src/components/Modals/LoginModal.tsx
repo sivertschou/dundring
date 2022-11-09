@@ -2,11 +2,10 @@ import { Button } from '@chakra-ui/button';
 import {
   FormControl,
   FormErrorMessage,
-  FormHelperText,
   FormLabel,
 } from '@chakra-ui/form-control';
 import { Input } from '@chakra-ui/input';
-import { Link, Stack, Text } from '@chakra-ui/layout';
+import { Stack, Text } from '@chakra-ui/layout';
 import {
   Modal,
   ModalBody,
@@ -16,93 +15,126 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
-import { Spinner, Tooltip } from '@chakra-ui/react';
+import { Spinner } from '@chakra-ui/react';
 import * as React from 'react';
 import * as api from '../../api';
 import { useUser } from '../../context/UserContext';
 import { useToast } from '@chakra-ui/react';
-import utils from '../../utils';
 import { useLoginModal } from '../../context/ModalContext';
-import sha256 from 'crypto-js/sha256';
-import Base64 from 'crypto-js/enc-base64';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { ApiStatus } from '@dundring/types';
+import * as utils from '@dundring/utils';
+import { maxUsernameLength } from '@dundring/utils';
 
-export const hash = (message: string) =>
-  Base64.stringify(sha256('yehaw' + message));
+interface EditableString {
+  value: string;
+  touched: boolean;
+}
 
-export const LoginModal = () => {
-  const { isOpen } = useLoginModal();
-  const [username, setUsername] = React.useState('');
-  const [mail, setMail] = React.useState('');
-  const [mailIsTouched, setMailIsTouched] = React.useState(false);
-  const [password, setPassword] = React.useState('');
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState('');
-  const navigate = useNavigate();
+interface LoginState {
+  type: 'login';
+  mail: EditableString;
+  errorMessage?: string;
+  isLoading: boolean;
+}
 
-  const [creatingUser, setCreatingUser] = React.useState(false);
+interface RegisterState {
+  type: 'register';
+  mail: string;
+  username: EditableString;
+  ticket: string;
+  isLoading: boolean;
+  errorMessage?: string;
+}
+
+interface MailSentState {
+  type: 'mail-sent';
+  mail: string;
+  userExists: boolean;
+}
+
+type State = LoginState | RegisterState | MailSentState;
+
+const MailSent = ({
+  state,
+  isOpen,
+  onClose,
+}: {
+  state: MailSentState;
+  isOpen: boolean;
+  onClose: () => void;
+}) => {
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Sign in</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Stack>
+            {state.userExists ? (
+              <Text>
+                Mail sent to {state.mail}! Check your mail to sign in!
+              </Text>
+            ) : (
+              <>
+                <Text>
+                  We could not find a user registered to {state.mail}, so we
+                  have sent you a link that can be used to create a user.
+                </Text>
+
+                <Text>
+                  If you know that you already have created a user, try signing
+                  in with one of the other alternatives.
+                </Text>
+              </>
+            )}
+          </Stack>
+        </ModalBody>
+        <ModalFooter />
+      </ModalContent>
+    </Modal>
+  );
+};
+
+const Register = ({
+  state,
+  setErrorMessage,
+  setIsLoading,
+  setUsername,
+  isOpen,
+  onClose,
+}: {
+  state: RegisterState;
+  setErrorMessage: (message?: string) => void;
+  setUsername: (username: string, touched: boolean) => void;
+  setIsLoading: (isLoading: boolean) => void;
+  isOpen: boolean;
+  onClose: () => void;
+}) => {
   const { setUser } = useUser();
   const toast = useToast();
 
-  const onClose = () => {
-    navigate('/');
-  };
+  const mail = state.mail;
+  const username = state.username.value;
+  const usernameIsTouched = state.username.touched;
 
-  const illegalCharacters = utils.general.removeDuplicateWords(
-    utils.general.getIllegalUsernameCharacters(username)
-  );
-  const maxUsernameLength = 20;
+  const usernameIsTooLong = utils.usernameIsTooLong(username);
+  const illegalCharacters = utils.illegalCharactersInUsername(username);
   const usernameContainsIllegalCharacters = illegalCharacters.length > 0;
-  const usernameIsTooLong = username.length > maxUsernameLength;
-  const usernameIsValid =
-    !usernameIsTooLong && !usernameContainsIllegalCharacters;
-  const mailIsValid = utils.general.mailIsValid(mail);
-  const passwordIsValid = password.length > 0;
-  const login = async () => {
-    const trimmedUsername = username.trim();
-    const trimmedPassword = password.trim();
 
-    if (!trimmedUsername || !trimmedPassword) {
-      setErrorMessage('Enter username and password.');
+  const registerWithMail = async () => {
+    const trimmedUsername = username;
+
+    if (!trimmedUsername) {
+      setErrorMessage('Enter a username');
       return;
     }
 
     setIsLoading(true);
-    const response = await api.login({
+    const response = await api.registerMailLogin({
       username: trimmedUsername,
-      password: hash(trimmedPassword),
-    });
-    setIsLoading(false);
-
-    if (response.status === 'FAILURE') {
-      setErrorMessage(response.message);
-    } else if (response.status === 'SUCCESS') {
-      const { roles, token, username, ftp } = response.data;
-      setUser({ loggedIn: true, token, roles, username, ftp, workouts: [] });
-      onClose();
-    }
-  };
-
-  const register = async () => {
-    const trimmedMail = mail.trim();
-    const trimmedUsername = username.trim();
-    const trimmedPassword = password.trim();
-
-    if (!trimmedUsername || !trimmedPassword || !trimmedMail) {
-      setErrorMessage('Enter mail, username and password.');
-      return;
-    }
-    const mailIsValid = utils.general.mailIsValid(mail);
-
-    if (!mailIsValid) {
-      setErrorMessage('Please enter a valid email address.');
-      return;
-    }
-    setIsLoading(true);
-    const response = await api.register({
-      username: trimmedUsername,
-      password: hash(trimmedPassword),
-      mail: trimmedMail,
+      ticket: state.ticket,
     });
     setIsLoading(false);
 
@@ -119,7 +151,7 @@ export const LoginModal = () => {
         workouts: [],
       });
       toast({
-        title: `Created user '${username}'`,
+        title: `Created user ${username}`,
         isClosable: true,
         duration: 5000,
         status: 'success',
@@ -132,50 +164,48 @@ export const LoginModal = () => {
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
       <ModalContent>
-        {creatingUser ? (
+        {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              register();
+              registerWithMail();
             }}
           >
-            <ModalHeader>Register</ModalHeader>
+            <ModalHeader>Sign in</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Stack>
-                <FormControl isInvalid={!mailIsValid && mailIsTouched}>
+                <FormControl>
                   <FormLabel>Mail</FormLabel>
                   <Input
+                    isDisabled={true}
                     placeholder="Mail"
                     type="email"
                     name="email"
                     autoComplete="email"
                     id="email"
                     value={mail}
-                    onChange={(e) => {
-                      setMail(e.target.value);
-                      setMailIsTouched(false);
-                      setErrorMessage('');
-                    }}
-                    onBlur={(_e) => {
-                      setMailIsTouched(true);
-                      setMail((mail) => mail.replace(' ', ''));
-                    }}
                   />
                 </FormControl>
 
-                <FormControl isInvalid={!usernameIsValid}>
+                <FormControl
+                  isInvalid={
+                    !utils.usernameIsValid(username) && usernameIsTouched
+                  }
+                >
                   <FormLabel>Username</FormLabel>
                   <Input
-                    placeholder="Username"
+                    placeholder="username"
+                    type="text"
                     name="username"
                     autoComplete="username"
                     id="username"
                     value={username}
                     onChange={(e) => {
+                      setUsername(e.target.value, false);
                       setErrorMessage('');
-                      setUsername(e.target.value.replace(' ', ''));
                     }}
+                    onBlur={(_) => setUsername(username.replace(' ', ''), true)}
                   />
                   <FormErrorMessage>
                     The username can't
@@ -192,139 +222,302 @@ export const LoginModal = () => {
                   </FormErrorMessage>
                 </FormControl>
 
-                <FormControl>
-                  <FormLabel>Password</FormLabel>
-                  <Input
-                    placeholder="Password"
-                    type="password"
-                    name="password"
-                    id="password"
-                    autoComplete="password"
-                    value={password}
-                    onChange={(e) => {
-                      setErrorMessage('');
-                      setPassword(e.target.value);
-                    }}
-                    onBlur={(_e) => {
-                      setPassword((password) => password.trim());
-                    }}
-                  />
-                  <Tooltip
-                    label={
-                      `Although this might seem like a shady message, ` +
-                      `we do hash your password both before sending it ` +
-                      `from the browser, and before storing it on our servers. ` +
-                      `Currently this hash would be sent as your password: ${hash(
-                        password
-                      )}`
-                    }
-                  >
-                    <FormHelperText>
-                      As always; use a unique password.
-                    </FormHelperText>
-                  </Tooltip>
-                </FormControl>
-                <Link
-                  onClick={() => {
-                    setErrorMessage('');
-                    setCreatingUser(false);
-                  }}
-                >
-                  Already have an account? Login
-                </Link>
-                {errorMessage ? (
-                  <Text color="red.500">{errorMessage}</Text>
+                {state.errorMessage ? (
+                  <Text color="red.500">{state.errorMessage}</Text>
                 ) : null}
               </Stack>
             </ModalBody>
 
             <ModalFooter>
-              {!isLoading ? (
+              {!state.isLoading ? (
                 <Button
-                  onClick={() => register()}
-                  isDisabled={
-                    !usernameIsValid || !mailIsValid || !passwordIsValid
-                  }
+                  isDisabled={!utils.usernameIsValid(username)}
                   type="submit"
                 >
-                  Register
-                </Button>
-              ) : (
-                <Spinner />
-              )}
-            </ModalFooter>
-          </form>
-        ) : (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              login();
-            }}
-          >
-            <ModalHeader>Login</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <Stack>
-                <FormControl>
-                  <FormLabel>Username</FormLabel>
-                  <Input
-                    placeholder="Username"
-                    name="username"
-                    autoComplete="username"
-                    value={username}
-                    onChange={(e) => {
-                      setErrorMessage('');
-                      setUsername(e.target.value);
-                    }}
-                    onBlur={(_e) => {
-                      setUsername((username) => username.trim());
-                    }}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Password</FormLabel>
-                  <Input
-                    placeholder="Password"
-                    type="password"
-                    name="password"
-                    autoComplete="password"
-                    value={password}
-                    onChange={(e) => {
-                      setErrorMessage('');
-                      setPassword(e.target.value);
-                    }}
-                    onBlur={(_e) => {
-                      setPassword((password) => password.trim());
-                    }}
-                  />
-                </FormControl>
-                <Link
-                  onClick={() => {
-                    setErrorMessage('');
-                    setCreatingUser(true);
-                  }}
-                >
                   Create user
-                </Link>
-                {errorMessage ? (
-                  <Text color="red.500">{errorMessage}</Text>
-                ) : null}
-              </Stack>
-            </ModalBody>
-
-            <ModalFooter>
-              {!isLoading ? (
-                <Button onClick={() => login()} type="submit">
-                  Login
                 </Button>
               ) : (
                 <Spinner />
               )}
             </ModalFooter>
           </form>
-        )}
+        }
       </ModalContent>
     </Modal>
   );
+};
+const Login = ({
+  state,
+  setErrorMessage,
+  setIsLoading,
+  setMail,
+  goToMailSent,
+  isOpen,
+  onClose,
+}: {
+  state: LoginState;
+  setErrorMessage: (message?: string) => void;
+  setMail: (mail: string, touched: boolean) => void;
+  setIsLoading: (isLoading: boolean) => void;
+  goToMailSent: (mail: string, userExists: boolean) => void;
+  isOpen: boolean;
+  onClose: () => void;
+}) => {
+  const toast = useToast();
+
+  const mail = state.mail.value;
+  const mailIsTouched = state.mail.touched;
+  const mailIsValid = utils.mailIsValid(mail);
+
+  const loginWithMail = async () => {
+    const trimmedMail = state.mail.value.trim();
+
+    if (!trimmedMail) {
+      setErrorMessage('Enter your e-mail address.');
+      return;
+    }
+
+    setIsLoading(true);
+    const response = await api.requestLoginLinkMail({
+      mail: trimmedMail,
+    });
+    setIsLoading(false);
+
+    if (response.status === 'FAILURE') {
+      setErrorMessage(response.message);
+    } else if (response.status === 'SUCCESS') {
+      goToMailSent(trimmedMail, response.data === 'Login link sent');
+
+      const text =
+        response.data === 'Login link sent'
+          ? {
+              title: 'Login link sent!',
+              description: `An e-mail with a sign in link has been sent to ${trimmedMail}!`,
+            }
+          : {
+              title: 'Sign up link sent!',
+              description: `We couldn't find a user registered to ${trimmedMail}, so we sent you a link that can be used to create a user.`,
+            };
+
+      toast({
+        title: text.title,
+        description: text.description,
+        isClosable: true,
+        duration: 60000,
+        status: 'success',
+      });
+      onClose();
+    }
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+      <ModalOverlay />
+      <ModalContent>
+        {
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              loginWithMail();
+            }}
+          >
+            <ModalHeader>Sign in</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <Stack>
+                <FormControl isInvalid={!mailIsValid && mailIsTouched}>
+                  <FormLabel>Mail</FormLabel>
+                  <Input
+                    placeholder="Mail"
+                    type="email"
+                    name="email"
+                    autoComplete="email"
+                    id="email"
+                    value={mail}
+                    onChange={(e) => {
+                      setMail(e.target.value, false);
+                      setErrorMessage('');
+                    }}
+                    onBlur={(_) => setMail(mail.replace(' ', ''), true)}
+                  />
+                </FormControl>
+
+                {state.errorMessage ? (
+                  <Text color="red.500">{state.errorMessage}</Text>
+                ) : null}
+              </Stack>
+            </ModalBody>
+
+            <ModalFooter>
+              {!state.isLoading ? (
+                <Button
+                  onClick={() => loginWithMail()}
+                  isDisabled={!mailIsValid}
+                  type="submit"
+                >
+                  Continue with e-Mail
+                </Button>
+              ) : (
+                <Spinner />
+              )}
+            </ModalFooter>
+          </form>
+        }
+      </ModalContent>
+    </Modal>
+  );
+};
+
+const setMail = (state: State, mail: string, touched: boolean): State => {
+  switch (state.type) {
+    case 'login':
+      return { ...state, mail: { value: mail, touched } };
+    case 'mail-sent':
+    case 'register':
+      return state;
+  }
+};
+
+const setUsername = (
+  state: State,
+  username: string,
+  touched: boolean
+): State => {
+  switch (state.type) {
+    case 'register':
+      return { ...state, username: { value: username, touched } };
+    case 'login':
+    case 'mail-sent':
+      return state;
+  }
+};
+const setErrorMessage = (state: State, msg?: string): State => {
+  switch (state.type) {
+    case 'login':
+    case 'register':
+      return { ...state, errorMessage: msg };
+    case 'mail-sent':
+      return state;
+  }
+};
+
+const setIsLoading = (state: State, isLoading: boolean): State => {
+  switch (state.type) {
+    case 'login':
+    case 'register':
+      return { ...state, isLoading };
+    case 'mail-sent':
+      return state;
+  }
+};
+export const LoginModal = () => {
+  const { isOpen } = useLoginModal();
+  const navigate = useNavigate();
+  const [state, setState] = React.useState<State>({
+    type: 'login',
+    mail: { value: '', touched: false },
+    isLoading: false,
+  });
+
+  const { setUser } = useUser();
+  const toast = useToast();
+
+  const ticket = useSearchParams()[0].get('ticket');
+
+  const onClose = React.useCallback(() => {
+    navigate('/');
+  }, [navigate]);
+
+  React.useEffect(() => {
+    const abortController = new AbortController();
+    const authenticate = async (
+      ticket: string,
+      abortController: AbortController
+    ) => {
+      try {
+        const ret = await api.authenticateMailLogin(
+          { ticket },
+          abortController
+        );
+
+        if (ret.status === ApiStatus.SUCCESS) {
+          switch (ret.data.type) {
+            case 'user_exists': {
+              setUser({
+                ...ret.data.data,
+                loggedIn: true,
+                workouts: [],
+              });
+              toast({
+                title: `Logged in as ${ret.data.data.username}`,
+                isClosable: true,
+                duration: 5000,
+                status: 'success',
+              });
+              onClose();
+              break;
+            }
+            case 'user_does_not_exist': {
+              setState({
+                type: 'register',
+                mail: ret.data.mail,
+                username: { value: '', touched: false },
+                ticket,
+                isLoading: false,
+                errorMessage: '',
+              });
+              break;
+            }
+          }
+        }
+      } catch (error) {}
+    };
+
+    if (ticket) {
+      authenticate(ticket, abortController).catch(console.error);
+    }
+    return () => abortController.abort();
+  }, [ticket, onClose, setUser, toast]);
+
+  switch (state.type) {
+    case 'mail-sent':
+      return <MailSent state={state} isOpen={isOpen} onClose={onClose} />;
+    case 'login':
+      return (
+        <Login
+          state={state}
+          setMail={(mail, touched) =>
+            setState((s) => setMail(s, mail, touched))
+          }
+          setIsLoading={(isLoading) =>
+            setState((s) => setIsLoading(s, isLoading))
+          }
+          setErrorMessage={(error) =>
+            setState((s) => setErrorMessage(s, error))
+          }
+          goToMailSent={(mail: string, userExists: boolean) =>
+            setState({ type: 'mail-sent', mail, userExists })
+          }
+          isOpen={isOpen}
+          onClose={onClose}
+        />
+      );
+    case 'register':
+      return (
+        <Register
+          state={state}
+          setUsername={(username, touched) =>
+            setState((s) => setUsername(s, username, touched))
+          }
+          setIsLoading={(isLoading) =>
+            setState((s) => setIsLoading(s, isLoading))
+          }
+          setErrorMessage={(error) =>
+            setState((s) => setErrorMessage(s, error))
+          }
+          isOpen={isOpen}
+          onClose={onClose}
+        />
+      );
+  }
 };

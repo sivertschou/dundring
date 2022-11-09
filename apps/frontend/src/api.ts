@@ -1,9 +1,12 @@
 import {
   ApiResponseBody,
   ImportWorkoutResponseBody,
-  LoginRequestBody,
   LoginResponseBody,
-  RegisterRequestBody,
+  MailAuthenticationRegisterRequestBody,
+  MailAuthenticationRequestBody,
+  MailAuthenticationResponseBody,
+  MailLoginRequestBody,
+  RequestLoginLinkMailResponseBody,
   UserUpdateRequestBody,
   WorkoutRequestBody,
   WorkoutsResponseBody,
@@ -27,7 +30,11 @@ const get = async <T>(url: string): Promise<T> => {
   return response.json();
 };
 
-const post = async <T, U>(url: string, body: U, token?: string): Promise<T> => {
+const post = async <T, U>(
+  url: string,
+  body: U,
+  abortController?: AbortController
+): Promise<T> => {
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -35,6 +42,7 @@ const post = async <T, U>(url: string, body: U, token?: string): Promise<T> => {
       Accept: 'application/json',
     },
     body: JSON.stringify(body),
+    signal: abortController?.signal,
   });
 
   return response.json();
@@ -71,18 +79,30 @@ const authPost = async <T, U>(
   return response.json();
 };
 
-export const login = async (loginData: LoginRequestBody) => {
-  return post<ApiResponseBody<LoginResponseBody>, LoginRequestBody>(
-    `${httpUrl}/login`,
-    loginData
-  );
+export const requestLoginLinkMail = async (data: MailLoginRequestBody) => {
+  return post<
+    ApiResponseBody<RequestLoginLinkMailResponseBody>,
+    MailLoginRequestBody
+  >(`${httpUrl}/login/mail`, data);
 };
 
-export const register = async (registerData: RegisterRequestBody) => {
-  return post<ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
-    `${httpUrl}/register`,
-    registerData
-  );
+export const authenticateMailLogin = async (
+  body: MailAuthenticationRequestBody,
+  abortController?: AbortController
+) => {
+  return post<
+    ApiResponseBody<MailAuthenticationResponseBody>,
+    MailAuthenticationRequestBody
+  >(`${httpUrl}/auth/mail`, body, abortController);
+};
+
+export const registerMailLogin = async (
+  body: MailAuthenticationRegisterRequestBody
+) => {
+  return post<
+    ApiResponseBody<LoginResponseBody>,
+    MailAuthenticationRegisterRequestBody
+  >(`${httpUrl}/register/mail`, body);
 };
 
 export const validateToken = async (token: string) => {

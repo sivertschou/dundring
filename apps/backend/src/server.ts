@@ -3,22 +3,25 @@ import * as userService from './services/userService';
 import * as groupSessionService from './services/groupSessionService';
 import * as validationService from './services/validationService';
 import * as slackService from './services/slackService';
+import * as mailService from './services/mailService';
 import * as express from 'express';
 import * as core from 'express-serve-static-core';
 import {
   ApiResponseBody,
   ApiStatus,
   ImportWorkoutResponseBody,
-  LoginRequestBody,
   LoginResponseBody,
   MessagesResponseBody,
-  RegisterRequestBody,
   UserUpdateRequestBody,
   WorkoutRequestBody,
   WorkoutsResponseBody,
   UserRole,
   WebSocketRequest,
   WebSocketRequestType,
+  MailLoginRequestBody,
+  MailAuthenticationRequestBody,
+  MailAuthenticationResponseBody,
+  MailAuthenticationRegisterRequestBody,
 } from '@dundring/types';
 import * as WebSocket from 'ws';
 import cors from 'cors';
@@ -60,6 +63,7 @@ const checkEnvConfig = () => {
   }
 
   slackService.checkSlackConfig();
+  mailService.checkMailConfig();
 };
 
 checkEnvConfig();
@@ -90,9 +94,10 @@ router.get<core.ParamsDictionary, ApiResponseBody<ImportWorkoutResponseBody>>(
 
 router.get<null, ApiResponseBody<WorkoutsResponseBody>>(
   '/me/workouts',
-  validationService.authenticateToken,
-  (req: validationService.AuthenticatedRequest<null>, res) => {
-    const workouts = userService.getUserWorkouts(req.username || '');
+  (req, res) => {
+    if (!validationService.authenticateToken(req, res)) return;
+
+    const workouts = userService.getUserWorkouts(req.username);
     res.send({
       status: ApiStatus.SUCCESS,
       data: { workouts },
@@ -102,16 +107,9 @@ router.get<null, ApiResponseBody<WorkoutsResponseBody>>(
 
 router.post<WorkoutRequestBody, ApiResponseBody<WorkoutsResponseBody>>(
   '/me/workout',
-  validationService.authenticateToken,
-  (req: validationService.AuthenticatedRequest<WorkoutRequestBody>, res) => {
+  (req, res) => {
+    if (!validationService.authenticateToken(req, res)) return;
     const workout = req.body.workout;
-    if (!req.username) {
-      res.send({
-        status: ApiStatus.FAILURE,
-        message: 'Unathorized',
-      });
-      return;
-    }
 
     const ret = userService.saveWorkout(req.username, workout);
 
@@ -134,15 +132,9 @@ router.post<WorkoutRequestBody, ApiResponseBody<WorkoutsResponseBody>>(
 
 router.post<UserUpdateRequestBody, ApiResponseBody<UserUpdateRequestBody>>(
   '/me',
-  validationService.authenticateToken,
-  (req: validationService.AuthenticatedRequest<UserUpdateRequestBody>, res) => {
-    if (!req.username) {
-      res.send({
-        status: ApiStatus.FAILURE,
-        message: 'Unathorized',
-      });
-      return;
-    }
+  (req, res) => {
+    if (!validationService.authenticateToken(req, res)) return;
+
     const { ftp } = req.body;
 
     const ret = userService.updateUserFtp(req.username, ftp);
@@ -166,8 +158,9 @@ router.post<UserUpdateRequestBody, ApiResponseBody<UserUpdateRequestBody>>(
 
 router.post<null, ApiResponseBody<LoginResponseBody>>(
   '/validate',
-  validationService.authenticateToken,
-  async (req: validationService.AuthenticatedRequest<null>, res) => {
+  async (req, res) => {
+    if (!validationService.authenticateToken(req, res)) return;
+
     const username = req.username;
     const user = userService.getUser(username || '');
     const authHeader = req.headers['authorization'];
@@ -186,119 +179,145 @@ router.post<null, ApiResponseBody<LoginResponseBody>>(
   }
 );
 
+router.post<null, ApiResponseBody<string>, MailLoginRequestBody>(
+  '/login/mail',
+  async (req, res) => {
+    const { mail } = req.body;
+
+    const ret = await mailService.sendLoginOrRegisterMail(mail);
+
+    switch (ret.status) {
+      case 'SUCCESS':
+        res.send({ status: ApiStatus.SUCCESS, data: ret.data });
+        return;
+      case 'ERROR':
+        res.send({ status: ApiStatus.FAILURE, message: ret.type });
+        return;
+    }
+  }
+);
+
+router.post<
+  null,
+  ApiResponseBody<LoginResponseBody>,
+  MailAuthenticationRegisterRequestBody
+>('/register/mail', async (req, res) => {
+  const { username, ticket } = req.body;
+
+  const mailTokenRet = validationService.getMailTokenData(ticket);
+
+  if (mailTokenRet.status === 'ERROR') {
+    res.send({ status: ApiStatus.FAILURE, message: mailTokenRet.type });
+    return;
+  }
+
+  const ret = userService.createUser({
+    username: username,
+    mail: mailTokenRet.data.mail,
+    roles: [UserRole.DEFAULT],
+    workouts: [],
+    ftp: 250,
+  });
+
+  if (ret.status === 'ERROR') {
+    const message = ret.type;
+    let statusMessage = 'Something went wrong.';
+    let statusCode = 500;
+    switch (message) {
+      case 'User already exists':
+        statusMessage = 'A user with that username already exists.';
+        statusCode = 400;
+        break;
+      case 'Mail is already in use':
+        statusMessage = 'The e-mail address is already in use.';
+        statusCode = 400;
+        break;
+      case 'File not found':
+      default:
+        break;
+    }
+    res.statusMessage = statusMessage;
+    res.statusCode = statusCode;
+    res.send({
+      status: ApiStatus.FAILURE,
+      message: statusMessage,
+    });
+    return;
+  }
+
+  const token = validationService.generateAccessToken(username);
+  const user = userService.getUser(username);
+  if (user) {
+    const { roles, ftp } = user;
+    res.send({
+      status: ApiStatus.SUCCESS,
+      data: {
+        username,
+        token,
+        roles,
+        ftp,
+      },
+    });
+    return;
+  }
+
+  res.statusMessage = 'Something went wrong. Try again later.';
+  res.statusCode = 401;
+  res.send({
+    status: ApiStatus.FAILURE,
+    message: 'Something went wrong. Try again later.',
+  });
+});
+
+router.post<
+  null,
+  ApiResponseBody<MailAuthenticationResponseBody>,
+  MailAuthenticationRequestBody
+>('/auth/mail', async (req, res) => {
+  const { ticket } = req.body;
+  const ret = validationService.getMailTokenData(ticket);
+
+  if (ret.status === 'ERROR') {
+    res.send({ status: ApiStatus.FAILURE, message: ret.type });
+    return;
+  }
+  const data = ret.data;
+  const user = userService.getUserByMail(data.mail);
+  if (!user) {
+    res.send({
+      status: ApiStatus.SUCCESS,
+      data: { type: 'user_does_not_exist', mail: data.mail },
+    });
+    return;
+  }
+  const username = user.username;
+
+  const token = validationService.generateAccessToken(username);
+  const { roles, ftp } = user;
+
+  res.send({
+    status: ApiStatus.SUCCESS,
+    data: {
+      type: 'user_exists',
+      data: {
+        username,
+        token,
+        roles,
+        ftp,
+      },
+    },
+  });
+  return;
+});
+
 router.get<null, ApiResponseBody<MessagesResponseBody>>(
   '/messages',
-  (req, res) => {
+  (_req, res) => {
     const messages = messageService.getMessages();
 
     res.send({
       status: ApiStatus.SUCCESS,
       data: { messages },
-    });
-  }
-);
-
-router.post<null, ApiResponseBody<LoginResponseBody>, LoginRequestBody>(
-  '/login',
-  async (req, res) => {
-    const { username, password } = req.body;
-
-    if (userService.validateUser(username, password)) {
-      const token = validationService.generateAccessToken(username);
-      const user = userService.getUser(username);
-      if (user) {
-        const { roles, ftp } = user;
-
-        res.send({
-          status: ApiStatus.SUCCESS,
-          data: {
-            username,
-            token,
-            roles,
-            ftp,
-          },
-        });
-        return;
-      }
-    }
-
-    res.statusMessage = 'Invalid username or password.';
-    res.statusCode = 401;
-    res.send({
-      status: ApiStatus.FAILURE,
-      message: 'Invalid username or password',
-    });
-  }
-);
-
-router.post<null, ApiResponseBody<LoginResponseBody>, RegisterRequestBody>(
-  '/register',
-  async (req, res) => {
-    const { username, password, mail } = req.body;
-
-    const salt = validationService.generateSalt();
-
-    const hashedPassword = validationService.hash(salt + password);
-
-    const ret = userService.createUser({
-      username: username,
-      mail: mail,
-      password: hashedPassword,
-      salt,
-      roles: [UserRole.DEFAULT],
-      workouts: [],
-      ftp: 250,
-    });
-
-    if (ret.status === 'ERROR') {
-      const message = ret.type;
-      let statusMessage = 'Something went wrong.';
-      let statusCode = 500;
-      switch (message) {
-        case 'User already exists':
-          statusMessage = 'User already exists';
-          statusCode = 400;
-          break;
-        case 'Mail is already in use':
-          statusMessage = 'Mail is already in use';
-          statusCode = 400;
-          break;
-        case 'File not found':
-        default:
-          break;
-      }
-      res.statusMessage = statusMessage;
-      res.statusCode = statusCode;
-      res.send({
-        status: ApiStatus.FAILURE,
-        message: statusMessage,
-      });
-      return;
-    }
-
-    if (userService.validateUser(username, password)) {
-      const token = validationService.generateAccessToken(username);
-      const user = userService.getUser(username);
-      if (user) {
-        const { roles, ftp } = user;
-        res.send({
-          status: ApiStatus.SUCCESS,
-          data: {
-            username,
-            token,
-            roles,
-            ftp,
-          },
-        });
-        return;
-      }
-    }
-
-    res.statusMessage = 'Invalid username or password.';
-    res.statusCode = 401;
-    res.send({
-      status: ApiStatus.FAILURE,
-      message: 'Invalid username or password',
     });
   }
 );

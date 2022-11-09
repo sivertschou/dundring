@@ -11,9 +11,7 @@ export interface StoredUser {
   username: string;
   mail: string;
   roles: UserRole[];
-  password: string;
   workouts: Workout[];
-  salt: string;
   ftp: number;
 }
 
