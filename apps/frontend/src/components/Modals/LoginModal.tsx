@@ -424,9 +424,9 @@ export const LoginModal = () => {
 
   const ticket = useSearchParams()[0].get('ticket');
 
-  const onClose = () => {
+  const onClose = React.useCallback(() => {
     navigate('/');
-  };
+  }, [navigate]);
 
   React.useEffect(() => {
     const authenticate = async (ticket: string) => {
