@@ -30,7 +30,11 @@ const get = async <T>(url: string): Promise<T> => {
   return response.json();
 };
 
-const post = async <T, U>(url: string, body: U, token?: string): Promise<T> => {
+const post = async <T, U>(
+  url: string,
+  body: U,
+  abortController?: AbortController
+): Promise<T> => {
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -38,6 +42,7 @@ const post = async <T, U>(url: string, body: U, token?: string): Promise<T> => {
       Accept: 'application/json',
     },
     body: JSON.stringify(body),
+    signal: abortController?.signal,
   });
 
   return response.json();
@@ -82,12 +87,13 @@ export const requestLoginLinkMail = async (data: MailLoginRequestBody) => {
 };
 
 export const authenticateMailLogin = async (
-  body: MailAuthenticationRequestBody
+  body: MailAuthenticationRequestBody,
+  abortController?: AbortController
 ) => {
   return post<
     ApiResponseBody<MailAuthenticationResponseBody>,
     MailAuthenticationRequestBody
-  >(`${httpUrl}/auth/mail`, body);
+  >(`${httpUrl}/auth/mail`, body, abortController);
 };
 
 export const registerMailLogin = async (

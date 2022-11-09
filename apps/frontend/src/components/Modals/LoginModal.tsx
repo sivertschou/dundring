@@ -429,44 +429,54 @@ export const LoginModal = () => {
   }, [navigate]);
 
   React.useEffect(() => {
-    const authenticate = async (ticket: string) => {
-      const ret = await api.authenticateMailLogin({ ticket });
+    const abortController = new AbortController();
+    const authenticate = async (
+      ticket: string,
+      abortController: AbortController
+    ) => {
+      try {
+        const ret = await api.authenticateMailLogin(
+          { ticket },
+          abortController
+        );
 
-      if (ret.status === ApiStatus.SUCCESS) {
-        switch (ret.data.type) {
-          case 'user_exists': {
-            setUser({
-              ...ret.data.data,
-              loggedIn: true,
-              workouts: [],
-            });
-            toast({
-              title: `Logged in as ${ret.data.data.username}`,
-              isClosable: true,
-              duration: 5000,
-              status: 'success',
-            });
-            onClose();
-            break;
-          }
-          case 'user_does_not_exist': {
-            setState({
-              type: 'register',
-              mail: ret.data.mail,
-              username: { value: '', touched: false },
-              ticket,
-              isLoading: false,
-              errorMessage: '',
-            });
-            break;
+        if (ret.status === ApiStatus.SUCCESS) {
+          switch (ret.data.type) {
+            case 'user_exists': {
+              setUser({
+                ...ret.data.data,
+                loggedIn: true,
+                workouts: [],
+              });
+              toast({
+                title: `Logged in as ${ret.data.data.username}`,
+                isClosable: true,
+                duration: 5000,
+                status: 'success',
+              });
+              onClose();
+              break;
+            }
+            case 'user_does_not_exist': {
+              setState({
+                type: 'register',
+                mail: ret.data.mail,
+                username: { value: '', touched: false },
+                ticket,
+                isLoading: false,
+                errorMessage: '',
+              });
+              break;
+            }
           }
         }
-      }
+      } catch (error) {}
     };
 
     if (ticket) {
-      authenticate(ticket).catch(console.error);
+      authenticate(ticket, abortController).catch(console.error);
     }
+    return () => abortController.abort();
   }, [ticket, onClose, setUser, toast]);
 
   switch (state.type) {
