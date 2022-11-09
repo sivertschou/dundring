@@ -33,7 +33,6 @@ export const MainPage = () => {
     useLoginModal();
 
   React.useEffect(() => {
-    console.log('location.pathname', location.pathname);
     const path = location.pathname.split('/')[1];
     switch (path) {
       case 'group':

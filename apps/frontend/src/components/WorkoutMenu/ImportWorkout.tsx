@@ -66,7 +66,6 @@ export const ImportWorkout = ({ setWorkoutToEdit, previewFtp }: Props) => {
     if (!workoutIdParam) return;
     const [username, id] = workoutIdParam.split('-');
     setWorkoutIdInput(workoutIdParam);
-    console.log('username:', username, 'id:', id);
     handleImportWorkout(username, id);
   }, [handleImportWorkout, workoutIdParam]);
 
