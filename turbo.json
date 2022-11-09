@@ -14,6 +14,7 @@
       "outputs": []
     },
     "start": {
+      "dependsOn": ["^build"],
       "cache": false
     },
     "mock": {
