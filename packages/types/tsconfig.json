@@ -1,5 +1,8 @@
 {
-  "extends": "@dundring/tsconfig/base.json",
-  "include": ["src"],
-  "compilerOptions": { "outDir": "dist" }
+  "extends": "@dundring/tsconfig/package-base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": ["src"]
 }

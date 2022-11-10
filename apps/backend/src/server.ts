@@ -16,12 +16,11 @@ import {
   WorkoutRequestBody,
   WorkoutsResponseBody,
   UserRole,
-  WebSocketRequest,
-  WebSocketRequestType,
   MailLoginRequestBody,
   MailAuthenticationRequestBody,
   MailAuthenticationResponseBody,
   MailAuthenticationRegisterRequestBody,
+  WebSocketRequest,
 } from '@dundring/types';
 import * as WebSocket from 'ws';
 import cors from 'cors';
@@ -330,7 +329,7 @@ wss.on('connection', (ws) => {
   ws.on('message', (rawData) => {
     const req = JSON.parse(rawData.toString()) as WebSocketRequest;
     switch (req.type) {
-      case WebSocketRequestType.createGroupSession: {
+      case 'create-group-session': {
         const { member } = req;
         username = member.username;
         ws.send(
@@ -340,7 +339,7 @@ wss.on('connection', (ws) => {
         );
         break;
       }
-      case WebSocketRequestType.joinGroupSession: {
+      case 'join-group-session': {
         const { roomId, member } = req;
         username = member.username;
 
@@ -350,12 +349,12 @@ wss.on('connection', (ws) => {
         });
         break;
       }
-      case WebSocketRequestType.leaveGroupSession: {
+      case 'leave-group-session': {
         const { username } = req;
         groupSessionService.leaveRoom(username);
         break;
       }
-      case WebSocketRequestType.sendData: {
+      case 'send-data': {
         if (!username) {
           console.log('unknown tried to share workoutdata');
           return;

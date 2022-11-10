@@ -11,12 +11,12 @@ import {
   WorkoutRequestBody,
   WorkoutsResponseBody,
 } from '@dundring/types';
-export const domain = process.env.REACT_APP_DOMAIN || 'http://localhost:3000';
+export const domain = import.meta.env.VITE_DOMAIN || 'http://localhost:3000';
 
 export const httpUrl =
-  process.env.REACT_APP_HTTP_URL || 'http://localhost:8080/api';
+  import.meta.env.VITE_HTTP_URL || 'http://localhost:8080/api';
 
-export const wsUrl = process.env.REACT_APP_WS_URL || 'ws://localhost:8080';
+export const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:8080';
 
 const get = async <T>(url: string): Promise<T> => {
   const response = await fetch(url, {

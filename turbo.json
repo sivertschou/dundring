@@ -15,10 +15,13 @@
     },
     "start": {
       "dependsOn": ["^build"],
-      "cache": false
+      "cache": false,
+      "outputs": ["build/**", "dist/**"]
     },
     "mock": {
-      "cache": false
+      "dependsOn": ["^build"],
+      "cache": false,
+      "outputs": ["build/**", "dist/**"]
     }
   }
 }

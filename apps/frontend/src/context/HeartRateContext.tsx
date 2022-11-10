@@ -42,7 +42,7 @@ export const HeartRateContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const usingMockData = process.env.REACT_APP_USE_MOCK_DATA ? true : false;
+  const usingMockData = import.meta.env.VITE_USE_MOCK_DATA ? true : false;
 
   if (usingMockData) {
     return (

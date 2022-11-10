@@ -4,9 +4,7 @@ import {
   LeaveGroupSession,
   Member,
   SendDataRequest,
-  WebSocketRequestType,
   WebSocketResponse,
-  WebSocketResponseType,
 } from '@dundring/types';
 import * as React from 'react';
 import { wsUrl } from '../api';
@@ -75,41 +73,41 @@ export const WebsocketContextProvider = ({
     socket.onmessage = (e) => {
       const message = JSON.parse(e.data) as WebSocketResponse;
       switch (message.type) {
-        case WebSocketResponseType.createdGroupSession: {
+        case 'created-group-session': {
           logEvent(`created group session with id: ${message.room.id}`);
           setActiveGroupSession({ ...message.room, workoutData: {} });
           setCreateStatus('NOT_ASKED');
           break;
         }
-        case WebSocketResponseType.failedToCreateGroupSession: {
+        case 'failed-to-create-group-session': {
           logEvent('failed to create group session');
           setCreateStatus('ERROR');
           break;
         }
-        case WebSocketResponseType.joinedGroupSession: {
+        case 'joined-group-session': {
           logEvent(`joined group session with id: ${message.room.id}`);
           setActiveGroupSession({ ...message.room, workoutData: {} });
           setJoinStatus('NOT_ASKED');
           break;
         }
-        case WebSocketResponseType.failedToJoinGroupSession: {
+        case 'failed-to-join-group-session': {
           logEvent('failed to join group session');
           setJoinStatus('ROOM_NOT_FOUND');
           break;
         }
-        case WebSocketResponseType.memberJoinedGroupSession: {
+        case 'member-joined-group-session': {
           if (!activeGroupSession) return;
           logEvent(`${message.username} joined group session`);
           setActiveGroupSession({ ...activeGroupSession, ...message.room });
           break;
         }
-        case WebSocketResponseType.memberLeftGroupSession: {
+        case 'member-left-group-session': {
           if (!activeGroupSession) return;
           logEvent(`${message.username} left group session`);
           setActiveGroupSession({ ...activeGroupSession, ...message.room });
           break;
         }
-        case WebSocketResponseType.dataReceived: {
+        case 'data-received': {
           const sender = message.username;
           const data = message.data;
 
@@ -141,7 +139,7 @@ export const WebsocketContextProvider = ({
             setCreateStatus('LOADING');
             setUsername(username);
             const data: CreateGroupSession = {
-              type: WebSocketRequestType.createGroupSession,
+              type: 'create-group-session',
               member: { username, ftp: 300, weight: 85 },
             };
             socket.send(JSON.stringify(data));
@@ -152,7 +150,7 @@ export const WebsocketContextProvider = ({
             setJoinStatus('LOADING');
             setUsername(username);
             const data: JoinGroupSession = {
-              type: WebSocketRequestType.joinGroupSession,
+              type: 'join-group-session',
               member: { username, ftp: 300, weight: 85 },
               roomId,
             };
@@ -163,7 +161,7 @@ export const WebsocketContextProvider = ({
           if (socket) {
             setActiveGroupSession(null);
             const data: LeaveGroupSession = {
-              type: WebSocketRequestType.leaveGroupSession,
+              type: 'leave-group-session',
               username,
             };
             socket.send(JSON.stringify(data));
@@ -176,7 +174,7 @@ export const WebsocketContextProvider = ({
           if (!data.heartRate && !data.power) return;
 
           const request: SendDataRequest = {
-            type: WebSocketRequestType.sendData,
+            type: 'send-data',
             data,
             username,
           };
