@@ -26,7 +26,7 @@
     "turbo": "^1.4.4"
   },
   "workspaces": [
-    "packages/*",
+    "libs/*",
     "apps/*"
   ],
   "lint-staged": {
