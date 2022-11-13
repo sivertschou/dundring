@@ -4,22 +4,20 @@ export interface Room {
   members: Member[];
 }
 
-export enum WebSocketRequestType {
-  createGroupSession,
-  joinGroupSession,
-  leaveGroupSession,
-  sendData,
-}
+export type WebSocketRequestType =
+  | 'create-group-session'
+  | 'join-group-session'
+  | 'leave-group-session'
+  | 'send-data';
 
-export enum WebSocketResponseType {
-  createdGroupSession,
-  failedToCreateGroupSession,
-  joinedGroupSession,
-  failedToJoinGroupSession,
-  memberJoinedGroupSession,
-  memberLeftGroupSession,
-  dataReceived,
-}
+export type WebSocketResponseType =
+  | 'created-group-session'
+  | 'failed-to-create-group-session'
+  | 'joined-group-session'
+  | 'failed-to-join-group-session'
+  | 'member-joined-group-session'
+  | 'member-left-group-session'
+  | 'data-received';
 
 export interface Member {
   username: string;
@@ -27,22 +25,22 @@ export interface Member {
   weight: number;
 }
 export interface CreateGroupSession {
-  type: WebSocketRequestType.createGroupSession;
+  type: 'create-group-session';
   member: Member;
 }
 export interface JoinGroupSession {
-  type: WebSocketRequestType.joinGroupSession;
+  type: 'join-group-session';
   member: Member;
   roomId: string;
 }
 export interface LeaveGroupSession {
-  type: WebSocketRequestType.leaveGroupSession;
+  type: 'leave-group-session';
   username: string;
 }
 
 // DATA RECEIVED FROM USER
 export interface SendDataRequest {
-  type: WebSocketRequestType.sendData;
+  type: 'send-data';
   data: { heartRate?: number; power?: number };
   username: string;
 }
@@ -55,11 +53,11 @@ export type WebSocketRequest =
 
 // CREATE GROUP SESSION
 export interface CreateGroupSessionSuccessResponse {
-  type: WebSocketResponseType.createdGroupSession;
+  type: 'created-group-session';
   room: Room;
 }
 export interface CreateGroupSessionErrorResponse {
-  type: WebSocketResponseType.failedToCreateGroupSession;
+  type: 'failed-to-create-group-session';
   message: 'Failed to create room.';
 }
 
@@ -69,11 +67,11 @@ export type CreateGroupSessionResponse =
 
 // JOIN GROUP SESSION
 export interface JoinGroupSessionSuccessResponse {
-  type: WebSocketResponseType.joinedGroupSession;
+  type: 'joined-group-session';
   room: Room;
 }
 export interface JoinGroupSessionErrorResponse {
-  type: WebSocketResponseType.failedToJoinGroupSession;
+  type: 'failed-to-join-group-session';
   message: 'Failed to join room.';
 }
 
@@ -83,21 +81,21 @@ export type JoinGroupSessionResponse =
 
 // MEMBER JOINED GROUP SESSION
 export interface MemberJoinedResponse {
-  type: WebSocketResponseType.memberJoinedGroupSession;
+  type: 'member-joined-group-session';
   room: Room;
   username: string;
 }
 
 // MEMBER LEFT GROUP SESSION
 export interface MemberLeftResponse {
-  type: WebSocketResponseType.memberLeftGroupSession;
+  type: 'member-left-group-session';
   room: Room;
   username: string;
 }
 
 // DATA RECEIVED FROM USER
 export interface DataReceivedResponse {
-  type: WebSocketResponseType.dataReceived;
+  type: 'data-received';
   data: { heartRate?: number; power?: number };
   username: string;
 }

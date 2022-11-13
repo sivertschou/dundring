@@ -7,7 +7,6 @@ import {
   MemberLeftResponse,
   Room,
   WebSocketResponse,
-  WebSocketResponseType,
 } from '@dundring/types';
 import { generateRandomString } from '@dundring/utils';
 import * as slackService from './slackService';
@@ -32,7 +31,7 @@ export const sendWorkoutDataToRoom = (
   data: { heartRata?: number; power?: number }
 ) => {
   const response: DataReceivedResponse = {
-    type: WebSocketResponseType.dataReceived,
+    type: 'data-received',
     data,
     username,
   };
@@ -84,7 +83,7 @@ export const createRoom = (
   if (roomId === null) {
     console.log(`${creator.username} failed to create room.`);
     return {
-      type: WebSocketResponseType.failedToCreateGroupSession,
+      type: 'failed-to-create-group-session',
       message: 'Failed to create room.',
     };
   } else {
@@ -97,7 +96,7 @@ export const createRoom = (
     slackService.logRoomCreation(room);
     rooms[roomId] = room;
     usersAndActiveRooms[creator.username] = room.id;
-    return { type: WebSocketResponseType.createdGroupSession, room };
+    return { type: 'created-group-session', room };
   }
 };
 const toMember = (serverMember: ServerMember): Member => ({
@@ -123,7 +122,7 @@ export const joinRoom = (
     usersAndActiveRooms[member.username] = roomId;
 
     const response: JoinGroupSessionResponse = {
-      type: WebSocketResponseType.joinedGroupSession,
+      type: 'joined-group-session',
       room: toRoom(updatedRoom),
     };
     slackService.logRoomJoin(member.username, room);
@@ -134,7 +133,7 @@ export const joinRoom = (
       .filter((m) => m.username !== member.username)
       .map((m) => {
         const message: MemberJoinedResponse = {
-          type: WebSocketResponseType.memberJoinedGroupSession,
+          type: 'member-joined-group-session',
           room: toRoom(updatedRoom),
           username: member.username,
         };
@@ -142,7 +141,7 @@ export const joinRoom = (
       });
   } else {
     const response: JoinGroupSessionResponse = {
-      type: WebSocketResponseType.failedToJoinGroupSession,
+      type: 'failed-to-join-group-session',
       message: 'Failed to join room.',
     };
     ws.send(JSON.stringify(response));
@@ -172,7 +171,7 @@ export const leaveRoom = (username: string) => {
         .filter((m) => m.username !== username)
         .map((m) => {
           const message: MemberLeftResponse = {
-            type: WebSocketResponseType.memberLeftGroupSession,
+            type: 'member-left-group-session',
             room: toRoom(updatedRoom),
             username,
           };

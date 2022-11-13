@@ -4,13 +4,19 @@
   "private": true,
   "description": "",
   "author": "",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
-  "main": "dist/index.js",
+  "files": [
+    "dist/**"
+  ],
   "scripts": {
-    "start": "tsc -w",
-    "build": "tsc"
+    "build": "rollup -c --bundleConfigAsCjs",
+    "start": "rollup -c -w --bundleConfigAsCjs"
   },
   "devDependencies": {
-    "typescript": "^4.4.4"
+    "@rollup/plugin-typescript": "^9.0.2",
+    "rollup": "^3.2.5",
+    "typescript": "4.8.4"
   }
 }

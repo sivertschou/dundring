@@ -1,7 +1,7 @@
 config="\
-REACT_APP_DOMAIN=http://localhost:3000
-REACT_APP_HTTP_URL=http://localhost:8080/api
-REACT_APP_WS_URL=ws://localhost:8080
+VITE_DOMAIN=http://localhost:3000
+VITE_HTTP_URL=http://localhost:8080/api
+VITE_WS_URL=ws://localhost:8080
 "
 
 echo "frontend/prepare.sh – Starting ⚡️"
