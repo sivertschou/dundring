@@ -9,3 +9,8 @@ export interface WorkoutPart {
   targetPower: number;
   type: 'steady';
 }
+
+export interface WorkoutBase {
+  name: string;
+  parts: WorkoutPart[];
+}

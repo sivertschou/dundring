@@ -99,6 +99,7 @@ export const UserContextProvider = ({
         setUser: setUserExternal,
         workouts,
         refetchData: () => {
+          console.log('refetch user data');
           refetchWorkouts();
         },
         localWorkouts,

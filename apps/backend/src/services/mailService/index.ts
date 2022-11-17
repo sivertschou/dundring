@@ -1,4 +1,4 @@
-import { Status, mapStatusSuccess } from '@dundring/types';
+import { Status, mapStatusSuccess, isSuccess } from '@dundring/types';
 import nodemailer from 'nodemailer';
 import { generateMailToken } from '../validationService';
 import * as userService from '../userService';
@@ -100,7 +100,7 @@ export const sendLoginOrRegisterMail = async (
     process.env.FRONTEND_BASE_URL || 'https://dundring.com';
 
   const loginLink = `${frontendBaseUrl}/auth?ticket=${token}`;
-  if (userService.getUserByMail(mail)) {
+  if (isSuccess(await userService.getUserByMail(mail))) {
     if (!transporter) {
       console.log(`[mail]: To: ${mail}\n[mail]: Login link: ${loginLink}`);
       return { status: 'SUCCESS', data: 'Login link sent' };

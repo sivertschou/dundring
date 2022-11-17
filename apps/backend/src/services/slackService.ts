@@ -1,4 +1,4 @@
-import { User, Room } from '@dundring/types';
+import { User, Room, UserBase } from '@dundring/types';
 import fetch from 'node-fetch';
 
 require('dotenv').config();
@@ -76,7 +76,7 @@ const sendSlackMessage = (service: SlackService, message: string) => {
   }
 };
 
-export const logUserCreation = (user: User) => {
+export const logUserCreation = (user: UserBase) => {
   const message = `New user: *${user.username}* (${user.mail})`;
   sendSlackMessage(SlackService.USER_CREATION, message);
 };
@@ -99,4 +99,9 @@ export const logRoomLeave = (username: string, room: Room) => {
 export const logRoomDeletion = (username: string, room: Room) => {
   const message = `*${username}* left group session with id *#${room.id}*. No more users in group session; deleting it.`;
   sendSlackMessage(SlackService.GROUP_SESSION, message);
+};
+
+export const logAndReturn = <T>(message: string, data: T) => {
+  sendSlackMessage(SlackService.ERRORS, message);
+  return data;
 };

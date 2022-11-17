@@ -1,175 +1,116 @@
-import { StoredUser, UserRole, Status, Workout } from '@dundring/types';
+import {
+  Status,
+  Workout,
+  WorkoutBase,
+  UserBase,
+  isError,
+  success,
+  successMap,
+  WorkoutPart,
+} from '@dundring/types';
+
+import {
+  SteadyWorkoutPart as PrismaSteadyWorkoutPart,
+  Workout as PrismaWorkout,
+} from '@prisma/client';
 import {} from '@dundring/types';
 require('dotenv').config();
-import * as fs from 'fs';
 import * as slackService from './slackService';
-import { generateRandomString } from '@dundring/utils';
+import * as db from '../db';
+import { PrismaClient, SteadyWorkoutPart, User } from '@prisma/client';
 
-const dataPath = process.env.DATA_PATH || 'data';
-const usersPath = `${dataPath}/users.json`;
+export const getUser = async (username: string) =>
+  db.getUserByUsername(username);
 
-export const getUsers = (): StoredUser[] => {
-  if (fs.existsSync(usersPath)) {
-    const rawdata = fs.readFileSync(usersPath);
-    return JSON.parse(rawdata.toString()) as StoredUser[];
-  }
+export const getUserByMail = async (mail: string) => db.getUserByMail(mail);
 
-  return [];
-};
+export const getUserWorkoutsByUserId = async (userId: string) =>
+  db.getUserWorkouts(userId);
 
-export const getUser = (username: string): StoredUser | null =>
-  getUsers().find((user) => user.username === username) || null;
+export const updateUserFtp = async (userId: string, ftp: number) =>
+  db.upsertFitnessData(userId, { ftp });
 
-export const getUserByMail = (mail: string): StoredUser | null =>
-  getUsers().find((user) => user.mail === mail) || null;
+export const getUserFitnessData = async (userId: string) =>
+  db.getFitnessData(userId);
 
-export const getUserRoles = (username: string): UserRole[] => {
-  const user = getUser(username);
-  return user ? user.roles : [];
-};
+export const fromPrismaWorkoutPart = (
+  part: PrismaSteadyWorkoutPart
+): WorkoutPart => ({
+  duration: part.duration,
+  targetPower: part.power,
+  type: 'steady',
+});
 
-export const getUserWorkouts = (username: string): Workout[] => {
-  const user = getUser(username);
-  return user ? user.workouts : [];
-};
+export const fromPrismaWorkout = (
+  workout: PrismaWorkout & { parts: PrismaSteadyWorkoutPart[] }
+): Workout => ({
+  name: workout.name,
+  id: workout.id,
+  parts: [...workout.parts]
+    .sort((a, b) => a.index - b.index)
+    .map(fromPrismaWorkoutPart),
+});
 
-export const updateUserFtp = (
-  username: string,
-  ftp: number
-): Status<StoredUser, 'File not found' | 'User not found'> => {
-  const user = getUser(username);
-
-  if (!user) {
-    return { status: 'ERROR', type: 'User not found' };
-  }
-
-  return setUser({ ...user, ftp });
-};
-
-export const importWorkout = (
-  workoutOwnerUsername: string,
+export const getWorkout = async (
   workoutId: string
-): Status<
-  Workout,
-  'User not found' | 'File not found' | 'Workout not found'
+): Promise<
+  Status<
+    Workout,
+    'Workout not found' | 'Something went wrong reading from database'
+  >
 > => {
-  const user = getUser(workoutOwnerUsername);
-  if (!user) return { status: 'ERROR', type: 'User not found' };
+  const workoutResult = await db.getWorkout(workoutId);
 
-  const workout = user.workouts.find((w) => w.id == workoutId);
-  if (!workout) return { status: 'ERROR', type: 'Workout not found' };
-  return { status: 'SUCCESS', data: workout };
-};
-
-const getNewWorkoutId = (workouts: Workout[]) => {
-  const defaultLength = 5;
-  const numRetriesPerLength = 20;
-  const numLengthIncreases = 5;
-
-  for (let i = 0; i < numLengthIncreases; i++) {
-    for (let j = 0; j < numRetriesPerLength; j++) {
-      const id = generateRandomString(defaultLength + i);
-      if (!workouts.find((w) => w.id === id)) {
-        return id;
-      }
-    }
+  if (isError(workoutResult)) {
+    return workoutResult;
   }
 
-  return null;
+  return success(fromPrismaWorkout(workoutResult.data));
 };
 
-const updateWorkoutOrAppendIfNotFound = (
-  workouts: Workout[],
-  workout: Workout
-): Status<Workout[], 'Could not generate available id'> => {
-  const workoutExists = workouts.find((w) => w.id === workout.id);
-  if (workoutExists) {
-    return {
-      status: 'SUCCESS',
-      data: [...workouts.map((w) => (w.id === workout.id ? workout : w))],
-    };
-  } else {
-    const newId = getNewWorkoutId(workouts);
-    if (newId === null)
-      return { status: 'ERROR', type: 'Could not generate available id' };
-
-    return {
-      status: 'SUCCESS',
-      data: [...workouts, { ...workout, id: newId }],
-    };
-  }
-};
-
-export const saveWorkout = (
-  username: string,
-  workout: Workout
-): Status<
-  Workout[],
-  'User not found' | 'File not found' | 'Could not generate available id'
+export const getUserWorkouts = async (
+  userId: string
+): Promise<
+  Status<Workout[], 'Something went wrong while reading workouts from database'>
 > => {
-  const user = getUser(username);
-  if (!user) {
-    return { status: 'ERROR', type: 'User not found' };
-  }
-  const workouts = user.workouts;
-  const updatedWorkouts = updateWorkoutOrAppendIfNotFound(workouts, workout);
-  if (updatedWorkouts.status === 'ERROR') return updatedWorkouts;
+  const workoutResult = await db.getUserWorkouts(userId);
 
-  const ret = setUser({
-    ...user,
-    workouts: updatedWorkouts.data,
-  });
-
-  if (ret.status === 'ERROR') {
-    return ret;
-  } else {
-    return { status: 'SUCCESS', data: workouts };
+  if (isError(workoutResult)) {
+    return workoutResult;
   }
+
+  return success(workoutResult.data.map(fromPrismaWorkout));
 };
 
-export const createUser = (
-  user: StoredUser
-): Status<
-  StoredUser,
-  'User already exists' | 'Mail is already in use' | 'File not found'
+export const upsertWorkout = async (
+  userId: string,
+  workout: WorkoutBase,
+  workoutId?: string
+): Promise<Status<Workout, 'Something went wrong while upserting workout'>> => {
+  return successMap(
+    await db.upsertWorkout(userId, workout, workoutId),
+    fromPrismaWorkout
+  );
+};
+
+export const createUser = async (
+  user: UserBase
+): Promise<
+  Status<
+    User,
+    | 'Mail is already in use'
+    | 'Username is already in use'
+    | 'Something went wrong writing to database'
+  >
 > => {
-  if (getUser(user.username)) {
-    return { status: 'ERROR', type: 'User already exists' };
-  }
+  // TODO: Do this check when trying to add the user to the database
+  // if (await getUser(user.username)) {
+  //   return { status: 'ERROR', type: 'User already exists' };
+  // }
 
-  if (getUserByMail(user.mail)) {
-    return { status: 'ERROR', type: 'Mail is already in use' };
-  }
+  // if (await getUserByMail(user.mail)) {
+  //   return { status: 'ERROR', type: 'Mail is already in use' };
+  // }
 
-  if (fs.existsSync(usersPath)) {
-    const rawdata = fs.readFileSync(usersPath);
-    const parsedData = JSON.parse(rawdata.toString()) as StoredUser[];
-
-    fs.writeFileSync(usersPath, JSON.stringify([...parsedData, user]));
-    slackService.logUserCreation(user);
-
-    return { status: 'SUCCESS', data: user };
-  } else {
-    console.error('File not found', usersPath);
-    return { status: 'ERROR', type: 'File not found' };
-  }
-};
-
-export const setUser = (
-  updatedUser: StoredUser
-): Status<StoredUser, 'File not found'> => {
-  if (fs.existsSync(usersPath)) {
-    const rawdata = fs.readFileSync(usersPath);
-    const parsedData = JSON.parse(rawdata.toString()) as StoredUser[];
-
-    const updatedUsers = parsedData.map((user) =>
-      user.username === updatedUser.username ? updatedUser : user
-    );
-
-    fs.writeFileSync(usersPath, JSON.stringify([...updatedUsers]));
-    return { status: 'SUCCESS', data: updatedUser };
-  } else {
-    console.error('File not found', usersPath);
-    return { status: 'ERROR', type: 'File not found' };
-  }
+  return db.createUser(user);
 };

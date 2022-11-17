@@ -46,7 +46,7 @@ export type MailAuthenticationResponseBody =
 
 export interface LoginResponseBody {
   username: string;
-  roles: UserRole[];
+  userId: string;
   token: string;
   ftp: number;
 }
@@ -57,6 +57,9 @@ export interface UserUpdateRequestBody {
 
 export interface WorkoutsResponseBody {
   workouts: Workout[];
+}
+export interface UpdateWorkoutResponseBody {
+  workout: Workout;
 }
 
 export interface ImportWorkoutResponseBody {

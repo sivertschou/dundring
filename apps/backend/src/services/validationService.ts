@@ -17,14 +17,8 @@ interface Mailtoken {
 
 const mailtokens: { [token: string]: Mailtoken } = {};
 
-export const generateSalt = () =>
-  new Array(10)
-    .fill(0)
-    .map((_) => Math.floor(Math.random() * 10))
-    .join('');
-
-export const generateAccessToken = (username: string) => {
-  return jwt.sign({ username }, tokenSecret, {
+export const generateAccessToken = (user: UserPayload) => {
+  return jwt.sign(user, tokenSecret, {
     expiresIn: '120d',
   });
 };
@@ -52,16 +46,19 @@ export const getMailTokenData = (
 
 export type AuthenticatedRequest<T> = {
   username: string;
+  userId: string;
   jwtPayload: JwtExpPayload;
 } & Request<T>;
 
 interface UnauthenticatedRequest<T> extends Request<T> {
   username?: string;
+  userId?: string;
   jwtPayload?: JwtExpPayload;
 }
 
 interface UserPayload {
   username: string;
+  userId: string;
 }
 interface JwtExpPayload {
   expiresIn: string;
@@ -72,16 +69,16 @@ export const authenticateToken = <Res, Req>(
   res: Response<ApiResponseBody<Res>>
 ): req is AuthenticatedRequest<Req> => {
   try {
-    const jwtPayload = jwt.decode(
-      req.header('authorization')!
-    ) as JwtExpPayload;
-
-    req.jwtPayload = jwtPayload;
+    console.log('authenticateToken');
+    console.log('req.header');
 
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
+    console.log('token:', token);
+
     if (!token) {
+      console.log('no token provided');
       const statusMessage = 'No token provided.';
       res.statusMessage = statusMessage;
       res.statusCode = 401;
@@ -92,9 +89,16 @@ export const authenticateToken = <Res, Req>(
       return false;
     }
 
+    const jwtPayload = jwt.decode(token) as JwtExpPayload;
+
+    req.jwtPayload = jwtPayload;
+    console.log('jwtPayload:', jwtPayload);
+
     const user = jwt.verify(token, tokenSecret) as UserPayload;
+    console.log('user:', user);
 
     req.username = user.username;
+    req.userId = user.userId;
 
     return true;
   } catch (error) {

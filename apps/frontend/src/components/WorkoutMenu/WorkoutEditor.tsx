@@ -31,6 +31,7 @@ import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 import { createZoneTableInfo } from '../../utils/zones';
 import { secondsToHoursMinutesAndSecondsString } from '@dundring/utils';
 import { getPowerToSpeedMap } from '../../utils/speed';
+import { ApiStatus } from '@dundring/types';
 
 const editableWorkoutIsEqualToLoaded = (
   editable: EditableWorkout,
@@ -72,7 +73,7 @@ export const WorkoutEditor = ({
 }: Props) => {
   const { activeFtp, setActiveFtp, setActiveWorkout } = useActiveWorkout();
   const { user, saveLocalWorkout } = useUser();
-  const token = user.loggedIn && user.token;
+  const token = (user.loggedIn && user.token) || null;
 
   const canSaveLocally =
     loadedWorkout.type === 'new' || loadedWorkout.type === 'local';
@@ -86,6 +87,17 @@ export const WorkoutEditor = ({
       return 0;
     }
     return parsed;
+  };
+
+  const saveRemotely = async () => {
+    if (token) {
+      const res = await saveWorkout(token, { workout });
+      if (res.status === ApiStatus.FAILURE) {
+        // TODO: Show error message
+        return;
+      }
+      closeEditor();
+    }
   };
 
   const [ftp, setFtp] = React.useState('' + activeFtp);
@@ -254,13 +266,7 @@ export const WorkoutEditor = ({
       <FormControl>
         <HStack>
           {canSaveRemotely ? (
-            <Button
-              onClick={() => {
-                saveWorkout(token, { workout });
-                closeEditor();
-              }}
-              leftIcon={<Icon as={CloudUpload} />}
-            >
+            <Button onClick={saveRemotely} leftIcon={<Icon as={CloudUpload} />}>
               Save
             </Button>
           ) : null}

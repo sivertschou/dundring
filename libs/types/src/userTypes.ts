@@ -1,5 +1,3 @@
-import { Workout } from './workoutTypes';
-
 export interface User {
   username: string;
   mail: string;
@@ -7,12 +5,9 @@ export interface User {
   ftp: number;
 }
 
-export interface StoredUser {
+export interface UserBase {
   username: string;
   mail: string;
-  roles: UserRole[];
-  workouts: Workout[];
-  ftp: number;
 }
 
 export enum UserRole {
