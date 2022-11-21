@@ -1,9 +1,12 @@
-import * as messageService from './services/messageService';
-import * as userService from './services/userService';
-import * as groupSessionService from './services/groupSessionService';
-import * as validationService from './services/validationService';
-import * as slackService from './services/slackService';
-import * as mailService from './services/mailService';
+import {
+  groupSessionService,
+  mailService,
+  messageService,
+  slackService,
+  userService,
+  validationService,
+  workoutService,
+} from './services';
 import * as express from 'express';
 import * as core from 'express-serve-static-core';
 import {
@@ -72,7 +75,7 @@ router.get<core.ParamsDictionary, ApiResponseBody<GetWorkoutResponseBody>>(
   '/workouts/:workoutId',
   async (req, res) => {
     const workoutId = req.params['workoutId'];
-    const response = await userService.getWorkout(workoutId);
+    const response = await workoutService.getWorkout(workoutId);
 
     switch (response.status) {
       case 'SUCCESS':
@@ -96,7 +99,7 @@ router.get<null, ApiResponseBody<WorkoutsResponseBody>>(
   async (req, res) => {
     if (!validationService.authenticateToken(req, res)) return;
 
-    const workouts = await userService.getUserWorkouts(req.userId);
+    const workouts = await workoutService.getUserWorkouts(req.userId);
 
     if (isError(workouts)) {
       res.send({ status: ApiStatus.FAILURE, message: workouts.type });
@@ -117,7 +120,7 @@ router.post<WorkoutRequestBody, ApiResponseBody<UpdateWorkoutResponseBody>>(
 
     const workout = req.body.workout;
 
-    const ret = await userService.upsertWorkout(
+    const ret = await workoutService.upsertWorkout(
       req.userId,
       workout,
       workout.id
