@@ -30,7 +30,6 @@ export const UserContextProvider = ({
             case 'SUCCESS':
               setUser({
                 loggedIn: true,
-                roles: res.data.roles,
                 token: locallyStoredToken,
                 username: res.data.username,
                 workouts: [],

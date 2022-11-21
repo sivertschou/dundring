@@ -1,6 +1,5 @@
 import { Workout } from './workoutTypes';
 import { Message } from './messageTypes';
-import { UserRole } from './userTypes';
 
 export enum ApiStatus {
   SUCCESS = 'SUCCESS',
