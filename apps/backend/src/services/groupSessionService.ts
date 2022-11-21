@@ -9,8 +9,8 @@ import {
   WebSocketResponse,
 } from '@dundring/types';
 import { generateRandomString } from '@dundring/utils';
-import * as slackService from './slackService';
 import { WebSocket } from 'ws';
+import { slackService } from '.';
 
 export interface ServerMember {
   username: string;

@@ -1,10 +1,10 @@
 import { Status, UserBase } from '@dundring/types';
 
 require('dotenv').config();
-import * as slackService from './slackService';
 import * as db from '../db';
 import { User } from '@prisma/client';
 import { isSuccess } from '@dundring/utils';
+import { slackService } from '.';
 
 export const getUser = async (username: string) =>
   db.getUserByUsername(username);

@@ -1,9 +1,9 @@
 import { Status } from '@dundring/types';
 import nodemailer from 'nodemailer';
 import { generateMailToken } from '../validationService';
-import * as userService from '../userService';
 import { registerMailTemplate, signInMailTemplate } from './htmlTemplates';
 import { isSuccess, successMap } from '@dundring/utils';
+import { userService } from '..';
 require('dotenv').config();
 
 export const checkMailConfig = () => {

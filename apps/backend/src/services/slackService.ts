@@ -1,4 +1,4 @@
-import { User, Room, UserBase } from '@dundring/types';
+import { Room, UserBase } from '@dundring/types';
 import fetch from 'node-fetch';
 
 require('dotenv').config();
