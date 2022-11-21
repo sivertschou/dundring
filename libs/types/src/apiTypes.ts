@@ -62,7 +62,7 @@ export interface UpdateWorkoutResponseBody {
   workout: Workout;
 }
 
-export interface ImportWorkoutResponseBody {
+export interface GetWorkoutResponseBody {
   workout: Workout;
 }
 

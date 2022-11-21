@@ -79,7 +79,6 @@ export const WorkoutOverview = ({
       {allWorkouts.map(({ workout, locallyStored }, i) => (
         <WorkoutListItem
           key={i}
-          username={user.loggedIn ? user.username : null}
           isLocallyStored={locallyStored}
           workout={workout}
           setActiveWorkout={(workout: Workout) =>

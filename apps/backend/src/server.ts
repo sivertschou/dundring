@@ -9,7 +9,6 @@ import * as core from 'express-serve-static-core';
 import {
   ApiResponseBody,
   ApiStatus,
-  ImportWorkoutResponseBody,
   LoginResponseBody,
   MessagesResponseBody,
   UserUpdateRequestBody,
@@ -24,6 +23,7 @@ import {
   isSuccess,
   isError,
   UpdateWorkoutResponseBody,
+  GetWorkoutResponseBody,
 } from '@dundring/types';
 import * as WebSocket from 'ws';
 import cors from 'cors';
@@ -70,7 +70,7 @@ const checkEnvConfig = () => {
 
 checkEnvConfig();
 
-router.get<core.ParamsDictionary, ApiResponseBody<ImportWorkoutResponseBody>>(
+router.get<core.ParamsDictionary, ApiResponseBody<GetWorkoutResponseBody>>(
   '/workouts/:workoutId',
   async (req, res) => {
     const workoutId = req.params['workoutId'];
