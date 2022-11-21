@@ -104,15 +104,6 @@ export const createUser = async (
     | 'Something went wrong writing to database'
   >
 > => {
-  // TODO: Do this check when trying to add the user to the database
-  // if (await getUser(user.username)) {
-  //   return { status: 'ERROR', type: 'User already exists' };
-  // }
-
-  // if (await getUserByMail(user.mail)) {
-  //   return { status: 'ERROR', type: 'Mail is already in use' };
-  // }
-
   const ret = await db.createUser(user);
 
   if (isSuccess(ret)) {
