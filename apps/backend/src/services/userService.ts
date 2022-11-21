@@ -7,6 +7,7 @@ import {
   success,
   successMap,
   WorkoutPart,
+  isSuccess,
 } from '@dundring/types';
 
 import {
@@ -112,5 +113,11 @@ export const createUser = async (
   //   return { status: 'ERROR', type: 'Mail is already in use' };
   // }
 
-  return db.createUser(user);
+  const ret = await db.createUser(user);
+
+  if (isSuccess(ret)) {
+    slackService.logUserCreation(ret.data);
+  }
+
+  return ret;
 };
