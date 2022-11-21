@@ -1,3 +1,4 @@
+export * from './service';
 export * from './string';
 export * from './time';
 export * from './user';

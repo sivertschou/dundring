@@ -1,8 +1,9 @@
-import { Status, mapStatusSuccess, isSuccess } from '@dundring/types';
+import { Status } from '@dundring/types';
 import nodemailer from 'nodemailer';
 import { generateMailToken } from '../validationService';
 import * as userService from '../userService';
 import { registerMailTemplate, signInMailTemplate } from './htmlTemplates';
+import { isSuccess, successMap } from '@dundring/utils';
 require('dotenv').config();
 
 export const checkMailConfig = () => {
@@ -106,7 +107,7 @@ export const sendLoginOrRegisterMail = async (
       return { status: 'SUCCESS', data: 'Login link sent' };
     }
 
-    return mapStatusSuccess(
+    return successMap(
       await sendMail({
         to: mail,
         subject: 'Sign in link',
@@ -120,7 +121,7 @@ export const sendLoginOrRegisterMail = async (
       return { status: 'SUCCESS', data: 'Register link sent' };
     }
 
-    return mapStatusSuccess(
+    return successMap(
       await sendMail({
         to: mail,
         subject: 'Create a user for dundring.com',

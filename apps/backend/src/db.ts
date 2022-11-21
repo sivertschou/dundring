@@ -1,4 +1,5 @@
-import { Status, success, error, UserBase, WorkoutBase } from '@dundring/types';
+import { Status, UserBase, WorkoutBase } from '@dundring/types';
+import { error, success } from '@dundring/utils';
 import {
   FitnessData,
   PrismaClient,

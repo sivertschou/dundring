@@ -3,11 +3,7 @@ import {
   Workout,
   WorkoutBase,
   UserBase,
-  isError,
-  success,
-  successMap,
   WorkoutPart,
-  isSuccess,
 } from '@dundring/types';
 
 import {
@@ -18,7 +14,8 @@ import {} from '@dundring/types';
 require('dotenv').config();
 import * as slackService from './slackService';
 import * as db from '../db';
-import { PrismaClient, SteadyWorkoutPart, User } from '@prisma/client';
+import { User } from '@prisma/client';
+import { isError, isSuccess, success, successMap } from '@dundring/utils';
 
 export const getUser = async (username: string) =>
   db.getUserByUsername(username);

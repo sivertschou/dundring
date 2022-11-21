@@ -14,20 +14,18 @@ import {
   UserUpdateRequestBody,
   WorkoutRequestBody,
   WorkoutsResponseBody,
-  UserRole,
   MailLoginRequestBody,
   MailAuthenticationRequestBody,
   MailAuthenticationResponseBody,
   MailAuthenticationRegisterRequestBody,
   WebSocketRequest,
-  isSuccess,
-  isError,
   UpdateWorkoutResponseBody,
   GetWorkoutResponseBody,
 } from '@dundring/types';
 import * as WebSocket from 'ws';
 import cors from 'cors';
 import http from 'http';
+import { isError, isSuccess } from '@dundring/utils';
 
 require('dotenv').config();
 
