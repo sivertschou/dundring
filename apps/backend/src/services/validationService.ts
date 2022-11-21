@@ -69,16 +69,10 @@ export const authenticateToken = <Res, Req>(
   res: Response<ApiResponseBody<Res>>
 ): req is AuthenticatedRequest<Req> => {
   try {
-    console.log('authenticateToken');
-    console.log('req.header');
-
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
-    console.log('token:', token);
-
     if (!token) {
-      console.log('no token provided');
       const statusMessage = 'No token provided.';
       res.statusMessage = statusMessage;
       res.statusCode = 401;
@@ -92,10 +86,8 @@ export const authenticateToken = <Res, Req>(
     const jwtPayload = jwt.decode(token) as JwtExpPayload;
 
     req.jwtPayload = jwtPayload;
-    console.log('jwtPayload:', jwtPayload);
 
     const user = jwt.verify(token, tokenSecret) as UserPayload;
-    console.log('user:', user);
 
     req.username = user.username;
     req.userId = user.userId;
