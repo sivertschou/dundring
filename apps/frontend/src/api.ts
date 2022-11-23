@@ -1,6 +1,6 @@
 import {
   ApiResponseBody,
-  ImportWorkoutResponseBody,
+  GetWorkoutResponseBody,
   LoginResponseBody,
   MailAuthenticationRegisterRequestBody,
   MailAuthenticationRequestBody,
@@ -120,9 +120,9 @@ export const fetchMyWorkouts = async (token: string) => {
   );
 };
 
-export const importWorkout = async (username: string, id: string) => {
-  return get<ApiResponseBody<ImportWorkoutResponseBody>>(
-    `${httpUrl}/${username}/workouts/${id}`
+export const getWorkout = async (workoutId: string) => {
+  return get<ApiResponseBody<GetWorkoutResponseBody>>(
+    `${httpUrl}/workouts/${workoutId}`
   );
 };
 

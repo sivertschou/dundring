@@ -1,8 +1,9 @@
-import { Status, mapStatusSuccess } from '@dundring/types';
+import { Status } from '@dundring/types';
 import nodemailer from 'nodemailer';
 import { generateMailToken } from '../validationService';
-import * as userService from '../userService';
 import { registerMailTemplate, signInMailTemplate } from './htmlTemplates';
+import { isSuccess, successMap } from '@dundring/utils';
+import { userService } from '..';
 require('dotenv').config();
 
 export const checkMailConfig = () => {
@@ -100,13 +101,13 @@ export const sendLoginOrRegisterMail = async (
     process.env.FRONTEND_BASE_URL || 'https://dundring.com';
 
   const loginLink = `${frontendBaseUrl}/auth?ticket=${token}`;
-  if (userService.getUserByMail(mail)) {
+  if (isSuccess(await userService.getUserByMail(mail))) {
     if (!transporter) {
       console.log(`[mail]: To: ${mail}\n[mail]: Login link: ${loginLink}`);
       return { status: 'SUCCESS', data: 'Login link sent' };
     }
 
-    return mapStatusSuccess(
+    return successMap(
       await sendMail({
         to: mail,
         subject: 'Sign in link',
@@ -120,7 +121,7 @@ export const sendLoginOrRegisterMail = async (
       return { status: 'SUCCESS', data: 'Register link sent' };
     }
 
-    return mapStatusSuccess(
+    return successMap(
       await sendMail({
         to: mail,
         subject: 'Create a user for dundring.com',

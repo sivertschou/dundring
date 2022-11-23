@@ -12,23 +12,19 @@ import {
 import * as api from '../../api';
 
 interface Props {
-  username: string | null;
   workout: Workout;
   setActiveWorkout: (workout: Workout) => void;
   onClickEdit: () => void;
   isLocallyStored: boolean;
 }
 export const WorkoutListItem = ({
-  username,
   workout,
   setActiveWorkout,
   onClickEdit,
   isLocallyStored,
 }: Props) => {
   const workoutDuration = getTotalWorkoutTime(workout);
-  const { onCopy } = useClipboard(
-    `${api.domain}/workout/${username}-${workout.id}`
-  );
+  const { onCopy } = useClipboard(`${api.domain}/workout/${workout.id}`);
   const toast = useToast();
 
   return (

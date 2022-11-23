@@ -1,6 +1,5 @@
 import { Workout } from './workoutTypes';
 import { Message } from './messageTypes';
-import { UserRole } from './userTypes';
 
 export enum ApiStatus {
   SUCCESS = 'SUCCESS',
@@ -46,7 +45,7 @@ export type MailAuthenticationResponseBody =
 
 export interface LoginResponseBody {
   username: string;
-  roles: UserRole[];
+  userId: string;
   token: string;
   ftp: number;
 }
@@ -58,8 +57,11 @@ export interface UserUpdateRequestBody {
 export interface WorkoutsResponseBody {
   workouts: Workout[];
 }
+export interface UpdateWorkoutResponseBody {
+  workout: Workout;
+}
 
-export interface ImportWorkoutResponseBody {
+export interface GetWorkoutResponseBody {
   workout: Workout;
 }
 

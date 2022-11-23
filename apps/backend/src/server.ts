@@ -1,30 +1,34 @@
-import * as messageService from './services/messageService';
-import * as userService from './services/userService';
-import * as groupSessionService from './services/groupSessionService';
-import * as validationService from './services/validationService';
-import * as slackService from './services/slackService';
-import * as mailService from './services/mailService';
+import {
+  groupSessionService,
+  mailService,
+  messageService,
+  slackService,
+  userService,
+  validationService,
+  workoutService,
+} from './services';
 import * as express from 'express';
 import * as core from 'express-serve-static-core';
 import {
   ApiResponseBody,
   ApiStatus,
-  ImportWorkoutResponseBody,
   LoginResponseBody,
   MessagesResponseBody,
   UserUpdateRequestBody,
   WorkoutRequestBody,
   WorkoutsResponseBody,
-  UserRole,
   MailLoginRequestBody,
   MailAuthenticationRequestBody,
   MailAuthenticationResponseBody,
   MailAuthenticationRegisterRequestBody,
   WebSocketRequest,
+  UpdateWorkoutResponseBody,
+  GetWorkoutResponseBody,
 } from '@dundring/types';
 import * as WebSocket from 'ws';
 import cors from 'cors';
 import http from 'http';
+import { isError, isSuccess } from '@dundring/utils';
 
 require('dotenv').config();
 
@@ -67,12 +71,11 @@ const checkEnvConfig = () => {
 
 checkEnvConfig();
 
-router.get<core.ParamsDictionary, ApiResponseBody<ImportWorkoutResponseBody>>(
-  '/:username/workouts/:workoutId',
-  (req, res) => {
-    const username = req.params['username'];
+router.get<core.ParamsDictionary, ApiResponseBody<GetWorkoutResponseBody>>(
+  '/workouts/:workoutId',
+  async (req, res) => {
     const workoutId = req.params['workoutId'];
-    const response = userService.importWorkout(username, workoutId);
+    const response = await workoutService.getWorkout(workoutId);
 
     switch (response.status) {
       case 'SUCCESS':
@@ -93,30 +96,41 @@ router.get<core.ParamsDictionary, ApiResponseBody<ImportWorkoutResponseBody>>(
 
 router.get<null, ApiResponseBody<WorkoutsResponseBody>>(
   '/me/workouts',
-  (req, res) => {
+  async (req, res) => {
     if (!validationService.authenticateToken(req, res)) return;
 
-    const workouts = userService.getUserWorkouts(req.username);
+    const workouts = await workoutService.getUserWorkouts(req.userId);
+
+    if (isError(workouts)) {
+      res.send({ status: ApiStatus.FAILURE, message: workouts.type });
+      return;
+    }
+
     res.send({
       status: ApiStatus.SUCCESS,
-      data: { workouts },
+      data: { workouts: workouts.data },
     });
   }
 );
 
-router.post<WorkoutRequestBody, ApiResponseBody<WorkoutsResponseBody>>(
+router.post<WorkoutRequestBody, ApiResponseBody<UpdateWorkoutResponseBody>>(
   '/me/workout',
-  (req, res) => {
+  async (req, res) => {
     if (!validationService.authenticateToken(req, res)) return;
+
     const workout = req.body.workout;
 
-    const ret = userService.saveWorkout(req.username, workout);
+    const ret = await workoutService.upsertWorkout(
+      req.userId,
+      workout,
+      workout.id
+    );
 
     switch (ret.status) {
       case 'SUCCESS':
         res.send({
           status: ApiStatus.SUCCESS,
-          data: { workouts: ret.data },
+          data: { workout: ret.data },
         });
         return;
       default:
@@ -131,12 +145,12 @@ router.post<WorkoutRequestBody, ApiResponseBody<WorkoutsResponseBody>>(
 
 router.post<UserUpdateRequestBody, ApiResponseBody<UserUpdateRequestBody>>(
   '/me',
-  (req, res) => {
+  async (req, res) => {
     if (!validationService.authenticateToken(req, res)) return;
 
     const { ftp } = req.body;
 
-    const ret = userService.updateUserFtp(req.username, ftp);
+    const ret = await userService.updateUserFtp(req.userId, ftp);
 
     switch (ret.status) {
       case 'SUCCESS':
@@ -160,19 +174,24 @@ router.post<null, ApiResponseBody<LoginResponseBody>>(
   async (req, res) => {
     if (!validationService.authenticateToken(req, res)) return;
 
-    const username = req.username;
-    const user = userService.getUser(username || '');
+    const { username, userId } = req;
+
+    const user = await userService.getUser(username || '');
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
-    if (!user) {
+    if (isError(user)) {
       return;
     }
 
-    const { roles, ftp } = user;
     res.send({
       status: ApiStatus.SUCCESS,
-      data: { roles, ftp, token: token || '', username: user.username },
+      data: {
+        ftp: user.data.fitnessData?.ftp || 200,
+        token: token || '',
+        username,
+        userId,
+      },
     });
     return;
   }
@@ -210,28 +229,24 @@ router.post<
     return;
   }
 
-  const ret = userService.createUser({
+  const ret = await userService.createUser({
     username: username,
     mail: mailTokenRet.data.mail,
-    roles: [UserRole.DEFAULT],
-    workouts: [],
-    ftp: 250,
   });
 
-  if (ret.status === 'ERROR') {
+  if (isError(ret)) {
     const message = ret.type;
     let statusMessage = 'Something went wrong.';
     let statusCode = 500;
     switch (message) {
-      case 'User already exists':
-        statusMessage = 'A user with that username already exists.';
+      case 'Username is already in use':
+        statusMessage = 'The username is already in use.';
         statusCode = 400;
         break;
       case 'Mail is already in use':
         statusMessage = 'The e-mail address is already in use.';
         statusCode = 400;
         break;
-      case 'File not found':
       default:
         break;
     }
@@ -244,16 +259,23 @@ router.post<
     return;
   }
 
-  const token = validationService.generateAccessToken(username);
-  const user = userService.getUser(username);
-  if (user) {
-    const { roles, ftp } = user;
+  const token = validationService.generateAccessToken({
+    userId: ret.data.id,
+    username: ret.data.username,
+  });
+  const [user, fitnessData] = await Promise.all([
+    userService.getUser(username),
+    userService.getUserFitnessData(ret.data.id),
+  ]);
+
+  if (isSuccess(user) && isSuccess(fitnessData)) {
+    const { ftp } = fitnessData.data;
     res.send({
       status: ApiStatus.SUCCESS,
       data: {
+        userId: user.data.id,
         username,
         token,
-        roles,
         ftp,
       },
     });
@@ -281,30 +303,41 @@ router.post<
     return;
   }
   const data = ret.data;
-  const user = userService.getUserByMail(data.mail);
-  if (!user) {
+  const user = await userService.getUserByMail(data.mail);
+  if (isSuccess(user)) {
+    const username = user.data.username;
+    const userId = user.data.id;
+
+    const token = validationService.generateAccessToken({
+      userId,
+      username,
+    });
+    const fitnessData = await userService.getUserFitnessData(userId);
+    const ftp = isSuccess(fitnessData)
+      ? fitnessData.data.ftp
+      : slackService.logAndReturn(
+          `user [${userId}] does not have any fitnessData stored. Returning {ftp: 200}`,
+          200
+        );
+
     res.send({
       status: ApiStatus.SUCCESS,
-      data: { type: 'user_does_not_exist', mail: data.mail },
+      data: {
+        type: 'user_exists',
+        data: {
+          userId,
+          username,
+          token,
+          ftp,
+        },
+      },
     });
     return;
   }
-  const username = user.username;
-
-  const token = validationService.generateAccessToken(username);
-  const { roles, ftp } = user;
 
   res.send({
     status: ApiStatus.SUCCESS,
-    data: {
-      type: 'user_exists',
-      data: {
-        username,
-        token,
-        roles,
-        ftp,
-      },
-    },
+    data: { type: 'user_does_not_exist', mail: data.mail },
   });
   return;
 });

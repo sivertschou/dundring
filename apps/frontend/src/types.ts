@@ -1,5 +1,3 @@
-import { UserRole } from '@dundring/types';
-
 export interface Lap {
   dataPoints: DataPoint[];
   distance: number;
@@ -41,7 +39,6 @@ export interface LoggedInUser {
   loggedIn: true;
   token: string;
   username: string;
-  roles: UserRole[];
   workouts: Workout[];
   ftp: number;
 }

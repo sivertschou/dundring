@@ -9,7 +9,7 @@ import {
   Input,
   InputGroup,
 } from '@chakra-ui/react';
-import { importWorkout } from '../../api';
+import { getWorkout } from '../../api';
 import { Text } from '@chakra-ui/layout';
 import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
 import { useParams } from 'react-router-dom';
@@ -34,13 +34,10 @@ export const ImportWorkout = ({ setWorkoutToEdit, previewFtp }: Props) => {
 
   const navigate = useNavigate();
 
-  const workoutIdInputIsValidFormat =
-    workoutIdInput.match('([a-zA-Z0-9]+-[0-9]+)') !== null;
-
   const handleImportWorkout = React.useCallback(
-    async (username: string, id: string) => {
+    async (workoutId: string) => {
       setIsLoading(true);
-      const workoutResponse = await importWorkout(username, id);
+      const workoutResponse = await getWorkout(workoutId);
       setIsLoading(false);
 
       switch (workoutResponse.status) {
@@ -64,31 +61,28 @@ export const ImportWorkout = ({ setWorkoutToEdit, previewFtp }: Props) => {
 
   React.useEffect(() => {
     if (!workoutIdParam) return;
-    const [username, id] = workoutIdParam.split('-');
     setWorkoutIdInput(workoutIdParam);
-    handleImportWorkout(username, id);
+    handleImportWorkout(workoutIdParam);
   }, [handleImportWorkout, workoutIdParam]);
 
   const onClickImportWorkout = async () => {
-    const [username, id] = workoutIdInput.split('-');
-    handleImportWorkout(username, id);
+    if (!workoutIdInput) return;
+    handleImportWorkout(workoutIdInput);
   };
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        if (workoutIdInputIsValidFormat) onClickImportWorkout();
+        onClickImportWorkout();
       }}
     >
-      <FormControl
-        isInvalid={!workoutIdInputIsValidFormat && workoutIdInput !== ''}
-      >
+      <FormControl isInvalid={!!errorMessage}>
         <FormLabel>Import workout</FormLabel>
         <HStack>
           <InputGroup>
             <Input
-              placeholder="Workout id : username-id"
+              placeholder="E.g. 7ad16cbc-0708-4ad0-a9da-ea5dfb35d4f2"
               type="workoutIdInput"
               name="workoutIdInput"
               value={workoutIdInput}
@@ -100,15 +94,12 @@ export const ImportWorkout = ({ setWorkoutToEdit, previewFtp }: Props) => {
           </InputGroup>
           <Button
             isLoading={isLoading}
-            disabled={!workoutIdInputIsValidFormat}
+            disabled={!workoutIdInput}
             onClick={onClickImportWorkout}
           >
             Import
           </Button>
         </HStack>
-        <FormErrorMessage>
-          {'Invalid workout id. Format: username-id'}
-        </FormErrorMessage>
         {errorMessage ? <Text color="red.500">{errorMessage}</Text> : null}
         <FormHelperText>
           You can import/clone an other user's workout by entering the workout

@@ -30,7 +30,6 @@ export const UserContextProvider = ({
             case 'SUCCESS':
               setUser({
                 loggedIn: true,
-                roles: res.data.roles,
                 token: locallyStoredToken,
                 username: res.data.username,
                 workouts: [],
@@ -99,6 +98,7 @@ export const UserContextProvider = ({
         setUser: setUserExternal,
         workouts,
         refetchData: () => {
+          console.log('refetch user data');
           refetchWorkouts();
         },
         localWorkouts,
