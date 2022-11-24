@@ -99,7 +99,7 @@ export const requestLoginLinkMail = async (data: MailLoginRequestBody) => {
 
 export const authenticateMailLogin = async (
   body: MailAuthenticationRequestBody,
-  abortController?: AbortController
+  abortController: AbortController
 ) => {
   return post<
     ApiResponseBody<MailAuthenticationResponseBody>,
@@ -118,7 +118,7 @@ export const registerMailLogin = async (
 
 export const validateToken = async (
   token: string,
-  abortController?: AbortController
+  abortController: AbortController
 ) => {
   return authPost<ApiResponseBody<LoginResponseBody>, {}>(
     `${httpUrl}/validate`,
