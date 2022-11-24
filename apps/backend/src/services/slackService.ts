@@ -1,4 +1,4 @@
-import { Room, UserBase } from '@dundring/types';
+import { FeedbackRequestBody, Room, UserBase } from '@dundring/types';
 import fetch from 'node-fetch';
 
 require('dotenv').config();
@@ -104,4 +104,12 @@ export const logRoomDeletion = (username: string, room: Room) => {
 export const logAndReturn = <T>(message: string, data: T) => {
   sendSlackMessage(SlackService.ERRORS, message);
   return data;
+};
+
+export const logFeedback = (data: FeedbackRequestBody) => {
+  const message = `Feedback${
+    data.contactInfo ? ' from ' + data.contactInfo : ''
+  }
+${data.content}`;
+  sendSlackMessage(SlackService.FEEDBACK, message);
 };

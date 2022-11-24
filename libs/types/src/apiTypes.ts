@@ -72,3 +72,8 @@ export interface MessagesResponseBody {
 export interface WorkoutRequestBody {
   workout: Workout;
 }
+
+export interface FeedbackRequestBody {
+  content: string;
+  contactInfo?: string;
+}

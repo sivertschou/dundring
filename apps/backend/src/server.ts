@@ -24,6 +24,7 @@ import {
   WebSocketRequest,
   UpdateWorkoutResponseBody,
   GetWorkoutResponseBody,
+  FeedbackRequestBody,
 } from '@dundring/types';
 import * as WebSocket from 'ws';
 import cors from 'cors';
@@ -351,6 +352,19 @@ router.get<null, ApiResponseBody<MessagesResponseBody>>(
       status: ApiStatus.SUCCESS,
       data: { messages },
     });
+  }
+);
+
+router.post<FeedbackRequestBody, ApiResponseBody<null>>(
+  '/feedback',
+  async (req, res) => {
+    slackService.logFeedback(req.body);
+
+    res.send({
+      status: ApiStatus.SUCCESS,
+      data: null,
+    });
+    return;
   }
 );
 
