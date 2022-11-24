@@ -46,6 +46,7 @@ export const FeedbackModal = () => {
   const feedbackIsInvalid = state.content.touched && !state.content.value;
 
   const sendFeedback = async () => {
+    //TODO: Allow cmd+enter to trigger a send in the Textarea
     const trimmedContent = state.content.value.trim();
     const trimmedSender = state.sender.value.trim();
 
@@ -56,6 +57,7 @@ export const FeedbackModal = () => {
 
     setState((state) => ({ ...state, isLoading: true }));
     const sender = trimmedSender ? { sender: trimmedSender } : undefined;
+    console.log('sender:', sender);
     const response = await api.sendFeedback({
       content: trimmedContent,
       ...sender,
@@ -83,20 +85,18 @@ export const FeedbackModal = () => {
     <Modal isOpen={isOpen} onClose={() => navigate('/')} size="2xl">
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Feedback</ModalHeader>
-        <ModalCloseButton />
         <form
           onSubmit={(e) => {
             e.preventDefault();
             sendFeedback();
           }}
         >
-          <ModalHeader>Sign in</ModalHeader>
+          <ModalHeader>Feedback</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Stack>
               <FormControl isInvalid={feedbackIsInvalid} isRequired={true}>
-                <FormLabel>Feedback</FormLabel>
+                <FormLabel>What do you have on your mind?</FormLabel>
                 <Textarea
                   placeholder="Type whatever's on your mind!"
                   name="feedback"
@@ -111,9 +111,9 @@ export const FeedbackModal = () => {
                   }}
                 />
                 <FormHelperText>
-                  Please enter whatever's on your mind! This could be anything
-                  from bugs/unexpected behaviour your have encountered, features
-                  you would like to see or some other general feedback.
+                  This could be anything from bugs/unexpected behaviour you've
+                  encountered, features you would like to see or some other
+                  general feedback.
                 </FormHelperText>
               </FormControl>
               <FormControl>

@@ -107,9 +107,8 @@ export const logAndReturn = <T>(message: string, data: T) => {
 };
 
 export const logFeedback = (data: FeedbackRequestBody) => {
-  const message = `Feedback${
+  const message = `*Feedback${
     data.contactInfo ? ' from ' + data.contactInfo : ''
-  }
-${data.content}`;
+  }*\n${data.content}`;
   sendSlackMessage(SlackService.FEEDBACK, message);
 };
