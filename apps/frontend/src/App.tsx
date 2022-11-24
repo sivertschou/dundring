@@ -12,10 +12,11 @@ export const App = () => {
           <Route path="workout" element={<MainPage />}>
             <Route path=":workoutId" element={<MainPage />} />
           </Route>
-          <Route path="profile" element={<MainPage />} />
-          <Route path="logs" element={<MainPage />} />
-          <Route path="login" element={<MainPage />} />
           <Route path="auth" element={<MainPage />} />
+          <Route path="feedback" element={<MainPage />} />
+          <Route path="login" element={<MainPage />} />
+          <Route path="logs" element={<MainPage />} />
+          <Route path="profile" element={<MainPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

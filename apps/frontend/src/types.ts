@@ -48,3 +48,8 @@ export interface LoggedOutUser {
 }
 
 export type UserContextType = LoggedInUser | LoggedOutUser;
+
+export interface EditableString {
+  value: string;
+  touched: boolean;
+}

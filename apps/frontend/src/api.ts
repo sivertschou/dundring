@@ -1,5 +1,6 @@
 import {
   ApiResponseBody,
+  FeedbackRequestBody,
   GetWorkoutResponseBody,
   LoginResponseBody,
   MailAuthenticationRegisterRequestBody,
@@ -142,4 +143,11 @@ export const updateUser = async (token: string, data: { ftp: number }) => {
     ApiResponseBody<UserUpdateRequestBody>,
     UserUpdateRequestBody
   >(`${httpUrl}/me`, token, data);
+};
+
+export const sendFeedback = async (body: FeedbackRequestBody) => {
+  return post<ApiResponseBody<null>, FeedbackRequestBody>(
+    `${httpUrl}/feedback`,
+    body
+  );
 };

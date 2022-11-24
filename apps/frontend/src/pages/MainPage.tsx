@@ -7,6 +7,7 @@ import { ActionBar } from '../components/ActionBar';
 import { TopBar } from '../components/TopBar';
 import { useLocation, useParams } from 'react-router-dom';
 import {
+  useFeedbackModal,
   useGroupSessionModal,
   useLoginModal,
   useLogModal,
@@ -28,13 +29,19 @@ export const MainPage = () => {
     useGroupSessionModal();
   const { onOpen: onOpenProfileModal, onClose: onCloseProfileModal } =
     useProfileModal();
+  const { onOpen: onOpenFeedbackModal, onClose: onCloseFeedbackModal } =
+    useFeedbackModal();
   const { onOpen: onOpenLogModal, onClose: onCloseLogModal } = useLogModal();
   const { onOpen: onOpenLoginModal, onClose: onCloseLoginModal } =
     useLoginModal();
 
   React.useEffect(() => {
     const path = location.pathname.split('/')[1];
+    console.log('PATH:', path);
     switch (path) {
+      case 'feedback':
+        onOpenFeedbackModal();
+        return;
       case 'group':
         onOpenGroupSessionModal();
         connect();
@@ -58,6 +65,7 @@ export const MainPage = () => {
         return;
 
       default:
+        onCloseFeedbackModal();
         onCloseGroupSessionModal();
         onCloseLogModal();
         onCloseLoginModal();
@@ -68,6 +76,8 @@ export const MainPage = () => {
     location,
     params,
     connect,
+    onOpenFeedbackModal,
+    onCloseFeedbackModal,
     onOpenLogModal,
     onCloseLogModal,
     onOpenLoginModal,
