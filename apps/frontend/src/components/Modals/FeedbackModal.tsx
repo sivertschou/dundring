@@ -21,9 +21,13 @@ import {
   Spinner,
   Input,
   FormHelperText,
+  Link,
+  Spacer,
+  Icon,
 } from '@chakra-ui/react';
 import * as React from 'react';
 import { EditableString } from '../../types';
+import { Link45deg } from 'react-bootstrap-icons';
 
 interface State {
   content: EditableString;
@@ -95,6 +99,24 @@ export const FeedbackModal = () => {
           <ModalCloseButton />
           <ModalBody>
             <Stack>
+              <Text>
+                We appreciate your feedback! We'll do everything we can to fix
+                bugs/unexpected behaviour, and we'll try to prioritize your
+                feature suggestions.
+              </Text>
+              <Text>
+                Remember that you can chat with us on our{' '}
+                <Link
+                  href="https://join.slack.com/t/dundring/shared_invite/zt-10g7cx905-6ugYR~UdMEFBAkwdSWOAew"
+                  p="0"
+                  isExternal={true}
+                  alignItems="center"
+                >
+                  Slack Workspace
+                  <Icon as={Link45deg} />
+                </Link>
+              </Text>
+              <Spacer />
               <FormControl isInvalid={feedbackIsInvalid} isRequired={true}>
                 <FormLabel>What do you have on your mind?</FormLabel>
                 <Textarea
