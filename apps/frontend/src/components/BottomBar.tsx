@@ -62,6 +62,13 @@ export const BottomBar = () => {
           </Button>
           <HStack justifyContent="flex-end" paddingX="2">
             <Center>
+              <Tooltip label="Found a bug, or maybe you have an idea for some nice features we should include? Send us some feedback!">
+                <Link as={ReachLink} to="/feedback">
+                  Send us feedback!
+                </Link>
+              </Tooltip>
+            </Center>
+            <Center>
               <Tooltip label={colorModeButtonText}>
                 <Link>
                   <Icon
