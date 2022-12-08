@@ -35,6 +35,12 @@ export const ProfileModal = () => {
     navigate('/');
   };
 
+  React.useEffect(() => {
+    if (user.loggedIn) {
+      setFtpInput('' + user.ftp);
+    }
+  }, [user]);
+
   if (!user.loggedIn) return null;
 
   const updateFtp = async (input: string) => {
