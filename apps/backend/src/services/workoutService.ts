@@ -8,7 +8,7 @@ import * as db from '../db';
 
 const fromPrismaWorkoutPart = (part: PrismaSteadyWorkoutPart): WorkoutPart => ({
   duration: part.duration,
-  targetPower: part.power,
+  targetPower: part.power / 10,
   type: 'steady',
 });
 
@@ -20,6 +20,18 @@ const fromPrismaWorkout = (
   parts: [...workout.parts]
     .sort((a, b) => a.index - b.index)
     .map(fromPrismaWorkoutPart),
+});
+
+const convertWorkoutPartPowerToInteger = (
+  workoutPart: WorkoutPart
+): WorkoutPart => ({
+  ...workoutPart,
+  targetPower: Math.floor(workoutPart.targetPower * 10),
+});
+
+const workoutPowerToInteger = (workout: WorkoutBase): WorkoutBase => ({
+  ...workout,
+  parts: workout.parts.map(convertWorkoutPartPowerToInteger),
 });
 
 export const getWorkout = async (
@@ -38,6 +50,7 @@ export const getWorkout = async (
 
   return success(fromPrismaWorkout(workoutResult.data));
 };
+
 export const getUserWorkouts = async (
   userId: string
 ): Promise<
@@ -58,7 +71,7 @@ export const upsertWorkout = async (
   workoutId?: string
 ): Promise<Status<Workout, 'Something went wrong while upserting workout'>> => {
   return successMap(
-    await db.upsertWorkout(userId, workout, workoutId),
+    await db.upsertWorkout(userId, workoutPowerToInteger(workout), workoutId),
     fromPrismaWorkout
   );
 };
