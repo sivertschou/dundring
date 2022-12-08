@@ -18,13 +18,17 @@ export const httpUrl =
 
 export const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:8080';
 
-const get = async <T>(url: string): Promise<T> => {
+const get = async <T>(
+  url: string,
+  abortController?: AbortController
+): Promise<T> => {
   const response = await fetch(url, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
+    signal: abortController?.signal,
   });
 
   return response.json();
@@ -48,7 +52,11 @@ const post = async <T, U>(
   return response.json();
 };
 
-const authGet = async <T>(url: string, token: string): Promise<T> => {
+const authGet = async <T>(
+  url: string,
+  token: string,
+  abortController?: AbortController
+): Promise<T> => {
   const response = await fetch(url, {
     method: 'GET',
     headers: {
@@ -56,6 +64,7 @@ const authGet = async <T>(url: string, token: string): Promise<T> => {
       Accept: 'application/json',
       authorization: `Bearer ${token}`,
     },
+    signal: abortController?.signal,
   });
 
   return response.json();
@@ -64,7 +73,8 @@ const authGet = async <T>(url: string, token: string): Promise<T> => {
 const authPost = async <T, U>(
   url: string,
   token: string,
-  body: U
+  body: U,
+  abortController?: AbortController
 ): Promise<T> => {
   const response = await fetch(url, {
     method: 'POST',
@@ -74,6 +84,7 @@ const authPost = async <T, U>(
       authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(body),
+    signal: abortController?.signal,
   });
 
   return response.json();
@@ -88,7 +99,7 @@ export const requestLoginLinkMail = async (data: MailLoginRequestBody) => {
 
 export const authenticateMailLogin = async (
   body: MailAuthenticationRequestBody,
-  abortController?: AbortController
+  abortController: AbortController
 ) => {
   return post<
     ApiResponseBody<MailAuthenticationResponseBody>,
@@ -105,11 +116,15 @@ export const registerMailLogin = async (
   >(`${httpUrl}/register/mail`, body);
 };
 
-export const validateToken = async (token: string) => {
+export const validateToken = async (
+  token: string,
+  abortController: AbortController
+) => {
   return authPost<ApiResponseBody<LoginResponseBody>, {}>(
     `${httpUrl}/validate`,
     token,
-    {}
+    {},
+    abortController
   );
 };
 

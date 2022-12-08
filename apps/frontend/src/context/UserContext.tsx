@@ -22,26 +22,39 @@ export const UserContextProvider = ({
   children: React.ReactNode;
 }) => {
   React.useEffect(() => {
+    const abortController = new AbortController();
+    const authenticate = async (
+      localToken: string,
+      abortController: AbortController
+    ) => {
+      try {
+        const ret = await validateToken(localToken, abortController);
+
+        switch (ret.status) {
+          case 'SUCCESS':
+            setUser({
+              loggedIn: true,
+              token: localToken,
+              username: ret.data.username,
+              workouts: [],
+              ftp: ret.data.ftp,
+            });
+            break;
+          default:
+            localStorage['usertoken'] = '';
+        }
+      } catch (error) {
+        console.log('ERROR:', error);
+      }
+    };
+
     const locallyStoredToken = localStorage['usertoken'];
+
     if (locallyStoredToken) {
-      validateToken(locallyStoredToken)
-        .then((res) => {
-          switch (res.status) {
-            case 'SUCCESS':
-              setUser({
-                loggedIn: true,
-                token: locallyStoredToken,
-                username: res.data.username,
-                workouts: [],
-                ftp: res.data.ftp,
-              });
-              break;
-            default:
-              localStorage['usertoken'] = '';
-          }
-        })
-        .catch((e) => console.log('ERROR:', e));
+      authenticate(locallyStoredToken, abortController).catch(console.error);
     }
+
+    return () => abortController.abort();
   }, []);
 
   const [user, setUser] = React.useState<UserContextType>(defaultUser);
