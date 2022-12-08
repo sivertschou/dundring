@@ -43,7 +43,7 @@ export const BottomBar = () => {
         <Grid
           backgroundColor={bgColor}
           width="100%"
-          templateColumns="1fr 4fr 1fr"
+          templateColumns="1fr 2fr 1fr"
           pointerEvents="auto"
         >
           <Flex p="1">
