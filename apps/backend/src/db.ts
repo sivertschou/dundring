@@ -82,6 +82,22 @@ export const createUser = async (
   }
 };
 
+export const deleteWorkout = async (
+  workoutId: string
+): Promise<Status<string, 'Something went wrong writing to database'>> => {
+  try {
+    const result = await prisma.workout.delete({
+      where: { id: workoutId },
+    });
+
+    return success(result.id);
+  } catch (e) {
+    // TODO: Figure out if it failed due to
+    console.error('[db.createUser]', e);
+    return error('Something went wrong writing to database');
+  }
+};
+
 export const getUserWorkouts = async (
   userId: string
 ): Promise<

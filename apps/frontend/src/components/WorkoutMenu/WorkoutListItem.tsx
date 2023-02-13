@@ -3,7 +3,7 @@ import Icon from '@chakra-ui/icon';
 import { Center, Grid, Heading, HStack, Stack, Text } from '@chakra-ui/layout';
 import { useClipboard, useToast } from '@chakra-ui/react';
 import { Tooltip } from '@chakra-ui/tooltip';
-import { Cloud, Gear, Hdd, Clipboard } from 'react-bootstrap-icons';
+import { Cloud, Gear, Hdd, Clipboard, Trash } from 'react-bootstrap-icons';
 import { Workout } from '../../types';
 import {
   getTotalWorkoutTime,
@@ -15,6 +15,7 @@ interface Props {
   workout: Workout;
   setActiveWorkout: (workout: Workout) => void;
   onClickEdit: () => void;
+  onClickDelete: () => void;
   isLocallyStored: boolean;
 }
 export const WorkoutListItem = ({
@@ -22,6 +23,7 @@ export const WorkoutListItem = ({
   setActiveWorkout,
   onClickEdit,
   isLocallyStored,
+  onClickDelete,
 }: Props) => {
   const workoutDuration = getTotalWorkoutTime(workout);
   const { onCopy } = useClipboard(`${api.domain}/workout/${workout.id}`);
@@ -75,6 +77,14 @@ export const WorkoutListItem = ({
             icon={<Icon as={Gear} />}
             isRound
             onClick={() => onClickEdit()}
+          />
+        </Tooltip>
+        <Tooltip label="Delete workout" placement="right">
+          <IconButton
+            aria-label="Delete workout"
+            icon={<Icon as={Trash} />}
+            isRound
+            onClick={() => onClickDelete()}
           />
         </Tooltip>
       </HStack>

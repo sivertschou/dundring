@@ -72,3 +72,7 @@ export interface MessagesResponseBody {
 export interface WorkoutRequestBody {
   workout: Workout;
 }
+
+export interface DeleteWorkoutResponseBody {
+  workoutId: string;
+}

@@ -69,7 +69,7 @@ export const WorkoutEditorModal = () => {
                 }}
                 icon={<Icon as={ArrowLeft} />}
               />
-              Edit workout
+              Edit workout1
             </>
           ) : (
             <>Your workouts</>

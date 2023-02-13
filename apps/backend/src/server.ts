@@ -24,6 +24,7 @@ import {
   WebSocketRequest,
   UpdateWorkoutResponseBody,
   GetWorkoutResponseBody,
+  DeleteWorkoutResponseBody,
 } from '@dundring/types';
 import * as WebSocket from 'ws';
 import cors from 'cors';
@@ -142,6 +143,32 @@ router.post<WorkoutRequestBody, ApiResponseBody<UpdateWorkoutResponseBody>>(
     }
   }
 );
+
+router.delete<
+  core.ParamsDictionary,
+  ApiResponseBody<DeleteWorkoutResponseBody>
+>('/me/workout/:workoutId', async (req, res) => {
+  if (!validationService.authenticateToken(req, res)) return;
+
+  const workoutId = req.params['workoutId'];
+
+  const ret = await workoutService.deleteWorkout(workoutId);
+
+  switch (ret.status) {
+    case 'SUCCESS':
+      res.send({
+        status: ApiStatus.SUCCESS,
+        data: { workoutId: workoutId },
+      });
+      return;
+    default:
+      res.send({
+        status: ApiStatus.FAILURE,
+        message: ret.type,
+      });
+      return;
+  }
+});
 
 router.post<UserUpdateRequestBody, ApiResponseBody<UserUpdateRequestBody>>(
   '/me',

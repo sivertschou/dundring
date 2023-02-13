@@ -7,8 +7,10 @@ import {
 import Icon from '@chakra-ui/icon';
 import { Input, InputGroup, InputRightAddon } from '@chakra-ui/input';
 import { Divider, Stack } from '@chakra-ui/layout';
+import { ApiStatus } from '@dundring/types';
 import * as React from 'react';
 import { PencilSquare } from 'react-bootstrap-icons';
+import { deleteWorkout } from '../../api';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 import { useUser } from '../../context/UserContext';
 import { Workout } from '../../types';
@@ -26,6 +28,7 @@ export const WorkoutOverview = ({
   setActiveWorkout,
 }: Props) => {
   const { user, workouts, localWorkouts } = useUser();
+  const token = (user.loggedIn && user.token) || null;
   const { activeFtp, setActiveFtp } = useActiveWorkout();
   const [previewFtp, setPreviewFtp] = React.useState('' + activeFtp);
   const previewFtpAsNumber = parseInputAsInt(previewFtp);
@@ -90,6 +93,17 @@ export const WorkoutOverview = ({
               type: locallyStored ? 'local' : 'remote',
               previewFtp: previewFtpAsNumber,
             });
+          }}
+          onClickDelete={async () => {
+            console.log(token);
+            if (token) {
+              const res = await deleteWorkout(token, workout.id);
+              if (res.status === ApiStatus.FAILURE) {
+                // TODO: Show error message
+                console.log('FAILURE');
+                return;
+              }
+            }
           }}
         />
       ))}

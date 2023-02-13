@@ -90,6 +90,26 @@ const authPost = async <T, U>(
   return response.json();
 };
 
+const authDelete = async <T, U>(
+  url: string,
+  token: string,
+  body: U,
+  abortController?: AbortController
+): Promise<T> => {
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+    signal: abortController?.signal,
+  });
+
+  return response.json();
+};
+
 export const requestLoginLinkMail = async (data: MailLoginRequestBody) => {
   return post<
     ApiResponseBody<RequestLoginLinkMailResponseBody>,
@@ -152,6 +172,13 @@ export const saveWorkout = async (
   );
 };
 
+export const deleteWorkout = async (token: string, workoutId: string) => {
+  return authDelete<ApiResponseBody<{}>, {}>(
+    `${httpUrl}/me/workout/${workoutId}`,
+    token,
+    workoutId
+  );
+};
 export const updateUser = async (token: string, data: { ftp: number }) => {
   return authPost<
     ApiResponseBody<UserUpdateRequestBody>,

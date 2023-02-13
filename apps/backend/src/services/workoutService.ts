@@ -75,3 +75,9 @@ export const upsertWorkout = async (
     fromPrismaWorkout
   );
 };
+
+export const deleteWorkout = async (
+  workoutId: string
+): Promise<Status<string, 'Something went wrong writing to database'>> => {
+  return successMap(await db.deleteWorkout(workoutId), (x) => x);
+};
