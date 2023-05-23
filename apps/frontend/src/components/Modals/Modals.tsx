@@ -3,6 +3,7 @@ import { LogModal } from './LogModal';
 import { LoginModal } from './LoginModal';
 import { ProfileModal } from './ProfileModal';
 import { GroupSessionModal } from './GroupSessionModal';
+import { WelcomeMessageModal } from './WelcomeMessageModal';
 
 export const Modals = () => {
   return (
@@ -12,6 +13,7 @@ export const Modals = () => {
       <LoginModal />
       <ProfileModal />
       <WorkoutEditorModal />
+      <WelcomeMessageModal />
     </>
   );
 };

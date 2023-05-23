@@ -11,6 +11,7 @@ import {
   useLoginModal,
   useLogModal,
   useProfileModal,
+  useWelcomeMessageModal,
   useWorkoutEditorModal,
 } from '../context/ModalContext';
 import { Modals } from '../components/Modals/Modals';
@@ -31,6 +32,10 @@ export const MainPage = () => {
   const { onOpen: onOpenLogModal, onClose: onCloseLogModal } = useLogModal();
   const { onOpen: onOpenLoginModal, onClose: onCloseLoginModal } =
     useLoginModal();
+  const {
+    onOpen: onOpenWelcomeMessageModal,
+    onClose: onCloseWelcomeMessageModal,
+  } = useWelcomeMessageModal();
 
   React.useEffect(() => {
     const path = location.pathname.split('/')[1];
@@ -63,6 +68,8 @@ export const MainPage = () => {
         onCloseLoginModal();
         onCloseProfileModal();
         onCloseWorkoutEditorModal();
+
+        onOpenWelcomeMessageModal();
     }
   }, [
     location,
@@ -78,6 +85,8 @@ export const MainPage = () => {
     onCloseGroupSessionModal,
     onOpenWorkoutEditorModal,
     onCloseWorkoutEditorModal,
+    onOpenWelcomeMessageModal,
+    onCloseWelcomeMessageModal,
   ]);
 
   return (

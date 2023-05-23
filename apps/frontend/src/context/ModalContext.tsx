@@ -9,11 +9,12 @@ interface Modal {
 }
 
 const ModalContext = React.createContext<{
-  workoutEditorModal: Modal;
+  groupSessionModal: Modal;
   logModal: Modal;
   loginModal: Modal;
   profileModal: Modal;
-  groupSessionModal: Modal;
+  welcomeMessageModal: Modal;
+  workoutEditorModal: Modal;
 } | null>(null);
 
 export const ModalContextProvider = ({
@@ -25,15 +26,17 @@ export const ModalContextProvider = ({
   const loginModal: Modal = useDisclosure();
   const profileModal: Modal = useDisclosure();
   const groupSessionModal: Modal = useDisclosure();
+  const welcomeMessageModal: Modal = useDisclosure();
   const workoutEditorModal: Modal = useDisclosure();
 
   return (
     <ModalContext.Provider
       value={{
+        groupSessionModal,
         logModal,
         loginModal,
         profileModal,
-        groupSessionModal,
+        welcomeMessageModal,
         workoutEditorModal,
       }}
     >
@@ -76,6 +79,30 @@ export const useGroupSessionModal = () => {
     );
   }
   return context.groupSessionModal;
+};
+
+export const useWelcomeMessageModal = () => {
+  const CURRENT_VERSION = 1;
+  const KEY = 'lastViewedVersion';
+  const context = React.useContext(ModalContext);
+  if (context === null) {
+    throw new Error(
+      'useWelcomeMessageModal must be used within a ModalContextProvider'
+    );
+  }
+  return {
+    isOpen: context.welcomeMessageModal.isOpen,
+    onOpen: () => {
+      if (parseInt(localStorage.getItem(KEY) || '0') < CURRENT_VERSION) {
+        context.welcomeMessageModal.onOpen();
+      }
+    },
+    onClose: () => {
+      localStorage.setItem(KEY, JSON.stringify(CURRENT_VERSION));
+      context.welcomeMessageModal.onClose();
+    },
+    onToggle: context.welcomeMessageModal.onToggle,
+  };
 };
 
 export const useWorkoutEditorModal = () => {
