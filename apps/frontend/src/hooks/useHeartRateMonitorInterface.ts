@@ -142,7 +142,15 @@ export const useHeartRateMonitorInterface = (): HeartRateMonitorInterface => {
   };
   const disconnect = async () => {
     if (heartRateMonitor.status === 'connected') {
-      await heartRateMonitor.heartRateMeasurementCharacteristic.stopNotifications();
+      try {
+        await heartRateMonitor.heartRateMeasurementCharacteristic.stopNotifications();
+      } catch (e: any) {
+        if (e instanceof DOMException) {
+          console.log('HR already disconnected');
+        } else {
+          throw e;
+        }
+      }
 
       console.log('> Notifications stopped');
       heartRateMonitor.heartRateMeasurementCharacteristic.removeEventListener(
