@@ -1,3 +1,4 @@
+import { useToast } from '@chakra-ui/toast';
 import * as React from 'react';
 import { useLogs } from '../context/LogContext';
 
@@ -58,6 +59,7 @@ const parseHeartRate = (value: DataView | ArrayBuffer) => {
 export const useHeartRateMonitorInterface = (): HeartRateMonitorInterface => {
   const [heartRate, setHeartRate] = React.useState<number | null>(null);
   const { logEvent } = useLogs();
+  const toast = useToast();
 
   const [heartRateMonitor, dispatch] = React.useReducer(
     (_current: HeartRateMonitor, action: Action): HeartRateMonitor => {
@@ -138,20 +140,28 @@ export const useHeartRateMonitorInterface = (): HeartRateMonitorInterface => {
       heartRateMeasurementCharacteristic,
     });
 
+    const onDisconnected = () => {
+      toast({
+        title: 'HR Disconnected!',
+        isClosable: true,
+        duration: 2000,
+        status: 'warning',
+      });
+      setHeartRate(null);
+      dispatch({
+        type: 'set_error',
+        errorMessage: 'Disconnected',
+      });
+      logEvent('heart rate monitor auto-disconnected');
+    };
+    device.removeEventListener('gattserverdisconnected', onDisconnected);
+    device.addEventListener('gattserverdisconnected', onDisconnected);
+
     logEvent('heart rate monitor connected');
   };
   const disconnect = async () => {
     if (heartRateMonitor.status === 'connected') {
-      try {
-        await heartRateMonitor.heartRateMeasurementCharacteristic.stopNotifications();
-      } catch (e: any) {
-        if (e instanceof DOMException) {
-          console.log('HR already disconnected');
-        } else {
-          throw e;
-        }
-      }
-
+      await heartRateMonitor.heartRateMeasurementCharacteristic.stopNotifications();
       console.log('> Notifications stopped');
       heartRateMonitor.heartRateMeasurementCharacteristic.removeEventListener(
         'characteristicvaluechanged',
