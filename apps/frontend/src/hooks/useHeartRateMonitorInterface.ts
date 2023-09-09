@@ -91,6 +91,21 @@ export const useHeartRateMonitorInterface = (): HeartRateMonitorInterface => {
     setHeartRate(hr);
   };
 
+  const onDisconnected = React.useCallback(() => {
+    toast({
+      title: 'HR Disconnected!',
+      isClosable: true,
+      duration: 2000,
+      status: 'warning',
+    });
+    setHeartRate(null);
+    dispatch({
+      type: 'set_error',
+      errorMessage: 'Disconnected',
+    });
+    logEvent('heart rate monitor auto-disconnected');
+  }, []);
+
   const requestPermission = async () => {
     dispatch({ type: 'set_connecting' });
     const device = await navigator.bluetooth
@@ -140,20 +155,6 @@ export const useHeartRateMonitorInterface = (): HeartRateMonitorInterface => {
       heartRateMeasurementCharacteristic,
     });
 
-    const onDisconnected = () => {
-      toast({
-        title: 'HR Disconnected!',
-        isClosable: true,
-        duration: 2000,
-        status: 'warning',
-      });
-      setHeartRate(null);
-      dispatch({
-        type: 'set_error',
-        errorMessage: 'Disconnected',
-      });
-      logEvent('heart rate monitor auto-disconnected');
-    };
     device.removeEventListener('gattserverdisconnected', onDisconnected);
     device.addEventListener('gattserverdisconnected', onDisconnected);
 
