@@ -37,5 +37,6 @@ jobs:
       - name: Prettify code
         uses: creyD/prettier_action@v4.3
         with:
+          prettier_version: '3.0.3'
           dry: True
           prettier_options: --check **/*.{ts,tsx,js,md,html,json} #todo add svg
