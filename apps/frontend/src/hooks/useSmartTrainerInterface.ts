@@ -156,9 +156,8 @@ export const useSmartTrainerInterface = (): SmartTrainerInterface => {
 
     const server = await device.gatt?.connect();
     try {
-      const fitnessMachineService = await server?.getPrimaryService(
-        'fitness_machine'
-      );
+      const fitnessMachineService =
+        await server?.getPrimaryService('fitness_machine');
 
       if (!fitnessMachineService) {
         return dispatch({
@@ -209,9 +208,8 @@ export const useSmartTrainerInterface = (): SmartTrainerInterface => {
       logEvent(
         'Could not connect to device as Fitness Machine. Trying to connect to cycling power.'
       );
-      const cyclingPowerService = await server?.getPrimaryService(
-        'cycling_power'
-      );
+      const cyclingPowerService =
+        await server?.getPrimaryService('cycling_power');
       if (!cyclingPowerService) {
         return dispatch({
           type: 'set_error',
