@@ -26,12 +26,14 @@ import {
   Thead,
   Tooltip,
   Tr,
+  useToast,
 } from '@chakra-ui/react';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 import { createZoneTableInfo } from '../../utils/zones';
 import { secondsToHoursMinutesAndSecondsString } from '@dundring/utils';
 import { getPowerToSpeedMap } from '../../utils/speed';
 import { ApiStatus } from '@dundring/types';
+import { parseInputAsInt } from '../../utils/general';
 
 const editableWorkoutIsEqualToLoaded = (
   editable: EditableWorkout,
@@ -73,6 +75,7 @@ export const WorkoutEditor = ({
 }: Props) => {
   const { activeFtp, setActiveFtp, setActiveWorkout } = useActiveWorkout();
   const { user, saveLocalWorkout } = useUser();
+  const toast = useToast();
   const token = (user.loggedIn && user.token) || null;
 
   const canSaveLocally =
@@ -81,19 +84,16 @@ export const WorkoutEditor = ({
   const canSaveRemotely =
     token && (loadedWorkout.type === 'new' || loadedWorkout.type === 'remote');
 
-  const parseInputAsInt = (input: string) => {
-    const parsed = parseInt(input);
-    if (isNaN(parsed)) {
-      return 0;
-    }
-    return parsed;
-  };
-
   const saveRemotely = async () => {
     if (token) {
       const res = await saveWorkout(token, { workout });
       if (res.status === ApiStatus.FAILURE) {
-        // TODO: Show error message
+        toast({
+          title: `Save workout remotely failed`,
+          isClosable: true,
+          duration: 5000,
+          status: 'error',
+        });
         return;
       }
       closeEditor();
