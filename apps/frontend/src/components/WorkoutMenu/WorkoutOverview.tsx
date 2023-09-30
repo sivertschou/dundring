@@ -60,7 +60,7 @@ export const WorkoutOverview = ({
         Create new workout
       </Button>
       <FormControl id="ftp">
-        <FormLabel>Active Ftp</FormLabel>
+        <FormLabel>Active FTP</FormLabel>
         <InputGroup>
           <Input
             value={previewFtp}
