@@ -11,9 +11,10 @@ import * as React from 'react';
 import { PencilSquare } from 'react-bootstrap-icons';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 import { useUser } from '../../context/UserContext';
-import { Workout } from '../../types';
+import { Workout, WorkoutType } from '../../types';
 import { parseInputAsInt } from '../../utils/general';
 import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
+import { defaultWorkouts } from './defaultWorkouts';
 import { ImportWorkout } from './ImportWorkout';
 import { WorkoutListItem } from './WorkoutListItem';
 
@@ -25,14 +26,17 @@ export const WorkoutOverview = ({
   setWorkoutToEdit,
   setActiveWorkout,
 }: Props) => {
-  const { user, workouts, localWorkouts } = useUser();
+  const { workouts, localWorkouts } = useUser();
   const { activeFtp, setActiveFtp } = useActiveWorkout();
   const [previewFtp, setPreviewFtp] = React.useState('' + activeFtp);
   const previewFtpAsNumber = parseInputAsInt(previewFtp);
 
-  const allWorkouts = [
-    ...workouts.map((workout) => ({ workout, locallyStored: false })),
-    ...localWorkouts.map((workout) => ({ workout, locallyStored: true })),
+  const allUserWorkouts = [
+    ...workouts.map((workout) => ({ workout, type: 'remote' as WorkoutType })),
+    ...localWorkouts.map((workout) => ({
+      workout,
+      type: 'local' as WorkoutType,
+    })),
   ];
 
   return (
@@ -60,7 +64,7 @@ export const WorkoutOverview = ({
         Create new workout
       </Button>
       <FormControl id="ftp">
-        <FormLabel>Active Ftp</FormLabel>
+        <FormLabel>Active FTP</FormLabel>
         <InputGroup>
           <Input
             value={previewFtp}
@@ -76,10 +80,10 @@ export const WorkoutOverview = ({
       </FormControl>
 
       <Divider />
-      {allWorkouts.map(({ workout, locallyStored }, i) => (
+      {allUserWorkouts.map(({ workout, type }, i) => (
         <WorkoutListItem
           key={i}
-          isLocallyStored={locallyStored}
+          type={type}
           workout={workout}
           setActiveWorkout={(workout: Workout) =>
             setActiveWorkout(workout, previewFtpAsNumber)
@@ -87,7 +91,27 @@ export const WorkoutOverview = ({
           onClickEdit={() => {
             setWorkoutToEdit({
               ...workout,
-              type: locallyStored ? 'local' : 'remote',
+              type,
+              previewFtp: previewFtpAsNumber,
+            });
+          }}
+        />
+      ))}
+
+      <Divider />
+
+      {defaultWorkouts.map((workout, i) => (
+        <WorkoutListItem
+          key={i}
+          type="library"
+          workout={workout}
+          setActiveWorkout={(workout: Workout) =>
+            setActiveWorkout(workout, previewFtpAsNumber)
+          }
+          onClickEdit={() => {
+            setWorkoutToEdit({
+              ...workout,
+              type: 'new',
               previewFtp: previewFtpAsNumber,
             });
           }}

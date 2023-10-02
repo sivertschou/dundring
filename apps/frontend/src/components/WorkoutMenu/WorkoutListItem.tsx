@@ -3,8 +3,8 @@ import Icon from '@chakra-ui/icon';
 import { Center, Grid, Heading, HStack, Stack, Text } from '@chakra-ui/layout';
 import { useClipboard, useToast } from '@chakra-ui/react';
 import { Tooltip } from '@chakra-ui/tooltip';
-import { Cloud, Gear, Hdd, Clipboard } from 'react-bootstrap-icons';
-import { Workout } from '../../types';
+import { Cloud, Gear, Hdd, Clipboard, Book } from 'react-bootstrap-icons';
+import { Workout, WorkoutType } from '../../types';
 import {
   getTotalWorkoutTime,
   secondsToHoursMinutesAndSecondsString,
@@ -15,13 +15,13 @@ interface Props {
   workout: Workout;
   setActiveWorkout: (workout: Workout) => void;
   onClickEdit: () => void;
-  isLocallyStored: boolean;
+  type: WorkoutType;
 }
 export const WorkoutListItem = ({
   workout,
   setActiveWorkout,
   onClickEdit,
-  isLocallyStored,
+  type,
 }: Props) => {
   const workoutDuration = getTotalWorkoutTime(workout);
   const { onCopy } = useClipboard(`${api.domain}/workout/${workout.id}`);
@@ -29,16 +29,7 @@ export const WorkoutListItem = ({
 
   return (
     <Grid templateColumns="1fr 10fr 3fr">
-      <Tooltip
-        label={`Workout is stored ${
-          isLocallyStored ? 'in the browser' : 'remotely'
-        }`}
-        placement="left"
-      >
-        <Center>
-          <Icon as={isLocallyStored ? Hdd : Cloud} />
-        </Center>
-      </Tooltip>
+      <WorkoutIcon type={type} />
       <Stack spacing="0">
         <Heading as="h2" fontSize="2xl">
           {workout.name}
@@ -48,7 +39,7 @@ export const WorkoutListItem = ({
         </Text>
       </Stack>
       <HStack>
-        {isLocallyStored ? null : (
+        {type === 'remote' && (
           <Tooltip label="Copy import link to clipboard. Share this id to allow other people to import this workout.">
             <IconButton
               aria-label="copy"
@@ -79,5 +70,29 @@ export const WorkoutListItem = ({
         </Tooltip>
       </HStack>
     </Grid>
+  );
+};
+
+const WorkoutIcon = ({ type }: { type: WorkoutType }) => {
+  if (type === 'library') {
+    return (
+      <Tooltip label={`Workout is from the workout library`} placement="left">
+        <Center>
+          <Icon as={Book} />
+        </Center>
+      </Tooltip>
+    );
+  }
+  return (
+    <Tooltip
+      label={`Workout is stored ${
+        type === 'remote' ? 'in the browser' : 'remotely'
+      }`}
+      placement="left"
+    >
+      <Center>
+        <Icon as={type === 'local' ? Hdd : Cloud} />
+      </Center>
+    </Tooltip>
   );
 };

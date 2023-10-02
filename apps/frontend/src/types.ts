@@ -22,6 +22,8 @@ export interface Workout {
   parts: WorkoutPart[];
 }
 
+export type WorkoutType = 'local' | 'remote' | 'new' | 'library';
+
 export interface WorkoutPart {
   duration: number;
   targetPower: number;
