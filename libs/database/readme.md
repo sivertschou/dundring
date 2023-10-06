@@ -14,6 +14,6 @@
 3. Push the migrations to the database
    ```
    DATABASE_URL=postgres://postgres:password@localhost:5432 \
-     yarn db:migrate-prod
+     yarn db:migrate
    ```
    You can also set this in the `.env` file. See `.env.example`
