@@ -4,7 +4,7 @@ import { Center, Grid, Heading, HStack, Stack, Text } from '@chakra-ui/layout';
 import { useClipboard, useToast } from '@chakra-ui/react';
 import { Tooltip } from '@chakra-ui/tooltip';
 import { Cloud, Gear, Hdd, Clipboard, Book } from 'react-bootstrap-icons';
-import { Workout, WorkoutType } from '../../types';
+import { StoredWorkoutType, Workout, WorkoutType } from '../../types';
 import {
   getTotalWorkoutTime,
   secondsToHoursMinutesAndSecondsString,
@@ -15,7 +15,7 @@ interface Props {
   workout: Workout;
   setActiveWorkout: (workout: Workout) => void;
   onClickEdit: () => void;
-  type: WorkoutType;
+  type: StoredWorkoutType;
 }
 export const WorkoutListItem = ({
   workout,
@@ -73,25 +73,33 @@ export const WorkoutListItem = ({
   );
 };
 
-const WorkoutIcon = ({ type }: { type: WorkoutType }) => {
-  if (type === 'library') {
-    return (
-      <Tooltip label={`Workout is from the workout library`} placement="left">
-        <Center>
-          <Icon as={Book} />
-        </Center>
-      </Tooltip>
-    );
-  }
+const WorkoutIcon = ({ type }: { type: StoredWorkoutType }) => {
+  const iconAndDescription = (type: StoredWorkoutType) => {
+    switch (type) {
+      case 'library':
+        return {
+          icon: Book,
+          description: 'Workout is from the workout library',
+        };
+      case 'local':
+        return {
+          icon: Hdd,
+          description: 'Workout is stored in the browser',
+        };
+      case 'remote':
+        return {
+          icon: Cloud,
+          description: 'Workout is stored remotely',
+        };
+    }
+  };
+
+  const { icon, description } = iconAndDescription(type);
+
   return (
-    <Tooltip
-      label={`Workout is stored ${
-        type === 'remote' ? 'in the browser' : 'remotely'
-      }`}
-      placement="left"
-    >
+    <Tooltip label={description} placement="left">
       <Center>
-        <Icon as={type === 'local' ? Hdd : Cloud} />
+        <Icon as={icon} />
       </Center>
     </Tooltip>
   );

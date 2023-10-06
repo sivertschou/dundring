@@ -32,10 +32,13 @@ export const WorkoutOverview = ({
   const previewFtpAsNumber = parseInputAsInt(previewFtp);
 
   const allUserWorkouts = [
-    ...workouts.map((workout) => ({ workout, type: 'remote' as WorkoutType })),
+    ...workouts.map((workout) => ({
+      workout,
+      type: 'remote' as StoredWorkoutType,
+    })),
     ...localWorkouts.map((workout) => ({
       workout,
-      type: 'local' as WorkoutType,
+      type: 'local' as StoredWorkoutType,
     })),
   ];
 
