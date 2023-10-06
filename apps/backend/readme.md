@@ -15,3 +15,9 @@ Run the app
 ```
 $ npm start
 ```
+
+### Setup and use local database
+
+1. Set `DATABASE_URL=file:./dundring.db
+
+2. Use Prisma to init the db : `npx prisma migrate dev --name init`
