@@ -1,0 +1,30 @@
+{
+  "name": "@dundring/database",
+  "version": "0.1.0",
+  "private": true,
+  "description": "",
+  "author": "",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rollup -c --bundleConfigAsCjs",
+    "dev": "rollup -c -w --bundleConfigAsCjs",
+    "db:generate": "prisma generate",
+    "db:migrate-dev": "prisma migrate dev",
+    "db:migrate-prod": "prisma migrate deploy",
+    "db:push": "prisma db push --skip-generate",
+    "db:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.4.0"
+  },
+  "devDependencies": {
+    "@dundring/types": "*",
+    "@dundring/tsconfig": "*",
+    "@rollup/plugin-typescript": "^9.0.2",
+    "prisma": "^4.4.0",
+    "rollup": "^3.2.5",
+    "typescript": "4.8.4"
+  }
+}

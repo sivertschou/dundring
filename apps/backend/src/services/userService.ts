@@ -2,7 +2,7 @@ import { Status, UserBase } from '@dundring/types';
 
 require('dotenv').config();
 import * as db from '../db';
-import { User } from '@prisma/client';
+import { User } from '@dundring/database';
 import { isSuccess } from '@dundring/utils';
 import { slackService } from '.';
 
