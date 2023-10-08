@@ -83,7 +83,7 @@ export const WorkoutOverview = ({
         </FormHelperText>
       </FormControl>
 
-      <Divider />
+      {allUserWorkouts.length > 0 && <Divider />}
       {allUserWorkouts.map(({ workout, type }, i) => (
         <WorkoutListItem
           key={i}
