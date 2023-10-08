@@ -7,11 +7,12 @@ import {
 import Icon from '@chakra-ui/icon';
 import { Input, InputGroup, InputRightAddon } from '@chakra-ui/input';
 import { Divider, Stack } from '@chakra-ui/layout';
+import { Center, Text } from '@chakra-ui/react';
 import * as React from 'react';
 import { PencilSquare } from 'react-bootstrap-icons';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 import { useUser } from '../../context/UserContext';
-import { Workout, WorkoutType } from '../../types';
+import { StoredWorkoutType, Workout, WorkoutType } from '../../types';
 import { parseInputAsInt } from '../../utils/general';
 import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
 import { defaultWorkouts } from './defaultWorkouts';
@@ -102,7 +103,9 @@ export const WorkoutOverview = ({
       ))}
 
       <Divider />
-
+      <Center>
+        <Text size="5xl">Predefined workouts</Text>
+      </Center>
       {defaultWorkouts.map((workout, i) => (
         <WorkoutListItem
           key={i}

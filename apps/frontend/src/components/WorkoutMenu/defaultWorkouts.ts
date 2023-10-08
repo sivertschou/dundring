@@ -2,7 +2,7 @@ import { Workout } from '@dundring/types';
 
 export const defaultWorkouts: Workout[] = [
   {
-    name: '4x4',
+    name: '4x4min @ 110% FTP',
     parts: [
       {
         duration: 300,
@@ -83,7 +83,7 @@ export const defaultWorkouts: Workout[] = [
     id: '', // needs '' as id to correctly save in localStorage when user edits the workout
   },
   {
-    name: '3x10 min - Threshold intervals',
+    name: '3x10 min @ 92% FTP - Threshold intervals',
     parts: [
       {
         duration: 300,
@@ -154,7 +154,7 @@ export const defaultWorkouts: Workout[] = [
     id: '',
   },
   {
-    name: 'Easy Z1-Z2 - 1 Hour',
+    name: 'Easy Z1-Z2 (60-75% FTP) - 1 Hour',
     parts: [
       {
         duration: 300,
@@ -361,7 +361,7 @@ export const defaultWorkouts: Workout[] = [
     id: '',
   },
   {
-    name: '10x1min - 117% - 140%',
+    name: '10x1min - 117% - 140% FTP',
     parts: [
       {
         duration: 300,
