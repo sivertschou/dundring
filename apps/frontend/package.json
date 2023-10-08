@@ -52,7 +52,7 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/web-bluetooth": "^0.0.11",
     "@vitejs/plugin-react": "^2.2.0",
-    "typescript": "4.8.4",
+    "typescript": "^5.2.2",
     "vite": "^3.2.0"
   }
 }
