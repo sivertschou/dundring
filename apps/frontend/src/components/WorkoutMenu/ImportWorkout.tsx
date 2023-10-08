@@ -2,7 +2,6 @@ import * as React from 'react';
 import {
   Button,
   FormControl,
-  FormErrorMessage,
   FormHelperText,
   FormLabel,
   HStack,
@@ -14,6 +13,7 @@ import { Text } from '@chakra-ui/layout';
 import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import * as api from '../../api';
 
 export enum ApiStatus {
   SUCCESS = 'SUCCESS',
@@ -35,7 +35,11 @@ export const ImportWorkout = ({ setWorkoutToEdit, previewFtp }: Props) => {
   const navigate = useNavigate();
 
   const handleImportWorkout = React.useCallback(
-    async (workoutId: string) => {
+    async (workoutIdOrWorkoutLink: string) => {
+      const workoutId = workoutIdOrWorkoutLink.replace(
+        `${api.domain}/workout/`,
+        ''
+      );
       setIsLoading(true);
       const workoutResponse = await getWorkout(workoutId);
       setIsLoading(false);
