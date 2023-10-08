@@ -11,6 +11,7 @@ MAIL_HOST=
 MAIL_PORT=
 MAIL_USER=
 MAIL_PASSWORD=
+DATABASE_URL=
 "
 
 echo "backend/prepare.sh – Starting ⚡️"
