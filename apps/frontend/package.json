@@ -21,6 +21,8 @@
     "eslint": "^8.3.0",
     "eslint-config-react-app": "^7.0.1",
     "framer-motion": "^4.0.0",
+    "lint-staged": "^13.0.3",
+    "node-jq": "^2.3.4",
     "react": "^17.0.2",
     "react-beautiful-dnd": "^13.1.0",
     "react-bootstrap-icons": "^1.6.1",
@@ -28,6 +30,7 @@
     "react-router-dom": "^6.2.1",
     "recharts": "^2.1.4",
     "swr": "^1.0.1",
+    "turbo": "^1.4.4",
     "web-vitals": "^0.2.2"
   },
   "browserslist": {
