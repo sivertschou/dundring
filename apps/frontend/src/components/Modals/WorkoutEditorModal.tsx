@@ -10,7 +10,7 @@ import {
 import * as React from 'react';
 import { ArrowLeft } from 'react-bootstrap-icons';
 import { WorkoutOverview } from '../WorkoutMenu/WorkoutOverview';
-import { Workout } from '../../types';
+import { Workout, WorkoutType } from '../../types';
 import { WorkoutEditor } from '../WorkoutMenu/WorkoutEditor';
 import { useUser } from '../../context/UserContext';
 import { useWorkoutEditorModal } from '../../context/ModalContext';
@@ -28,7 +28,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 export interface WorkoutToEdit extends Workout {
-  type: 'local' | 'remote' | 'new';
+  type: WorkoutType;
   previewFtp: number;
 }
 export const WorkoutEditorModal = () => {
