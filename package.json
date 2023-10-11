@@ -23,7 +23,7 @@
     "lint-staged": "^13.0.3",
     "node-jq": "^2.3.4",
     "prettier": "3.0.3",
-    "turbo": "^1.4.4"
+    "turbo": "^1.10.15"
   },
   "workspaces": [
     "libs/*",
