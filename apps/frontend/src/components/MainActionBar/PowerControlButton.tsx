@@ -27,7 +27,7 @@ export const PowerControlButton = ({
     <Tooltip
       label={`${isPositive ? '+' : '-'}${Math.abs(
         wattFromFtpPercent(value, activeFtp)
-      )}W (${value}%)`}
+      )}W`}
       placement="top"
     >
       <Button
