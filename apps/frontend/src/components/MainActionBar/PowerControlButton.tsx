@@ -6,19 +6,20 @@ import { wattFromFtpPercent } from '../../utils/general';
 interface Props {
   value: number;
   activeFtp: number;
+  setActiveFtp: (newFtp: number) => void;
 }
 
-export const PowerControlButton = ({ value, activeFtp }: Props) => {
-  const {
-    isConnected: smartTrainerIsConnected,
-    setResistance: setSmartTrainerResistance,
-    currentResistance,
-  } = useSmartTrainer();
+export const PowerControlButton = ({
+  value,
+  activeFtp,
+  setActiveFtp,
+}: Props) => {
+  const { isConnected: smartTrainerIsConnected } = useSmartTrainer();
 
   const canAddResistanceValue = (value: number) => {
     const watt = wattFromFtpPercent(value, activeFtp);
 
-    return currentResistance + watt >= 0;
+    return activeFtp + watt >= 0;
   };
 
   const isPositive = value >= 0;
@@ -33,7 +34,7 @@ export const PowerControlButton = ({ value, activeFtp }: Props) => {
         onClick={() => {
           if (!smartTrainerIsConnected) return;
           const addWatt = wattFromFtpPercent(value, activeFtp);
-          setSmartTrainerResistance(currentResistance + addWatt);
+          setActiveFtp(activeFtp + addWatt);
         }}
         isDisabled={!smartTrainerIsConnected || !canAddResistanceValue(value)}
         size="sm"
