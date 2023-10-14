@@ -65,6 +65,7 @@ export const WorkoutEditorModal = () => {
                 mr="1"
                 onClick={() => {
                   navigate('/workout');
+                  setIsWorkoutUnsaved(false);
                   setWorkoutToEdit(null);
                 }}
                 icon={<Icon as={ArrowLeft} />}

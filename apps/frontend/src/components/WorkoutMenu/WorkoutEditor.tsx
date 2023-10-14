@@ -96,6 +96,7 @@ export const WorkoutEditor = ({
         });
         return;
       }
+      setIsWorkoutUnsaved(false);
       closeEditor();
     }
   };
@@ -274,6 +275,7 @@ export const WorkoutEditor = ({
             <Button
               onClick={() => {
                 saveLocalWorkout(workout);
+                setIsWorkoutUnsaved(false);
                 closeEditor();
               }}
               leftIcon={<Icon as={Hdd} />}
@@ -291,7 +293,14 @@ export const WorkoutEditor = ({
             Use without saving
           </Button>
 
-          <Button onClick={closeEditor}>Cancel</Button>
+          <Button
+            onClick={() => {
+              setIsWorkoutUnsaved(false);
+              closeEditor();
+            }}
+          >
+            Cancel
+          </Button>
         </HStack>
         {!user.loggedIn ? (
           <FormHelperText>
