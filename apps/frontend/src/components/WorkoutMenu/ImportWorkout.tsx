@@ -48,6 +48,7 @@ export const ImportWorkout = ({ setWorkoutToEdit, previewFtp }: Props) => {
         case ApiStatus.SUCCESS: {
           setWorkoutToEdit({
             ...workoutResponse.data.workout,
+            id: '',
             type: 'new',
             previewFtp,
           });
