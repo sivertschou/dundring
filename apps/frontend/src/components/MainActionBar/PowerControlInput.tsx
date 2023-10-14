@@ -25,11 +25,8 @@ interface PowerInputData {
 }
 
 export const PowerControlInput = () => {
-  const { activeFtp } = useActiveWorkout();
-  const {
-    isConnected: smartTrainerIsConnected,
-    setResistance: setSmartTrainerResistance,
-  } = useSmartTrainer();
+  const { setActiveFtp, activeFtp } = useActiveWorkout();
+  const { isConnected: smartTrainerIsConnected } = useSmartTrainer();
 
   const [powerInputData, dispatchPowerInputAction] = React.useReducer(
     (
@@ -145,9 +142,7 @@ export const PowerControlInput = () => {
               if (!smartTrainerIsConnected || powerInputData.power === null)
                 return;
 
-              setSmartTrainerResistance(
-                wattFromFtpPercent(powerInputData.power, activeFtp)
-              );
+              setActiveFtp(wattFromFtpPercent(powerInputData.power, activeFtp));
             }}
           >
             Set
