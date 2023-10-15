@@ -25,7 +25,7 @@ interface Props {
   showUserData: ShowData;
   showOtherUsersData: { [username: string]: ShowData };
 }
-const mergeArrays = (arr1: any[], arr2: any[]) => {
+const mergeArrays = <A,>(arr1: A[], arr2: A[]) => {
   const a = arr1.length > arr2.length ? arr1 : arr2;
   const b = arr1.length > arr2.length ? arr2 : arr1;
   return a.map((a, i) => ({ ...a, ...b[i] }));
