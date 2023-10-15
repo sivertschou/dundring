@@ -19,7 +19,9 @@ const DataContext = React.createContext<{
   start: () => void;
   stop: () => void;
   addLap: () => void;
+  override: () => void;
   isRunning: boolean;
+  hasOldData: boolean;
 } | null>(null);
 
 interface Props {
@@ -56,7 +58,12 @@ interface Pause {
 interface Start {
   type: 'START';
 }
-type Action = AddData | AddLap | IncreaseElapsedTime | Start | Pause;
+
+interface Override {
+  type: 'OVERRIDE';
+  data: Data;
+}
+type Action = AddData | AddLap | IncreaseElapsedTime | Start | Pause | Override;
 
 const zap: Waypoint[] = [
   { lat: 59.90347154, lon: 10.6590337, distance: 2400 },
@@ -69,10 +76,27 @@ const zap: Waypoint[] = [
 
 const SECONDS_30 = 30000;
 
+type TemporaryData = {
+  getOldData: () => any;
+  reset: () => void;
+  hasOldData: boolean;
+};
+
 const useSaveDataToLocalStorage = () => {
   const [nextSaveTime, setNextSaveTime] = React.useState(SECONDS_30);
 
-  const save = (data: Data) => {
+  const reset = () => {
+    localStorage.removeItem('data');
+  };
+
+  const getOldData = () => {
+    const data = localStorage.getItem('data');
+    return data === null ? null : (JSON.parse(data) as Data);
+  };
+
+  const hasOldData = localStorage.hasOwnProperty('data');
+
+  const saveDataIfTimeElapsed = (data: Data) => {
     if (data.timeElapsed < nextSaveTime) {
       return;
     }
@@ -81,7 +105,7 @@ const useSaveDataToLocalStorage = () => {
     console.log(localStorage.data.length);
   };
 
-  return save;
+  return { saveDataIfTimeElapsed, getOldData, reset, hasOldData };
 };
 
 export const DataContextProvider = ({ clockWorker, children }: Props) => {
@@ -93,7 +117,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
 
   const { sendData } = useWebsocket();
 
-  const saveDataIfTimeElapsed = useSaveDataToLocalStorage();
+  const localStorageData = useSaveDataToLocalStorage();
 
   const [data, dispatch] = React.useReducer(
     (currentData: Data, action: Action): Data => {
@@ -116,7 +140,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
           return { ...currentData, state: 'paused' };
         }
         case 'INCREASE_ELAPSED_TIME': {
-          saveDataIfTimeElapsed(currentData);
+          localStorageData.saveDataIfTimeElapsed(currentData);
           return {
             ...currentData,
             timeElapsed: currentData.timeElapsed + action.delta,
@@ -127,6 +151,9 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
             ...currentData,
             laps: [...currentData.laps, { dataPoints: [], distance: 0 }],
           };
+        }
+        case 'OVERRIDE': {
+          return action.data;
         }
         case 'ADD_DATA': {
           const laps = currentData.laps;
@@ -297,6 +324,15 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
     clockWorker.postMessage('stopClockTimer');
   }, [clockWorker, logEvent, smartTrainerIsConnected, setResistance, wakeLock]);
 
+  const override = () => {
+    const oldData = localStorageData.getOldData();
+    if (oldData === null) {
+      console.error('override error');
+      return;
+    }
+    dispatch({ type: 'OVERRIDE', data: { ...oldData, state: 'paused' } });
+  };
+
   return (
     <DataContext.Provider
       value={{
@@ -310,7 +346,9 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         start,
         stop,
         addLap: () => dispatch({ type: 'ADD_LAP' }),
+        override,
         isRunning: data.state === 'running',
+        hasOldData: localStorageData.hasOldData,
       }}
     >
       {children}
