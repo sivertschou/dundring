@@ -76,12 +76,6 @@ const zap: Waypoint[] = [
 
 const SECONDS_30 = 30000;
 
-type TemporaryData = {
-  getOldData: () => any;
-  reset: () => void;
-  hasOldData: boolean;
-};
-
 const useSaveDataToLocalStorage = () => {
   const [nextSaveTime, setNextSaveTime] = React.useState(SECONDS_30);
 
@@ -330,7 +324,10 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
       console.error('override error');
       return;
     }
-    dispatch({ type: 'OVERRIDE', data: { ...oldData, state: 'paused' } });
+    dispatch({
+      type: 'OVERRIDE',
+      data: { ...oldData, state: data.state, speed: data.speed },
+    });
   };
 
   return (
