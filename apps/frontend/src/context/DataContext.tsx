@@ -67,6 +67,23 @@ const zap: Waypoint[] = [
   { lat: 59.8856822, lon: 10.65318595, distance: 2000 },
 ];
 
+const SECONDS_30 = 30000;
+
+const useSaveDataToLocalStorage = () => {
+  const [nextSaveTime, setNextSaveTime] = React.useState(SECONDS_30);
+
+  const save = (data: Data) => {
+    if (data.timeElapsed < nextSaveTime) {
+      return;
+    }
+    setNextSaveTime(data.timeElapsed + SECONDS_30);
+    localStorage.setItem('data', JSON.stringify(data));
+    console.log(localStorage.data.length);
+  };
+
+  return save;
+};
+
 export const DataContextProvider = ({ clockWorker, children }: Props) => {
   const {
     syncResistance,
@@ -75,6 +92,8 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
   } = useActiveWorkout();
 
   const { sendData } = useWebsocket();
+
+  const saveDataIfTimeElapsed = useSaveDataToLocalStorage();
 
   const [data, dispatch] = React.useReducer(
     (currentData: Data, action: Action): Data => {
@@ -97,6 +116,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
           return { ...currentData, state: 'paused' };
         }
         case 'INCREASE_ELAPSED_TIME': {
+          saveDataIfTimeElapsed(currentData);
           return {
             ...currentData,
             timeElapsed: currentData.timeElapsed + action.delta,
