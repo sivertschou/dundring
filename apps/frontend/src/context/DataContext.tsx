@@ -326,7 +326,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
     }
     dispatch({
       type: 'OVERRIDE',
-      data: { ...oldData, state: data.state, speed: data.speed },
+      data: { ...oldData, state: data.state },
     });
   };
 
