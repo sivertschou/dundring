@@ -7,18 +7,16 @@ import theme from '../theme';
 import { useData } from '../context/DataContext';
 import {
   getRemainingTime,
-  getTargetPower,
   useActiveWorkout,
 } from '../context/ActiveWorkoutContext';
 import { secondsToHoursMinutesAndSecondsString } from '@dundring/utils';
 
 export const TopBar = () => {
-  const { power, cadence } = useSmartTrainer();
+  const { power, cadence, currentResistance } = useSmartTrainer();
   const { heartRate } = useHeartRateMonitor();
-  const { activeWorkout, activeFtp } = useActiveWorkout();
+  const { activeWorkout } = useActiveWorkout();
   const { timeElapsed, distance, speed } = useData();
   const remainingTime = getRemainingTime(activeWorkout);
-  const targetPower = getTargetPower(activeWorkout, activeFtp);
 
   const secondsElapsed = Math.floor(timeElapsed / 1000);
 
@@ -76,10 +74,7 @@ export const TopBar = () => {
               )}
             </Stack>
             <Stack spacing="0" color={powerColor}>
-              {targetPower !== null ? (
-                <Text fontSize={secondaryFontSize}>@{targetPower}w</Text>
-              ) : null}
-
+              <Text fontSize={secondaryFontSize}>@{currentResistance}w</Text>
               <Center>
                 <Text fontSize={mainFontSize}>{power || '0'}</Text>
                 <Text fontSize={unitFontSize}>w</Text>
