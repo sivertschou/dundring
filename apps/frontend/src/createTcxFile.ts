@@ -26,7 +26,7 @@ export const toTCX = (
     `    </Activity>`,
     `  </Activities>`,
     `  <Author xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="Application_t">`,
-    `    <Name>Dundring</Name>`,
+    `    <Name>dundring.com</Name>`,
     `    <Build>`,
     `      <Version>`,
     `        <VersionMajor>1</VersionMajor>`,
