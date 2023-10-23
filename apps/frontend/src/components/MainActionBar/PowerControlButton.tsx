@@ -24,23 +24,20 @@ export const PowerControlButton = ({ value, activeFtp }: Props) => {
   const isPositive = value >= 0;
   return (
     <Tooltip
-      label={`${isPositive ? '+' : '-'}${Math.abs(
-        wattFromFtpPercent(value, activeFtp)
-      )}W (${value}%)`}
+      label={`${isPositive ? '+' : '-'}${Math.abs(value)}W`}
       placement="top"
     >
       <Button
         onClick={() => {
           if (!smartTrainerIsConnected) return;
-          const addWatt = wattFromFtpPercent(value, activeFtp);
-          setSmartTrainerResistance(currentResistance + addWatt);
+          setSmartTrainerResistance(currentResistance + value);
         }}
         isDisabled={!smartTrainerIsConnected || !canAddResistanceValue(value)}
         size="sm"
         leftIcon={<Icon as={isPositive ? ArrowUp : ArrowDown} />}
         paddingX="2"
       >
-        {Math.abs(value)}%
+        {Math.abs(value)}W
       </Button>
     </Tooltip>
   );
