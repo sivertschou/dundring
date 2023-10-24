@@ -100,7 +100,7 @@ export const Graphs = ({
       const avgPower = Math.floor(
         ((data[0]?.power || 0) +
           (data[1]?.power || 0) +
-          (data[1]?.power || 0)) /
+          (data[2]?.power || 0)) /
           3
       );
       const name = `${user.username} Power`;
