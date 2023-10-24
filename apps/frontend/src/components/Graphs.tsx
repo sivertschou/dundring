@@ -25,10 +25,14 @@ interface Props {
   showUserData: ShowData;
   showOtherUsersData: { [username: string]: ShowData };
 }
-const mergeArrays = (arr1: any[], arr2: any[]) => {
+const mergeArrays = <A,>(arr1: A[], arr2: A[]) => {
   const a = arr1.length > arr2.length ? arr1 : arr2;
   const b = arr1.length > arr2.length ? arr2 : arr1;
   return a.map((a, i) => ({ ...a, ...b[i] }));
+};
+
+type DataElement = {
+  [usernameAndType: `${string} ${'HR' | 'Power'}`]: number | undefined;
 };
 
 export const Graphs = ({
@@ -56,30 +60,27 @@ export const Graphs = ({
       .map((user) => {
         const data = activeGroupSession?.workoutData[user.username];
         if (!data) return [];
-        const baseData = [
-          ...new Array(numPoints).fill({
-            [user.username + ' HR']: undefined,
-            [user.username + ' Power']: undefined,
-          }),
-        ];
-
-        const reversed = [...data].reverse();
-
-        return [
-          ...baseData,
-          ...reversed.map((data) => ({
+        const filler = {
+          [user.username + ' HR']: undefined,
+          [user.username + ' Power']: undefined,
+        };
+        const baseData = new Array<DataElement>(numPoints).fill(filler);
+        const reversedUserData: Array<DataElement> = [...data]
+          .reverse()
+          .map((data) => ({
             [user.username + ' HR']: data.heartRate,
             [user.username + ' Power']: data.power,
-          })),
-        ].splice(-numPoints);
+          }));
+
+        return [...baseData, ...reversedUserData].splice(-numPoints);
       })
       .reduce(
         (merged, data) => mergeArrays(merged, data),
-        [...Array(numPoints)]
+        Array<DataElement>(numPoints)
       );
 
     const filledData = [
-      ...new Array(numPoints).fill({
+      ...new Array<DataElement>(numPoints).fill({
         'You HR': undefined,
         'You Power': undefined,
       }),
@@ -87,7 +88,7 @@ export const Graphs = ({
     ].splice(-numPoints);
 
     const filledUntrackedData = [
-      ...new Array(numPoints).fill({
+      ...new Array<DataElement>(numPoints).fill({
         'You-Untracked HR': undefined,
         'You-Untracked Power': undefined,
       }),
