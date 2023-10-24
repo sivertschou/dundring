@@ -34,7 +34,9 @@ WORKDIR /app
 # Don't run production as root
 RUN addgroup --system --gid 1001 expressjs
 RUN adduser --system --uid 1001 expressjs
-USER expressjs
+# USER expressjs
 COPY --from=installer /app .
 
+# CMD  libs/database && node apps/backend/build/server.js
+ENTRYPOINT ["/app/apps/backend/docker-entrypoint.sh"]
 CMD node apps/backend/build/server.js
