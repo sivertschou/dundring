@@ -74,34 +74,6 @@ const zap: Waypoint[] = [
   { lat: 59.8856822, lon: 10.65318595, distance: 2000 },
 ];
 
-const SECONDS_30 = 30000;
-
-const useSaveDataToLocalStorage = () => {
-  const [nextSaveTime, setNextSaveTime] = React.useState(SECONDS_30);
-
-  const reset = () => {
-    localStorage.removeItem('data');
-  };
-
-  const getOldData = () => {
-    const data = localStorage.getItem('data');
-    return data === null ? null : (JSON.parse(data) as Data);
-  };
-
-  const hasOldData = localStorage.hasOwnProperty('data');
-
-  const saveDataIfTimeElapsed = (data: Data) => {
-    if (data.timeElapsed < nextSaveTime) {
-      return;
-    }
-    setNextSaveTime(data.timeElapsed + SECONDS_30);
-    localStorage.setItem('data', JSON.stringify(data));
-    console.log(localStorage.data.length);
-  };
-
-  return { saveDataIfTimeElapsed, getOldData, reset, hasOldData };
-};
-
 export const DataContextProvider = ({ clockWorker, children }: Props) => {
   const {
     syncResistance,
@@ -351,6 +323,40 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
       {children}
     </DataContext.Provider>
   );
+};
+
+const useSaveDataToLocalStorage = () => {
+  const SECONDS_30 = 30000;
+
+  const [nextSaveTime, setNextSaveTime] = React.useState(SECONDS_30);
+  const [lapsSaved, setLapsSaved] = React.useState(0);
+  const [elementsSaved, setElementsSaved] = React.useState(0);
+
+  const reset = () => {
+    localStorage.removeItem('data');
+  };
+
+  const getOldData = () => {
+    const data = localStorage.getItem('data');
+    return data === null ? null : (JSON.parse(data) as Data);
+  };
+
+  const hasOldData = localStorage.hasOwnProperty('data');
+
+  const saveDataIfTimeElapsed = (data: Data) => {
+    if (data.timeElapsed < nextSaveTime) {
+      return;
+    }
+    setNextSaveTime(data.timeElapsed + SECONDS_30);
+
+    localStorage.setItem(`data-laps`, JSON.stringify(data.laps));
+    localStorage.setItem(
+      `data-untracked-${elementsSaved}`,
+      JSON.stringify(data.laps)
+    );
+  };
+
+  return { saveDataIfTimeElapsed, getOldData, reset, hasOldData };
 };
 
 export const useData = () => {
