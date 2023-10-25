@@ -52,7 +52,7 @@ jobs:
               --network caddy \
               --label caddy=preview-${{ github.event.number }}.dundring.com \
               --label caddy.reverse_proxy="{{upstreams 80}}" \
-              --label caddy.tls.dns="cloudflare {${{ secrets.CLOUDFLARE_API_TOKEN }}}" \
+              --label caddy.tls.dns="cloudflare ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
               ${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:preview-${{ github.event.number }}
 
       - name: Start backend
@@ -69,5 +69,5 @@ jobs:
               --network caddy \
               --label caddy=preview-${{ github.event.number }}.dundring.com \
               --label caddy.reverse_proxy="/api* {{upstreams 8080}}" \
-              --label caddy.tls.dns="cloudflare {${{ secrets.CLOUDFLARE_API_TOKEN }}}" \
+              --label caddy.tls.dns="cloudflare ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
               ${{ vars.DOCKERHUB_USERNAME }}/dundring-backend:preview-${{ github.event.number }}
