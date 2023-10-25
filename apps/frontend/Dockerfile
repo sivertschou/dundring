@@ -32,7 +32,7 @@ RUN yarn turbo run build --filter=@dundring/frontend
 FROM nginx:1.25.2-alpine AS runner
 
 # Copy the built React app from the build stage to the NGINX web server
-COPY --from=builder /app/apps/frontend/dist /usr/share/nginx/html
+COPY --from=installer /app/apps/frontend/dist /usr/share/nginx/html
 
 # Expose port 80 for incoming HTTP traffic
 EXPOSE 80
