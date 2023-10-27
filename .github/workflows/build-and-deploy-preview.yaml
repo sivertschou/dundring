@@ -30,44 +30,60 @@ jobs:
           push: true
 
       - name: Build, tag and push frontend
-        env:
-          PR_NUMBER: ${{ github.event.number }}
         uses: docker/build-push-action@v5
         with:
           file: ./apps/frontend/Dockerfile
           push: true
           tags: ${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:preview-${{ github.event.number }}
 
-      - name: Start frontend
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ vars.DOCKERHUB_USERNAME }} --password-stdin
-            docker stop $(docker container ls -q -f ancestor=${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:preview-${{ github.event.number }}) || echo "No frontend container to stop"
-            docker pull ${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:preview-${{ github.event.number }}
-            docker run -d \
-              --network caddy \
-              --label caddy=preview-${{ github.event.number }}.dundring.com \
-              --label caddy.reverse_proxy="{{upstreams 80}}" \
-              --label caddy.tls.dns="cloudflare ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
-              ${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:preview-${{ github.event.number }}
+  deploy:
+    runs-on: ubuntu-latest
+    # needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Start backend
-        uses: appleboy/ssh-action@v1.0.0
+      - name: Add docker compose file to server
+        uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          script: |
-            echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ vars.DOCKERHUB_USERNAME }} --password-stdin
-            docker stop $(docker container ls -q -f ancestor=${{ vars.DOCKERHUB_USERNAME }}/dundring-backend:preview-${{ github.event.number }}) || echo "No backend container to stop"
-            docker pull ${{ vars.DOCKERHUB_USERNAME }}/dundring-backend:preview-${{ github.event.number }}
-            docker run -d \
-              --network caddy \
-              --label caddy=preview-${{ github.event.number }}.dundring.com \
-              --label caddy.reverse_proxy="/api* {{upstreams 8080}}" \
-              --label caddy.tls.dns="cloudflare ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
-              ${{ vars.DOCKERHUB_USERNAME }}/dundring-backend:preview-${{ github.event.number }}
+          source: docker/preview/docker-compose.yaml
+          target: previews/preview-${{ github.event.number }}
+          strip_components: 2
+
+      # - name: Start the containers with Docker Compose
+      #   uses: appleboy/ssh-action@v1.0.0
+      #   env:
+      #   with:
+      #     host: ${{ secrets.SSH_HOST }}
+      #     username: ${{ secrets.SSH_USERNAME }}
+      #     key: ${{ secrets.SSH_KEY }}
+      #
+      #     script: |
+      #       docker stop $(docker container ls -q -f ancestor=${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:preview-${{ github.event.number }}) || echo "No frontend container to stop"
+      #       docker pull ${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:preview-${{ github.event.number }}
+      #       docker run -d \
+      #         --network caddy \
+      #         --label caddy=preview-${{ github.event.number }}.dundring.com \
+      #         --label caddy.reverse_proxy="{{upstreams 80}}" \
+      #         --label caddy.tls.dns="cloudflare ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+      #         ${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:preview-${{ github.event.number }}
+      # - name: Start the app
+      #   uses: appleboy/ssh-action@v1.0.0
+      #   env:
+      #   with:
+      #     host: ${{ secrets.SSH_HOST }}
+      #     username: ${{ secrets.SSH_USERNAME }}
+      #     key: ${{ secrets.SSH_KEY }}
+      #
+      #     script: |
+      #       docker stop $(docker container ls -q -f ancestor=${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:preview-${{ github.event.number }}) || echo "No frontend container to stop"
+      #       docker pull ${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:preview-${{ github.event.number }}
+      #       docker run -d \
+      #         --network caddy \
+      #         --label caddy=preview-${{ github.event.number }}.dundring.com \
+      #         --label caddy.reverse_proxy="{{upstreams 80}}" \
+      #         --label caddy.tls.dns="cloudflare ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+      #         ${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:preview-${{ github.event.number }}
