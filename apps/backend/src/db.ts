@@ -184,6 +184,13 @@ export const upsertWorkout = async (
 > => {
   try {
     /* TODO: Fix this to first upsert the workout and its parts, and then delete the potentially unused workout parts. */
+    const workoutInDB = await prisma.workout.findFirst({
+      where: { id: workoutId },
+    });
+    if (!(workoutInDB?.userId === userId)) {
+      return error('Something went wrong while upserting workout');
+    }
+
     const result = await (workoutId
       ? prisma.workout.update({
           data: { name: workout.name },
