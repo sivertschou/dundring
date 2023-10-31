@@ -10,18 +10,14 @@
       "dependsOn": ["^build"],
       "outputs": ["build/**", "dist/**"]
     },
-    "lint": {
-      "outputs": []
-    },
+    "lint": {},
     "start": {
       "dependsOn": ["^build"],
-      "cache": false,
-      "outputs": ["build/**", "dist/**"]
+      "cache": false
     },
     "mock": {
       "dependsOn": ["^build"],
-      "cache": false,
-      "outputs": ["build/**", "dist/**"]
+      "cache": false
     }
   }
 }
