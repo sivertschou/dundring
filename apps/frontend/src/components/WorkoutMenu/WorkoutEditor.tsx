@@ -15,9 +15,9 @@ import { DraggableItem } from './DraggableItem';
 import { useUser } from '../../context/UserContext';
 import { saveWorkout } from '../../api';
 import { CloudUpload, Hdd } from 'react-bootstrap-icons';
-import Icon from '@chakra-ui/icon';
 import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
 import {
+  Icon,
   Table,
   Tbody,
   Td,

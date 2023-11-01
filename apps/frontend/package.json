@@ -10,25 +10,25 @@
     "build:mock": "export VITE_USE_MOCK_DATA=true ; tsc && vite build"
   },
   "dependencies": {
-    "@chakra-ui/react": "^1.0.0",
-    "@emotion/react": "^11.0.0",
-    "@emotion/styled": "^11.0.0",
-    "@svgr/webpack": "^6.3.1",
+    "@chakra-ui/react": "^2.8.1",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@svgr/webpack": "^8.1.0",
     "babel-plugin-named-asset-import": "^0.3.8",
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
-    "dotenv": "^10.0.0",
-    "dotenv-expand": "^5.1.0",
-    "eslint": "^8.3.0",
+    "dotenv": "^16.3.1",
+    "dotenv-expand": "^10.0.0",
+    "eslint": "^8.52.0",
     "eslint-config-react-app": "^7.0.1",
-    "framer-motion": "^4.0.0",
-    "react": "^17.0.2",
-    "react-beautiful-dnd": "^13.1.0",
-    "react-bootstrap-icons": "^1.6.1",
-    "react-dom": "^17.0.2",
-    "react-router-dom": "^6.2.1",
-    "recharts": "^2.9.1",
-    "swr": "^1.0.1",
-    "web-vitals": "^0.2.2"
+    "framer-motion": "^10.16.4",
+    "react": "^18.2.0",
+    "react-beautiful-dnd": "^13.1.1",
+    "react-bootstrap-icons": "^1.10.3",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.18.0",
+    "recharts": "^2.9.2",
+    "swr": "^2.2.4",
+    "web-vitals": "^3.5.0"
   },
   "browserslist": {
     "production": [
@@ -45,14 +45,13 @@
   "devDependencies": {
     "@dundring/types": "*",
     "@dundring/utils": "*",
-    "@types/dom-screen-wake-lock": "^1.0.0",
-    "@types/react": "^16.9.0",
-    "@types/react-beautiful-dnd": "^13.1.2",
-    "@types/react-dom": "^16.9.0",
-    "@types/react-router-dom": "^5.3.3",
-    "@types/web-bluetooth": "^0.0.11",
-    "@vitejs/plugin-react": "^2.2.0",
-    "typescript": "4.8.4",
-    "vite": "^3.2.0"
+    "@types/dom-screen-wake-lock": "^1.0.2",
+    "@types/react": "^18.2.34",
+    "@types/react-beautiful-dnd": "^13.1.6",
+    "@types/react-dom": "^18.2.14",
+    "@types/web-bluetooth": "^0.0.19",
+    "@vitejs/plugin-react": "^4.1.1",
+    "typescript": "5.2.2",
+    "vite": "^4.5.0"
   }
 }

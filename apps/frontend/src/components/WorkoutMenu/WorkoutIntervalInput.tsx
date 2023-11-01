@@ -1,9 +1,8 @@
 import { IconButton } from '@chakra-ui/button';
 import { Tooltip } from '@chakra-ui/tooltip';
-import Icon from '@chakra-ui/icon';
 import { Input, InputGroup, InputRightAddon } from '@chakra-ui/input';
 import { Text, Grid, Center } from '@chakra-ui/layout';
-import { FormControl } from '@chakra-ui/react';
+import { FormControl, Icon } from '@chakra-ui/react';
 import * as React from 'react';
 import { Files, List, X } from 'react-bootstrap-icons';
 import { WorkoutPart } from '../../types';
