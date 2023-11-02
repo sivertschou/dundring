@@ -29,6 +29,7 @@ COPY turbo.json turbo.json
 RUN yarn turbo run build --filter=@dundring/backend
 
 FROM base AS runner
+RUN apk add --no-cache openssl1.1-compat
 WORKDIR /app
 
 # Don't run production as root
