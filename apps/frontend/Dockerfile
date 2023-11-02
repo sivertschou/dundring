@@ -33,6 +33,7 @@ FROM nginx:1.25.2-alpine AS runner
 
 # Copy the built React app from the build stage to the NGINX web server
 COPY --from=installer /app/apps/frontend/dist /usr/share/nginx/html
+COPY /apps/frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80 for incoming HTTP traffic
 EXPOSE 80
