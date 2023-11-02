@@ -18,6 +18,7 @@ import {
   SkipForwardFill,
   SkipStartFill,
 } from 'react-bootstrap-icons';
+import { useNavigate } from 'react-router-dom';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 import { useData } from '../../context/DataContext';
 import { useWorkoutEditorModal } from '../../context/ModalContext';
@@ -42,8 +43,8 @@ export const WorkoutControls = () => {
   const { activeWorkout, syncResistance, changeActivePart, pause, start } =
     useActiveWorkout();
   const { addLap } = useData();
-  const { onOpen: onOpenWorkoutEditor } = useWorkoutEditorModal();
   const linkColor = useLinkColor();
+  const navigate = useNavigate();
 
   const isWorkoutSelected = activeWorkout.workout !== null;
   const activeWorkoutPart = activeWorkout.activePart;
@@ -173,7 +174,7 @@ export const WorkoutControls = () => {
               <Button
                 variant="link"
                 color={linkColor}
-                onClick={() => onOpenWorkoutEditor()}
+                onClick={() => navigate('/workout')}
               >
                 Select workout
               </Button>

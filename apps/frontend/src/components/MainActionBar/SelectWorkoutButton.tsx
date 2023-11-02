@@ -1,10 +1,10 @@
 import { Icon, IconButton, Tooltip } from '@chakra-ui/react';
 import { BarChartLine, BarChartLineFill } from 'react-bootstrap-icons';
+import { useNavigate } from 'react-router-dom';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
-import { useWorkoutEditorModal } from '../../context/ModalContext';
 
 export const SelectWorkoutButton = () => {
-  const { onOpen: onOpenWorkoutEditor } = useWorkoutEditorModal();
+  const navigate = useNavigate();
   const { activeWorkout } = useActiveWorkout();
 
   const text = activeWorkout.workout ? 'Change workout' : 'Select workout';
@@ -15,7 +15,7 @@ export const SelectWorkoutButton = () => {
         icon={
           <Icon as={activeWorkout.workout ? BarChartLineFill : BarChartLine} />
         }
-        onClick={onOpenWorkoutEditor}
+        onClick={() => navigate('/workout')}
       />
     </Tooltip>
   );
