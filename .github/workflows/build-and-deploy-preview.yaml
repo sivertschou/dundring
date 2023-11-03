@@ -6,6 +6,9 @@ on:
       - opened
       - synchronize
 
+env:
+  tag: preview-${{ github.event.number }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,7 +29,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           file: ./apps/backend/Dockerfile
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/dundring-backend:preview-${{ github.event.number }}
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/dundring-backend:${{ env.tag }}
           push: true
 
       - name: Build, tag and push frontend
@@ -34,7 +37,7 @@ jobs:
         with:
           file: ./apps/frontend/Dockerfile
           push: true
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:preview-${{ github.event.number }}
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:${{ env.tag }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -51,7 +54,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           source: docker/preview/docker-compose.yaml
-          target: previews/preview-${{ github.event.number }}
+          target: previews/${{ env.tag }}
           strip_components: 2
 
       - name: Start the containers with Docker Compose
@@ -62,12 +65,12 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
 
           script: |
-            cd previews/preview-${{ github.event.number }}
+            cd previews/${{ env.tag }}
 
-            TAG=preview-${{ github.event.number }} \
+            TAG=${{ env.tag }} \
               docker-compose pull
 
-            TAG=preview-${{ github.event.number }} \
+            TAG=${{ env.tag }} \
               DB_USERNAME=dundring \
               DB_PASSWORD=password \
               CLOUDFLARE_DNS_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }} \
