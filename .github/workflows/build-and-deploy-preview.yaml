@@ -70,6 +70,10 @@ jobs:
               DB_USERNAME=dundring \
               DB_PASSWORD=password \
               CLOUDFLARE_DNS_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }} \
+              MAIL_HOST=${{ secrets.MAIL_HOST }} \
+              MAIL_PORT=${{ secrets.MAIL_PORT }} \
+              MAIL_USER=${{ secrets.MAIL_USER }} \
+              MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
               docker-compose up -d
 
       # - name: Start the containers with Docker Compose

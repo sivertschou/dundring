@@ -18,7 +18,11 @@ services:
     depends_on:
       - postgres
     environment:
-      DATABASE_URL: postgresql://${DB_USERNAME}:${DB_PASSWORD}@postgres:5432/dundring
+      - DATABASE_URL=postgresql://${DB_USERNAME}:${DB_PASSWORD}@postgres:5432/dundring
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_USER=${MAIL_USER}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
     networks:
       - caddy
       - dundring
