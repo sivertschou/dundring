@@ -10,18 +10,18 @@ export const getEnv = (): Environment => {
     case 'test':
       return {
         dundringHttpServerUrl: 'https://test.dundring.com/api',
-        dundringWsServerUrl: 'wss://test.dundring.com',
+        dundringWsServerUrl: 'wss://test.dundring.com/api',
       };
     case 'prod':
       return {
         dundringHttpServerUrl: 'https://dundring.com/api',
-        dundringWsServerUrl: 'wss://dundring.com',
+        dundringWsServerUrl: 'wss://dundring.com/api',
       };
     default:
       if (isSecureConnection()) {
         return {
           dundringHttpServerUrl: `https://${location.hostname}/api`,
-          dundringWsServerUrl: `wss://${location.hostname}`,
+          dundringWsServerUrl: `wss://${location.hostname}/api`,
         };
       }
 
