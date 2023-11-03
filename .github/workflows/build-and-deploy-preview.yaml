@@ -76,38 +76,3 @@ jobs:
               MAIL_USER=${{ secrets.MAIL_USER }} \
               MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
               docker-compose up -d
-
-      # - name: Start the containers with Docker Compose
-      #   uses: appleboy/ssh-action@v1.0.0
-      #   env:
-      #   with:
-      #     host: ${{ secrets.SSH_HOST }}
-      #     username: ${{ secrets.SSH_USERNAME }}
-      #     key: ${{ secrets.SSH_KEY }}
-      #
-      #     script: |
-      #       docker stop $(docker container ls -q -f ancestor=${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:preview-${{ github.event.number }}) || echo "No frontend container to stop"
-      #       docker pull ${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:preview-${{ github.event.number }}
-      #       docker run -d \
-      #         --network caddy \
-      #         --label caddy=preview-${{ github.event.number }}.dundring.com \
-      #         --label caddy.reverse_proxy="{{upstreams 80}}" \
-      #         --label caddy.tls.dns="cloudflare ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
-      #         ${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:preview-${{ github.event.number }}
-      # - name: Start the app
-      #   uses: appleboy/ssh-action@v1.0.0
-      #   env:
-      #   with:
-      #     host: ${{ secrets.SSH_HOST }}
-      #     username: ${{ secrets.SSH_USERNAME }}
-      #     key: ${{ secrets.SSH_KEY }}
-      #
-      #     script: |
-      #       docker stop $(docker container ls -q -f ancestor=${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:preview-${{ github.event.number }}) || echo "No frontend container to stop"
-      #       docker pull ${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:preview-${{ github.event.number }}
-      #       docker run -d \
-      #         --network caddy \
-      #         --label caddy=preview-${{ github.event.number }}.dundring.com \
-      #         --label caddy.reverse_proxy="{{upstreams 80}}" \
-      #         --label caddy.tls.dns="cloudflare ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
-      #         ${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:preview-${{ github.event.number }}
