@@ -27,7 +27,7 @@ export const getEnv = (): Environment => {
 
       return {
         dundringHttpServerUrl: 'http://localhost:8080/api',
-        dundringWsServerUrl: 'ws://localhost:8080',
+        dundringWsServerUrl: 'ws://localhost:8080/api',
       };
   }
 };
