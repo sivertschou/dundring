@@ -6,7 +6,7 @@ import {
   SteadyWorkoutPart,
   User,
   Workout,
-} from '@prisma/client';
+} from '@dundring/database';
 export const prisma = new PrismaClient();
 
 export const getUserByUsername = async (

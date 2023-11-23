@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Lint files
 
 on:
   push:
@@ -6,23 +6,7 @@ on:
   pull_request:
     branches: ['master']
 
-env:
-  YARN_VERSION: 16
-
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js 16
-        uses: actions/setup-node@v4
-        with:
-          node-version: 16
-          cache: 'yarn'
-      - run: yarn
-      - run: yarn run build
-
   prettier:
     runs-on: ubuntu-latest
 

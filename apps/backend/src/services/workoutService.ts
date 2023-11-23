@@ -3,7 +3,7 @@ import { isError, success, successMap } from '@dundring/utils';
 import {
   SteadyWorkoutPart as PrismaSteadyWorkoutPart,
   Workout as PrismaWorkout,
-} from '@prisma/client';
+} from '@dundring/database';
 import * as db from '../db';
 
 const fromPrismaWorkoutPart = (part: PrismaSteadyWorkoutPart): WorkoutPart => ({
