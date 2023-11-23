@@ -1,14 +1,15 @@
 version: '3.7'
 services:
-  postgres:
-    image: postgres:15.4
-    container_name: postgres-${TAG}
+  mysql:
+    image: mysql:8.2
+    container_name: mysql-${TAG}
     environment:
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: dundring
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: dundring
     ports:
-      - '5432:5432'
+      - '3306:3306'
     networks:
       - dundring
 
@@ -16,9 +17,9 @@ services:
     image: sivertschou/dundring-backend:${TAG}
     container_name: backend-${TAG}
     depends_on:
-      - postgres
+      - mysql
     environment:
-      - DATABASE_URL=postgresql://${DB_USERNAME}:${DB_PASSWORD}@postgres:5432/dundring
+      - DATABASE_URL=mysql://${DB_USERNAME}:${DB_PASSWORD}@mysql:3306/dundring
       - MAIL_PORT=${MAIL_PORT}
       - MAIL_HOST=${MAIL_HOST}
       - MAIL_USER=${MAIL_USER}

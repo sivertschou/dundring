@@ -4,6 +4,6 @@ set -e
 cd libs/database
 
 # Run the database migration
-yarn db:migrate
+yarn db:push
 
 exec "$@"
