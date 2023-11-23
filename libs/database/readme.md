@@ -2,18 +2,22 @@
 
 1. Pull the database image
    ```
-   docker pull postgres:15-alpine
+   docker pull mysql:8.2
    ```
 2. Start the database
    ```
-   docker run \
-     -p 5432:5432 \
-     -e POSTGRES_PASSWORD=password \
-     postgres:15-alpine
+    docker run \
+      --name dundring-mysql \
+      -e MYSQL_ROOT_PASSWORD=password \
+      -e MYSQL_DATABASE=dundring \
+      -e MYSQL_USER=mysql \
+      -e MYSQL_PASSWORD=password \
+      -p 3306:3306 \
+      mysql:8.2
    ```
 3. Push the migrations to the database
    ```
-   DATABASE_URL=postgres://postgres:password@localhost:5432 \
-     yarn db:migrate
+   DATABASE_URL=mysql://mysql:password@localhost:3306/dundring \
+     yarn db:push
    ```
    You can also set this in the `.env` file. See `.env.example`
