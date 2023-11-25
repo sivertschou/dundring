@@ -67,8 +67,8 @@ jobs:
 
             docker-compose pull
 
-            DB_USERNAME=${{ DB_USERNAME }} \
-              DB_PASSWORD=${{ DB_PASSWORD }} \
+            DB_USERNAME=${{ secrets.DB_USERNAME }} \
+              DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
               CLOUDFLARE_DNS_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }} \
               MAIL_HOST=${{ secrets.MAIL_HOST }} \
               MAIL_PORT=${{ secrets.MAIL_PORT }} \
