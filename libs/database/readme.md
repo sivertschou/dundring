@@ -2,7 +2,7 @@
 
 1. Pull the database image
    ```
-   docker pull mysql:8.2
+   docker pull mysql:8.0
    ```
 2. Start the database
    ```
@@ -13,7 +13,7 @@
       -e MYSQL_USER=mysql \
       -e MYSQL_PASSWORD=password \
       -p 3306:3306 \
-      mysql:8.2
+      mysql:8.0
    ```
 3. Push the migrations to the database
    ```

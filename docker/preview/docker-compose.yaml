@@ -1,15 +1,28 @@
 version: '3.7'
 services:
   mysql:
-    image: mysql:8.2
+    image: mysql:8.0
     container_name: mysql-${TAG}
     environment:
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: dundring
-    ports:
-      - '3306:3306'
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'mysqladmin',
+          'ping',
+          '-h',
+          'localhost',
+          '-uroot',
+          '-p${DB_ROOT_PASSWORD}',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
     networks:
       - dundring
 
@@ -17,7 +30,8 @@ services:
     image: sivertschou/dundring-backend:${TAG}
     container_name: backend-${TAG}
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     environment:
       - DATABASE_URL=mysql://${DB_USERNAME}:${DB_PASSWORD}@mysql:3306/dundring
       - MAIL_PORT=${MAIL_PORT}
