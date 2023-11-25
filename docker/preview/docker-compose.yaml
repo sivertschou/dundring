@@ -1,43 +1,19 @@
 version: '3.7'
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: mysql-${TAG}
+  postgres:
+    image: postgres:16.1-alpine
+    container_name: postgres-${TAG}
     environment:
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: dundring
-    healthcheck:
-      test:
-        [
-          'CMD',
-          'mysqladmin',
-          'ping',
-          '-h',
-          'localhost',
-          '-uroot',
-          '-p${DB_ROOT_PASSWORD}',
-        ]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-      start_period: 10s
-    ulimits:
-      nofile:
-        soft: 20000
-        hard: 40000
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     networks:
       - dundring
 
   backend:
     image: sivertschou/dundring-backend:${TAG}
     container_name: backend-${TAG}
-    depends_on:
-      mysql:
-        condition: service_healthy
     environment:
-      - DATABASE_URL=mysql://${DB_USERNAME}:${DB_PASSWORD}@mysql:3306/dundring
+      - DATABASE_URL=postgresql://${DB_USERNAME}:${DB_PASSWORD}@postgres:5432/dundring
       - MAIL_PORT=${MAIL_PORT}
       - MAIL_HOST=${MAIL_HOST}
       - MAIL_USER=${MAIL_USER}
