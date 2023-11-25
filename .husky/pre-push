@@ -1,13 +1,13 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-exit_with_warning_message(){
-  echo "\033[0;33m$1\033[m"
-  exit 1
+exit_with_warning_message() {
+	echo "\033[0;33m$1\033[m"
+	exit 1
 }
 
 current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
 
-if [ "$current_branch" = "master" ]; then
-  exit_with_warning_message "You're trying to push directly to the master branch; are you sure you want to do this? If yes, run 'git push' with the '--no-verify' flag 🤠\n"
+if [ "$current_branch" = "main" ]; then
+	exit_with_warning_message "You're trying to push directly to the main branch; are you sure you want to do this? If yes, run 'git push' with the '--no-verify' flag 🤠\n"
 fi
