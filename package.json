@@ -22,7 +22,7 @@
     "@prettier/plugin-xml": "^2.2.0",
     "husky": "^7.0.0",
     "lint-staged": "^13.0.3",
-    "node-jq": "^2.3.4",
+    "node-jq": "^4.2.2",
     "prettier": "3.0.3",
     "turbo": "^1.10.15"
   },

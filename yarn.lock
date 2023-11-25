@@ -5539,10 +5539,10 @@ node-fetch@^2.6.6:
   dependencies:
     whatwg-url "^5.0.0"
 
-node-jq@^2.3.4:
-  version "2.3.5"
-  resolved "https://registry.yarnpkg.com/node-jq/-/node-jq-2.3.5.tgz#99af9537a2a1d6217a1bcb6e212208fdf1ebf724"
-  integrity sha512-V2qmX4oXvrITgxeR8WZTELVGFGx2auO+qvxs7Q4Isovh2UGkO1Fl3OACrxPZ2dgikJT5KbwYvK8PwGyc2hfRIg==
+node-jq@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/node-jq/-/node-jq-4.2.2.tgz#5f0b6ba9f6b0fd3c183212cf0dc28fea24ec5865"
+  integrity sha512-eFYWkKyDrl5c2L2ZvD0iecIvCYyyXkFelbvIn2peL8V58vz75Wrp8y0NKN8yiaBO7jL//koB2/n3ZOVStH9tbA==
   dependencies:
     bin-build "^3.0.0"
     is-valid-path "^0.1.1"
