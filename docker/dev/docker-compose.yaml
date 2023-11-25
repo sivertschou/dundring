@@ -1,0 +1,48 @@
+version: '3.7'
+services:
+  postgres:
+    image: postgres:16.1-alpine
+    container_name: postgres-dev
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - dundring
+    volumes:
+      - ~/dev-data:/var/lib/postgresql/data
+
+  backend:
+    image: sivertschou/dundring-backend:dev
+    container_name: backend-dev
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://${DB_USERNAME}:${DB_PASSWORD}@postgres:5432/dundring
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_USER=${MAIL_USER}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - TOKEN_SECRET=${TOKEN_SECRET}
+    networks:
+      - caddy
+      - dundring
+    labels:
+      caddy: dev.dundring.com
+      caddy.reverse_proxy: '/api* {{upstreams 8080}}'
+      caddy.tls.dns: 'cloudflare ${CLOUDFLARE_DNS_API_TOKEN}'
+
+  frontend:
+    image: sivertschou/dundring-frontend:dev
+    container_name: frontend-dev
+    restart: always
+    networks:
+      - caddy
+    labels:
+      caddy: dev.dundring.com
+      caddy.reverse_proxy: '{{upstreams 80}}'
+      caddy.tls.dns: 'cloudflare ${CLOUDFLARE_DNS_API_TOKEN}'
+
+networks:
+  caddy:
+    external: true
+  dundring:

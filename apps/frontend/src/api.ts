@@ -11,12 +11,12 @@ import {
   WorkoutRequestBody,
   WorkoutsResponseBody,
 } from '@dundring/types';
-export const domain = import.meta.env.VITE_DOMAIN || 'http://localhost:3000';
+import { getEnv } from './utils/environment';
 
-export const httpUrl =
-  import.meta.env.VITE_HTTP_URL || 'http://localhost:8080/api';
+export const domain = location.origin;
 
-export const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:8080';
+export const httpUrl = getEnv().dundringHttpServerUrl;
+export const wsUrl = getEnv().dundringWsServerUrl;
 
 const get = async <T>(
   url: string,
