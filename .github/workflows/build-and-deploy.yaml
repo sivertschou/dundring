@@ -83,14 +83,24 @@ jobs:
           script: |
             cd dev
 
-            docker-compose pull
-              TAG=${{ needs.build.outputs.version }}
-              DB_USERNAME=${{ secrets.DB_USERNAME }} \
-              DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-              CLOUDFLARE_DNS_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }} \
-              MAIL_HOST=${{ secrets.MAIL_HOST }} \
-              MAIL_PORT=${{ secrets.MAIL_PORT }} \
-              MAIL_USER=${{ secrets.MAIL_USER }} \
-              MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
-              TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
-              docker-compose up -d
+            TAG_GREEN=${{ needs.build.outputs.version }}
+            # Find currently running version
+            TAG_BLUE=$(docker inspect --format='{{ index .Config.Image }}' backend-dev-green 2>/dev/null | cut -d ':' -f 2)
+            # Fallback to current version if no container is running
+            TAG_BLUE=${TAG_BLUE:-$TAG_GREEN}
+
+
+            CLOUDFLARE_DNS_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            MAIL_HOST=${{ secrets.MAIL_HOST }}
+            MAIL_PORT=${{ secrets.MAIL_PORT }}
+            MAIL_USER=${{ secrets.MAIL_USER }}
+            MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}'
+            TOKEN_SECRET=${{ secrets.TOKEN_SECRET }}
+
+            # Start green with updated version
+            docker-compose up -d
+
+            # Wait until green is healty
+
+            # Start blue with updated version
