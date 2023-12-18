@@ -21,7 +21,7 @@
     "jsonwebtoken": "^8.5.1",
     "node-fetch": "^2.6.6",
     "nodemailer": "^6.8.0",
-    "ws": "^8.3.0"
+    "ws": "^8.15.1"
   },
   "devDependencies": {
     "@dundring/types": "*",
@@ -35,7 +35,7 @@
     "@types/ws": "^8.2.1",
     "nodemon": "^2.0.14",
     "prisma": "^4.4.0",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "typescript": "4.8.4"
   }
 }
