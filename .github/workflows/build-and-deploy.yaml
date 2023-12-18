@@ -50,6 +50,11 @@ jobs:
           push: true
           tags: ${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:${{ steps.gitversion.outputs.semVer }}
 
+      - name: Set version tag
+        run: |
+          git tag ${{ steps.gitversion.outputs.semVer }}
+          git push origin ${{ steps.gitversion.outputs.semVer }}
+
   deploy:
     runs-on: ubuntu-latest
     needs: build
