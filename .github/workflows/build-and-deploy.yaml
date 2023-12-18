@@ -84,7 +84,7 @@ jobs:
             cd dev
 
             # Find currently running version
-            TAG_BLUE=$(docker inspect --format='{{ index .Config.Image }}' backend-dev-green 2>/dev/null | cut -d ':' -f 2)
+            TAG_BLUE=$(docker inspect --format='{{ index .Config.Image }}' backend-dev-blue 2>/dev/null | cut -d ':' -f 2)
 
             TAG_GREEN=${{ needs.build.outputs.version }} \
             TAG_BLUE=${TAG_BLUE:-$TAG_GREEN} \
