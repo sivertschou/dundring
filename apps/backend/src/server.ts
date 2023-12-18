@@ -354,6 +354,10 @@ router.get<null, ApiResponseBody<MessagesResponseBody>>(
   }
 );
 
+router.get<null, {}>('/health', (_req, res) => {
+  res.send({ status: 'ok' });
+});
+
 // TODO: figure out why a connect is triggered several times.
 //       This is probably due to some fishy rerender.
 wss.on('connection', (ws) => {
