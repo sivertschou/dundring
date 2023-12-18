@@ -98,10 +98,12 @@ jobs:
               docker-compose up --detach
 
             # Wait until green is healty
-            url=$(docker inspect --format '{{index .NetworkSettings.Networks "dundring-dev" "IPAddress"}}' backend-dev-green)
+            url="http://$(docker inspect --format '{{index .NetworkSettings.Networks "dundring-dev" "IPAddress"}}' backend-dev-green):8080/api/health"
             http_status=""
             counter=0
             max_retries=30
+
+            echo "Check health at $url"
 
             while [ "$http_status" != "200" ]; do
                 # Increment the counter
