@@ -95,7 +95,7 @@ jobs:
             MAIL_USER=${{ secrets.MAIL_USER }} \
             MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
             TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
-              docker-compose up --remove-orphans --detach
+              docker-compose up --detach
 
             # Wait until green is healty
 
