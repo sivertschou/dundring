@@ -19,6 +19,7 @@ services:
     labels:
       caddy: dev.dundring.com
       caddy.reverse_proxy: '/api* {{upstreams 8080}}'
+      caddy.reverse_proxy.lb_policy: 'cookie'
       caddy.tls.dns: 'cloudflare ${CLOUDFLARE_DNS_API_TOKEN}'
 
   frontend-green:
@@ -51,6 +52,7 @@ services:
     labels:
       caddy: dev.dundring.com
       caddy.reverse_proxy: '/api* {{upstreams 8080}}'
+      caddy.reverse_proxy.lb_policy: 'cookie'
       caddy.tls.dns: 'cloudflare ${CLOUDFLARE_DNS_API_TOKEN}'
 
   frontend-blue:
