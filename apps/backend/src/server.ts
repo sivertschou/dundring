@@ -355,7 +355,13 @@ router.get<null, ApiResponseBody<MessagesResponseBody>>(
 );
 
 router.get<null, {}>('/health', (_req, res) => {
-  res.send({ status: 'ok' });
+  res.send({
+    status: 'ok',
+    info: {
+      pod: process.env.POD,
+      version: process.env.TAG,
+    },
+  });
 });
 
 // TODO: figure out why a connect is triggered several times.
