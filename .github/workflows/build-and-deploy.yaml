@@ -103,6 +103,9 @@ jobs:
             counter=0
             max_retries=30
 
+            echo "Give green pod 5 seconds to shut down before starting health checking"
+            sleep 5
+
             echo "Check health at $url"
 
             while [ "$http_status" != "200" ]; do
