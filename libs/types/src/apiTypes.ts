@@ -1,5 +1,4 @@
 import { Workout } from './workoutTypes';
-import { Message } from './messageTypes';
 
 export enum ApiStatus {
   SUCCESS = 'SUCCESS',
@@ -63,10 +62,6 @@ export interface UpdateWorkoutResponseBody {
 
 export interface GetWorkoutResponseBody {
   workout: Workout;
-}
-
-export interface MessagesResponseBody {
-  messages: Message[];
 }
 
 export interface WorkoutRequestBody {

@@ -1,6 +1,5 @@
 import {
   mailService,
-  messageService,
   slackService,
   userService,
   validationService,
@@ -12,7 +11,6 @@ import {
   ApiResponseBody,
   ApiStatus,
   LoginResponseBody,
-  MessagesResponseBody,
   UserUpdateRequestBody,
   WorkoutRequestBody,
   WorkoutsResponseBody,
@@ -341,18 +339,6 @@ router.post<
   });
   return;
 });
-
-router.get<null, ApiResponseBody<MessagesResponseBody>>(
-  '/messages',
-  (_req, res) => {
-    const messages = messageService.getMessages();
-
-    res.send({
-      status: ApiStatus.SUCCESS,
-      data: { messages },
-    });
-  }
-);
 
 router.get<null, {}>('/health', (_req, res) => {
   res.send({
