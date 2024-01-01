@@ -1,6 +1,5 @@
 import { AspectRatio, Grid, Stack } from '@chakra-ui/layout';
 import { useBreakpointValue } from '@chakra-ui/media-query';
-import { Member } from '@dundring/types';
 import * as React from 'react';
 import { useData } from '../context/DataContext';
 import { LocalRoom } from '../context/WebsocketContext';
@@ -9,7 +8,7 @@ import { PowerBar } from './PowerBar';
 import { DataPoint, PowerChart } from './PowerChart';
 
 interface Props {
-  otherUsers: Member[];
+  otherUsers: string[];
   activeGroupSession: LocalRoom | null;
   showFill: boolean;
   showUserData: ShowData;
@@ -48,13 +47,13 @@ export const Graphs = ({
     }));
 
     const otherPeoplesDataMerged = otherUsers
-      .map((user) => {
-        const data = activeGroupSession?.workoutData[user.username];
+      .map((username) => {
+        const data = activeGroupSession?.workoutData[username];
         if (!data) return [];
         const baseData: DataPoint[] = [
           ...new Array(numPoints).fill({
-            [user.username + ' HR']: undefined,
-            [user.username + ' Power']: undefined,
+            [username + ' HR']: undefined,
+            [username + ' Power']: undefined,
           }),
         ];
 
@@ -63,8 +62,8 @@ export const Graphs = ({
         return [
           ...baseData,
           ...reversed.map((data) => ({
-            [user.username + ' HR']: data.heartRate,
-            [user.username + ' Power']: data.power,
+            [username + ' HR']: data.heartRate,
+            [username + ' Power']: data.power,
           })),
         ].splice(-numPoints);
       })
@@ -100,14 +99,14 @@ export const Graphs = ({
       3
   );
 
-  const otherPeoplesAvgPower = otherUsers.map((user) => {
-    const data = activeGroupSession?.workoutData[user.username];
+  const otherPeoplesAvgPower = otherUsers.map((username) => {
+    const data = activeGroupSession?.workoutData[username];
     if (!data) return null;
     const avgPower = Math.floor(
       ((data[0]?.power || 0) + (data[1]?.power || 0) + (data[2]?.power || 0)) /
         3
     );
-    const name = `${user.username} Power`;
+    const name = `${username} Power`;
     return { name, [name]: avgPower };
   });
 

@@ -25,9 +25,10 @@ export const getEnv = (): Environment => {
         };
       }
 
+      const hostname = import.meta.env.VITE_HOST_OVERRIDE || 'localhost:8080';
       return {
-        dundringHttpServerUrl: 'http://localhost:8080/api',
-        dundringWsServerUrl: 'ws://localhost:8080/api',
+        dundringHttpServerUrl: `http://${hostname}/api`,
+        dundringWsServerUrl: `ws://${hostname}/api`,
       };
   }
 };

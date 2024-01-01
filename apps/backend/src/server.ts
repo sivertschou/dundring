@@ -1,5 +1,4 @@
 import {
-  groupSessionService,
   mailService,
   messageService,
   slackService,
@@ -21,7 +20,6 @@ import {
   MailAuthenticationRequestBody,
   MailAuthenticationResponseBody,
   MailAuthenticationRegisterRequestBody,
-  WebSocketRequest,
   UpdateWorkoutResponseBody,
   GetWorkoutResponseBody,
 } from '@dundring/types';
@@ -29,6 +27,8 @@ import * as WebSocket from 'ws';
 import cors from 'cors';
 import http from 'http';
 import { isError, isSuccess } from '@dundring/utils';
+import { initRedis } from './redis';
+import { initWebsockets } from './websocket';
 
 require('dotenv').config();
 
@@ -364,57 +364,11 @@ router.get<null, {}>('/health', (_req, res) => {
   });
 });
 
+initWebsockets(wss);
+initRedis();
+
 // TODO: figure out why a connect is triggered several times.
 //       This is probably due to some fishy rerender.
-wss.on('connection', (ws) => {
-  console.log('connection');
-  let username = '';
-  ws.on('message', (rawData) => {
-    const req = JSON.parse(rawData.toString()) as WebSocketRequest;
-    switch (req.type) {
-      case 'create-group-session': {
-        const { member } = req;
-        username = member.username;
-        ws.send(
-          JSON.stringify(
-            groupSessionService.createRoom({ ...member, socket: ws })
-          )
-        );
-        break;
-      }
-      case 'join-group-session': {
-        const { roomId, member } = req;
-        username = member.username;
-
-        groupSessionService.joinRoom(ws, roomId, {
-          ...member,
-          socket: ws,
-        });
-        break;
-      }
-      case 'leave-group-session': {
-        const { username } = req;
-        groupSessionService.leaveRoom(username);
-        break;
-      }
-      case 'send-data': {
-        if (!username) {
-          console.log('unknown tried to share workoutdata');
-          return;
-        }
-        groupSessionService.sendWorkoutDataToRoom(username, req.data);
-        break;
-      }
-    }
-  });
-  ws.on('close', () => {
-    console.log('connection closed', username);
-    if (username) {
-      groupSessionService.leaveRoom(username);
-      username = '';
-    }
-  });
-});
 
 httpServer.listen(httpPort, () => {
   console.log(`App is listening on port ${httpPort}!:)`);

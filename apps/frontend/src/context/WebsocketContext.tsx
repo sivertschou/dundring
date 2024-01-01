@@ -2,7 +2,6 @@ import {
   CreateGroupSession,
   JoinGroupSession,
   LeaveGroupSession,
-  Member,
   SendDataRequest,
   WebSocketResponse,
 } from '@dundring/types';
@@ -17,8 +16,7 @@ export const defaultUser: UserContextType = {
 
 export interface Room {
   id: string;
-  members: Member[];
-  creator: string;
+  members: string[];
 }
 
 export interface LocalRoom extends Room {
@@ -140,7 +138,7 @@ export const WebsocketContextProvider = ({
             setUsername(username);
             const data: CreateGroupSession = {
               type: 'create-group-session',
-              member: { username, ftp: 300, weight: 85 },
+              member: { username },
             };
             socket.send(JSON.stringify(data));
           }
@@ -151,7 +149,7 @@ export const WebsocketContextProvider = ({
             setUsername(username);
             const data: JoinGroupSession = {
               type: 'join-group-session',
-              member: { username, ftp: 300, weight: 85 },
+              member: { username },
               roomId,
             };
             socket.send(JSON.stringify(data));

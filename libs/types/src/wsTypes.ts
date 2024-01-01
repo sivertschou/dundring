@@ -1,7 +1,6 @@
 export interface Room {
   id: string;
-  creator: string;
-  members: Member[];
+  members: string[];
 }
 
 export type WebSocketRequestType =
@@ -21,9 +20,8 @@ export type WebSocketResponseType =
 
 export interface Member {
   username: string;
-  ftp: number;
-  weight: number;
 }
+
 export interface CreateGroupSession {
   type: 'create-group-session';
   member: Member;

@@ -34,7 +34,7 @@ export const GraphContainer = () => {
     () =>
       activeGroupSession
         ? activeGroupSession.members.filter(
-            (otherUser) => otherUser.username !== providedUsername
+            (otherUser) => otherUser !== providedUsername
           )
         : [],
     [activeGroupSession, providedUsername]
@@ -97,19 +97,19 @@ export const GraphContainer = () => {
               setChecked={(checked) => setShowUserData(checked)}
               checked={showUserData}
             />
-            {otherUsers.map((user, i) => (
+            {otherUsers.map((username, i) => (
               <GraphCheckboxes
-                key={user.username}
-                title={user.username}
+                key={username}
+                title={username}
                 index={i + 1}
                 setChecked={(checked) =>
                   setShowOtherUsersData((prev) => ({
                     ...prev,
-                    [user.username]: checked,
+                    [username]: checked,
                   }))
                 }
                 checked={
-                  showOtherUsersData[user.username] || { hr: true, power: true }
+                  showOtherUsersData[username] || { hr: true, power: true }
                 }
               />
             ))}

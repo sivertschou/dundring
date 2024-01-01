@@ -97,6 +97,7 @@ export const CreateOrJoinGroupSession = () => {
           <Button
             type="submit"
             isDisabled={!usernameAvailable || !usernameIsValid}
+            isLoading={createStatus === 'LOADING'}
           >
             Start group session
           </Button>
