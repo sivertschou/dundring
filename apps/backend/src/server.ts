@@ -63,6 +63,12 @@ const checkEnvConfig = () => {
     );
   }
 
+  if (!process.env.REDIS_URL) {
+    console.log(
+      '[.env]: No Redis URL provided; using `redis://127.0.0.1:6380`:. Override this by setting the PORT in the environment config.'
+    );
+  }
+
   slackService.checkSlackConfig();
   mailService.checkMailConfig();
 };

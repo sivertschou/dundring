@@ -3,11 +3,13 @@ import { error, isSuccess, success } from '@dundring/utils';
 import { createClient } from 'redis';
 import * as websocket from './websocket';
 
+require('dotenv').config();
+
 const roomChannelPrefix = 'room';
 
+const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 const redisClient = createClient({
-  // TODO: Base on .env
-  socket: { host: '127.0.0.1' },
+  url: redisUrl,
 });
 const redisPublisher = redisClient.duplicate();
 const redisSubscriber = redisClient.duplicate();
