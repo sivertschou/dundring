@@ -17,7 +17,7 @@
       "outputs": ["build/**", "dist/**"]
     },
     "lint": {},
-    "start": {
+    "dev": {
       "dependsOn": ["^db:generate", "^db:migrate", "^build"],
       "cache": false,
       "outputs": ["build/**", "dist/**"]
