@@ -5,6 +5,9 @@
     "db:generate": {
       "cache": false
     },
+    "db:migrate": {
+      "cache": false
+    },
     "build": {
       "dependsOn": ["^db:generate", "^build"],
       "outputs": ["build/**", "dist/**"]
@@ -15,12 +18,12 @@
     },
     "lint": {},
     "start": {
-      "dependsOn": ["^db:generate", "^build"],
+      "dependsOn": ["^db:generate", "^db:migrate", "^build"],
       "cache": false,
       "outputs": ["build/**", "dist/**"]
     },
     "mock": {
-      "dependsOn": ["^db:generate", "^build"],
+      "dependsOn": ["^db:generate", "^db:migrate", "^build"],
       "cache": false,
       "outputs": ["build/**", "dist/**"]
     }
