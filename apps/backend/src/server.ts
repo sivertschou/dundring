@@ -220,16 +220,16 @@ router.post<
 >('/register/mail', async (req, res) => {
   const { username, ticket } = req.body;
 
-  const mailTokenRet = validationService.getMailTokenData(ticket);
+  const mailTokenRet = await validationService.getMailTokenData(ticket);
 
-  if (mailTokenRet.status === 'ERROR') {
+  if (isError(mailTokenRet)) {
     res.send({ status: ApiStatus.FAILURE, message: mailTokenRet.type });
     return;
   }
 
   const ret = await userService.createUser({
     username: username,
-    mail: mailTokenRet.data.mail,
+    mail: mailTokenRet.data,
   });
 
   if (isError(ret)) {
@@ -294,14 +294,13 @@ router.post<
   MailAuthenticationRequestBody
 >('/auth/mail', async (req, res) => {
   const { ticket } = req.body;
-  const ret = validationService.getMailTokenData(ticket);
+  const ret = await validationService.getMailTokenData(ticket);
 
-  if (ret.status === 'ERROR') {
+  if (isError(ret)) {
     res.send({ status: ApiStatus.FAILURE, message: ret.type });
     return;
   }
-  const data = ret.data;
-  const user = await userService.getUserByMail(data.mail);
+  const user = await userService.getUserByMail(ret.data);
   if (isSuccess(user)) {
     const username = user.data.username;
     const userId = user.data.id;
@@ -335,7 +334,7 @@ router.post<
 
   res.send({
     status: ApiStatus.SUCCESS,
-    data: { type: 'user_does_not_exist', mail: data.mail },
+    data: { type: 'user_does_not_exist', mail: ret.data },
   });
   return;
 });

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { ApiResponseBody, ApiStatus, Status } from '@dundring/types';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { days } from '@dundring/utils';
+import * as redis from '../redis';
 
 const tokenSecret = process.env.TOKEN_SECRET || '12345';
 
@@ -10,38 +10,22 @@ export const hash = (message: string) => {
   return crypto.createHash('md5').update(message).digest('hex');
 };
 
-interface Mailtoken {
-  timestamp: Date;
-  mail: string;
-}
-
-const mailtokens: { [token: string]: Mailtoken } = {};
-
 export const generateAccessToken = (user: UserPayload) => {
   return jwt.sign(user, tokenSecret, {
     expiresIn: '120d',
   });
 };
 
-export const generateMailToken = (mail: string) => {
+export const generateMailToken = async (mail: string) => {
   const token = crypto.randomUUID();
-  mailtokens[token] = { mail, timestamp: new Date() };
+  redis.setMailToken(token, mail);
   return token;
 };
 
-export const getMailTokenData = (
+export const getMailTokenData = async (
   token: string
-): Status<Mailtoken, 'Token expired' | 'Token not found'> => {
-  const data = mailtokens[token];
-  if (!data) {
-    return { status: 'ERROR', type: 'Token not found' };
-  }
-
-  if (Date.now() - data.timestamp.getTime() > days(1)) {
-    return { status: 'ERROR', type: 'Token expired' };
-  }
-
-  return { status: 'SUCCESS', data };
+): Promise<Status<string, 'Mail token not found'>> => {
+  return redis.getMailToken(token);
 };
 
 export type AuthenticatedRequest<T> = {
