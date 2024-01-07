@@ -21,10 +21,4 @@ if [ ! -f .env ]; then
 	echo ".env created ⚡️"
 fi
 
-if [ ! -d data ]; then
-	echo "data directory does not exits; creating it ⚡️"
-	mkdir -p data
-	printf "[]" >data/users.json
-	printf "[]" >data/messages.json
-fi
 echo "backend/prepare.sh – Done ⚡️"
