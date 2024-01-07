@@ -6,6 +6,7 @@ services:
     restart: always
     environment:
       - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
       - MAIL_PORT=${MAIL_PORT}
       - MAIL_HOST=${MAIL_HOST}
       - MAIL_USER=${MAIL_USER}
@@ -39,6 +40,7 @@ services:
     restart: always
     environment:
       - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
       - MAIL_PORT=${MAIL_PORT}
       - MAIL_HOST=${MAIL_HOST}
       - MAIL_USER=${MAIL_USER}
