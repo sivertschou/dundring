@@ -9,6 +9,7 @@ env:
 
 jobs:
   build:
+    name: Build, tag and push image
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.gitversion.outputs.semVer }}
@@ -55,7 +56,8 @@ jobs:
           git tag ${{ steps.gitversion.outputs.semVer }}
           git push origin ${{ steps.gitversion.outputs.semVer }}
 
-  deploy:
+  deploy-dev:
+    name: Deploy dev
     runs-on: ubuntu-latest
     needs: build
     environment: dev
@@ -142,4 +144,102 @@ jobs:
             MAIL_USER=${{ secrets.MAIL_USER }} \
             MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
             TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
+              docker-compose up --detach
+
+  deploy-prod:
+    name: Deploy prod
+    runs-on: ubuntu-latest
+    needs: build
+    environment: prod
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add docker compose file to server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          source: docker/prod/docker-compose.yaml
+          target: prod
+          strip_components: 2
+
+      - name: Start the containers with Docker Compose
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+
+          script: |
+            cd prod
+
+            # Find currently running version
+            TAG_BLUE=$(docker inspect --format='{{ index .Config.Image }}' backend-prod-blue 2>/dev/null | cut -d ':' -f 2)
+
+            TAG_GREEN=${{ needs.build.outputs.version }} \
+            TAG_BLUE=${TAG_BLUE:-$TAG_GREEN} \
+            CLOUDFLARE_DNS_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }} \
+            DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            REDIS_URL=${{ secrets.REDIS_URL }} \
+            MAIL_HOST=${{ secrets.MAIL_HOST }} \
+            MAIL_PORT=${{ secrets.MAIL_PORT }} \
+            MAIL_USER=${{ secrets.MAIL_USER }} \
+            MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
+            TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
+            SLACK_USER_CREATION=${{ secrets.SLACK_TOKEN }} \
+            SLACK_ERRORS=${{ secrets.SLACK_TOKEN }} \
+            SLACK_GROUP_SESSION=${{ secrets.SLACK_TOKEN }} \
+            SLACK_FEEDBACK=${{ secrets.SLACK_TOKEN }} \
+              docker-compose up --detach
+
+            # Wait until green is healty
+            url="http://$(docker inspect --format '{{index .NetworkSettings.Networks "dundring-prod" "IPAddress"}}' backend-prod-green):8080/api/health"
+            http_status=""
+            counter=0
+            max_retries=30
+
+            echo "Give green pod 5 seconds to shut down before starting health checking"
+            sleep 5
+
+            echo "Check health at $url"
+
+            while [ "$http_status" != "200" ]; do
+                # Increment the counter
+                ((counter++))
+
+                # Make the HTTP request and capture the HTTP status code
+                http_status=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+
+                if [ "$http_status" == "200" ]; then
+                    echo "Health check successful! HTTP Status: $http_status"
+                else
+                    echo "Health check failed. HTTP Status: $http_status. Retry $counter of $max_retries. Retrying in 5 seconds..."
+
+                    # Check if the counter has reached the maximum retries
+                    if [ "$counter" -ge "$max_retries" ]; then
+                        echo "Maximum retries reached. Exiting..."
+                        exit 1
+                    fi
+
+                    sleep 5
+                fi
+            done
+
+            # Start blue with updated version
+            TAG_GREEN=${{ needs.build.outputs.version }} \
+            TAG_BLUE=${{ needs.build.outputs.version }} \
+            CLOUDFLARE_DNS_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }} \
+            DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            REDIS_URL=${{ secrets.REDIS_URL }} \
+            MAIL_HOST=${{ secrets.MAIL_HOST }} \
+            MAIL_PORT=${{ secrets.MAIL_PORT }} \
+            MAIL_USER=${{ secrets.MAIL_USER }} \
+            MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
+            TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
+            SLACK_USER_CREATION=${{ secrets.SLACK_TOKEN }} \
+            SLACK_ERRORS=${{ secrets.SLACK_TOKEN }} \
+            SLACK_GROUP_SESSION=${{ secrets.SLACK_TOKEN }} \
+            SLACK_FEEDBACK=${{ secrets.SLACK_TOKEN }} \
               docker-compose up --detach
