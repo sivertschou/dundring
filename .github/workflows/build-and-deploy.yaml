@@ -89,7 +89,7 @@ jobs:
             TAG_BLUE=$(docker inspect --format='{{ index .Config.Image }}' backend-dev-blue 2>/dev/null | cut -d ':' -f 2)
 
             TAG_GREEN=${{ needs.build.outputs.version }} \
-            TAG_BLUE=${TAG_BLUE:-$TAG_GREEN} \
+            TAG_BLUE=${TAG_BLUE:-${{ needs.build.outputs.version }}} \
             CLOUDFLARE_DNS_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }} \
             DATABASE_URL=${{ secrets.DATABASE_URL }} \
             REDIS_URL=${{ secrets.REDIS_URL }} \
@@ -179,7 +179,7 @@ jobs:
             TAG_BLUE=$(docker inspect --format='{{ index .Config.Image }}' backend-prod-blue 2>/dev/null | cut -d ':' -f 2)
 
             TAG_GREEN=${{ needs.build.outputs.version }} \
-            TAG_BLUE=${TAG_BLUE:-$TAG_GREEN} \
+            TAG_BLUE=${TAG_BLUE:-${{ needs.build.outputs.version }}} \
             CLOUDFLARE_DNS_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }} \
             DATABASE_URL=${{ secrets.DATABASE_URL }} \
             REDIS_URL=${{ secrets.REDIS_URL }} \
@@ -188,10 +188,7 @@ jobs:
             MAIL_USER=${{ secrets.MAIL_USER }} \
             MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
             TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
-            SLACK_USER_CREATION=${{ secrets.SLACK_TOKEN }} \
-            SLACK_ERRORS=${{ secrets.SLACK_TOKEN }} \
-            SLACK_GROUP_SESSION=${{ secrets.SLACK_TOKEN }} \
-            SLACK_FEEDBACK=${{ secrets.SLACK_TOKEN }} \
+            SLACK_TOKEN=${{ secrets.SLACK_TOKEN }} \
               docker-compose up --detach
 
             # Wait until green is healty
@@ -238,8 +235,5 @@ jobs:
             MAIL_USER=${{ secrets.MAIL_USER }} \
             MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
             TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
-            SLACK_USER_CREATION=${{ secrets.SLACK_TOKEN }} \
-            SLACK_ERRORS=${{ secrets.SLACK_TOKEN }} \
-            SLACK_GROUP_SESSION=${{ secrets.SLACK_TOKEN }} \
-            SLACK_FEEDBACK=${{ secrets.SLACK_TOKEN }} \
+            SLACK_TOKEN=${{ secrets.SLACK_TOKEN }} \
               docker-compose up --detach
