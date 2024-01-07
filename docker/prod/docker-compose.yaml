@@ -18,6 +18,7 @@ services:
       - SLACK_FEEDBACK=${SLACK_TOKEN}
       - POD=green
       - TAG=${TAG_GREEN}
+      - NODE_ENV=production
     networks:
       - caddy
       - dundring-prod
@@ -56,6 +57,7 @@ services:
       - SLACK_FEEDBACK=${SLACK_TOKEN}
       - POD=blue
       - TAG=${TAG_BLUE}
+      - NODE_ENV=production
     networks:
       - caddy
       - dundring-prod
