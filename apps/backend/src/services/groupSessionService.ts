@@ -8,23 +8,10 @@ import {
   Room,
   WebSocketResponse,
 } from '@dundring/types';
-import { generateRandomString } from '@dundring/utils';
-import { WebSocket } from 'ws';
+import { generateRandomString, isSuccess } from '@dundring/utils';
 import { slackService } from '.';
-
-export interface ServerMember {
-  username: string;
-  ftp: number;
-  weight: number;
-  socket: WebSocket;
-}
-
-interface ServerRoom extends Room {
-  members: ServerMember[];
-}
-
-const rooms: { [roomId: string]: ServerRoom } = {};
-const usersAndActiveRooms: { [username: string]: string } = {};
+import * as redis from '../redis';
+import * as websocket from '../websocket';
 
 export const sendWorkoutDataToRoom = (
   username: string,
@@ -38,14 +25,15 @@ export const sendWorkoutDataToRoom = (
   sendDataToRoom(username, response);
 };
 
-const generateRoomId = (
+const generateRoomId = async (
   length: number,
   numRetriesPerLength: number,
   numLengthIncreasesLeft: number
-): string | null => {
+): Promise<string | null> => {
   for (let i = 0; i < numRetriesPerLength; i++) {
     const id = generateRandomString(length);
-    if (!rooms[id]) {
+    const roomExists = await redis.roomExists(id);
+    if (!roomExists) {
       return id;
     }
   }
@@ -61,122 +49,103 @@ const generateRoomId = (
   }
 };
 
-const getAvailableRoomId = () => {
+const getAvailableRoomId = async () => {
   return generateRoomId(4, 5, 20);
 };
-const sendDataToRoom = (fromUsername: string, data: WebSocketResponse) => {
-  const roomId = usersAndActiveRooms[fromUsername];
-  if (!roomId) return;
-  const room = rooms[roomId];
-  if (!room) return;
-  room.members
-    .filter((member) => member.username !== fromUsername)
-    .map((member) => {
-      member.socket.send(JSON.stringify(data));
-    });
+
+const sendDataToRoom = async (
+  fromUsername: string,
+  data: WebSocketResponse
+) => {
+  const roomIdStatus = await redis.getRoomFromUsername(fromUsername);
+  if (isSuccess(roomIdStatus)) {
+    redis.publishMessageToRoom(data, roomIdStatus.data);
+  }
 };
 
-export const createRoom = (
-  creator: ServerMember
-): CreateGroupSessionResponse => {
-  const roomId = getAvailableRoomId();
+export const createRoom = async (
+  user: Member
+): Promise<CreateGroupSessionResponse> => {
+  const roomId = await getAvailableRoomId();
+  console.log('roomId:', roomId);
   if (roomId === null) {
-    console.log(`${creator.username} failed to create room.`);
+    console.log(`${user.username} failed to create room.`);
     return {
       type: 'failed-to-create-group-session',
       message: 'Failed to create room.',
     };
   } else {
-    console.log(`${creator.username} created room #${roomId}`);
-    const room: ServerRoom = {
+    console.log(
+      `${user.username} created room #${roomId}. Add to connection pool`
+    );
+
+    const room: Room = {
       id: roomId,
-      creator: creator.username,
-      members: [creator],
+      members: [user.username],
     };
-    slackService.logRoomCreation(room);
-    rooms[roomId] = room;
-    usersAndActiveRooms[creator.username] = room.id;
+    slackService.logRoomCreation(user.username, roomId);
+    redis.createRoom(roomId, user);
     return { type: 'created-group-session', room };
   }
 };
-const toMember = (serverMember: ServerMember): Member => ({
-  username: serverMember.username,
-  ftp: serverMember.ftp,
-  weight: serverMember.weight,
-});
-const toRoom = (serverRoom: ServerRoom): Room => ({
-  id: serverRoom.id,
-  creator: serverRoom.creator,
-  members: serverRoom.members.map((serverMember) => toMember(serverMember)),
-});
-export const joinRoom = (
-  ws: WebSocket,
-  roomId: string,
-  member: ServerMember
-) => {
-  const room = rooms[roomId];
 
-  if (room) {
-    const updatedRoom = { ...room, members: [...room.members, member] };
-    rooms[roomId] = updatedRoom;
-    usersAndActiveRooms[member.username] = roomId;
+export const joinRoom = async (roomId: string, member: Member) => {
+  console.log(
+    `${member.username} tries to join ${roomId}. Add to connection pool`
+  );
+  const joinRoomResponse = await redis.joinRoom(roomId, member);
+
+  if (isSuccess(joinRoomResponse)) {
+    const room = joinRoomResponse.data;
 
     const response: JoinGroupSessionResponse = {
       type: 'joined-group-session',
-      room: toRoom(updatedRoom),
+      room,
     };
-    slackService.logRoomJoin(member.username, room);
+    slackService.logRoomJoin(member.username, roomId);
 
-    ws.send(JSON.stringify(response));
+    // TODO: This is not needed as a broadcast is done to everyone including the sender
+    websocket.sendMessage(member.username, response);
 
-    updatedRoom.members
-      .filter((m) => m.username !== member.username)
-      .map((m) => {
-        const message: MemberJoinedResponse = {
-          type: 'member-joined-group-session',
-          room: toRoom(updatedRoom),
-          username: member.username,
-        };
-        m.socket.send(JSON.stringify(message));
-      });
+    redis.publishMessageToRoom(
+      {
+        type: 'member-joined-group-session',
+        username: member.username,
+        room,
+      },
+      roomId
+    );
   } else {
     const response: JoinGroupSessionResponse = {
       type: 'failed-to-join-group-session',
       message: 'Failed to join room.',
     };
-    ws.send(JSON.stringify(response));
+    websocket.sendMessage(member.username, response);
   }
 };
-export const leaveRoom = (username: string) => {
-  const roomId = usersAndActiveRooms[username];
-  const room = rooms[roomId];
-  if (room) {
-    const updatedRoom = {
-      ...room,
-      members: [...room.members].filter(
-        (member) => member.username !== username
-      ),
-    };
+export const leaveRoom = async (username: string, roomId: string) => {
+  websocket.removeConnection(username);
 
-    if (updatedRoom.members.length === 0) {
-      slackService.logRoomDeletion(username, room);
-      delete rooms[roomId];
+  const leaveRoomStatus = await redis.leaveRoom(username, roomId);
+
+  if (isSuccess(leaveRoomStatus)) {
+    const usersLeftInRoom = leaveRoomStatus.data;
+
+    if (usersLeftInRoom === 0) {
+      slackService.logRoomDeletion(username, roomId);
     } else {
-      slackService.logRoomLeave(username, room);
-      rooms[roomId] = updatedRoom;
+      slackService.logRoomLeave(username, roomId);
 
-      delete usersAndActiveRooms[username];
+      const membersInRoom = await redis.getRoomMembers(roomId);
 
-      updatedRoom.members
-        .filter((m) => m.username !== username)
-        .map((m) => {
-          const message: MemberLeftResponse = {
-            type: 'member-left-group-session',
-            room: toRoom(updatedRoom),
-            username,
-          };
-          m.socket.send(JSON.stringify(message));
-        });
+      if (isSuccess(membersInRoom)) {
+        const message: MemberLeftResponse = {
+          type: 'member-left-group-session',
+          room: { id: roomId, members: membersInRoom.data },
+          username,
+        };
+        redis.publishMessageToRoom(message, roomId);
+      }
     }
   }
 };

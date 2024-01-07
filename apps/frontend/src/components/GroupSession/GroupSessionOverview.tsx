@@ -52,20 +52,20 @@ export const GroupSessionOverview = () => {
       <List>
         {[
           ...activeGroupSession.members.filter(
-            (member) => member.username === providedUsername
+            (member) => member === providedUsername
           ),
           ...activeGroupSession.members.filter(
-            (member) => member.username !== providedUsername
+            (member) => member !== providedUsername
           ),
         ].map((member, i) => {
-          const workoutData = activeGroupSession.workoutData[member.username];
+          const workoutData = activeGroupSession.workoutData[member];
           const heartRate = (workoutData && workoutData[0].heartRate) || '';
           const power = (workoutData && workoutData[0].power) || '';
           return (
-            <ListItem key={member.username}>
+            <ListItem key={member}>
               <HStack fontSize="xl">
                 <ListIcon as={i === 0 ? PersonFill : Person} />
-                <Text fontWeight="bold">{member.username}</Text>
+                <Text fontWeight="bold">{member}</Text>
                 <Text color={hrColors[i]}>
                   {heartRate ? heartRate + 'bpm' : ''}
                 </Text>{' '}

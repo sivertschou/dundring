@@ -3,7 +3,6 @@ import { CustomGraphTooltip } from './Graph/CustomGraphTooltip';
 import { hrColors, powerColors, untrackedColor } from '../colors';
 import { ShowData } from './Graph/GraphContainer';
 import React from 'react';
-import { Member } from '@dundring/types';
 
 const fillAreaChart = (
   dataPrefix: string,
@@ -77,7 +76,7 @@ export type DataPoint<T extends string = string> = Record<
 
 interface Props {
   allMerged: DataPoint[];
-  otherUsers: Member[];
+  otherUsers: string[];
   showOtherUsersData: { [username: string]: ShowData };
   showUserData: ShowData;
   showFill: boolean;
@@ -93,10 +92,10 @@ export const PowerChart = ({
   return (
     <ResponsiveContainer width="100%">
       <AreaChart data={allMerged}>
-        {otherUsers.map((user, i) =>
+        {otherUsers.map((username, i) =>
           fillAreaChart(
-            user.username,
-            showOtherUsersData[user.username] || {
+            username,
+            showOtherUsersData[username] || {
               hr: true,
               power: true,
             },
@@ -114,10 +113,10 @@ export const PowerChart = ({
           true
         )}
         {fillAreaChart('You', showUserData, 0, showFill, 'power')}
-        {otherUsers.map((user, i) =>
+        {otherUsers.map((username, i) =>
           fillAreaChart(
-            user.username,
-            showOtherUsersData[user.username] || {
+            username,
+            showOtherUsersData[username] || {
               hr: true,
               power: true,
             },

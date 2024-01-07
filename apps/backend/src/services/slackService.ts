@@ -81,23 +81,23 @@ export const logUserCreation = (user: UserBase) => {
   sendSlackMessage(SlackService.USER_CREATION, message);
 };
 
-export const logRoomJoin = (username: string, room: Room) => {
-  const message = `*${username}* joined group session with id *#${room.id}*`;
+export const logRoomJoin = (username: string, roomId: string) => {
+  const message = `*${username}* joined group session with id *#${roomId}*`;
   sendSlackMessage(SlackService.GROUP_SESSION, message);
 };
 
-export const logRoomCreation = (room: Room) => {
-  const message = `*${room.creator}* created group session with id *#${room.id}*`;
+export const logRoomCreation = (username: string, roomId: string) => {
+  const message = `*${username}* created group session with id *#${roomId}*`;
   sendSlackMessage(SlackService.GROUP_SESSION, message);
 };
 
-export const logRoomLeave = (username: string, room: Room) => {
-  const message = `*${username}* left group session with id *#${room.id}*.`;
+export const logRoomLeave = (username: string, roomId: string) => {
+  const message = `*${username}* left group session with id *#${roomId}*.`;
   sendSlackMessage(SlackService.GROUP_SESSION, message);
 };
 
-export const logRoomDeletion = (username: string, room: Room) => {
-  const message = `*${username}* left group session with id *#${room.id}*. No more users in group session; deleting it.`;
+export const logRoomDeletion = (username: string, roomId: string) => {
+  const message = `*${username}* left group session with id *#${roomId}*. No more users in group session; deleting it.`;
   sendSlackMessage(SlackService.GROUP_SESSION, message);
 };
 

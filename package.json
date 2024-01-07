@@ -7,7 +7,8 @@
   "packageManager": "yarn@1.22.18",
   "scripts": {
     "prepare": "husky install && bash scripts/print_dundring.sh",
-    "start": "FORCE_COLOR=1 turbo run start",
+    "dev": "FORCE_COLOR=1 turbo run dev",
+    "start": "FORCE_COLOR=1 turbo run dev",
     "mock": "FORCE_COLOR=1 turbo run mock",
     "build:mock": "turbo run build:mock",
     "build": "turbo run build",

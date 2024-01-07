@@ -96,7 +96,7 @@ export const sendLoginOrRegisterMail = async (
     'Something went wrong while sending the e-mail'
   >
 > => {
-  const token = generateMailToken(mail);
+  const token = await generateMailToken(mail);
   const frontendBaseUrl =
     process.env.FRONTEND_BASE_URL || 'https://dundring.com';
 

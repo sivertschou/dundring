@@ -2,7 +2,6 @@ import { ResponsiveContainer, BarChart, YAxis, Tooltip, Bar } from 'recharts';
 import { CustomChartTooltip } from './Graph/CustomChartTooltip';
 import { powerColors } from '../colors';
 import React from 'react';
-import { Member } from '@dundring/types';
 
 interface Props {
   otherPeoplesAvgPower: ({
@@ -10,7 +9,7 @@ interface Props {
     name: string;
   } | null)[];
   myAvgPower: number;
-  otherUsers: Member[];
+  otherUsers: string[];
   showFill: boolean;
 }
 
@@ -63,7 +62,7 @@ export const PowerBar = ({
         ]}
       >
         {fillBarChart('You', true, 0)}
-        {otherUsers.map((user, i) => fillBarChart(user.username, true, i + 1))}
+        {otherUsers.map((username, i) => fillBarChart(username, true, i + 1))}
         <YAxis />
         <Tooltip content={<CustomChartTooltip />} cursor={false} />
       </BarChart>

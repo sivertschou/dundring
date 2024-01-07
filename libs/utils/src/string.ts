@@ -15,3 +15,16 @@ export const generateRandomString = (length: number) => {
 
 export const removeDuplicateWords = (words: string[]): string[] =>
   Array.from(new Set(words));
+
+export const sortedObject = (object: { [key: string]: any }) => {
+  const keys = Object.keys(object);
+  keys.sort();
+
+  const sortedObject: { [key: string]: any } = {};
+  keys.map((key) => (sortedObject[key] = object[key]));
+
+  return sortedObject;
+};
+
+export const sortedStringifiedObject = (object: { [key: string]: any }) =>
+  JSON.stringify(sortedObject(object));
