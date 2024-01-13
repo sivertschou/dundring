@@ -35,6 +35,7 @@ services:
       - MAIL_HOST=${MAIL_HOST}
       - MAIL_USER=${MAIL_USER}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - FRONTEND_BASE_URL=https://${TAG}.dundring.com
     networks:
       - caddy
       - dundring_preview

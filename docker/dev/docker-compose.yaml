@@ -12,6 +12,7 @@ services:
       - MAIL_USER=${MAIL_USER}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - TOKEN_SECRET=${TOKEN_SECRET}
+      - FRONTEND_BASE_URL=https://dev.dundring.com
       - POD=green
       - TAG=${TAG_GREEN}
     networks:
@@ -46,6 +47,7 @@ services:
       - MAIL_USER=${MAIL_USER}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - TOKEN_SECRET=${TOKEN_SECRET}
+      - FRONTEND_BASE_URL=https://dev.dundring.com
       - POD=blue
       - TAG=${TAG_BLUE}
     networks:
