@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "prepare": "bash prepare.sh",
-    "start": "vite --port 3000",
+    "dev": "vite --port 3000",
     "mock": "export VITE_USE_MOCK_DATA=true ; vite --port 3000",
     "build": "tsc && vite build",
     "build:mock": "export VITE_USE_MOCK_DATA=true ; tsc && vite build"

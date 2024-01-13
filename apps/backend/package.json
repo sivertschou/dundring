@@ -7,7 +7,7 @@
     "prepare": "bash prepare.sh",
     "tsc": "tsc",
     "start-server": "ts-node",
-    "start": "nodemon src/server.ts",
+    "dev": "nodemon src/server.ts",
     "mock": "yarn start",
     "build": "tsc"
   },
