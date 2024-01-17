@@ -8,3 +8,10 @@ export interface UserBase {
   username: string;
   mail: string;
 }
+
+export type AuthenticationType = MailAuthentication;
+
+export interface MailAuthentication {
+  type: 'mail';
+  mail: string;
+}

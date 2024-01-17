@@ -1,5 +1,5 @@
-import { Status, UserBase, WorkoutBase } from '@dundring/types';
-import { error, success } from '@dundring/utils';
+import { AuthenticationType, Status, WorkoutBase } from '@dundring/types';
+import { error, isSuccess, success } from '@dundring/utils';
 import {
   FitnessData,
   PrismaClient,
@@ -7,10 +7,16 @@ import {
   User,
   Workout,
 } from '@dundring/database';
+import { generateRandomTemporaryUsername } from './services/userService';
 export const prisma = new PrismaClient();
 
-export const getUserByUsername = async (
-  username: string
+export const getUser = async (
+  opts:
+    | {
+        id: string;
+      }
+    | { username: string }
+    | { mail: string }
 ): Promise<
   Status<
     User & { fitnessData: FitnessData | null },
@@ -19,7 +25,7 @@ export const getUserByUsername = async (
 > => {
   try {
     const result = await prisma.user.findUnique({
-      where: { username },
+      where: { ...opts },
       include: { fitnessData: true },
     });
 
@@ -29,10 +35,14 @@ export const getUserByUsername = async (
 
     return success(result);
   } catch (e) {
-    console.error('[db.getUserByUsername]', e);
+    console.error('[db.getUser]', e);
     return error('Something went wrong reading from database');
   }
 };
+
+export const userExists = async (
+  query: { username: string } | { mail: string }
+) => isSuccess(await getUser(query));
 
 export const getUserByMail = async (
   mail: string
@@ -56,7 +66,7 @@ export const getUserByMail = async (
 };
 
 export const createUser = async (
-  user: UserBase
+  auth: AuthenticationType
 ): Promise<
   Status<
     User,
@@ -66,11 +76,12 @@ export const createUser = async (
   >
 > => {
   try {
+    console.log('createUser:', auth);
     const result = await prisma.user.create({
       data: {
-        username: user.username,
-        mail: user.mail,
+        username: await generateRandomTemporaryUsername(),
         fitnessData: { create: { ftp: 200 } },
+        mail: auth.mail,
       },
     });
 

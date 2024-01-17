@@ -39,6 +39,9 @@ export const MainPage = () => {
 
   React.useEffect(() => {
     const path = location.pathname.split('/')[1];
+    console.log('path', path);
+    console.log('pathname', location.pathname);
+    console.log('pathname.split(/)', location.pathname.split('/'));
     switch (path) {
       case 'group':
         onOpenGroupSessionModal();

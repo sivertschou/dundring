@@ -11,7 +11,12 @@ export const hash = (message: string) => {
 };
 
 export const generateAccessToken = (user: UserPayload) => {
-  return jwt.sign(user, tokenSecret, {
+  const payload = {
+    sub: user.id,
+    iat: Date.now(),
+  };
+
+  return jwt.sign(payload, tokenSecret, {
     expiresIn: '120d',
   });
 };
@@ -41,8 +46,7 @@ interface UnauthenticatedRequest<T> extends Request<T> {
 }
 
 interface UserPayload {
-  username: string;
-  userId: string;
+  id: string;
 }
 interface JwtExpPayload {
   expiresIn: string;
@@ -73,8 +77,7 @@ export const authenticateToken = <Res, Req>(
 
     const user = jwt.verify(token, tokenSecret) as UserPayload;
 
-    req.username = user.username;
-    req.userId = user.userId;
+    req.userId = user.id;
 
     return true;
   } catch (error) {

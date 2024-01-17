@@ -422,6 +422,7 @@ export const LoginModal = () => {
   const toast = useToast();
 
   const ticket = useSearchParams()[0].get('ticket');
+  console.log("ticket:", ticket)
 
   const onClose = React.useCallback(() => {
     navigate('/');
@@ -435,7 +436,7 @@ export const LoginModal = () => {
     ) => {
       try {
         const ret = await api.authenticateMailLogin(
-          { ticket },
+          ticket ,
           abortController
         );
 

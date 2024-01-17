@@ -2,7 +2,7 @@ import { Status } from '@dundring/types';
 import nodemailer from 'nodemailer';
 import { generateMailToken } from '../validationService';
 import { registerMailTemplate, signInMailTemplate } from './htmlTemplates';
-import { isSuccess, successMap } from '@dundring/utils';
+import { isSuccess, success, successMap } from '@dundring/utils';
 import { userService } from '..';
 require('dotenv').config();
 
@@ -104,7 +104,7 @@ export const sendLoginOrRegisterMail = async (
   if (isSuccess(await userService.getUserByMail(mail))) {
     if (!transporter) {
       console.log(`[mail]: To: ${mail}\n[mail]: Login link: ${loginLink}`);
-      return { status: 'SUCCESS', data: 'Login link sent' };
+      return success('Login link sent');
     }
 
     return successMap(
@@ -118,7 +118,7 @@ export const sendLoginOrRegisterMail = async (
   } else {
     if (!transporter) {
       console.log(`[mail]: To: ${mail}\n[mail]: Register link: ${loginLink}`);
-      return { status: 'SUCCESS', data: 'Register link sent' };
+      return success('Register link sent');
     }
 
     return successMap(
