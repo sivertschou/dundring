@@ -8,6 +8,7 @@ import { TopBar } from '../components/TopBar';
 import { useLocation, useParams } from 'react-router-dom';
 import {
   useGroupSessionModal,
+  useLoadOldDataModal,
   useLoginModal,
   useLogModal,
   useProfileModal,
@@ -36,6 +37,9 @@ export const MainPage = () => {
     onOpen: onOpenWelcomeMessageModal,
     onClose: onCloseWelcomeMessageModal,
   } = useWelcomeMessageModal();
+
+  const { onOpen: onOpenUseOldDataModal, onClose: onCloseUseOldDataModal } =
+    useLoadOldDataModal();
 
   React.useEffect(() => {
     const path = location.pathname.split('/')[1];
@@ -70,6 +74,7 @@ export const MainPage = () => {
         onCloseWorkoutEditorModal();
 
         onOpenWelcomeMessageModal();
+        onOpenUseOldDataModal();
     }
   }, [
     location,
@@ -87,6 +92,8 @@ export const MainPage = () => {
     onCloseWorkoutEditorModal,
     onOpenWelcomeMessageModal,
     onCloseWelcomeMessageModal,
+    onOpenUseOldDataModal,
+    onCloseUseOldDataModal,
   ]);
 
   return (

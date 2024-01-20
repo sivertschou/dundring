@@ -22,6 +22,7 @@ const DataContext = React.createContext<{
   override: () => void;
   isRunning: boolean;
   hasOldData: boolean;
+  resetOldData: () => void;
 } | null>(null);
 
 interface Props {
@@ -319,6 +320,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         override,
         isRunning: data.state === 'running',
         hasOldData: localStorageData.hasOldData,
+        resetOldData: localStorageData.reset,
       }}
     >
       {children}

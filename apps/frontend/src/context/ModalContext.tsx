@@ -14,6 +14,7 @@ const ModalContext = React.createContext<{
   loginModal: Modal;
   profileModal: Modal;
   welcomeMessageModal: Modal;
+  useOldDataModal: Modal;
   workoutEditorModal: Modal;
 } | null>(null);
 
@@ -27,6 +28,7 @@ export const ModalContextProvider = ({
   const profileModal: Modal = useDisclosure();
   const groupSessionModal: Modal = useDisclosure();
   const welcomeMessageModal: Modal = useDisclosure();
+  const useOldDataModal: Modal = useDisclosure();
   const workoutEditorModal: Modal = useDisclosure();
 
   return (
@@ -37,6 +39,7 @@ export const ModalContextProvider = ({
         loginModal,
         profileModal,
         welcomeMessageModal,
+        useOldDataModal,
         workoutEditorModal,
       }}
     >
@@ -93,15 +96,38 @@ export const useWelcomeMessageModal = () => {
   return {
     isOpen: context.welcomeMessageModal.isOpen,
     onOpen: () => {
-      if (parseInt(localStorage.getItem(KEY) || '0') < CURRENT_VERSION) {
+      if (parseInt(window.localStorage.getItem(KEY) || '0') < CURRENT_VERSION) {
         context.welcomeMessageModal.onOpen();
       }
     },
     onClose: () => {
-      localStorage.setItem(KEY, JSON.stringify(CURRENT_VERSION));
+      window.localStorage.setItem(KEY, JSON.stringify(CURRENT_VERSION));
       context.welcomeMessageModal.onClose();
     },
     onToggle: context.welcomeMessageModal.onToggle,
+  };
+};
+
+export const useLoadOldDataModal = () => {
+  const context = React.useContext(ModalContext);
+  if (context === null) {
+    throw new Error(
+      'useLoadOldDataModal must be used within a ModalContextProvider'
+    );
+  }
+  return {
+    isOpen: context.useOldDataModal.isOpen,
+    onOpen: () => {
+      if (localStorage.hasOwnProperty('other-data')) {
+        console.log('woop');
+        context.useOldDataModal.onOpen();
+      }
+    },
+    onClose: () => {
+      ('');
+      context.useOldDataModal.onClose();
+    },
+    onToggle: context.useOldDataModal.onToggle,
   };
 };
 
