@@ -113,6 +113,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
           };
         }
         case 'ADD_LAP': {
+          localStorageData.saveLap(currentData);
           return {
             ...currentData,
             laps: [...currentData.laps, { dataPoints: [], distance: 0 }],
@@ -326,37 +327,113 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
 };
 
 const useSaveDataToLocalStorage = () => {
-  const SECONDS_30 = 30000;
+  const SECONDS_30 = 3000;
 
   const [nextSaveTime, setNextSaveTime] = React.useState(SECONDS_30);
-  const [lapsSaved, setLapsSaved] = React.useState(0);
+
   const [elementsSaved, setElementsSaved] = React.useState(0);
 
   const reset = () => {
-    localStorage.removeItem('data');
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('data')) localStorage.removeItem(key);
+    });
+    localStorage.removeItem('other-data');
   };
 
   const getOldData = () => {
-    const data = localStorage.getItem('data');
-    return data === null ? null : (JSON.parse(data) as Data);
+    let lapDataGroupedOnIndex: { [key: number]: [number, Lap][] } = {};
+
+    for (const [lapKey, lapInfo] of Object.entries(localStorage)) {
+      const matched = lapKey.match('data-laps-(\\d+)-(\\d+)');
+      if (!matched) {
+        continue;
+      }
+      const lapIndex = parseInt(matched[1], 10);
+      let lapInfoArray = lapDataGroupedOnIndex[lapIndex];
+      if (lapInfoArray === undefined) {
+        lapInfoArray = [];
+        lapDataGroupedOnIndex[lapIndex] = lapInfoArray;
+      }
+      lapInfoArray.push([parseInt(matched[2], 10), JSON.parse(lapInfo)]);
+    }
+
+    const sortedLapData = Object.entries(lapDataGroupedOnIndex)
+      .toSorted((a, b) => a[0].localeCompare(b[0]))
+      .map(([_key, lapInfo]) => lapInfo);
+
+    const combineLapData = (lapInfos: [number, Lap][]): Lap => {
+      const sortedLapInfo = lapInfos
+        .toSorted((a, b) => a[0] - b[0])
+        .map(([_index, lapInfo]) => lapInfo);
+      const distance = sortedLapInfo[sortedLapInfo.length - 1].distance;
+      const dataPoints = sortedLapInfo
+        .map((lapInfo) => lapInfo.dataPoints)
+        .flat(1);
+      return { distance, dataPoints };
+    };
+    const laps = sortedLapData.map(combineLapData);
+    const otherData = JSON.parse(
+      localStorage.getItem('other-data') || ''
+    ) as Data;
+    return {
+      distance: otherData.distance,
+      timeElapsed: otherData.timeElapsed,
+      startingTime: otherData.startingTime,
+      laps,
+      untrackedData: [],
+      speed: 0.0,
+      state: 'paused',
+    };
   };
 
-  const hasOldData = localStorage.hasOwnProperty('data');
+  const hasOldData = localStorage.hasOwnProperty('other-data');
+
+  const saveLap = (data: Data) => {
+    const lapIndex = data.laps.length - 1;
+    const { distance, dataPoints } = data.laps[lapIndex];
+    const res = {
+      distance,
+      dataPoints: dataPoints.slice(elementsSaved),
+    };
+    localStorage.setItem(
+      'other-data',
+      JSON.stringify(dataWithoutLapsAndUntrackedData(data))
+    );
+    localStorage.setItem(`data-laps-${lapIndex}-99999999`, JSON.stringify(res));
+    setNextSaveTime(data.timeElapsed + SECONDS_30);
+    setElementsSaved(0);
+  };
+
+  const dataWithoutLapsAndUntrackedData = (data: Data) => {
+    const { laps, untrackedData, ...otherData } = data;
+    return otherData;
+  };
 
   const saveDataIfTimeElapsed = (data: Data) => {
     if (data.timeElapsed < nextSaveTime) {
       return;
     }
-    setNextSaveTime(data.timeElapsed + SECONDS_30);
+    const lapIndex = data.laps.length - 1;
+    const { distance, dataPoints } = data.laps[lapIndex];
+    const lapInfoToSave = {
+      distance,
+      dataPoints: dataPoints.slice(elementsSaved),
+    };
 
-    localStorage.setItem(`data-laps`, JSON.stringify(data.laps));
     localStorage.setItem(
-      `data-untracked-${elementsSaved}`,
-      JSON.stringify(data.laps)
+      'other-data',
+      JSON.stringify(dataWithoutLapsAndUntrackedData(data))
     );
+    localStorage.setItem(
+      `data-laps-${lapIndex}-${elementsSaved}`,
+      JSON.stringify(lapInfoToSave)
+    );
+
+    setNextSaveTime(data.timeElapsed + SECONDS_30);
+    setElementsSaved(dataPoints.length);
   };
 
-  return { saveDataIfTimeElapsed, getOldData, reset, hasOldData };
+  return { saveDataIfTimeElapsed, saveLap, getOldData, reset, hasOldData };
 };
 
 export const useData = () => {
