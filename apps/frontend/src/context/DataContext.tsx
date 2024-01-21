@@ -82,7 +82,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         case 'START': {
           if (currentData.state === 'not_started') {
             return {
-              laps: [{ dataPoints: [], distance: 0 }],
+              laps: [{ dataPoints: [] }],
               untrackedData: currentData.untrackedData,
               timeElapsed: 0,
               distance: 0,
@@ -105,7 +105,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         case 'ADD_LAP': {
           return {
             ...currentData,
-            laps: [...currentData.laps, { dataPoints: [], distance: 0 }],
+            laps: [...currentData.laps, { dataPoints: [] }],
           };
         }
         case 'ADD_DATA': {
@@ -125,7 +125,6 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
                         ...currentLap.dataPoints,
                         { timeStamp: dataPoint.timeStamp },
                       ],
-                      distance: currentLap.distance,
                     },
                   ]
                 : [],
@@ -164,7 +163,6 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
               ...laps.filter((_, i) => i !== laps.length - 1),
               {
                 dataPoints: [...currentLap.dataPoints, dataPointWithPosition],
-                distance: currentLap.distance + deltaDistance,
               },
             ],
           };

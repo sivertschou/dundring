@@ -1,6 +1,5 @@
 export interface Lap {
   dataPoints: DataPoint[];
-  distance: number;
 }
 export interface DataPoint {
   heartRate?: number;
