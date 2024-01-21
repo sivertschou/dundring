@@ -26,7 +26,9 @@ export const TopBar = () => {
   const bgColor = useColorModeValue(theme.colors.white, theme.colors.gray[800]);
   const textShadow = `0px 0px 1vh ${bgColor}`;
 
-  const flooredDistance = Math.floor(distance / 100) / 10;
+  console.log(distance);
+  const flooredDistance = Math.floor(distance / 10) / 100;
+  console.log(flooredDistance);
 
   return (
     <Center
@@ -56,7 +58,7 @@ export const TopBar = () => {
                 {((3600 * speed) / 1000).toFixed(1)} km/h
               </Text>
               <Text fontSize={secondaryFontSize}>
-                {flooredDistance.toFixed(1)} km
+                {flooredDistance.toFixed(2)} km
               </Text>
               {remainingTime !== null ? (
                 <>
