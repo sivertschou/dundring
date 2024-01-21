@@ -8,7 +8,7 @@
     "tsc": "tsc",
     "start-server": "ts-node",
     "dev": "nodemon src/server.ts",
-    "mock": "yarn start",
+    "mock": "yarn dev",
     "build": "tsc"
   },
   "author": "",
