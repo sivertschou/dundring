@@ -6,25 +6,23 @@ import * as React from 'react';
 export const PausedWorkoutButtons = () => {
   const { hasValidData, isRunning } = useData();
   const [includeGPSData, setIncludeGPSData] = React.useState(true);
+  if (isRunning || !hasValidData) return null;
 
-  if (!isRunning && hasValidData) {
-    return (
-      <Grid templateColumns="1fr 1fr 1fr" gap="1" height="2.5em">
-        <Text />
-        <Center width="8em">
-          <DownloadTCXButton includeGPSData={includeGPSData} />
-        </Center>
-        <Center>
-          <HStack>
-            <Checkbox
-              isChecked={includeGPSData}
-              onChange={(e) => setIncludeGPSData(e.target.checked)}
-            />
-            <Text>GPS data</Text>
-          </HStack>
-        </Center>
-      </Grid>
-    );
-  }
-  return null;
+  return (
+    <Grid templateColumns="1fr 1fr 1fr" gap="1" height="2.5em">
+      <Text />
+      <Center width="8em">
+        <DownloadTCXButton includeGPSData={includeGPSData} />
+      </Center>
+      <Center>
+        <HStack>
+          <Checkbox
+            isChecked={includeGPSData}
+            onChange={(e) => setIncludeGPSData(e.target.checked)}
+          />
+          <Text>GPS data</Text>
+        </HStack>
+      </Center>
+    </Grid>
+  );
 };
