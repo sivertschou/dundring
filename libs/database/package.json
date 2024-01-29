@@ -19,7 +19,6 @@
   "dependencies": {
     "@prisma/client": "^5.6.0",
     "lint-staged": "^13.0.3",
-    "node-jq": "^2.3.4",
     "turbo": "^1.4.4"
   },
   "devDependencies": {
