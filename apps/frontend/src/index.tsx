@@ -1,6 +1,6 @@
 import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
 import * as React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { UserContextProvider } from './context/UserContext';
 import { HeartRateContextProvider } from './context/HeartRateContext';
@@ -17,7 +17,10 @@ import { ActiveWorkoutContextProvider } from './context/ActiveWorkoutContext';
 
 const cw: Worker = new WorkerBuilder(clockWorker);
 cw.postMessage('startDataTimer');
-ReactDOM.render(
+
+const root = createRoot(document.getElementById('root')!);
+
+root.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
       <BrowserRouter>
@@ -41,6 +44,5 @@ ReactDOM.render(
         </LogContextProvider>
       </BrowserRouter>
     </ChakraProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );

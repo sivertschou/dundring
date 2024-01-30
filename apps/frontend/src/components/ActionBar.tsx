@@ -1,6 +1,6 @@
 import { Button } from '@chakra-ui/button';
-import Icon from '@chakra-ui/icon';
 import { Stack, Text } from '@chakra-ui/layout';
+import { Icon } from '@chakra-ui/react';
 import {
   BarChartLine,
   BarChartLineFill,

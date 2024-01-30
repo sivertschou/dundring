@@ -16,8 +16,8 @@ import { MainActionBar } from './MainActionBar';
 import { Link as ReachLink } from 'react-router-dom';
 import { useColorMode, useColorModeValue } from '@chakra-ui/color-mode';
 import { useLogModal } from '../context/ModalContext';
-import Icon from '@chakra-ui/icon';
 import { useLogs } from '../context/LogContext';
+import { Icon } from '@chakra-ui/react';
 
 export const BottomBar = () => {
   const { colorMode, setColorMode } = useColorMode();

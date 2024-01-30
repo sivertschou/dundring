@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Center, Stack, Grid, HStack } from '@chakra-ui/layout';
 import { Button, IconButton } from '@chakra-ui/button';
 import { Grid3x2GapFill } from 'react-bootstrap-icons';
-import Icon from '@chakra-ui/icon';
 import { Tooltip } from '@chakra-ui/tooltip';
 import { useColorModeValue } from '@chakra-ui/color-mode';
 import { useSmartTrainer } from '../context/SmartTrainerContext';
@@ -13,6 +12,7 @@ import { QuickPowerButton } from './MainActionBar/QuickPowerButton';
 import { WorkoutControls } from './MainActionBar/WorkoutControls';
 import { SelectWorkoutButton } from './MainActionBar/SelectWorkoutButton';
 import { useLinkColor } from '../hooks/useLinkColor';
+import { Icon } from '@chakra-ui/react';
 
 export const MainActionBar = () => {
   const [showPowerControls, setShowPowerControls] = React.useState(false);

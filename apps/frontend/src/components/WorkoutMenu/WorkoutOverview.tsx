@@ -4,15 +4,14 @@ import {
   FormHelperText,
   FormLabel,
 } from '@chakra-ui/form-control';
-import Icon from '@chakra-ui/icon';
 import { Input, InputGroup, InputRightAddon } from '@chakra-ui/input';
 import { Divider, Stack } from '@chakra-ui/layout';
-import { Center, Text } from '@chakra-ui/react';
+import { Center, Text, Icon } from '@chakra-ui/react';
 import * as React from 'react';
 import { PencilSquare } from 'react-bootstrap-icons';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 import { useUser } from '../../context/UserContext';
-import { StoredWorkoutType, Workout, WorkoutType } from '../../types';
+import { StoredWorkoutType, Workout } from '../../types';
 import { parseInputAsInt } from '../../utils/general';
 import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
 import { defaultWorkouts } from './defaultWorkouts';
