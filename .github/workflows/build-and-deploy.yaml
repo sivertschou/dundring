@@ -270,3 +270,36 @@ jobs:
             TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
             SLACK_TOKEN=${{ secrets.SLACK_TOKEN }} \
               docker-compose up --detach
+
+            echo "Give blue pod 10 seconds to (re)start before starting health checking"
+            sleep 10
+
+            # Wait until blue is healty
+            url="http://$(docker inspect --format '{{index .NetworkSettings.Networks "dundring-prod" "IPAddress"}}' backend-prod-blue):8080/api/health"
+            http_status=""
+            counter=0
+            max_retries=30
+
+            echo "Check health at $url"
+
+            while [ "$http_status" != "200" ]; do
+                # Increment the counter
+                ((counter++))
+
+                # Make the HTTP request and capture the HTTP status code
+                http_status=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+
+                if [ "$http_status" == "200" ]; then
+                    echo "Health check successful! HTTP Status: $http_status"
+                else
+                    echo "Health check failed. HTTP Status: $http_status. Retry $counter of $max_retries. Retrying in 5 seconds..."
+
+                    # Check if the counter has reached the maximum retries
+                    if [ "$counter" -ge "$max_retries" ]; then
+                        echo "Maximum retries reached. Exiting..."
+                        exit 1
+                    fi
+
+                    sleep 5
+                fi
+            done
