@@ -100,14 +100,14 @@ jobs:
             TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
               docker-compose up --detach
 
+            echo "Give green pod 10 seconds to (re)start before starting health checking"
+            sleep 10
+
             # Wait until green is healty
             url="http://$(docker inspect --format '{{index .NetworkSettings.Networks "dundring-dev" "IPAddress"}}' backend-dev-green):8080/api/health"
             http_status=""
             counter=0
             max_retries=30
-
-            echo "Give green pod 10 seconds to shut down before starting health checking"
-            sleep 10
 
             echo "Check health at $url"
 
