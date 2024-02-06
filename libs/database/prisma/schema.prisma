@@ -42,3 +42,8 @@ model SteadyWorkoutPart {
 
   @@unique([index, workoutId])
 }
+
+model DataMigration {
+  name        String   @unique
+  dateApplied DateTime @default(now())
+}
