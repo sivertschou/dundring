@@ -76,7 +76,7 @@ const sendSlackMessage = (service: SlackService, message: string) => {
   }
 };
 
-export const logUserCreation = (user: UserBase) => {
+export const logUserCreation = (user: { username: string; mail: string }) => {
   const message = `New user: *${user.username}* (${user.mail})`;
   sendSlackMessage(SlackService.USER_CREATION, message);
 };
