@@ -71,6 +71,11 @@ export const createUser = async (
         username: user.username,
         mail: user.mail,
         fitnessData: { create: { ftp: 200 } },
+        mailAuthentication: {
+          create: {
+            mail: user.mail,
+          },
+        },
       },
     });
 
