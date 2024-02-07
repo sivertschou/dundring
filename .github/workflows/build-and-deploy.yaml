@@ -98,7 +98,7 @@ jobs:
             MAIL_USER=${{ secrets.MAIL_USER }} \
             MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
             TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
-              docker-compose up --detach
+              docker-compose up --detach --wait
 
             echo "Give green pod 10 seconds to (re)start before starting health checking"
             sleep 10
@@ -144,7 +144,7 @@ jobs:
             MAIL_USER=${{ secrets.MAIL_USER }} \
             MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
             TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
-              docker-compose up --detach
+              docker-compose up --detach --wait
 
             echo "Give blue pod 10 seconds to (re)start before starting health checking"
             sleep 10
@@ -222,7 +222,7 @@ jobs:
             MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
             TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
             SLACK_TOKEN=${{ secrets.SLACK_TOKEN }} \
-              docker-compose up --detach
+              docker-compose up --detach --wait
 
             echo "Give green pod 10 seconds to (re)start before starting health checking"
             sleep 10
@@ -269,7 +269,7 @@ jobs:
             MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
             TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
             SLACK_TOKEN=${{ secrets.SLACK_TOKEN }} \
-              docker-compose up --detach
+              docker-compose up --detach --wait
 
             echo "Give blue pod 10 seconds to (re)start before starting health checking"
             sleep 10
