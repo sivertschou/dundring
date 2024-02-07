@@ -3,7 +3,12 @@ services:
   backend-green:
     image: sivertschou/dundring-backend:${TAG_GREEN}
     container_name: backend-dev-green
-    restart: always
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=${REDIS_URL}
@@ -38,7 +43,12 @@ services:
   backend-blue:
     image: sivertschou/dundring-backend:${TAG_BLUE}
     container_name: backend-dev-blue
-    restart: always
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=${REDIS_URL}
