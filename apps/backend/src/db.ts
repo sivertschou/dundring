@@ -1,7 +1,8 @@
 import { Status, UserBase, WorkoutBase } from '@dundring/types';
-import { error, success } from '@dundring/utils';
+import { error, success, successMap } from '@dundring/utils';
 import {
   FitnessData,
+  MailAuthentication,
   PrismaClient,
   SteadyWorkoutPart,
   User,
@@ -40,15 +41,16 @@ export const getUserByMail = async (
   Status<User, 'User not found' | 'Something went wrong reading from database'>
 > => {
   try {
-    const result = await prisma.user.findUnique({
+    const result = await prisma.mailAuthentication.findUnique({
       where: { mail },
+      select: { user: true },
     });
 
     if (!result) {
       return error('User not found');
     }
 
-    return success(result);
+    return success(result.user);
   } catch (e) {
     console.error('[db.getUserByMail]', e);
     return error('Something went wrong reading from database');
@@ -59,7 +61,7 @@ export const createUser = async (
   user: UserBase
 ): Promise<
   Status<
-    User,
+    User & { mailAuthentication: MailAuthentication | null },
     | 'Username is already in use'
     | 'Mail is already in use'
     | 'Something went wrong writing to database'
@@ -69,13 +71,17 @@ export const createUser = async (
     const result = await prisma.user.create({
       data: {
         username: user.username,
-        mail: user.mail,
         fitnessData: { create: { ftp: 200 } },
         mailAuthentication: {
           create: {
             mail: user.mail,
           },
         },
+      },
+      select: {
+        id: true,
+        username: true,
+        mailAuthentication: true,
       },
     });
 
