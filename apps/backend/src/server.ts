@@ -174,7 +174,7 @@ router.post<null, ApiResponseBody<LoginResponseBody>>(
 
     const { username, userId } = req;
 
-    const user = await userService.getUser(username || '');
+    const user = await userService.getUser({ username });
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -262,7 +262,7 @@ router.post<
     username: ret.data.username,
   });
   const [user, fitnessData] = await Promise.all([
-    userService.getUser(username),
+    userService.getUser({ username }),
     userService.getUserFitnessData(ret.data.id),
   ]);
 

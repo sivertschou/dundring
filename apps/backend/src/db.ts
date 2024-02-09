@@ -1,5 +1,5 @@
 import { Status, UserBase, WorkoutBase } from '@dundring/types';
-import { error, success, successMap } from '@dundring/utils';
+import { error, success } from '@dundring/utils';
 import {
   FitnessData,
   MailAuthentication,
@@ -10,8 +10,8 @@ import {
 } from '@dundring/database';
 export const prisma = new PrismaClient();
 
-export const getUserByUsername = async (
-  username: string
+export const getUser = async (
+  query: { username: string } | { id: string }
 ): Promise<
   Status<
     User & { fitnessData: FitnessData | null },
@@ -20,7 +20,7 @@ export const getUserByUsername = async (
 > => {
   try {
     const result = await prisma.user.findUnique({
-      where: { username },
+      where: query,
       include: { fitnessData: true },
     });
 
@@ -30,7 +30,7 @@ export const getUserByUsername = async (
 
     return success(result);
   } catch (e) {
-    console.error('[db.getUserByUsername]', e);
+    console.error('[db.getUser]', e);
     return error('Something went wrong reading from database');
   }
 };

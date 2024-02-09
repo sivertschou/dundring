@@ -5,8 +5,8 @@ import * as db from '../db';
 import { isSuccess } from '@dundring/utils';
 import { slackService } from '.';
 
-export const getUser = async (username: string) =>
-  db.getUserByUsername(username);
+export const getUser = async (query: { username: string } | { id: string }) =>
+  db.getUser(query);
 
 export const getUserByMail = async (mail: string) => db.getUserByMail(mail);
 
