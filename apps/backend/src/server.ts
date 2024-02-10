@@ -1,26 +1,14 @@
-import {
-  mailService,
-  slackService,
-  userService,
-  validationService,
-  workoutService,
-} from './services';
+import { mailService, slackService, workoutService } from './services';
 import * as express from 'express';
 import * as core from 'express-serve-static-core';
 import {
   ApiResponseBody,
   ApiStatus,
-  LoginResponseBody,
-  UserUpdateRequestBody,
-  WorkoutRequestBody,
-  WorkoutsResponseBody,
-  UpdateWorkoutResponseBody,
   GetWorkoutResponseBody,
 } from '@dundring/types';
 import * as WebSocket from 'ws';
 import cors from 'cors';
 import http from 'http';
-import { isError } from '@dundring/utils';
 import { initRedis } from './redis';
 import { initWebsockets } from './websocket';
 import router from './routes';
@@ -82,81 +70,6 @@ router.get<core.ParamsDictionary, ApiResponseBody<GetWorkoutResponseBody>>(
         res.send({
           status: ApiStatus.FAILURE,
           message: response.type,
-        });
-        return;
-    }
-  }
-);
-
-router.get<null, ApiResponseBody<WorkoutsResponseBody>>(
-  '/me/workouts',
-  async (req, res) => {
-    if (!validationService.authenticateToken(req, res)) return;
-
-    const workouts = await workoutService.getUserWorkouts(req.userId);
-
-    if (isError(workouts)) {
-      res.send({ status: ApiStatus.FAILURE, message: workouts.type });
-      return;
-    }
-
-    res.send({
-      status: ApiStatus.SUCCESS,
-      data: { workouts: workouts.data },
-    });
-  }
-);
-
-router.post<WorkoutRequestBody, ApiResponseBody<UpdateWorkoutResponseBody>>(
-  '/me/workout',
-  async (req, res) => {
-    if (!validationService.authenticateToken(req, res)) return;
-
-    const workout = req.body.workout;
-
-    const ret = await workoutService.upsertWorkout(
-      req.userId,
-      workout,
-      workout.id
-    );
-
-    switch (ret.status) {
-      case 'SUCCESS':
-        res.send({
-          status: ApiStatus.SUCCESS,
-          data: { workout: ret.data },
-        });
-        return;
-      default:
-        res.send({
-          status: ApiStatus.FAILURE,
-          message: ret.type,
-        });
-        return;
-    }
-  }
-);
-
-router.post<UserUpdateRequestBody, ApiResponseBody<UserUpdateRequestBody>>(
-  '/me',
-  async (req, res) => {
-    if (!validationService.authenticateToken(req, res)) return;
-
-    const { ftp } = req.body;
-
-    const ret = await userService.updateUserFtp(req.userId, ftp);
-
-    switch (ret.status) {
-      case 'SUCCESS':
-        res.send({
-          status: ApiStatus.SUCCESS,
-          data: { ftp },
-        });
-        return;
-      default:
-        res.send({
-          status: ApiStatus.FAILURE,
-          message: ret.type,
         });
         return;
     }
