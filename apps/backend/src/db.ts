@@ -193,12 +193,16 @@ export const upsertWorkout = async (
     'Something went wrong while upserting workout'
   >
 > => {
+  console.debug(`[db.upsertWorkout] user ${userId} tries to upsert workout`);
   try {
     /* TODO: Fix this to first upsert the workout and its parts, and then delete the potentially unused workout parts. */
     const workoutInDB = await prisma.workout.findFirst({
       where: { id: workoutId },
     });
-    if (!(workoutInDB?.userId === userId)) {
+    if (workoutInDB && workoutInDB.userId !== userId) {
+      console.debug(
+        `[db.upsertWorkout]: User tries to update workout not owned by themselves. User id ${userId} – user id on workout: ${workoutInDB?.userId}.`
+      );
       return error('Something went wrong while upserting workout');
     }
 
