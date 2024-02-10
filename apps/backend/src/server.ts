@@ -1,11 +1,5 @@
-import { mailService, slackService, workoutService } from './services';
+import { mailService, slackService } from './services';
 import * as express from 'express';
-import * as core from 'express-serve-static-core';
-import {
-  ApiResponseBody,
-  ApiStatus,
-  GetWorkoutResponseBody,
-} from '@dundring/types';
 import * as WebSocket from 'ws';
 import cors from 'cors';
 import http from 'http';
@@ -52,29 +46,6 @@ const checkEnvConfig = () => {
 };
 
 checkEnvConfig();
-
-router.get<core.ParamsDictionary, ApiResponseBody<GetWorkoutResponseBody>>(
-  '/workouts/:workoutId',
-  async (req, res) => {
-    const workoutId = req.params['workoutId'];
-    const response = await workoutService.getWorkout(workoutId);
-
-    switch (response.status) {
-      case 'SUCCESS':
-        res.send({
-          status: ApiStatus.SUCCESS,
-          data: { workout: response.data },
-        });
-        return;
-      default:
-        res.send({
-          status: ApiStatus.FAILURE,
-          message: response.type,
-        });
-        return;
-    }
-  }
-);
 
 router.get<null, {}>('/health', (_req, res) => {
   res.send({
