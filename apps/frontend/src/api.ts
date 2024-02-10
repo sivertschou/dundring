@@ -94,7 +94,7 @@ export const requestLoginLinkMail = async (data: MailLoginRequestBody) => {
   return post<
     ApiResponseBody<RequestLoginLinkMailResponseBody>,
     MailLoginRequestBody
-  >(`${httpUrl}/login/mail`, data);
+  >(`${httpUrl}/auth/mail/login`, data);
 };
 
 export const authenticateMailLogin = async (
@@ -104,7 +104,7 @@ export const authenticateMailLogin = async (
   return post<
     ApiResponseBody<MailAuthenticationResponseBody>,
     MailAuthenticationRequestBody
-  >(`${httpUrl}/auth/mail`, body, abortController);
+  >(`${httpUrl}/auth/mail/authenticate`, body, abortController);
 };
 
 export const registerMailLogin = async (
@@ -113,7 +113,7 @@ export const registerMailLogin = async (
   return post<
     ApiResponseBody<LoginResponseBody>,
     MailAuthenticationRegisterRequestBody
-  >(`${httpUrl}/register/mail`, body);
+  >(`${httpUrl}/auth/mail/register`, body);
 };
 
 export const validateToken = async (
@@ -121,7 +121,7 @@ export const validateToken = async (
   abortController: AbortController
 ) => {
   return authPost<ApiResponseBody<LoginResponseBody>, {}>(
-    `${httpUrl}/validate`,
+    `${httpUrl}/auth/token/validate`,
     token,
     {},
     abortController
