@@ -34,7 +34,7 @@ router.get<null, ApiResponseBody<WorkoutsResponseBody>>(
 );
 
 router.post<WorkoutRequestBody, ApiResponseBody<UpdateWorkoutResponseBody>>(
-  '/workout',
+  '/workouts',
   async (req, res) => {
     if (!validationService.authenticateToken(req, res)) return;
 

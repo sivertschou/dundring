@@ -146,7 +146,7 @@ export const saveWorkout = async (
   workout: WorkoutRequestBody
 ) => {
   return authPost<ApiResponseBody<WorkoutsResponseBody>, WorkoutRequestBody>(
-    `${httpUrl}/me/workout`,
+    `${httpUrl}/me/workouts`,
     token,
     workout
   );
