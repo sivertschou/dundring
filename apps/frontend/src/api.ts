@@ -130,7 +130,7 @@ export const validateToken = async (
 
 export const fetchMyWorkouts = async (token: string) => {
   return authGet<ApiResponseBody<WorkoutsResponseBody>>(
-    `${httpUrl}/me/workouts`,
+    `${httpUrl}/workouts`,
     token
   );
 };
@@ -146,7 +146,7 @@ export const saveWorkout = async (
   workout: WorkoutRequestBody
 ) => {
   return authPost<ApiResponseBody<WorkoutsResponseBody>, WorkoutRequestBody>(
-    `${httpUrl}/me/workouts`,
+    `${httpUrl}/workouts`,
     token,
     workout
   );
