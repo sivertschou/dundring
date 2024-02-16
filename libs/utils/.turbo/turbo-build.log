@@ -1,0 +1,4 @@
+[2K[1G[2m$ rollup -c --bundleConfigAsCjs[22m
+[36m
+[1msrc/index.ts[22m → [1m./dist/index.cjs.js, ./dist/index.esm.js[22m...[39m
+[32mcreated [1m./dist/index.cjs.js, ./dist/index.esm.js[22m in [1m934ms[22m[39m

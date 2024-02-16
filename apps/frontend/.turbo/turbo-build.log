@@ -1,0 +1,25 @@
+[34m@dundring/frontend:build[0m: cache hit, replaying output [2mcc29ee4b351f5c14[0m
+[34m@dundring/frontend:build: [0m$ tsc && vite build
+[34m@dundring/frontend:build: [0msrc/components/WorkoutMenu/DraggableItem.tsx(13,6): error TS2786: 'Draggable' cannot be used as a JSX component.
+[34m@dundring/frontend:build: [0m  Its type 'typeof Draggable' is not a valid JSX element type.
+[34m@dundring/frontend:build: [0m    Type 'typeof Draggable' is not assignable to type 'new (props: any, deprecatedLegacyContext?: any) => Component<any, any, any>'.
+[34m@dundring/frontend:build: [0m      Construct signature return types 'Draggable' and 'Component<any, any, any>' are incompatible.
+[34m@dundring/frontend:build: [0m        The types returned by 'render()' are incompatible between these types.
+[34m@dundring/frontend:build: [0m          Type 'import("/Users/mortenkolstad/dundring/node_modules/@types/react-beautiful-dnd/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+[34m@dundring/frontend:build: [0msrc/components/WorkoutMenu/DraggableList.tsx(10,6): error TS2786: 'DragDropContext' cannot be used as a JSX component.
+[34m@dundring/frontend:build: [0m  Its type 'typeof DragDropContext' is not a valid JSX element type.
+[34m@dundring/frontend:build: [0m    Type 'typeof DragDropContext' is not assignable to type 'new (props: any, deprecatedLegacyContext?: any) => Component<any, any, any>'.
+[34m@dundring/frontend:build: [0m      Construct signature return types 'DragDropContext' and 'Component<any, any, any>' are incompatible.
+[34m@dundring/frontend:build: [0m        The types returned by 'render()' are incompatible between these types.
+[34m@dundring/frontend:build: [0m          Type 'import("/Users/mortenkolstad/dundring/node_modules/@types/react-beautiful-dnd/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+[34m@dundring/frontend:build: [0m            Type 'ReactElement<any, string | JSXElementConstructor<any>>' is not assignable to type 'ReactNode'.
+[34m@dundring/frontend:build: [0m              Property 'children' is missing in type 'ReactElement<any, string | JSXElementConstructor<any>>' but required in type 'ReactPortal'.
+[34m@dundring/frontend:build: [0msrc/components/WorkoutMenu/DraggableList.tsx(11,8): error TS2786: 'Droppable' cannot be used as a JSX component.
+[34m@dundring/frontend:build: [0m  Its type 'typeof Droppable' is not a valid JSX element type.
+[34m@dundring/frontend:build: [0m    Type 'typeof Droppable' is not assignable to type 'new (props: any, deprecatedLegacyContext?: any) => Component<any, any, any>'.
+[34m@dundring/frontend:build: [0m      Construct signature return types 'Droppable' and 'Component<any, any, any>' are incompatible.
+[34m@dundring/frontend:build: [0m        The types returned by 'render()' are incompatible between these types.
+[34m@dundring/frontend:build: [0m          Type 'import("/Users/mortenkolstad/dundring/node_modules/@types/react-beautiful-dnd/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+[34m@dundring/frontend:build: [0msrc/components/WorkoutMenu/DraggableList.tsx(19,13): error TS2322: Type 'import("/Users/mortenkolstad/dundring/node_modules/@types/react-beautiful-dnd/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+[34m@dundring/frontend:build: [0merror Command failed with exit code 1.
+[34m@dundring/frontend:build: [0minfo Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.

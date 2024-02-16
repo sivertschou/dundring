@@ -1,0 +1,10 @@
+[2K[1G[2m$ rollup -c --bundleConfigAsCjs[22m
+[36m
+[1msrc/index.ts[22m → [1m./dist/index.cjs.js, ./dist/index.esm.js[22m...[39m
+[1m[33m(!) Unresolved dependencies[39m[22m
+[90mhttps://rollupjs.org/guide/en/#warning-treating-module-as-external-dependency[39m
+[1m@prisma/client[22m (imported by "src/index.ts")
+[32mcreated [1m./dist/index.cjs.js, ./dist/index.esm.js[22m in [1m1.1s[22m[39m
+[36m
+[1msrc/migrate-data.ts[22m → [1m./dist/migrate-data.cjs.js, ./dist/migrate-data.esm.js[22m...[39m
+[32mcreated [1m./dist/migrate-data.cjs.js, ./dist/migrate-data.esm.js[22m in [1m605ms[22m[39m

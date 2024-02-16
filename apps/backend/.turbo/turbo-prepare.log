@@ -1,0 +1,6 @@
+[32m@dundring/backend:prepare[0m: cache hit, replaying output [2m504cafd4610ebd6d[0m
+[32m@dundring/backend:prepare: [0myarn run v1.22.19
+[32m@dundring/backend:prepare: [0m$ bash prepare.sh
+[32m@dundring/backend:prepare: [0mbackend/prepare.sh – Starting ⚡️
+[32m@dundring/backend:prepare: [0mbackend/prepare.sh – Done ⚡️
+[32m@dundring/backend:prepare: [0mDone in 0.08s.

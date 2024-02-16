@@ -1,0 +1,19 @@
+{
+	"name": "inkcli",
+	"version": "1.0.0",
+	"main": "index.js",
+	"license": "MIT",
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc --watch"
+	},
+	"dependencies": {
+		"@types/ink": "^2.0.3",
+		"@types/react": "^18.2.55",
+		"ink": "^4.4.1",
+		"prettier": "^3.2.5",
+		"react": "^18.2.0",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.3.3"
+	}
+}
