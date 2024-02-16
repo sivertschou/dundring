@@ -5,6 +5,12 @@ export interface User {
 }
 
 export interface UserBase {
+  id: string;
   username: string;
-  mail: string;
+}
+
+export interface UserCreationStrava {
+  athleteId: number;
+  refreshToken: string;
+  scopes: string[];
 }

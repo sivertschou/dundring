@@ -36,6 +36,8 @@ services:
       - MAIL_USER=${MAIL_USER}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - FRONTEND_BASE_URL=https://${TAG}.dundring.com
+      - STRAVA_CLIENT_ID=${STRAVA_CLIENT_ID}
+      - STRAVA_CLIENT_SECRET=${STRAVA_CLIENT_SECRET}
     networks:
       - caddy
       - dundring_preview

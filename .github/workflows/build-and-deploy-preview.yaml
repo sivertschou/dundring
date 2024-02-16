@@ -78,4 +78,6 @@ jobs:
               MAIL_PORT=${{ secrets.MAIL_PORT }} \
               MAIL_USER=${{ secrets.MAIL_USER }} \
               MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
+              STRAVA_CLIENT_ID='${{ secrets.STRAVA_CLIENT_ID }}' \
+              STRAVA_CLIENT_SECRET='${{ secrets.STRAVA_CLIENT_SECRET }}' \
               docker-compose up -d

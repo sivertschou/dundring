@@ -29,18 +29,14 @@ export type RequestLoginLinkMailResponseBody =
   | 'Login link sent'
   | 'Register link sent';
 
-export interface MailAuthenticationRequestBody {
-  ticket: string;
+export interface AuthenticationRequestBody {
+  code: string;
 }
 
-export interface MailAuthenticationRegisterRequestBody {
-  ticket: string;
-  username: string;
+export interface AuthenticationResponseBody {
+  user_created: boolean;
+  data: LoginResponseBody;
 }
-
-export type MailAuthenticationResponseBody =
-  | { type: 'user_exists'; data: LoginResponseBody }
-  | { type: 'user_does_not_exist'; mail: string };
 
 export interface LoginResponseBody {
   username: string;

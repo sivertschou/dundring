@@ -1,10 +1,9 @@
 import {
   ApiResponseBody,
+  AuthenticationRequestBody,
+  AuthenticationResponseBody,
   GetWorkoutResponseBody,
   LoginResponseBody,
-  MailAuthenticationRegisterRequestBody,
-  MailAuthenticationRequestBody,
-  MailAuthenticationResponseBody,
   MailLoginRequestBody,
   RequestLoginLinkMailResponseBody,
   UserUpdateRequestBody,
@@ -98,22 +97,21 @@ export const requestLoginLinkMail = async (data: MailLoginRequestBody) => {
 };
 
 export const authenticateMailLogin = async (
-  body: MailAuthenticationRequestBody,
-  abortController: AbortController
+  body: AuthenticationRequestBody
 ) => {
   return post<
-    ApiResponseBody<MailAuthenticationResponseBody>,
-    MailAuthenticationRequestBody
-  >(`${httpUrl}/auth/mail/authenticate`, body, abortController);
+    ApiResponseBody<AuthenticationResponseBody>,
+    AuthenticationRequestBody
+  >(`${httpUrl}/auth/mail/authenticate`, body);
 };
 
-export const registerMailLogin = async (
-  body: MailAuthenticationRegisterRequestBody
+export const authenticateStravaLogin = async (
+  body: AuthenticationRequestBody
 ) => {
   return post<
-    ApiResponseBody<LoginResponseBody>,
-    MailAuthenticationRegisterRequestBody
-  >(`${httpUrl}/auth/mail/register`, body);
+    ApiResponseBody<AuthenticationResponseBody>,
+    AuthenticationRequestBody
+  >(`${httpUrl}/auth/strava/authenticate`, body);
 };
 
 export const validateToken = async (

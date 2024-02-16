@@ -1,9 +1,5 @@
 import { Button } from '@chakra-ui/button';
-import {
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-} from '@chakra-ui/form-control';
+import { FormControl, FormLabel } from '@chakra-ui/form-control';
 import { Input } from '@chakra-ui/input';
 import { Stack, Text } from '@chakra-ui/layout';
 import {
@@ -15,16 +11,24 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
-import { Spinner } from '@chakra-ui/react';
+import {
+  AbsoluteCenter,
+  Box,
+  Center,
+  Divider,
+  Flex,
+  HStack,
+  Spinner,
+} from '@chakra-ui/react';
 import * as React from 'react';
 import * as api from '../../api';
 import { useUser } from '../../context/UserContext';
 import { useToast } from '@chakra-ui/react';
 import { useLoginModal } from '../../context/ModalContext';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { ApiStatus } from '@dundring/types';
 import * as utils from '@dundring/utils';
-import { maxUsernameLength } from '@dundring/utils';
+import { ConnectWithStravaButton } from '../ConnectWithStravaButton';
 
 interface EditableString {
   value: string;
@@ -38,22 +42,14 @@ interface LoginState {
   isLoading: boolean;
 }
 
-interface RegisterState {
-  type: 'register';
-  mail: string;
-  username: EditableString;
-  ticket: string;
-  isLoading: boolean;
-  errorMessage?: string;
-}
-
 interface MailSentState {
   type: 'mail-sent';
   mail: string;
   userExists: boolean;
 }
 
-type State = LoginState | RegisterState | MailSentState;
+type State = LoginState | MailSentState;
+const codesSent: Map<string, boolean> = new Map();
 
 const MailSent = ({
   state,
@@ -97,154 +93,6 @@ const MailSent = ({
   );
 };
 
-const Register = ({
-  state,
-  setErrorMessage,
-  setIsLoading,
-  setUsername,
-  isOpen,
-  onClose,
-}: {
-  state: RegisterState;
-  setErrorMessage: (message?: string) => void;
-  setUsername: (username: string, touched: boolean) => void;
-  setIsLoading: (isLoading: boolean) => void;
-  isOpen: boolean;
-  onClose: () => void;
-}) => {
-  const { setUser } = useUser();
-  const toast = useToast();
-
-  const mail = state.mail;
-  const username = state.username.value;
-  const usernameIsTouched = state.username.touched;
-
-  const usernameIsTooLong = utils.usernameIsTooLong(username);
-  const illegalCharacters = utils.illegalCharactersInUsername(username);
-  const usernameContainsIllegalCharacters = illegalCharacters.length > 0;
-
-  const registerWithMail = async () => {
-    const trimmedUsername = username;
-
-    if (!trimmedUsername) {
-      setErrorMessage('Enter a username');
-      return;
-    }
-
-    setIsLoading(true);
-    const response = await api.registerMailLogin({
-      username: trimmedUsername,
-      ticket: state.ticket,
-    });
-    setIsLoading(false);
-
-    if (response.status === 'FAILURE') {
-      setErrorMessage(response.message);
-    } else if (response.status === 'SUCCESS') {
-      const { token, username, ftp } = response.data;
-      setUser({
-        loggedIn: true,
-        token,
-        username,
-        ftp,
-        workouts: [],
-      });
-      toast({
-        title: `Created user ${username}`,
-        isClosable: true,
-        duration: 5000,
-        status: 'success',
-      });
-      onClose();
-    }
-  };
-
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
-      <ModalOverlay />
-      <ModalContent>
-        {
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              registerWithMail();
-            }}
-          >
-            <ModalHeader>Sign in</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <Stack>
-                <FormControl>
-                  <FormLabel>Mail</FormLabel>
-                  <Input
-                    isDisabled={true}
-                    placeholder="Mail"
-                    type="email"
-                    name="email"
-                    autoComplete="email"
-                    id="email"
-                    value={mail}
-                  />
-                </FormControl>
-
-                <FormControl
-                  isInvalid={
-                    !utils.usernameIsValid(username) && usernameIsTouched
-                  }
-                >
-                  <FormLabel>Username</FormLabel>
-                  <Input
-                    placeholder="username"
-                    type="text"
-                    name="username"
-                    autoComplete="username"
-                    id="username"
-                    value={username}
-                    onChange={(e) => {
-                      setUsername(e.target.value, false);
-                      setErrorMessage('');
-                    }}
-                    onBlur={(_) => setUsername(username.replace(' ', ''), true)}
-                  />
-                  <FormErrorMessage>
-                    The username can't
-                    {usernameIsTooLong
-                      ? ` be more than ${maxUsernameLength} characters long`
-                      : ''}
-                    {usernameIsTooLong && usernameContainsIllegalCharacters
-                      ? ' or'
-                      : ''}
-                    {usernameContainsIllegalCharacters
-                      ? ` contain ${illegalCharacters.join(',')}`
-                      : ''}
-                    .
-                  </FormErrorMessage>
-                </FormControl>
-
-                {state.errorMessage ? (
-                  <Text color="red.500">{state.errorMessage}</Text>
-                ) : null}
-              </Stack>
-            </ModalBody>
-
-            <ModalFooter>
-              {!state.isLoading ? (
-                <Button
-                  isDisabled={!utils.usernameIsValid(username)}
-                  type="submit"
-                >
-                  Create user
-                </Button>
-              ) : (
-                <Spinner />
-              )}
-            </ModalFooter>
-          </form>
-        }
-      </ModalContent>
-    </Modal>
-  );
-};
 const Login = ({
   state,
   setErrorMessage,
@@ -323,43 +171,51 @@ const Login = ({
             <ModalHeader>Sign in</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <Stack>
-                <FormControl isInvalid={!mailIsValid && mailIsTouched}>
-                  <FormLabel>Mail</FormLabel>
-                  <Input
-                    placeholder="Mail"
-                    type="email"
-                    name="email"
-                    autoComplete="email"
-                    id="email"
-                    value={mail}
-                    onChange={(e) => {
-                      setMail(e.target.value, false);
-                      setErrorMessage('');
-                    }}
-                    onBlur={(_) => setMail(mail.replace(' ', ''), true)}
-                  />
-                </FormControl>
+              <Stack spacing="10">
+                <HStack>
+                  <FormControl isInvalid={!mailIsValid && mailIsTouched}>
+                    <FormLabel>Mail</FormLabel>
+                    <Input
+                      placeholder="Mail"
+                      type="email"
+                      name="email"
+                      autoComplete="email"
+                      id="email"
+                      value={mail}
+                      onChange={(e) => {
+                        setMail(e.target.value, false);
+                        setErrorMessage('');
+                      }}
+                      onBlur={(_) => setMail(mail.replace(' ', ''), true)}
+                    />
+                  </FormControl>
 
-                {state.errorMessage ? (
-                  <Text color="red.500">{state.errorMessage}</Text>
-                ) : null}
+                  {state.errorMessage ? (
+                    <Text color="red.500">{state.errorMessage}</Text>
+                  ) : null}
+                  {!state.isLoading ? (
+                    <Flex alignSelf="end">
+                      <Button
+                        onClick={() => loginWithMail()}
+                        isDisabled={!mailIsValid}
+                        type="submit"
+                      >
+                        Continue with mail
+                      </Button>
+                    </Flex>
+                  ) : (
+                    <Spinner />
+                  )}
+                </HStack>
+                <Box position="relative">
+                  <Divider />
+                  <AbsoluteCenter px="4">or</AbsoluteCenter>
+                </Box>
+                <Center>
+                  <ConnectWithStravaButton />
+                </Center>
               </Stack>
             </ModalBody>
-
-            <ModalFooter>
-              {!state.isLoading ? (
-                <Button
-                  onClick={() => loginWithMail()}
-                  isDisabled={!mailIsValid}
-                  type="submit"
-                >
-                  Continue with e-Mail
-                </Button>
-              ) : (
-                <Spinner />
-              )}
-            </ModalFooter>
           </form>
         }
       </ModalContent>
@@ -372,28 +228,13 @@ const setMail = (state: State, mail: string, touched: boolean): State => {
     case 'login':
       return { ...state, mail: { value: mail, touched } };
     case 'mail-sent':
-    case 'register':
       return state;
   }
 };
 
-const setUsername = (
-  state: State,
-  username: string,
-  touched: boolean
-): State => {
-  switch (state.type) {
-    case 'register':
-      return { ...state, username: { value: username, touched } };
-    case 'login':
-    case 'mail-sent':
-      return state;
-  }
-};
 const setErrorMessage = (state: State, msg?: string): State => {
   switch (state.type) {
     case 'login':
-    case 'register':
       return { ...state, errorMessage: msg };
     case 'mail-sent':
       return state;
@@ -403,7 +244,6 @@ const setErrorMessage = (state: State, msg?: string): State => {
 const setIsLoading = (state: State, isLoading: boolean): State => {
   switch (state.type) {
     case 'login':
-    case 'register':
       return { ...state, isLoading };
     case 'mail-sent':
       return state;
@@ -412,6 +252,7 @@ const setIsLoading = (state: State, isLoading: boolean): State => {
 export const LoginModal = () => {
   const { isOpen } = useLoginModal();
   const navigate = useNavigate();
+  const location = useLocation();
   const [state, setState] = React.useState<State>({
     type: 'login',
     mail: { value: '', touched: false },
@@ -421,62 +262,47 @@ export const LoginModal = () => {
   const { setUser } = useUser();
   const toast = useToast();
 
-  const ticket = useSearchParams()[0].get('ticket');
+  const code = useSearchParams()[0].get('code');
 
   const onClose = React.useCallback(() => {
     navigate('/');
   }, [navigate]);
 
   React.useEffect(() => {
-    const abortController = new AbortController();
-    const authenticate = async (
-      ticket: string,
-      abortController: AbortController
-    ) => {
+    const authenticate = async (code: string) => {
       try {
-        const ret = await api.authenticateMailLogin(
-          { ticket },
-          abortController
-        );
+        if (codesSent.get(code)) return;
+        codesSent.set(code, true);
+
+        const ret = location.pathname.includes('/auth/strava')
+          ? await api.authenticateStravaLogin({ code })
+          : await api.authenticateMailLogin({ code });
 
         if (ret.status === ApiStatus.SUCCESS) {
-          switch (ret.data.type) {
-            case 'user_exists': {
-              setUser({
-                ...ret.data.data,
-                loggedIn: true,
-                workouts: [],
-              });
-              toast({
-                title: `Logged in as ${ret.data.data.username}`,
-                isClosable: true,
-                duration: 5000,
-                status: 'success',
-              });
-              onClose();
-              break;
-            }
-            case 'user_does_not_exist': {
-              setState({
-                type: 'register',
-                mail: ret.data.mail,
-                username: { value: '', touched: false },
-                ticket,
-                isLoading: false,
-                errorMessage: '',
-              });
-              break;
-            }
+          setUser({
+            ...ret.data.data,
+            loggedIn: true,
+            workouts: [],
+          });
+          if (ret.data.user_created) {
+            navigate('/profile');
+          } else {
+            toast({
+              title: `Logged in as ${ret.data.data.username}`,
+              isClosable: true,
+              duration: 5000,
+              status: 'success',
+            });
+            onClose();
           }
         }
       } catch (error) {}
     };
 
-    if (ticket) {
-      authenticate(ticket, abortController).catch(console.error);
+    if (code) {
+      authenticate(code).catch(console.error);
     }
-    return () => abortController.abort();
-  }, [ticket, onClose, setUser, toast]);
+  }, [code]);
 
   switch (state.type) {
     case 'mail-sent':
@@ -496,23 +322,6 @@ export const LoginModal = () => {
           }
           goToMailSent={(mail: string, userExists: boolean) =>
             setState({ type: 'mail-sent', mail, userExists })
-          }
-          isOpen={isOpen}
-          onClose={onClose}
-        />
-      );
-    case 'register':
-      return (
-        <Register
-          state={state}
-          setUsername={(username, touched) =>
-            setState((s) => setUsername(s, username, touched))
-          }
-          setIsLoading={(isLoading) =>
-            setState((s) => setIsLoading(s, isLoading))
-          }
-          setErrorMessage={(error) =>
-            setState((s) => setErrorMessage(s, error))
           }
           isOpen={isOpen}
           onClose={onClose}

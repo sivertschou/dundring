@@ -1,4 +1,4 @@
-import { mailService, slackService } from './services';
+import { mailService, slackService, stravaService } from './services';
 import * as express from 'express';
 import * as WebSocket from 'ws';
 import cors from 'cors';
@@ -43,6 +43,7 @@ const checkEnvConfig = () => {
 
   slackService.checkSlackConfig();
   mailService.checkMailConfig();
+  stravaService.checkStravaConfig();
 };
 
 checkEnvConfig();

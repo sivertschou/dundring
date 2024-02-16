@@ -3,53 +3,48 @@ import {
   ApiStatus,
   AuthenticationRequestBody,
   AuthenticationResponseBody,
-  MailLoginRequestBody,
 } from '@dundring/types';
 import { isError, isSuccess } from '@dundring/utils';
 import * as express from 'express';
 import {
-  mailService,
   slackService,
+  stravaService,
   userService,
   validationService,
 } from '../../services';
+
 const router = express.Router();
 
-router.post<null, ApiResponseBody<string>, MailLoginRequestBody>(
-  '/login',
-  async (req, res) => {
-    const { mail } = req.body;
-
-    const ret = await mailService.sendLoginOrRegisterMail(mail);
-
-    switch (ret.status) {
-      case 'SUCCESS':
-        res.send({ status: ApiStatus.SUCCESS, data: ret.data });
-        return;
-      case 'ERROR':
-        res.send({ status: ApiStatus.FAILURE, message: ret.type });
-        return;
-    }
-  }
-);
 router.post<
   null,
   ApiResponseBody<AuthenticationResponseBody>,
   AuthenticationRequestBody
 >('/authenticate', async (req, res) => {
   const { code } = req.body;
-  const ret = await validationService.getMailTokenData(code);
+  const tokenData = await stravaService.getStravaTokenFromAuthCode(code);
 
-  if (isError(ret)) {
-    res.send({ status: ApiStatus.FAILURE, message: ret.type });
+  if (isError(tokenData)) {
+    res.send({ status: ApiStatus.FAILURE, message: tokenData.type });
     return;
   }
-  const mail = ret.data;
-  const existingUser = await userService.getUserByMail(mail);
+
+  const stravaId = tokenData.data.athlete.id;
+
+  await stravaService.updateRefreshToken({
+    athleteId: stravaId,
+    refreshToken: tokenData.data.refresh_token,
+    scopes: [],
+  });
+
+  const existingUser = await userService.getUserByStravaId(stravaId);
 
   const user =
     isError(existingUser) && existingUser.type === 'User not found'
-      ? await userService.createUserFromMail(mail)
+      ? await userService.createUserFromStrava({
+          athleteId: stravaId,
+          refreshToken: tokenData.data.refresh_token,
+          scopes: [],
+        })
       : existingUser;
 
   if (isSuccess(user)) {
@@ -83,11 +78,17 @@ router.post<
     return;
   }
 
+  await userService.createUserFromStrava({
+    athleteId: tokenData.data.athlete.id,
+    refreshToken: tokenData.data.refresh_token,
+    scopes: [],
+  });
+
   res.send({
     status: ApiStatus.FAILURE,
-    message: 'Something went wrong when authenticating user based on mail',
+    message:
+      'Something went wrong when authenticating user based on Strava session',
   });
-  return;
 });
 
 export default router;

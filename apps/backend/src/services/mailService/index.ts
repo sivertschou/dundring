@@ -100,7 +100,7 @@ export const sendLoginOrRegisterMail = async (
   const frontendBaseUrl =
     process.env.FRONTEND_BASE_URL || 'https://dundring.com';
 
-  const loginLink = `${frontendBaseUrl}/auth?ticket=${token}`;
+  const loginLink = `${frontendBaseUrl}/auth/mail?code=${token}`;
   if (isSuccess(await userService.getUserByMail(mail))) {
     if (!transporter) {
       console.log(`[mail]: To: ${mail}\n[mail]: Login link: ${loginLink}`);
