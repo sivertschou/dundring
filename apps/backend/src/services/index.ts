@@ -6,10 +6,10 @@ import * as validationService from './validationService';
 import * as workoutService from './workoutService';
 
 export {
-  groupSessionService,
-  mailService,
-  slackService,
-  userService,
-  validationService,
-  workoutService,
+	groupSessionService,
+	mailService,
+	slackService,
+	userService,
+	validationService,
+	workoutService,
 };

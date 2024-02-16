@@ -1,69 +1,69 @@
-import { Workout } from './workoutTypes';
+import {Workout} from './workoutTypes';
 
 export enum ApiStatus {
-  SUCCESS = 'SUCCESS',
-  FAILURE = 'FAILURE',
-  LOADING = 'LOADING',
+	SUCCESS = 'SUCCESS',
+	FAILURE = 'FAILURE',
+	LOADING = 'LOADING',
 }
 export interface ApiSuccessResponseBody<T> {
-  status: ApiStatus.SUCCESS;
-  data: T;
+	status: ApiStatus.SUCCESS;
+	data: T;
 }
 export interface ApiErrorResponseBody {
-  status: ApiStatus.FAILURE;
-  message: string;
+	status: ApiStatus.FAILURE;
+	message: string;
 }
 export interface ApiLoading {
-  status: ApiStatus.LOADING;
+	status: ApiStatus.LOADING;
 }
 
 export type ApiResponseBody<T> =
-  | ApiSuccessResponseBody<T>
-  | ApiErrorResponseBody;
+	| ApiSuccessResponseBody<T>
+	| ApiErrorResponseBody;
 
 export interface MailLoginRequestBody {
-  mail: string;
+	mail: string;
 }
 
 export type RequestLoginLinkMailResponseBody =
-  | 'Login link sent'
-  | 'Register link sent';
+	| 'Login link sent'
+	| 'Register link sent';
 
 export interface MailAuthenticationRequestBody {
-  ticket: string;
+	ticket: string;
 }
 
 export interface MailAuthenticationRegisterRequestBody {
-  ticket: string;
-  username: string;
+	ticket: string;
+	username: string;
 }
 
 export type MailAuthenticationResponseBody =
-  | { type: 'user_exists'; data: LoginResponseBody }
-  | { type: 'user_does_not_exist'; mail: string };
+	| {type: 'user_exists'; data: LoginResponseBody}
+	| {type: 'user_does_not_exist'; mail: string};
 
 export interface LoginResponseBody {
-  username: string;
-  userId: string;
-  token: string;
-  ftp: number;
+	username: string;
+	userId: string;
+	token: string;
+	ftp: number;
 }
 
 export interface UserUpdateRequestBody {
-  ftp: number;
+	ftp: number;
 }
 
 export interface WorkoutsResponseBody {
-  workouts: Workout[];
+	workouts: Workout[];
 }
 export interface UpdateWorkoutResponseBody {
-  workout: Workout;
+	workout: Workout;
 }
 
 export interface GetWorkoutResponseBody {
-  workout: Workout;
+	workout: Workout;
 }
 
 export interface WorkoutRequestBody {
-  workout: Workout;
+	workout: Workout;
 }

@@ -1,4 +1,4 @@
-import { Workout } from '@dundring/types';
+import {Workout} from '@dundring/types';
 
 export const getTotalWorkoutTime = (workout: Workout) =>
-  workout.parts.reduce((sum, part) => sum + part.duration, 0);
+	workout.parts.reduce((sum, part) => sum + part.duration, 0);

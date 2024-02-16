@@ -1,5 +1,5 @@
 export const signInMailTemplate = (
-  url: string
+	url: string,
 ) => `<div style="font-family: Arial, Helvetica, sans-serif">
     <div style="text-align: left; max-width: 500px; padding: 10px">
       <img
@@ -36,7 +36,7 @@ export const signInMailTemplate = (
 </div>`;
 
 export const registerMailTemplate = (
-  url: string
+	url: string,
 ) => `<div style="font-family: Arial, Helvetica, sans-serif">
     <div style="text-align: left; max-width: 500px; padding: 10px">
       <img

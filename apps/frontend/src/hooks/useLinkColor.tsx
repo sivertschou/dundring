@@ -1,9 +1,9 @@
-import { useColorModeValue } from '@chakra-ui/react';
+import {useColorModeValue} from '@chakra-ui/react';
 
 export const useLinkColor = () => {
-  const linkColor = useColorModeValue('black', 'white');
-  return linkColor;
+	const linkColor = useColorModeValue('black', 'white');
+	return linkColor;
 };
 
 export const useLinkPowerColor = () =>
-  useColorModeValue('purple.500', 'purple.400');
+	useColorModeValue('purple.500', 'purple.400');

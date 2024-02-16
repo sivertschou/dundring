@@ -1,36 +1,55 @@
 {
-  "name": "dundring",
-  "version": "0.1.0",
-  "description": "",
-  "author": "sivertschou",
-  "private": true,
-  "packageManager": "yarn@1.22.18",
-  "scripts": {
-    "prepare": "husky install && bash scripts/print_dundring.sh",
-    "dev": "FORCE_COLOR=1 turbo run dev",
-    "start": "FORCE_COLOR=1 turbo run dev",
-    "mock": "FORCE_COLOR=1 turbo run mock",
-    "build:mock": "turbo run build:mock",
-    "build": "turbo run build",
-    "build:backend": "yarn --cwd apps/backend build",
-    "build:frontend": "yarn --cwd apps/frontend build",
-    "frontend": "yarn --cwd apps/frontend start",
-    "frontend:mock": "yarn --cwd apps/frontend mock",
-    "backend": "yarn --cwd apps/backend start",
-    "clean": "rm -rf node_modules */**/node_modules */**/.turbo */**/dist */**/build"
-  },
-  "devDependencies": {
-    "@prettier/plugin-xml": "^2.2.0",
-    "husky": "^7.0.0",
-    "lint-staged": "^13.0.3",
-    "prettier": "3.0.3",
-    "turbo": "^1.10.15"
-  },
-  "workspaces": [
-    "libs/*",
-    "apps/*"
-  ],
-  "lint-staged": {
-    "*.{ts,tsx,js,md,svg,html,json}": "prettier --write"
-  }
+	"name": "dundring",
+	"version": "0.0.0",
+	"license": "MIT",
+	"bin": "dist/cli.js",
+	"type": "module",
+	"engines": {
+		"node": ">=16"
+	},
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc --watch",
+		"test": "prettier --check . && xo && ava"
+	},
+	"files": [
+		"dist"
+	],
+	"dependencies": {
+		"ink": "^4.1.0",
+		"meow": "^11.0.0",
+		"react": "^18.2.0"
+	},
+	"devDependencies": {
+		"@sindresorhus/tsconfig": "^3.0.1",
+		"@types/react": "^18.0.32",
+		"@vdemedes/prettier-config": "^2.0.1",
+		"ava": "^5.2.0",
+		"chalk": "^5.2.0",
+		"eslint-config-xo-react": "^0.27.0",
+		"eslint-plugin-react": "^7.32.2",
+		"eslint-plugin-react-hooks": "^4.6.0",
+		"ink-testing-library": "^3.0.0",
+		"prettier": "^2.8.7",
+		"ts-node": "^10.9.1",
+		"typescript": "^5.0.3",
+		"xo": "^0.53.1"
+	},
+	"ava": {
+		"extensions": {
+			"ts": "module",
+			"tsx": "module"
+		},
+		"nodeArguments": [
+			"--loader=ts-node/esm"
+		]
+	},
+	"xo": {
+		"extends": "xo-react",
+		"prettier": true,
+		"rules": {
+			"react/prop-types": "off"
+		}
+	},
+	"prettier": "@vdemedes/prettier-config"
 }

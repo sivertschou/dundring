@@ -1,5 +1,5 @@
 {
-  "extends": "@dundring/tsconfig/base.json",
-  "include": ["src"],
-  "compilerOptions": { "outDir": "build" }
+	"extends": "@dundring/tsconfig/base.json",
+	"include": ["src"],
+	"compilerOptions": {"outDir": "build"}
 }

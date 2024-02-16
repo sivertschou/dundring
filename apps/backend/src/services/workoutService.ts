@@ -1,77 +1,77 @@
-import { Status, Workout, WorkoutBase, WorkoutPart } from '@dundring/types';
-import { isError, success, successMap } from '@dundring/utils';
+import {Status, Workout, WorkoutBase, WorkoutPart} from '@dundring/types';
+import {isError, success, successMap} from '@dundring/utils';
 import {
-  SteadyWorkoutPart as PrismaSteadyWorkoutPart,
-  Workout as PrismaWorkout,
+	SteadyWorkoutPart as PrismaSteadyWorkoutPart,
+	Workout as PrismaWorkout,
 } from '@dundring/database';
 import * as db from '../db';
 
 const fromPrismaWorkoutPart = (part: PrismaSteadyWorkoutPart): WorkoutPart => ({
-  duration: part.duration,
-  targetPower: part.power / 10,
-  type: 'steady',
+	duration: part.duration,
+	targetPower: part.power / 10,
+	type: 'steady',
 });
 
 const fromPrismaWorkout = (
-  workout: PrismaWorkout & { parts: PrismaSteadyWorkoutPart[] }
+	workout: PrismaWorkout & {parts: PrismaSteadyWorkoutPart[]},
 ): Workout => ({
-  name: workout.name,
-  id: workout.id,
-  parts: [...workout.parts]
-    .sort((a, b) => a.index - b.index)
-    .map(fromPrismaWorkoutPart),
+	name: workout.name,
+	id: workout.id,
+	parts: [...workout.parts]
+		.sort((a, b) => a.index - b.index)
+		.map(fromPrismaWorkoutPart),
 });
 
 const convertWorkoutPartPowerToInteger = (
-  workoutPart: WorkoutPart
+	workoutPart: WorkoutPart,
 ): WorkoutPart => ({
-  ...workoutPart,
-  targetPower: Math.floor(workoutPart.targetPower * 10),
+	...workoutPart,
+	targetPower: Math.floor(workoutPart.targetPower * 10),
 });
 
 const workoutPowerToInteger = (workout: WorkoutBase): WorkoutBase => ({
-  ...workout,
-  parts: workout.parts.map(convertWorkoutPartPowerToInteger),
+	...workout,
+	parts: workout.parts.map(convertWorkoutPartPowerToInteger),
 });
 
 export const getWorkout = async (
-  workoutId: string
+	workoutId: string,
 ): Promise<
-  Status<
-    Workout,
-    'Workout not found' | 'Something went wrong reading from database'
-  >
+	Status<
+		Workout,
+		'Workout not found' | 'Something went wrong reading from database'
+	>
 > => {
-  const workoutResult = await db.getWorkout(workoutId);
+	const workoutResult = await db.getWorkout(workoutId);
 
-  if (isError(workoutResult)) {
-    return workoutResult;
-  }
+	if (isError(workoutResult)) {
+		return workoutResult;
+	}
 
-  return success(fromPrismaWorkout(workoutResult.data));
+	return success(fromPrismaWorkout(workoutResult.data));
 };
 
 export const getUserWorkouts = async (
-  userId: string
+	userId: string,
 ): Promise<
-  Status<Workout[], 'Something went wrong while reading workouts from database'>
+	Status<Workout[], 'Something went wrong while reading workouts from database'>
 > => {
-  const workoutResult = await db.getUserWorkouts(userId);
+	const workoutResult = await db.getUserWorkouts(userId);
 
-  if (isError(workoutResult)) {
-    return workoutResult;
-  }
+	if (isError(workoutResult)) {
+		return workoutResult;
+	}
 
-  return success(workoutResult.data.map(fromPrismaWorkout));
+	return success(workoutResult.data.map(fromPrismaWorkout));
 };
 
 export const upsertWorkout = async (
-  userId: string,
-  workout: WorkoutBase,
-  workoutId?: string
+	userId: string,
+	workout: WorkoutBase,
+	workoutId?: string,
 ): Promise<Status<Workout, 'Something went wrong while upserting workout'>> => {
-  return successMap(
-    await db.upsertWorkout(userId, workoutPowerToInteger(workout), workoutId),
-    fromPrismaWorkout
-  );
+	return successMap(
+		await db.upsertWorkout(userId, workoutPowerToInteger(workout), workoutId),
+		fromPrismaWorkout,
+	);
 };

@@ -1,110 +1,108 @@
-import { Center, Stack } from '@chakra-ui/layout';
+import {Center, Stack} from '@chakra-ui/layout';
 import * as React from 'react';
-import { GraphContainer } from '../components/Graph/GraphContainer';
-import { WorkoutDisplay } from '../components/WorkoutDisplay';
-import { useWebsocket } from '../context/WebsocketContext';
-import { ActionBar } from '../components/ActionBar';
-import { TopBar } from '../components/TopBar';
-import { useLocation, useParams } from 'react-router-dom';
+import {GraphContainer} from '../components/Graph/GraphContainer';
+import {WorkoutDisplay} from '../components/WorkoutDisplay';
+import {useWebsocket} from '../context/WebsocketContext';
+import {ActionBar} from '../components/ActionBar';
+import {TopBar} from '../components/TopBar';
+import {useLocation, useParams} from 'react-router-dom';
 import {
-  useGroupSessionModal,
-  useLoginModal,
-  useLogModal,
-  useProfileModal,
-  useWelcomeMessageModal,
-  useWorkoutEditorModal,
+	useGroupSessionModal,
+	useLoginModal,
+	useLogModal,
+	useProfileModal,
+	useWelcomeMessageModal,
+	useWorkoutEditorModal,
 } from '../context/ModalContext';
-import { Modals } from '../components/Modals/Modals';
-import { BottomBar } from '../components/BottomBar';
+import {Modals} from '../components/Modals/Modals';
+import {BottomBar} from '../components/BottomBar';
 
 export const MainPage = () => {
-  const { connect } = useWebsocket();
-  const location = useLocation();
-  const params = useParams();
-  const {
-    onOpen: onOpenWorkoutEditorModal,
-    onClose: onCloseWorkoutEditorModal,
-  } = useWorkoutEditorModal();
-  const { onOpen: onOpenGroupSessionModal, onClose: onCloseGroupSessionModal } =
-    useGroupSessionModal();
-  const { onOpen: onOpenProfileModal, onClose: onCloseProfileModal } =
-    useProfileModal();
-  const { onOpen: onOpenLogModal, onClose: onCloseLogModal } = useLogModal();
-  const { onOpen: onOpenLoginModal, onClose: onCloseLoginModal } =
-    useLoginModal();
-  const {
-    onOpen: onOpenWelcomeMessageModal,
-    onClose: onCloseWelcomeMessageModal,
-  } = useWelcomeMessageModal();
+	const {connect} = useWebsocket();
+	const location = useLocation();
+	const params = useParams();
+	const {onOpen: onOpenWorkoutEditorModal, onClose: onCloseWorkoutEditorModal} =
+		useWorkoutEditorModal();
+	const {onOpen: onOpenGroupSessionModal, onClose: onCloseGroupSessionModal} =
+		useGroupSessionModal();
+	const {onOpen: onOpenProfileModal, onClose: onCloseProfileModal} =
+		useProfileModal();
+	const {onOpen: onOpenLogModal, onClose: onCloseLogModal} = useLogModal();
+	const {onOpen: onOpenLoginModal, onClose: onCloseLoginModal} =
+		useLoginModal();
+	const {
+		onOpen: onOpenWelcomeMessageModal,
+		onClose: onCloseWelcomeMessageModal,
+	} = useWelcomeMessageModal();
 
-  React.useEffect(() => {
-    const path = location.pathname.split('/')[1];
-    switch (path) {
-      case 'group':
-        onOpenGroupSessionModal();
-        connect();
-        return;
+	React.useEffect(() => {
+		const path = location.pathname.split('/')[1];
+		switch (path) {
+			case 'group':
+				onOpenGroupSessionModal();
+				connect();
+				return;
 
-      case 'workout':
-        onOpenWorkoutEditorModal();
-        return;
+			case 'workout':
+				onOpenWorkoutEditorModal();
+				return;
 
-      case 'profile':
-        onOpenProfileModal();
-        return;
+			case 'profile':
+				onOpenProfileModal();
+				return;
 
-      case 'login':
-      case 'auth':
-        onOpenLoginModal();
-        return;
+			case 'login':
+			case 'auth':
+				onOpenLoginModal();
+				return;
 
-      case 'logs':
-        onOpenLogModal();
-        return;
+			case 'logs':
+				onOpenLogModal();
+				return;
 
-      default:
-        onCloseGroupSessionModal();
-        onCloseLogModal();
-        onCloseLoginModal();
-        onCloseProfileModal();
-        onCloseWorkoutEditorModal();
+			default:
+				onCloseGroupSessionModal();
+				onCloseLogModal();
+				onCloseLoginModal();
+				onCloseProfileModal();
+				onCloseWorkoutEditorModal();
 
-        onOpenWelcomeMessageModal();
-    }
-  }, [
-    location,
-    params,
-    connect,
-    onOpenLogModal,
-    onCloseLogModal,
-    onOpenLoginModal,
-    onCloseLoginModal,
-    onOpenProfileModal,
-    onCloseProfileModal,
-    onOpenGroupSessionModal,
-    onCloseGroupSessionModal,
-    onOpenWorkoutEditorModal,
-    onCloseWorkoutEditorModal,
-    onOpenWelcomeMessageModal,
-    onCloseWelcomeMessageModal,
-  ]);
+				onOpenWelcomeMessageModal();
+		}
+	}, [
+		location,
+		params,
+		connect,
+		onOpenLogModal,
+		onCloseLogModal,
+		onOpenLoginModal,
+		onCloseLoginModal,
+		onOpenProfileModal,
+		onCloseProfileModal,
+		onOpenGroupSessionModal,
+		onCloseGroupSessionModal,
+		onOpenWorkoutEditorModal,
+		onCloseWorkoutEditorModal,
+		onOpenWelcomeMessageModal,
+		onCloseWelcomeMessageModal,
+	]);
 
-  return (
-    <>
-      <Center>
-        <Stack width="100%" pt={['30', '50', '100']}>
-          <Center width="100%">
-            <Center width="90%">
-              <WorkoutDisplay />
-              <GraphContainer />
-            </Center>
-          </Center>
-        </Stack>
-      </Center>
-      <TopBar />
-      <ActionBar />
-      <Modals />
-      <BottomBar />
-    </>
-  );
+	return (
+		<>
+			<Center>
+				<Stack width="100%" pt={['30', '50', '100']}>
+					<Center width="100%">
+						<Center width="90%">
+							<WorkoutDisplay />
+							<GraphContainer />
+						</Center>
+					</Center>
+				</Stack>
+			</Center>
+			<TopBar />
+			<ActionBar />
+			<Modals />
+			<BottomBar />
+		</>
+	);
 };

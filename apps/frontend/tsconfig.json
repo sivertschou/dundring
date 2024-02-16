@@ -1,11 +1,11 @@
 {
-  "extends": "@dundring/tsconfig/react-app.json",
-  "include": ["src"],
-  "compilerOptions": {
-    "types": [
-      "vite/client",
-      "@types/dom-screen-wake-lock",
-      "@types/web-bluetooth"
-    ]
-  }
+	"extends": "@dundring/tsconfig/react-app.json",
+	"include": ["src"],
+	"compilerOptions": {
+		"types": [
+			"vite/client",
+			"@types/dom-screen-wake-lock",
+			"@types/web-bluetooth"
+		]
+	}
 }

@@ -1,58 +1,58 @@
 {
-  "name": "@dundring/frontend",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "prepare": "bash prepare.sh",
-    "dev": "vite",
-    "mock": "export VITE_USE_MOCK_DATA=true ; vite",
-    "build": "tsc && vite build",
-    "build:mock": "export VITE_USE_MOCK_DATA=true ; tsc && vite build"
-  },
-  "dependencies": {
-    "@chakra-ui/react": "^2.8.1",
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
-    "@svgr/webpack": "^8.1.0",
-    "babel-plugin-named-asset-import": "^0.3.8",
-    "case-sensitive-paths-webpack-plugin": "^2.4.0",
-    "dotenv": "^16.3.1",
-    "dotenv-expand": "^10.0.0",
-    "eslint": "^8.52.0",
-    "eslint-config-react-app": "^7.0.1",
-    "framer-motion": "^10.16.4",
-    "react": "^18.2.0",
-    "react-beautiful-dnd": "^13.1.1",
-    "react-bootstrap-icons": "^1.10.3",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.18.0",
-    "recharts": "^2.9.2",
-    "swr": "^2.2.4",
-    "web-vitals": "^3.5.0"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "@dundring/types": "*",
-    "@dundring/utils": "*",
-    "@types/dom-screen-wake-lock": "^1.0.2",
-    "@types/react": "^18.2.34",
-    "@types/react-beautiful-dnd": "^13.1.6",
-    "@types/react-dom": "^18.2.14",
-    "@types/web-bluetooth": "^0.0.19",
-    "@vitejs/plugin-react": "^4.1.1",
-    "typescript": "5.2.2",
-    "vite": "^4.5.0",
-    "vite-plugin-checker": "^0.6.2"
-  }
+	"name": "@dundring/frontend",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"prepare": "bash prepare.sh",
+		"dev": "vite",
+		"mock": "export VITE_USE_MOCK_DATA=true ; vite",
+		"build": "tsc && vite build",
+		"build:mock": "export VITE_USE_MOCK_DATA=true ; tsc && vite build"
+	},
+	"dependencies": {
+		"@chakra-ui/react": "^2.8.1",
+		"@emotion/react": "^11.11.1",
+		"@emotion/styled": "^11.11.0",
+		"@svgr/webpack": "^8.1.0",
+		"babel-plugin-named-asset-import": "^0.3.8",
+		"case-sensitive-paths-webpack-plugin": "^2.4.0",
+		"dotenv": "^16.3.1",
+		"dotenv-expand": "^10.0.0",
+		"eslint": "^8.52.0",
+		"eslint-config-react-app": "^7.0.1",
+		"framer-motion": "^10.16.4",
+		"react": "^18.2.0",
+		"react-beautiful-dnd": "^13.1.1",
+		"react-bootstrap-icons": "^1.10.3",
+		"react-dom": "^18.2.0",
+		"react-router-dom": "^6.18.0",
+		"recharts": "^2.9.2",
+		"swr": "^2.2.4",
+		"web-vitals": "^3.5.0"
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	},
+	"devDependencies": {
+		"@dundring/types": "*",
+		"@dundring/utils": "*",
+		"@types/dom-screen-wake-lock": "^1.0.2",
+		"@types/react": "^18.2.34",
+		"@types/react-beautiful-dnd": "^13.1.6",
+		"@types/react-dom": "^18.2.14",
+		"@types/web-bluetooth": "^0.0.19",
+		"@vitejs/plugin-react": "^4.1.1",
+		"typescript": "5.2.2",
+		"vite": "^4.5.0",
+		"vite-plugin-checker": "^0.6.2"
+	}
 }
