@@ -284,7 +284,7 @@ export const LoginModal = () => {
             loggedIn: true,
             workouts: [],
           });
-          if (ret.data.user_created) {
+          if (ret.data.user_created || utils.settingUpProfile(ret.data.data)) {
             navigate('/profile');
           } else {
             toast({

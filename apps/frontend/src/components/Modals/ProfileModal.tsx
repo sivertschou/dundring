@@ -49,7 +49,7 @@ interface Props {
   onClose: () => void;
 }
 export const ProfileModalContent = ({ user, onClose }: Props) => {
-  const settingUpProfile = user.username.includes('#');
+  const settingUpProfile = utils.settingUpProfile(user);
 
   const [ftpInput, setFtpInput] = React.useState(
     editable(settingUpProfile ? '' : `${user.ftp}`)

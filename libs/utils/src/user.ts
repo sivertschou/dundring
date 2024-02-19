@@ -22,3 +22,6 @@ const legalUsernameCharacters = 'abcdefghifjklmnopqrstuvwxyz0123456789'.split(
 );
 
 export const mailIsValid = (mail: string) => /.+@.+\..+/.test(mail.trim());
+
+export const settingUpProfile = (user: { username: string }) =>
+  user.username.includes('#');
