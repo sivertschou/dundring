@@ -42,6 +42,38 @@ export const getUser = async (
   }
 };
 
+export const updateUser = async (
+  userId: string,
+  data: { username?: string; ftp?: number }
+): Promise<
+  Status<
+    User & { fitnessData: FitnessData | null },
+    'User not found' | 'Something went wrong writing to database'
+  >
+> => {
+  try {
+    const result = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        username: data.username,
+        fitnessData: {
+          update: { data: { ftp: data.ftp } },
+        },
+      },
+      include: { fitnessData: true },
+    });
+
+    if (!result) {
+      return error('User not found');
+    }
+
+    return success(result);
+  } catch (e) {
+    console.error('[db.updateUser]', e);
+    return error('Something went wrong writing to database');
+  }
+};
+
 export const getUserByMail = async (
   mail: string
 ): Promise<

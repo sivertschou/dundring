@@ -2,7 +2,9 @@ import {
   ApiResponseBody,
   ApiStatus,
   UserUpdateRequestBody,
+  UserUpdateResponseBody,
 } from '@dundring/types';
+import { isError } from '@dundring/utils';
 import * as express from 'express';
 import { userService, validationService } from '../../services';
 
@@ -10,29 +12,37 @@ const router = express.Router();
 
 router.use('/me', router);
 
-router.post<UserUpdateRequestBody, ApiResponseBody<UserUpdateRequestBody>>(
+router.post<UserUpdateRequestBody, ApiResponseBody<UserUpdateResponseBody>>(
   '/',
   async (req, res) => {
     if (!validationService.authenticateToken(req, res)) return;
 
-    const { ftp } = req.body;
+    const ret = await userService.updateUser(req.userId, {
+      username: req.body.username,
+      ftp: req.body.ftp,
+    });
 
-    const ret = await userService.updateUserFtp(req.userId, ftp);
-
-    switch (ret.status) {
-      case 'SUCCESS':
-        res.send({
-          status: ApiStatus.SUCCESS,
-          data: { ftp },
-        });
-        return;
-      default:
-        res.send({
-          status: ApiStatus.FAILURE,
-          message: ret.type,
-        });
-        return;
+    if (isError(ret)) {
+      return res.send({
+        status: ApiStatus.FAILURE,
+        message: ret.type,
+      });
     }
+
+    const { username, id, fitnessData } = ret.data;
+    const accessToken = validationService.generateAccessToken({
+      username,
+      userId: id,
+    });
+
+    res.send({
+      status: ApiStatus.SUCCESS,
+      data: {
+        accessToken,
+        username,
+        ftp: fitnessData?.ftp || req.body.ftp,
+      },
+    });
   }
 );
 

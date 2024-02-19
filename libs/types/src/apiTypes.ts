@@ -46,7 +46,14 @@ export interface LoginResponseBody {
 }
 
 export interface UserUpdateRequestBody {
+  ftp?: number;
+  username?: string;
+}
+
+export interface UserUpdateResponseBody {
   ftp: number;
+  username: string;
+  accessToken: string;
 }
 
 export interface WorkoutsResponseBody {

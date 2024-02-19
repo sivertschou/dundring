@@ -7,6 +7,7 @@ import {
   MailLoginRequestBody,
   RequestLoginLinkMailResponseBody,
   UserUpdateRequestBody,
+  UserUpdateResponseBody,
   WorkoutRequestBody,
   WorkoutsResponseBody,
 } from '@dundring/types';
@@ -150,9 +151,12 @@ export const saveWorkout = async (
   );
 };
 
-export const updateUser = async (token: string, data: { ftp: number }) => {
+export const updateUser = async (
+  token: string,
+  data: { ftp: number; username: string }
+) => {
   return authPost<
-    ApiResponseBody<UserUpdateRequestBody>,
+    ApiResponseBody<UserUpdateResponseBody>,
     UserUpdateRequestBody
   >(`${httpUrl}/me`, token, data);
 };

@@ -52,3 +52,8 @@ export interface LoggedOutUser {
 }
 
 export type UserContextType = LoggedInUser | LoggedOutUser;
+
+export interface Editable<T> {
+  touched: boolean;
+  data: T;
+}

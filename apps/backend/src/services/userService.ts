@@ -8,6 +8,11 @@ import { slackService } from '.';
 export const getUser = async (query: { username: string } | { id: string }) =>
   db.getUser(query);
 
+export const updateUser = async (
+  userId: string,
+  data: { username?: string; ftp?: number }
+) => db.updateUser(userId, data);
+
 export const getUserByMail = async (mail: string) => db.getUserByMail(mail);
 export const getUserByStravaId = async (athleteId: number) =>
   db.getUserByStravaId(athleteId);
