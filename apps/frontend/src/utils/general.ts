@@ -52,3 +52,7 @@ export const wattFromFtpPercent = (ftpPercent: number, ftp: number) =>
 
 export const editable = <T>(data: T): Editable<T> => ({ touched: false, data });
 export const touched = <T>(data: T): Editable<T> => ({ touched: true, data });
+export const addEditableError = <T>(editable: Editable<T>, error: string) => ({
+  ...editable,
+  error,
+});

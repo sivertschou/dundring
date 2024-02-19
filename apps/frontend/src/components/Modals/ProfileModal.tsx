@@ -22,7 +22,7 @@ import { useToast } from '@chakra-ui/toast';
 import { useProfileModal } from '../../context/ModalContext';
 import { useNavigate } from 'react-router-dom';
 import { LoggedInUser } from '../../types';
-import { editable, touched } from '../../utils/general';
+import { addEditableError, editable, touched } from '../../utils/general';
 import { FormHelperText } from '@chakra-ui/react';
 
 export const ProfileModal = () => {
@@ -76,7 +76,13 @@ export const ProfileModalContent = ({ user, onClose }: Props) => {
     setIsLoading(false);
 
     if (response.status === 'FAILURE') {
-      setErrorMessage(response.message);
+      if (response.message === 'Username is already taken') {
+        setUsernameInput((usernameInput) =>
+          addEditableError(usernameInput, 'Username is already taken')
+        );
+      } else {
+        setErrorMessage(response.message);
+      }
     } else if (response.status === 'SUCCESS') {
       const { ftp, username, accessToken } = response.data;
       setUser({ ...user, ftp, username, token: accessToken });
@@ -125,7 +131,10 @@ export const ProfileModalContent = ({ user, onClose }: Props) => {
         >
           <Stack gap="5">
             <FormControl
-              isInvalid={!utils.usernameIsValid(username) && usernameIsTouched}
+              isInvalid={
+                (!utils.usernameIsValid(username) && usernameIsTouched) ||
+                !!usernameInput.error
+              }
             >
               <FormLabel>
                 {settingUpProfile ? 'Chooose a username' : 'Username'}
@@ -146,17 +155,21 @@ export const ProfileModalContent = ({ user, onClose }: Props) => {
               />
               {/* TODO: Add "and on leaderboards" when leaderboards are implemented */}
               <FormErrorMessage>
-                The username can't
-                {usernameIsTooLong
-                  ? ` be more than ${utils.maxUsernameLength} characters long`
-                  : ''}
-                {usernameIsTooLong && usernameContainsIllegalCharacters
-                  ? ' or'
-                  : ''}
-                {usernameContainsIllegalCharacters
-                  ? ` contain ${illegalCharacters.join(',')}`
-                  : ''}
-                .
+                {usernameInput.error
+                  ? usernameInput.error
+                  : `The username can't ${
+                      usernameIsTooLong
+                        ? ` be more than ${utils.maxUsernameLength} characters long`
+                        : ''
+                    } ${
+                      usernameIsTooLong && usernameContainsIllegalCharacters
+                        ? ' or'
+                        : ''
+                    } ${
+                      usernameContainsIllegalCharacters
+                        ? ` contain ${illegalCharacters.join(',')}`
+                        : ''
+                    }.`}
               </FormErrorMessage>
 
               <FormHelperText>
@@ -197,7 +210,12 @@ export const ProfileModalContent = ({ user, onClose }: Props) => {
             <FormControl isInvalid={errorMessage !== ''}>
               <Button
                 type="submit"
-                isDisabled={isLoading || ftpInput.data === '' + user.ftp}
+                isDisabled={
+                  isLoading ||
+                  !utils.usernameIsValid(username) ||
+                  !ftpIsValid ||
+                  !!usernameInput.error
+                }
               >
                 {settingUpProfile ? 'Complete profile!' : 'Save'}
               </Button>

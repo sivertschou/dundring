@@ -9,6 +9,7 @@ import {
 import {
   FitnessData,
   MailAuthentication,
+  Prisma,
   PrismaClient,
   SteadyWorkoutPart,
   StravaAuthentication,
@@ -48,7 +49,9 @@ export const updateUser = async (
 ): Promise<
   Status<
     User & { fitnessData: FitnessData | null },
-    'User not found' | 'Something went wrong writing to database'
+    | 'User not found'
+    | 'Username is already taken'
+    | 'Something went wrong writing to database'
   >
 > => {
   try {
@@ -70,6 +73,11 @@ export const updateUser = async (
     return success(result);
   } catch (e) {
     console.error('[db.updateUser]', e);
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === 'P2002') {
+        return error('Username is already taken');
+      }
+    }
     return error('Something went wrong writing to database');
   }
 };
