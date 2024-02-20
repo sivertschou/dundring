@@ -123,7 +123,6 @@ export const ProfileModalContent = ({ user, onClose }: Props) => {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          // TODO: Save all changes
           updateProfile({
             username: usernameInput.data,
             ftp: ftpInput.data,
