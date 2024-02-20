@@ -145,6 +145,7 @@ export const ProfileModalContent = ({ user, onClose }: Props) => {
                 <Input
                   placeholder="E.g. mrdundring"
                   name="username"
+                  autoComplete={'off'}
                   value={usernameInput.data}
                   maxW={inputMaxWidth}
                   onChange={(e) => {
