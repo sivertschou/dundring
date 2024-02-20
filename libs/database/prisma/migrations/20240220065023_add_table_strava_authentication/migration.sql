@@ -3,7 +3,7 @@ CREATE TABLE "StravaAuthentication" (
     "athleteId" INTEGER NOT NULL,
     "userId" TEXT NOT NULL,
     "refreshToken" TEXT,
-    "scopes" TEXT[]
+    "readScope" BOOLEAN NOT NULL DEFAULT false
 );
 
 -- CreateIndex

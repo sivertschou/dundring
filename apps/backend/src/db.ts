@@ -22,14 +22,22 @@ export const getUser = async (
   query: { username: string } | { id: string }
 ): Promise<
   Status<
-    User & { fitnessData: FitnessData | null },
+    User & {
+      fitnessData: FitnessData | null;
+      stravaAuthentication: StravaAuthentication | null;
+      mailAuthentication: MailAuthentication | null;
+    },
     'User not found' | 'Something went wrong reading from database'
   >
 > => {
   try {
     const result = await prisma.user.findUnique({
       where: query,
-      include: { fitnessData: true },
+      include: {
+        fitnessData: true,
+        stravaAuthentication: true,
+        mailAuthentication: true,
+      },
     });
 
     if (!result) {

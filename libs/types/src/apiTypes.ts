@@ -70,3 +70,21 @@ export interface GetWorkoutResponseBody {
 export interface WorkoutRequestBody {
   workout: Workout;
 }
+
+export interface ProfileResponseBody {
+  username: string;
+  ftp: number;
+  mailAuthentication: MailAuthentication | null;
+  stravaAuthentication: StravaAuthentication | null;
+}
+
+export interface MailAuthentication {
+  mail: string;
+}
+
+export interface StravaAuthentication {
+  athleteId: number;
+  scopes: {
+    read: boolean;
+  };
+}

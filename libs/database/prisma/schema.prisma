@@ -51,11 +51,11 @@ model MailAuthentication {
 }
 
 model StravaAuthentication {
-  athleteId    Int      @unique
-  userId       String   @unique
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  athleteId    Int     @unique
+  userId       String  @unique
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   refreshToken String?
-  scopes       String[]
+  readScope    Boolean @default(false)
 }
 
 model DataMigration {
