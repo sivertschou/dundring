@@ -23,7 +23,7 @@ import { useProfileModal } from '../../context/ModalContext';
 import { useNavigate } from 'react-router-dom';
 import { LoggedInUser } from '../../types';
 import { addEditableError, editable, touched } from '../../utils/general';
-import { FormHelperText } from '@chakra-ui/react';
+import { FormHelperText, ModalBody, ModalFooter } from '@chakra-ui/react';
 
 export const ProfileModal = () => {
   const { isOpen } = useProfileModal();
@@ -94,6 +94,7 @@ export const ProfileModalContent = ({ user, onClose }: Props) => {
         duration: 5000,
         status: 'success',
       });
+      onClose();
     }
   };
 
@@ -118,128 +119,137 @@ export const ProfileModalContent = ({ user, onClose }: Props) => {
         {settingUpProfile ? 'Set up profile' : 'Edit profile'}
       </ModalHeader>
       <ModalCloseButton />
-      <Stack p="5">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            // TODO: Save all changes
-            updateProfile({
-              username: usernameInput.data,
-              ftp: ftpInput.data,
-            });
-          }}
-        >
-          <Stack gap="5">
-            <FormControl
-              isInvalid={
-                (!utils.usernameIsValid(username) && usernameIsTouched) ||
-                !!usernameInput.error
-              }
-            >
-              <FormLabel>
-                {settingUpProfile ? 'Chooose a username' : 'Username'}
-              </FormLabel>
-              <Input
-                placeholder="E.g. mrdundring"
-                name="username"
-                value={usernameInput.data}
-                maxW={inputMaxWidth}
-                onChange={(e) => {
-                  setUsernameInput(touched(e.target.value.replace(' ', '')));
-                }}
-                onBlur={(_e) => {
-                  setUsernameInput((value) =>
-                    touched(value.data.trim().toLowerCase())
-                  );
-                }}
-              />
-              {/* TODO: Add "and on leaderboards" when leaderboards are implemented */}
-              <FormErrorMessage>
-                {usernameInput.error
-                  ? usernameInput.error
-                  : `The username can't ${
-                      usernameIsTooLong
-                        ? ` be more than ${utils.maxUsernameLength} characters long`
-                        : ''
-                    } ${
-                      usernameIsTooLong && usernameContainsIllegalCharacters
-                        ? ' or'
-                        : ''
-                    } ${
-                      usernameContainsIllegalCharacters
-                        ? ` contain ${illegalCharacters.join(',')}`
-                        : ''
-                    }.`}
-              </FormErrorMessage>
 
-              <FormHelperText>
-                Your username is displayed to others in group sessions. Your
-                username can be changed at any time.
-              </FormHelperText>
-            </FormControl>
-            <FormControl isInvalid={!ftpIsValid && ftpInput.touched}>
-              <FormLabel>
-                {settingUpProfile ? 'What is your FTP?' : 'Your FTP'}
-              </FormLabel>
-              <InputGroup maxW={inputMaxWidth}>
-                <Input
-                  placeholder="E.g. 250"
-                  type="ftp"
-                  name="ftp"
-                  value={ftpInput.data}
-                  onChange={(e) => {
-                    setFtpInput(touched(e.target.value.replace(' ', '')));
-                  }}
-                  onBlur={(_e) => {
-                    setFtpInput((value) => touched(value.data.trim()));
-                  }}
-                />
-                <InputRightAddon children="Watt" />
-              </InputGroup>
-              <FormErrorMessage>
-                The FTP needs to be a positive whole number
-              </FormErrorMessage>
-              <FormHelperText>
-                Your FTP, or Functional Threshold Power, is the maximum Watt can
-                maintain for an hour. The workouts on dundring.com are based on
-                FTP, meaning you can create a workout suiting your FTP and share
-                it with a friend, and it will be adjusted to their FTP.
-              </FormHelperText>
-            </FormControl>
-
-            <FormControl isInvalid={errorMessage !== ''}>
-              <Button
-                type="submit"
-                isDisabled={
-                  isLoading ||
-                  !utils.usernameIsValid(username) ||
-                  !ftpIsValid ||
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          // TODO: Save all changes
+          updateProfile({
+            username: usernameInput.data,
+            ftp: ftpInput.data,
+          });
+        }}
+      >
+        <ModalBody>
+          <Stack>
+            <Stack gap="5">
+              <FormControl
+                isInvalid={
+                  (!utils.usernameIsValid(username) && usernameIsTouched) ||
                   !!usernameInput.error
                 }
               >
-                {settingUpProfile ? 'Complete profile!' : 'Save'}
-              </Button>
-              <FormErrorMessage>{errorMessage}</FormErrorMessage>
-            </FormControl>
+                <FormLabel>
+                  {settingUpProfile ? 'Chooose a username' : 'Username'}
+                </FormLabel>
+                <Input
+                  placeholder="E.g. mrdundring"
+                  name="username"
+                  value={usernameInput.data}
+                  maxW={inputMaxWidth}
+                  onChange={(e) => {
+                    setUsernameInput(touched(e.target.value.replace(' ', '')));
+                  }}
+                  onBlur={(_e) => {
+                    setUsernameInput((value) =>
+                      touched(value.data.trim().toLowerCase())
+                    );
+                  }}
+                />
+                {/* TODO: Add "and on leaderboards" when leaderboards are implemented */}
+                <FormErrorMessage>
+                  {usernameInput.error
+                    ? usernameInput.error
+                    : `The username can't ${
+                        usernameIsTooLong
+                          ? ` be more than ${utils.maxUsernameLength} characters long`
+                          : ''
+                      } ${
+                        usernameIsTooLong && usernameContainsIllegalCharacters
+                          ? ' or'
+                          : ''
+                      } ${
+                        usernameContainsIllegalCharacters
+                          ? ` contain ${illegalCharacters.join(',')}`
+                          : ''
+                      }.`}
+                </FormErrorMessage>
+
+                <FormHelperText>
+                  Your username is displayed to others in group sessions. Your
+                  username can be changed at any time.
+                </FormHelperText>
+              </FormControl>
+              <FormControl isInvalid={!ftpIsValid && ftpInput.touched}>
+                <FormLabel>
+                  {settingUpProfile ? 'What is your FTP?' : 'Your FTP'}
+                </FormLabel>
+                <InputGroup maxW={inputMaxWidth}>
+                  <Input
+                    placeholder="E.g. 250"
+                    type="ftp"
+                    name="ftp"
+                    value={ftpInput.data}
+                    onChange={(e) => {
+                      setFtpInput(touched(e.target.value.replace(' ', '')));
+                    }}
+                    onBlur={(_e) => {
+                      setFtpInput((value) => touched(value.data.trim()));
+                    }}
+                  />
+                  <InputRightAddon children="Watt" />
+                </InputGroup>
+                <FormErrorMessage>
+                  The FTP needs to be a positive whole number
+                </FormErrorMessage>
+                <FormHelperText>
+                  Your FTP, or Functional Threshold Power, is the maximum Watt
+                  can maintain for an hour. The workouts on dundring.com are
+                  based on FTP, meaning you can create a workout suiting your
+                  FTP and share it with a friend, and it will be adjusted to
+                  their FTP.
+                </FormHelperText>
+              </FormControl>
+
+              <FormControl isInvalid={errorMessage !== ''}>
+                <FormErrorMessage>{errorMessage}</FormErrorMessage>
+              </FormControl>
+            </Stack>
           </Stack>
-        </form>
-        {!settingUpProfile ? (
+        </ModalBody>
+        <ModalFooter justifyContent="space-between">
+          {!settingUpProfile ? (
+            <Button
+              size="sm"
+              variant="outline"
+              colorScheme="red"
+              onClick={() => {
+                toast({
+                  title: `Signed out of ${user.username}`,
+                  isClosable: true,
+                  duration: 5000,
+                  status: 'success',
+                });
+                setUser({ loggedIn: false });
+                onClose();
+              }}
+            >
+              Sign out
+            </Button>
+          ) : null}
           <Button
-            onClick={() => {
-              toast({
-                title: `Signed out of ${user.username}`,
-                isClosable: true,
-                duration: 5000,
-                status: 'success',
-              });
-              setUser({ loggedIn: false });
-              onClose();
-            }}
+            type="submit"
+            isDisabled={
+              isLoading ||
+              !utils.usernameIsValid(username) ||
+              !ftpIsValid ||
+              !!usernameInput.error
+            }
           >
-            Sign out
+            {settingUpProfile ? 'Complete profile!' : 'Save'}
           </Button>
-        ) : null}
-      </Stack>
+        </ModalFooter>
+      </form>
     </ModalContent>
   );
 };
