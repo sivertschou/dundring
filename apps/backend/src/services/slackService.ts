@@ -104,3 +104,7 @@ export const logAndReturn = <T>(message: string, data: T) => {
   sendSlackMessage(SlackService.ERRORS, message);
   return data;
 };
+
+export const log = (message: string) => {
+  sendSlackMessage(SlackService.ERRORS, message);
+};
