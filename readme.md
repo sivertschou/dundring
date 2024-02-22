@@ -47,7 +47,7 @@ You can create or join a group session to workout together with your friends.
 
 The project is separated into `frontend` and `backend`, with more in-depth instructions in each directory. The frontend is created with [React](https://reactjs.org/), [TypeScript](https://www.typescriptlang.org/) and [Chakra-UI](https://chakra-ui.com/), and the backend is created with [Express](https://expressjs.com/) and [TypeScript](https://www.typescriptlang.org/).
 
-Install dependencies and do the required config.
+Install dependencies and do the required config. `.env` files with empty values are generated in `apps/frontend`, `apps/backend` and `libs/database`. The application will use the default local config if no value is provided in `.env`, except for the Strava config; if you want to do testing with the Strava integration, you have to provide your own client id and client secret. You can get your personal client credentials by configuring an app here [https://www.strava.com/settings/api](https://www.strava.com/settings/api).
 
 ```
 $ yarn
@@ -57,7 +57,11 @@ You can either run both the frontend and backend in parallel, or separately.
 
 ### In parallel
 
-```
+```bash
+# start database and redis
+$ docker compose up -d
+
+# start the app
 $ yarn start
 ```
 
