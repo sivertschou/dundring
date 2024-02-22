@@ -187,6 +187,8 @@ const createUserFromStrava = async (
       stravaAuthentication: {
         create: {
           athleteId: body.athleteId,
+          refreshToken: body.refreshToken,
+          readScope: true,
         },
       },
     },
@@ -389,13 +391,12 @@ export const upsertWorkout = async (
 export const updateStravaRefreshToken = async (data: {
   athleteId: number;
   refreshToken: string;
-  scopes: string[];
 }): Promise<
   Status<StravaAuthentication, 'Something went wrong while writing to database'>
 > => {
   try {
     const result = await prisma.stravaAuthentication.update({
-      data,
+      data: { refreshToken: data.refreshToken },
       where: { athleteId: data.athleteId },
     });
 

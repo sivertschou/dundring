@@ -60,7 +60,6 @@ export const getStravaTokenFromAuthCode = async (
 export const updateRefreshToken = async (data: {
   athleteId: number;
   refreshToken: string;
-  scopes: string[];
 }) => {
   db.updateStravaRefreshToken(data);
 };

@@ -41,7 +41,7 @@ export const createUserFromStrava = async (body: UserCreationStrava) => {
   if (isSuccess(ret)) {
     const athleteId = ret.data.stravaAuthentication?.athleteId;
     slackService.log(
-      `New user: *${ret.data.id}* created with Strava: athlete id: [${athleteId}](https://strava.com/athletes/${ret.data.stravaAuthentication?.athleteId}))`
+      `New user: *${ret.data.id}* created with Strava: athlete id: https://strava.com/athletes/${athleteId}`
     );
   }
   return ret;

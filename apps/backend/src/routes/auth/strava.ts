@@ -33,7 +33,6 @@ router.post<
   await stravaService.updateRefreshToken({
     athleteId: stravaId,
     refreshToken: tokenData.data.refresh_token,
-    scopes: [],
   });
 
   const existingUser = await userService.getUserByStravaId(stravaId);
