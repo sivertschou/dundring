@@ -29,18 +29,14 @@ export type RequestLoginLinkMailResponseBody =
   | 'Login link sent'
   | 'Register link sent';
 
-export interface MailAuthenticationRequestBody {
-  ticket: string;
+export interface AuthenticationRequestBody {
+  code: string;
 }
 
-export interface MailAuthenticationRegisterRequestBody {
-  ticket: string;
-  username: string;
+export interface AuthenticationResponseBody {
+  user_created: boolean;
+  data: LoginResponseBody;
 }
-
-export type MailAuthenticationResponseBody =
-  | { type: 'user_exists'; data: LoginResponseBody }
-  | { type: 'user_does_not_exist'; mail: string };
 
 export interface LoginResponseBody {
   username: string;
@@ -50,7 +46,14 @@ export interface LoginResponseBody {
 }
 
 export interface UserUpdateRequestBody {
+  ftp?: number;
+  username?: string;
+}
+
+export interface UserUpdateResponseBody {
   ftp: number;
+  username: string;
+  accessToken: string;
 }
 
 export interface WorkoutsResponseBody {
@@ -66,4 +69,22 @@ export interface GetWorkoutResponseBody {
 
 export interface WorkoutRequestBody {
   workout: Workout;
+}
+
+export interface ProfileResponseBody {
+  username: string;
+  ftp: number;
+  mailAuthentication: MailAuthentication | null;
+  stravaAuthentication: StravaAuthentication | null;
+}
+
+export interface MailAuthentication {
+  mail: string;
+}
+
+export interface StravaAuthentication {
+  athleteId: number;
+  scopes: {
+    read: boolean;
+  };
 }

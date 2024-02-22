@@ -1,4 +1,4 @@
-import { UserBase } from '@dundring/types';
+import { UserBase, UserCreationStrava } from '@dundring/types';
 
 require('dotenv').config();
 import * as db from '../db';
@@ -8,7 +8,14 @@ import { slackService } from '.';
 export const getUser = async (query: { username: string } | { id: string }) =>
   db.getUser(query);
 
+export const updateUser = async (
+  userId: string,
+  data: { username?: string; ftp?: number }
+) => db.updateUser(userId, data);
+
 export const getUserByMail = async (mail: string) => db.getUserByMail(mail);
+export const getUserByStravaId = async (athleteId: number) =>
+  db.getUserByStravaId(athleteId);
 
 export const getUserWorkoutsByUserId = async (userId: string) =>
   db.getUserWorkouts(userId);
@@ -19,12 +26,8 @@ export const updateUserFtp = async (userId: string, ftp: number) =>
 export const getUserFitnessData = async (userId: string) =>
   db.getFitnessData(userId);
 
-export const createUser = async (user: UserBase) => {
-  const ret = await db.createUser(user);
+export const createUserFromStrava = async (body: UserCreationStrava) =>
+  db.createStravaUserWithRandomUsername(body);
 
-  if (isSuccess(ret)) {
-    slackService.logUserCreation({ username: user.username, mail: user.mail });
-  }
-
-  return ret;
-};
+export const createUserFromMail = async (mail: string) =>
+  db.createMailUserWithRandomUsername(mail);

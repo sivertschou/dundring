@@ -22,3 +22,22 @@ export const successMap = <T1, E, T2>(
   f: (s: T1) => T2
 ): Status<T2, E> =>
   status.status === 'SUCCESS' ? success(f(status.data)) : status;
+
+export const retry = async <T, E>(
+  f: () => Promise<Status<T, E>>,
+  attempts = 5
+): Promise<Status<T, E | 'Retry failed after several attempts'>> => {
+  for (let i = 0; i < attempts; i++) {
+    const ret = await f();
+
+    if (isSuccess(ret)) {
+      return ret;
+    }
+  }
+
+  return error('Retry failed after several attempts');
+};
+
+export const isNotNull = <T>(arg: T): arg is Exclude<T, null> => {
+  return arg !== null;
+};

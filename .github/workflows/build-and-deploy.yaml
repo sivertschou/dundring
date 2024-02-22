@@ -98,6 +98,8 @@ jobs:
             MAIL_USER=${{ secrets.MAIL_USER }} \
             MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
             TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
+            STRAVA_CLIENT_ID='${{ secrets.STRAVA_CLIENT_ID }}' \
+            STRAVA_CLIENT_SECRET='${{ secrets.STRAVA_CLIENT_SECRET }}' \
               docker-compose up --detach
 
             echo "Give green pod 10 seconds to (re)start before starting health checking"
@@ -144,6 +146,8 @@ jobs:
             MAIL_USER=${{ secrets.MAIL_USER }} \
             MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
             TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
+            STRAVA_CLIENT_ID='${{ secrets.STRAVA_CLIENT_ID }}' \
+            STRAVA_CLIENT_SECRET='${{ secrets.STRAVA_CLIENT_SECRET }}' \
               docker-compose up --detach
 
             echo "Give blue pod 10 seconds to (re)start before starting health checking"
@@ -222,6 +226,8 @@ jobs:
             MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
             TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
             SLACK_TOKEN=${{ secrets.SLACK_TOKEN }} \
+            STRAVA_CLIENT_ID='${{ secrets.STRAVA_CLIENT_ID }}' \
+            STRAVA_CLIENT_SECRET='${{ secrets.STRAVA_CLIENT_SECRET }}' \
               docker-compose up --detach
 
             echo "Give green pod 10 seconds to (re)start before starting health checking"
@@ -269,6 +275,8 @@ jobs:
             MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
             TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
             SLACK_TOKEN=${{ secrets.SLACK_TOKEN }} \
+            STRAVA_CLIENT_ID='${{ secrets.STRAVA_CLIENT_ID }}' \
+            STRAVA_CLIENT_SECRET='${{ secrets.STRAVA_CLIENT_SECRET }}' \
               docker-compose up --detach
 
             echo "Give blue pod 10 seconds to (re)start before starting health checking"

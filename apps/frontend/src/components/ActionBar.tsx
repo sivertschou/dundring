@@ -21,6 +21,7 @@ import { useUser } from '../context/UserContext';
 import { useWebsocket } from '../context/WebsocketContext';
 import { useLinkColor } from '../hooks/useLinkColor';
 import { ActionBarItem } from './ActionBarItem';
+import { settingUpProfile } from '@dundring/utils';
 
 export const ActionBar = () => {
   const { user } = useUser();
@@ -61,7 +62,7 @@ export const ActionBar = () => {
           color={linkColor}
         >
           <Text fontSize="xl" fontWeight="bold">
-            {user.username}
+            {settingUpProfile(user) ? 'Complete profile setup' : user.username}
           </Text>
         </Button>
       ) : (

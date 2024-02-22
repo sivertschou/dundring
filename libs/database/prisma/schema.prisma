@@ -11,17 +11,18 @@ datasource db {
 }
 
 model User {
-  id                 String              @id @default(uuid())
-  username           String              @unique
-  workouts           Workout[]
-  fitnessData        FitnessData?
-  mailAuthentication MailAuthentication?
+  id                   String                @id @default(uuid())
+  username             String                @unique
+  workouts             Workout[]
+  fitnessData          FitnessData?
+  mailAuthentication   MailAuthentication?
+  stravaAuthentication StravaAuthentication?
 }
 
 model FitnessData {
   id     String @id @default(uuid())
   ftp    Int
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String @unique
 }
 
@@ -29,7 +30,7 @@ model Workout {
   id     String              @id @default(uuid())
   name   String
   parts  SteadyWorkoutPart[]
-  user   User                @relation(fields: [userId], references: [id])
+  user   User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 }
 
@@ -37,7 +38,7 @@ model SteadyWorkoutPart {
   index     Int
   duration  Int
   power     Int
-  workout   Workout @relation(fields: [workoutId], references: [id])
+  workout   Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   workoutId String
 
   @@unique([index, workoutId])
@@ -46,7 +47,15 @@ model SteadyWorkoutPart {
 model MailAuthentication {
   mail   String @unique
   userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model StravaAuthentication {
+  athleteId    Int     @unique
+  userId       String  @unique
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshToken String?
+  readScope    Boolean @default(false)
 }
 
 model DataMigration {

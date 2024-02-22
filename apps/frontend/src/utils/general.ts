@@ -1,3 +1,5 @@
+import { Editable } from '../types';
+
 export const lerp = (from: number, to: number, amount: number) => {
   return from + (to - from) * Math.max(Math.min(1, amount), 0);
 };
@@ -47,3 +49,10 @@ export const ftpPercentFromWatt = (watt: number, ftp: number) =>
 
 export const wattFromFtpPercent = (ftpPercent: number, ftp: number) =>
   Math.floor((ftpPercent * ftp) / 100);
+
+export const editable = <T>(data: T): Editable<T> => ({ touched: false, data });
+export const touched = <T>(data: T): Editable<T> => ({ touched: true, data });
+export const addEditableError = <T>(editable: Editable<T>, error: string) => ({
+  ...editable,
+  error,
+});
