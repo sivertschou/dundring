@@ -58,7 +58,7 @@ interface Start {
 }
 type Action = AddData | AddLap | IncreaseElapsedTime | Start | Pause;
 
-const zap: Waypoint[] = [
+export const zap: Waypoint[] = [
   { lat: 59.90347154, lon: 10.6590337, distance: 2400 },
   { lat: 59.88396124, lon: 10.64085992, distance: 600 },
   { lat: 59.88389387, lon: 10.65213867, distance: 2000 },
