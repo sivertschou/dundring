@@ -102,7 +102,6 @@ export const MainPage = () => {
           </Center>
         </Stack>
       </Center>
-      <Map />
       <TopBar />
       <ActionBar />
       <Modals />
