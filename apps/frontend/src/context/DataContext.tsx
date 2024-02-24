@@ -20,7 +20,12 @@ const DataContext = React.createContext<{
   stop: () => void;
   addLap: () => void;
   isRunning: boolean;
+  activeRoute: Waypoint[];
+  activeRouteName: Route;
+  setActiveRoute: (route: Route) => void;
 } | null>(null);
+
+type Route = 'zap' | 'D';
 
 interface Props {
   clockWorker: Worker;
@@ -61,7 +66,6 @@ type Action = AddData | AddLap | IncreaseElapsedTime | Start | Pause;
 type Point = { lon: number; lat: number };
 
 const haversine = (pointA: Point, pointB: Point) => {
-  console.log('haversine:', pointA, pointB);
   const R = 6371.0; // Earth radius in kilometers
 
   // Differences between latitudes and longitudes
@@ -97,7 +101,7 @@ export const zap: Waypoint[] = [
 
 export const dStartPoint = { lon: 10.156904, lat: 58.218246 };
 export const dScale = 20000;
-export const dRaw =
+export const dRaw: Waypoint[] =
   'M52.441,6.944L6.944,99.757L65.483,98.602L41.535,266.697L194.534,96.048L145.952,97.005L162.132,58.67L233.957,60.637L286.632,70.238L321.687,84.921L343.785,103.523L353.971,123.439L355.695,136.82L352.395,155.383L340.667,173.874L316.104,191.846L279.854,205.146L242.113,211.914L199.121,214.592L115.318,214.647L68.661,266.697L233.957,265.55L292.804,259.597L347.319,247.755L390.832,231.15L426.372,208.159L447.79,183.522L458.152,159.53L460.969,137.141L456.411,108.765L443.483,84.096L421.917,61.994L386.125,40.317L340.331,23.913L300.784,15.296L263.649,10.335L209.737,7.141L52.441,6.944Z'
     .split(/M|L|Z/)
     .filter((v) => !!v)
@@ -122,6 +126,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
   } = useActiveWorkout();
 
   const { sendData } = useWebsocket();
+  const [route, setRoute] = React.useState<Route>('zap');
 
   const [data, dispatch] = React.useReducer(
     (currentData: Data, action: Action): Data => {
@@ -186,7 +191,10 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
           const deltaDistance = (speed * action.delta) / 1000;
 
           const totalDistance = currentData.distance + deltaDistance;
-          const coordinates = distanceToCoordinates(dRaw, totalDistance);
+          const coordinates = distanceToCoordinates(
+            route === 'D' ? dRaw : zap,
+            totalDistance
+          );
           const dataPointWithPosition: DataPoint = {
             ...dataPoint,
             ...(coordinates
@@ -338,6 +346,9 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         stop,
         addLap: () => dispatch({ type: 'ADD_LAP' }),
         isRunning: data.state === 'running',
+        activeRoute: route === 'zap' ? zap : dRaw,
+        activeRouteName: route === 'zap' ? 'zap' : 'D',
+        setActiveRoute: setRoute,
       }}
     >
       {children}

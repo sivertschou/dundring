@@ -3,6 +3,7 @@ import * as React from 'react';
 import { dRaw, useData, zap } from '../../context/DataContext';
 import { Waypoint } from '../../types';
 import { powerColor } from '../../colors';
+import { Box } from '@chakra-ui/react';
 
 interface Props {}
 
@@ -13,10 +14,9 @@ const waypointsToSvgPoints = (waypoints: Waypoint[], multiplier = 1) =>
   }));
 
 export const Map = ({}: Props) => {
-  const { data: laps } = useData();
+  const { data: laps, activeRoute } = useData();
   const rawData = laps.flatMap((x) => x.dataPoints);
 
-  const activeRoute = dRaw;
   const multiplier = 100;
 
   const dataPoints = rawData
@@ -43,7 +43,7 @@ export const Map = ({}: Props) => {
     }
   );
 
-  const padding = 1;
+  const padding = 0.1;
 
   const viewBox = `${minX - padding} ${minY - padding} ${
     maxX - minX + padding * 2
@@ -57,7 +57,7 @@ export const Map = ({}: Props) => {
       <path
         fill="none"
         stroke="gray"
-        strokeWidth=".03"
+        strokeWidth="0.01"
         strokeLinejoin="round"
         strokeLinecap="round"
         d={`M ${routeCoordinates
