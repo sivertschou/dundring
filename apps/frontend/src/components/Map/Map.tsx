@@ -1,6 +1,6 @@
 import { AspectRatio, Stack } from '@chakra-ui/layout';
 import * as React from 'react';
-import { useData, zap } from '../../context/DataContext';
+import { dRaw, useData, zap } from '../../context/DataContext';
 import { Waypoint } from '../../types';
 import { powerColor } from '../../colors';
 
@@ -16,7 +16,7 @@ export const Map = ({}: Props) => {
   const { data: laps } = useData();
   const rawData = laps.flatMap((x) => x.dataPoints);
 
-  const activeRoute = zap;
+  const activeRoute = dRaw;
   const multiplier = 100;
 
   const dataPoints = rawData
