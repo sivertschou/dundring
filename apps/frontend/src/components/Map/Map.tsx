@@ -3,12 +3,6 @@ import { useData } from '../../context/DataContext';
 import { Waypoint } from '../../types';
 import { powerColor } from '../../colors';
 
-const waypointsToSvgPoints = (waypoints: Waypoint[], multiplier = 1) =>
-  waypoints.map((waypoint) => ({
-    x: waypoint.lon * multiplier,
-    y: -waypoint.lat * multiplier,
-  }));
-
 export const Map = () => {
   const { data: laps, activeRoute } = useData();
   const rawData = laps.flatMap((x) => x.dataPoints);
@@ -76,3 +70,10 @@ export const Map = () => {
     </svg>
   );
 };
+
+const waypointsToSvgPoints = (waypoints: Waypoint[], multiplier = 1) =>
+  waypoints.map((waypoint) => ({
+    x: waypoint.lon * multiplier,
+    /* Negated to align Y axis */
+    y: -waypoint.lat * multiplier,
+  }));
