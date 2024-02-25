@@ -14,7 +14,10 @@ export const Map = () => {
     .filter((value) => value !== undefined) as Waypoint[];
 
   const coordinates = waypointsToSvgPoints(dataPoints, multiplier);
-  const routeCoordinates = waypointsToSvgPoints(activeRoute, multiplier);
+  const routeCoordinates = waypointsToSvgPoints(
+    activeRoute.waypoints,
+    multiplier
+  );
 
   const { minX, maxX, minY, maxY } = routeCoordinates.reduce(
     (prev, dataPoint) => {

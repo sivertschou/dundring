@@ -18,6 +18,7 @@ import { defaultWorkouts } from './defaultWorkouts';
 import { ImportWorkout } from './ImportWorkout';
 import { WorkoutListItem } from './WorkoutListItem';
 import { useData } from '../../context/DataContext';
+import { stringToRouteName } from '../../gps';
 
 interface Props {
   setActiveWorkout: (workout: Workout, ftp: number) => void;
@@ -31,7 +32,7 @@ export const WorkoutOverview = ({
   const { activeFtp, setActiveFtp } = useActiveWorkout();
   const [previewFtp, setPreviewFtp] = React.useState('' + activeFtp);
   const previewFtpAsNumber = parseInputAsInt(previewFtp);
-  const { activeRouteName, setActiveRoute } = useData();
+  const { activeRoute, setActiveRoute } = useData();
 
   const allUserWorkouts = [
     ...workouts.map((workout) => ({
@@ -87,8 +88,8 @@ export const WorkoutOverview = ({
       <FormControl id="route">
         <FormLabel>Active route</FormLabel>
         <Select
-          onChange={(e) => setActiveRoute(e.target.value === 'D' ? 'D' : 'zap')}
-          value={activeRouteName}
+          onChange={(e) => setActiveRoute(stringToRouteName(e.target.value))}
+          value={activeRoute.name}
         >
           <option value="zap">Zap (5km)</option>
           <option value="D">D Icon (8.3km)</option>
