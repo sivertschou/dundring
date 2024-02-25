@@ -6,6 +6,7 @@ import { LocalRoom } from '../context/WebsocketContext';
 import { ShowData } from './Graph/GraphContainer';
 import { PowerBar } from './PowerBar';
 import { DataPoint, PowerChart } from './PowerChart';
+import { Map } from './Map/Map';
 
 interface Props {
   otherUsers: string[];
@@ -114,7 +115,12 @@ export const Graphs = ({
 
   return (
     <Stack width="100%">
-      <Grid templateColumns={showPowerBar ? '5fr 1fr' : '1fr'}>
+      <Grid templateColumns={showPowerBar ? '1fr 5fr 1fr' : '1fr'}>
+        {showPowerBar && (
+          <AspectRatio ratio={1}>
+            <Map />
+          </AspectRatio>
+        )}
         <AspectRatio ratio={16 / 9} width="100%">
           <PowerChart
             allMerged={allMerged}

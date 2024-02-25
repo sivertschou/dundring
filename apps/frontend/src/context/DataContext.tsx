@@ -7,6 +7,7 @@ import { useHeartRateMonitor } from './HeartRateContext';
 import { useLogs } from './LogContext';
 import { useSmartTrainer } from './SmartTrainerContext';
 import { useWebsocket } from './WebsocketContext';
+import { Route, dWaypoints, routeNameToWaypoint, zapWaypoints } from '../gps';
 
 const DataContext = React.createContext<{
   data: Lap[];
@@ -20,6 +21,8 @@ const DataContext = React.createContext<{
   stop: () => void;
   addLap: () => void;
   isRunning: boolean;
+  activeRoute: { name: Route; waypoints: Waypoint[] };
+  setActiveRoute: (route: Route) => void;
 } | null>(null);
 
 interface Props {
@@ -58,15 +61,6 @@ interface Start {
 }
 type Action = AddData | AddLap | IncreaseElapsedTime | Start | Pause;
 
-const zap: Waypoint[] = [
-  { lat: 59.90347154, lon: 10.6590337, distance: 2400 },
-  { lat: 59.88396124, lon: 10.64085992, distance: 600 },
-  { lat: 59.88389387, lon: 10.65213867, distance: 2000 },
-  { lat: 59.86610453, lon: 10.64629091, distance: 2400 },
-  { lat: 59.88561483, lon: 10.6644647, distance: 600 },
-  { lat: 59.8856822, lon: 10.65318595, distance: 2000 },
-];
-
 export const DataContextProvider = ({ clockWorker, children }: Props) => {
   const {
     syncResistance,
@@ -75,6 +69,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
   } = useActiveWorkout();
 
   const { sendData } = useWebsocket();
+  const [route, setRoute] = React.useState<Route>('zap');
 
   const [data, dispatch] = React.useReducer(
     (currentData: Data, action: Action): Data => {
@@ -139,7 +134,10 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
           const deltaDistance = (speed * action.delta) / 1000;
 
           const totalDistance = currentData.distance + deltaDistance;
-          const coordinates = distanceToCoordinates(zap, totalDistance);
+          const coordinates = distanceToCoordinates(
+            route === 'D' ? dWaypoints : zapWaypoints,
+            totalDistance
+          );
           const dataPointWithPosition: DataPoint = {
             ...dataPoint,
             ...(coordinates
@@ -291,6 +289,8 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         stop,
         addLap: () => dispatch({ type: 'ADD_LAP' }),
         isRunning: data.state === 'running',
+        activeRoute: { name: route, waypoints: routeNameToWaypoint(route) },
+        setActiveRoute: setRoute,
       }}
     >
       {children}

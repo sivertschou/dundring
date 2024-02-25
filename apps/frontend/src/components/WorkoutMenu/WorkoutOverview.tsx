@@ -6,7 +6,7 @@ import {
 } from '@chakra-ui/form-control';
 import { Input, InputGroup, InputRightAddon } from '@chakra-ui/input';
 import { Divider, Stack } from '@chakra-ui/layout';
-import { Center, Text, Icon } from '@chakra-ui/react';
+import { Center, Text, Icon, Select } from '@chakra-ui/react';
 import * as React from 'react';
 import { PencilSquare } from 'react-bootstrap-icons';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
@@ -17,6 +17,8 @@ import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
 import { defaultWorkouts } from './defaultWorkouts';
 import { ImportWorkout } from './ImportWorkout';
 import { WorkoutListItem } from './WorkoutListItem';
+import { useData } from '../../context/DataContext';
+import { stringToRouteName } from '../../gps';
 
 interface Props {
   setActiveWorkout: (workout: Workout, ftp: number) => void;
@@ -30,6 +32,7 @@ export const WorkoutOverview = ({
   const { activeFtp, setActiveFtp } = useActiveWorkout();
   const [previewFtp, setPreviewFtp] = React.useState('' + activeFtp);
   const previewFtpAsNumber = parseInputAsInt(previewFtp);
+  const { activeRoute, setActiveRoute } = useData();
 
   const allUserWorkouts = [
     ...workouts.map((workout) => ({
@@ -80,6 +83,17 @@ export const WorkoutOverview = ({
           This value will be used as your FTP for this session. You can change
           your actual FTP on your profile page
         </FormHelperText>
+      </FormControl>
+
+      <FormControl id="route">
+        <FormLabel>Active route</FormLabel>
+        <Select
+          onChange={(e) => setActiveRoute(stringToRouteName(e.target.value))}
+          value={activeRoute.name}
+        >
+          <option value="zap">Zap (5km)</option>
+          <option value="D">D Icon (8.3km)</option>
+        </Select>
       </FormControl>
 
       {allUserWorkouts.length > 0 && <Divider />}
