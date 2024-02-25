@@ -15,10 +15,11 @@
   "license": "ISC",
   "dependencies": {
     "@dundring/database": "*",
+    "@types/jsonwebtoken": "^9.0.5",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.2",
     "node-fetch": "^2.6.6",
     "nodemailer": "^6.9.10",
     "redis": "^4.6.12",
