@@ -16,7 +16,6 @@ import {
 } from '../context/ModalContext';
 import { Modals } from '../components/Modals/Modals';
 import { BottomBar } from '../components/BottomBar';
-import { Map } from '../components/Map/Map';
 
 export const MainPage = () => {
   const { connect } = useWebsocket();

@@ -1,11 +1,7 @@
-import { AspectRatio, Stack } from '@chakra-ui/layout';
 import * as React from 'react';
-import { dRaw, useData, zap } from '../../context/DataContext';
+import { useData } from '../../context/DataContext';
 import { Waypoint } from '../../types';
 import { powerColor } from '../../colors';
-import { Box } from '@chakra-ui/react';
-
-interface Props {}
 
 const waypointsToSvgPoints = (waypoints: Waypoint[], multiplier = 1) =>
   waypoints.map((waypoint) => ({
@@ -13,7 +9,7 @@ const waypointsToSvgPoints = (waypoints: Waypoint[], multiplier = 1) =>
     y: -waypoint.lat * multiplier,
   }));
 
-export const Map = ({}: Props) => {
+export const Map = () => {
   const { data: laps, activeRoute } = useData();
   const rawData = laps.flatMap((x) => x.dataPoints);
 
@@ -61,10 +57,7 @@ export const Map = ({}: Props) => {
         strokeLinejoin="round"
         strokeLinecap="round"
         d={`M ${routeCoordinates
-          .map(
-            (dataPoint, i) =>
-              `${i !== 0 ? '' : ''}${dataPoint.x} ${dataPoint.y}`
-          )
+          .map((dataPoint) => `${dataPoint.x} ${dataPoint.y}`)
           .join(' ')}Z`}
       />
       <path
@@ -74,10 +67,7 @@ export const Map = ({}: Props) => {
         strokeLinejoin="round"
         strokeLinecap="round"
         d={`M ${coordinates
-          .map(
-            (dataPoint, i) =>
-              `${i !== 0 ? '' : ''}${dataPoint.x} ${dataPoint.y}`
-          )
+          .map((dataPoint) => `${dataPoint.x} ${dataPoint.y}`)
           .join(' ')}`}
       />
       {lastPoint ? (
