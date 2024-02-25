@@ -59,16 +59,18 @@ export const Map = () => {
           .map((dataPoint) => `${dataPoint.x} ${dataPoint.y}`)
           .join(' ')}Z`}
       />
-      <path
-        fill="none"
-        stroke={powerColor}
-        strokeWidth=".05"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-        d={`M ${coordinates
-          .map((dataPoint) => `${dataPoint.x} ${dataPoint.y}`)
-          .join(' ')}`}
-      />
+      {coordinates.length > 0 ? (
+        <path
+          fill="none"
+          stroke={powerColor}
+          strokeWidth=".05"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+          d={`M ${coordinates
+            .map((dataPoint) => `${dataPoint.x} ${dataPoint.y}`)
+            .join(' ')}`}
+        />
+      ) : null}
       {lastPoint ? (
         <g>
           <circle
