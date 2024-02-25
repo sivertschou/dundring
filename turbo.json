@@ -20,12 +20,14 @@
     "dev": {
       "dependsOn": ["^db:generate", "^db:migrate", "^build"],
       "cache": false,
-      "outputs": ["build/**", "dist/**"]
+      "outputs": ["build/**", "dist/**"],
+      "persistent": true
     },
     "mock": {
       "dependsOn": ["^db:generate", "^db:migrate", "^build"],
       "cache": false,
-      "outputs": ["build/**", "dist/**"]
+      "outputs": ["build/**", "dist/**"],
+      "persistent": true
     }
   }
 }

@@ -17,7 +17,7 @@
   "devDependencies": {
     "@dundring/tsconfig": "*",
     "@rollup/plugin-typescript": "^9.0.2",
-    "rollup": "^3.2.5",
-    "typescript": "4.8.4"
+    "rollup": "^4.12.0",
+    "typescript": "5.3.3"
   }
 }
