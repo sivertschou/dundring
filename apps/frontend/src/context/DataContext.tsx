@@ -111,6 +111,7 @@ export const dRaw: Waypoint[] =
     })
     .map(({ x, y }) => ({
       lon: x + dStartPoint.lon,
+      /* Negated to align Y axis */
       lat: -y + dStartPoint.lat,
     }))
     .map((point, index, arr) => ({
