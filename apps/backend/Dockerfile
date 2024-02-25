@@ -1,4 +1,4 @@
-FROM node:16-alpine AS base
+FROM node:20-alpine AS base
 
 FROM base AS builder
 RUN apk add --no-cache libc6-compat
@@ -12,7 +12,6 @@ RUN turbo prune --scope=@dundring/backend --docker
 # Add lockfile and package.json's of isolated subworkspace
 FROM base AS installer
 RUN apk add --no-cache libc6-compat
-RUN apk add --no-cache openssl1.1-compat
 RUN apk update
 WORKDIR /app
 
@@ -29,7 +28,6 @@ COPY turbo.json turbo.json
 RUN yarn turbo run build --filter=@dundring/backend
 
 FROM base AS runner
-RUN apk add --no-cache openssl1.1-compat
 WORKDIR /app
 
 # Don't run production as root

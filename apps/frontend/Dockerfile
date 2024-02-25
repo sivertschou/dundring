@@ -1,4 +1,4 @@
-FROM node:16-alpine AS base
+FROM node:20-alpine AS base
 
 FROM base AS builder
 RUN apk add --no-cache libc6-compat
@@ -12,7 +12,6 @@ RUN turbo prune --scope=@dundring/frontend --docker
 # Add lockfile and package.json's of isolated subworkspace
 FROM base AS installer
 RUN apk add --no-cache libc6-compat
-RUN apk add --no-cache openssl1.1-compat
 RUN apk update
 WORKDIR /app
 
