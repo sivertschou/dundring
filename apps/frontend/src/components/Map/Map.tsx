@@ -2,9 +2,11 @@ import * as React from 'react';
 import { useData } from '../../context/DataContext';
 import { Waypoint } from '../../types';
 import { powerColor } from '../../colors';
+import { useColorModeValue } from '@chakra-ui/react';
 
 export const Map = () => {
   const { data: laps, activeRoute } = useData();
+  const dotStrokeColor = useColorModeValue('black', 'white');
   const rawData = laps.flatMap((x) => x.dataPoints);
 
   const multiplier = 100;
@@ -68,7 +70,16 @@ export const Map = () => {
           .join(' ')}`}
       />
       {lastPoint ? (
-        <circle r=".05" cx={lastPoint.x} cy={lastPoint.y} fill="white" />
+        <g>
+          <circle
+            r=".06"
+            cx={lastPoint.x}
+            cy={lastPoint.y}
+            fill="white"
+            stroke={dotStrokeColor}
+            strokeWidth="0.01px"
+          />
+        </g>
       ) : null}
     </svg>
   );
