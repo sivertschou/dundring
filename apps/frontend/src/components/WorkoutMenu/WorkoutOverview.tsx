@@ -91,8 +91,8 @@ export const WorkoutOverview = ({
           onChange={(e) => setActiveRoute(stringToRouteName(e.target.value))}
           value={activeRoute.name}
         >
-          <option value="zap">Zap (5km)</option>
-          <option value="D">D Icon (8.3km)</option>
+          <option value="zap">Zap (10 km)</option>
+          <option value="D">D (10 km)</option>
         </Select>
       </FormControl>
 
