@@ -2,6 +2,7 @@
   "name": "@dundring/frontend",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "prepare": "bash prepare.sh",
     "dev": "vite",
@@ -50,9 +51,9 @@
     "@types/react-beautiful-dnd": "^13.1.6",
     "@types/react-dom": "^18.2.14",
     "@types/web-bluetooth": "^0.0.19",
-    "@vitejs/plugin-react": "^4.1.1",
+    "@vitejs/plugin-react": "^4.2.1",
     "typescript": "5.2.2",
-    "vite": "^4.5.2",
-    "vite-plugin-checker": "^0.6.2"
+    "vite": "^5.1.4",
+    "vite-plugin-checker": "^0.6.4"
   }
 }
