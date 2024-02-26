@@ -9,11 +9,11 @@ env:
   tag: preview-${{ github.event.number }}
 
 jobs:
-  deploy:
+  teardown:
     runs-on: ubuntu-latest
     environment: preview
     steps:
-      - name: Start the containers with Docker Compose
+      - name: Stop the containers with Docker Compose
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
