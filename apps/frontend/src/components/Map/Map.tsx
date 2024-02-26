@@ -7,7 +7,8 @@ import { toWebMercatorCoordinates } from '../../gps';
 
 export const Map = () => {
   const { data: laps, activeRoute } = useData();
-  const dotStrokeColor = useColorModeValue('black', 'white');
+  const dotColor = useColorModeValue('black', 'white');
+  const routeColor = useColorModeValue('#bdbdbd', '#424242');
   const rawData = laps.flatMap((x) => x.dataPoints);
 
   const multiplier = 40;
@@ -52,8 +53,8 @@ export const Map = () => {
     <svg viewBox={viewBox}>
       <path
         fill="none"
-        stroke="gray"
-        strokeWidth=".02"
+        stroke={routeColor}
+        strokeWidth=".015"
         strokeLinejoin="round"
         strokeLinecap="round"
         d={`M ${routeCoordinates
@@ -78,8 +79,7 @@ export const Map = () => {
             r=".02"
             cx={lastPoint.x}
             cy={lastPoint.y}
-            fill="white"
-            stroke={dotStrokeColor}
+            fill={dotColor}
             strokeWidth="0.01px"
           />
         </g>
