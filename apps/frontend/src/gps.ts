@@ -75,3 +75,17 @@ export const dWaypoints: Waypoint[] =
       ...point,
       distance: haversine(point, arr[(index + 1) % arr.length]) * 1000,
     }));
+
+export const toWebMercatorCoordinates = (waypoint: Waypoint) => {
+  const zoom = 8;
+  return {
+    x:
+      (1 / (2 * Math.PI)) *
+      Math.pow(2, zoom) *
+      (Math.PI + toRadians(waypoint.lon)),
+    y:
+      (1 / (2 * Math.PI)) *
+      Math.pow(2, zoom) *
+      (Math.PI - Math.log(Math.tan(Math.PI / 4 + toRadians(waypoint.lat) / 2))),
+  };
+};

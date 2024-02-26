@@ -3,13 +3,15 @@ import { useData } from '../../context/DataContext';
 import { Waypoint } from '../../types';
 import { powerColor } from '../../colors';
 import { useColorModeValue } from '@chakra-ui/react';
+import { toWebMercatorCoordinates } from '../../gps';
 
 export const Map = () => {
   const { data: laps, activeRoute } = useData();
-  const dotStrokeColor = useColorModeValue('black', 'white');
+  const dotColor = useColorModeValue('black', 'white');
+  const routeColor = useColorModeValue('#bdbdbd', '#424242');
   const rawData = laps.flatMap((x) => x.dataPoints);
 
-  const multiplier = 100;
+  const multiplier = 40;
 
   const dataPoints = rawData
     .map((dataPoint) => dataPoint.position)
@@ -51,8 +53,8 @@ export const Map = () => {
     <svg viewBox={viewBox}>
       <path
         fill="none"
-        stroke="gray"
-        strokeWidth="0.01"
+        stroke={routeColor}
+        strokeWidth=".015"
         strokeLinejoin="round"
         strokeLinecap="round"
         d={`M ${routeCoordinates
@@ -63,7 +65,7 @@ export const Map = () => {
         <path
           fill="none"
           stroke={powerColor}
-          strokeWidth=".05"
+          strokeWidth=".03"
           strokeLinejoin="round"
           strokeLinecap="round"
           d={`M ${coordinates
@@ -74,11 +76,10 @@ export const Map = () => {
       {lastPoint ? (
         <g>
           <circle
-            r=".06"
+            r=".02"
             cx={lastPoint.x}
             cy={lastPoint.y}
-            fill="white"
-            stroke={dotStrokeColor}
+            fill={dotColor}
             strokeWidth="0.01px"
           />
         </g>
@@ -88,8 +89,7 @@ export const Map = () => {
 };
 
 const waypointsToSvgPoints = (waypoints: Waypoint[], multiplier = 1) =>
-  waypoints.map((waypoint) => ({
-    x: waypoint.lon * multiplier,
-    /* Negated to align Y axis */
-    y: -waypoint.lat * multiplier,
+  waypoints.map(toWebMercatorCoordinates).map((waypoint) => ({
+    x: waypoint.x * multiplier,
+    y: waypoint.y * multiplier,
   }));
