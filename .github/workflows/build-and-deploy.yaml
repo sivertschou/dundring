@@ -43,13 +43,17 @@ jobs:
           file: ./apps/backend/Dockerfile
           tags: ${{ vars.DOCKERHUB_USERNAME }}/dundring-backend:${{ steps.gitversion.outputs.semVer }}
           push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Build, tag and push frontend
         uses: docker/build-push-action@v5
         with:
           file: ./apps/frontend/Dockerfile
-          push: true
           tags: ${{ vars.DOCKERHUB_USERNAME }}/dundring-frontend:${{ steps.gitversion.outputs.semVer }}
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Set version tag
         run: |
