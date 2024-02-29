@@ -118,7 +118,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
                     {
                       dataPoints: [
                         ...currentLap.dataPoints,
-                        { timeStamp: dataPoint.timeStamp },
+                        { timestamp: dataPoint.timestamp },
                       ],
                       distance: currentLap.distance,
                     },
@@ -154,7 +154,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
             ...currentData,
             untrackedData: [
               ...currentData.untrackedData,
-              { timeStamp: dataPoint.timeStamp },
+              { timestamp: dataPoint.timestamp },
             ],
             speed: speed,
             distance: currentData.distance + deltaDistance,
@@ -215,7 +215,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
           const powerToInclude = power ? { power } : {};
           const cadenceToInclude = cadence ? { cadence } : {};
           const dataPoint = {
-            timeStamp: new Date(),
+            timestamp: new Date(),
             ...heartRateToInclude,
             ...powerToInclude,
             ...cadenceToInclude,

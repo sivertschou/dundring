@@ -6,7 +6,7 @@ export interface DataPoint {
   heartRate?: number;
   power?: number;
   cadence?: number;
-  timeStamp: Date;
+  timestamp: Date;
   position?: Waypoint;
 }
 

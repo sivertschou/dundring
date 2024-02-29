@@ -6,7 +6,7 @@ export const toTCX = (
   distance: number,
   includeGPSData: boolean
 ) => {
-  const startTime = laps[0].dataPoints[0].timeStamp;
+  const startTime = laps[0].dataPoints[0].timestamp;
   const output = [
     `<?xml version="1.0" encoding="UTF-8"?>`,
     `<TrainingCenterDatabase`,
@@ -66,14 +66,14 @@ const lapToTCX = (lap: Lap, includeGPSData: boolean) => {
 
   if (filtererdDataPoints.length === 0) return '';
   return [
-    `      <Lap StartTime="${filtererdDataPoints[0].timeStamp.toISOString()}">`,
+    `      <Lap StartTime="${filtererdDataPoints[0].timestamp.toISOString()}">`,
     `        <Track>`,
     `${filtererdDataPoints.reduce(
       (output, data) =>
         (output ? output + '\n' : output) +
         [
           `          <Trackpoint>`,
-          `            <Time>${data.timeStamp.toISOString()}</Time>`,
+          `            <Time>${data.timestamp.toISOString()}</Time>`,
           data.heartRate !== undefined
             ? [
                 `            <HeartRateBpm>`,
