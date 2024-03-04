@@ -93,12 +93,22 @@ export const updateUser = async (
 export const getUserByMail = async (
   mail: string
 ): Promise<
-  Status<User, 'User not found' | 'Something went wrong reading from database'>
+  Status<
+    User & {
+      stravaAuthentication: StravaAuthentication | null;
+      mailAuthentication: MailAuthentication | null;
+    },
+    'User not found' | 'Something went wrong reading from database'
+  >
 > => {
   try {
     const result = await prisma.mailAuthentication.findUnique({
       where: { mail },
-      select: { user: true },
+      select: {
+        user: {
+          include: { stravaAuthentication: true, mailAuthentication: true },
+        },
+      },
     });
 
     if (!result) {
@@ -115,12 +125,22 @@ export const getUserByMail = async (
 export const getUserByStravaId = async (
   athleteId: number
 ): Promise<
-  Status<User, 'User not found' | 'Something went wrong reading from database'>
+  Status<
+    User & {
+      stravaAuthentication: StravaAuthentication | null;
+      mailAuthentication: MailAuthentication | null;
+    },
+    'User not found' | 'Something went wrong reading from database'
+  >
 > => {
   try {
     const result = await prisma.stravaAuthentication.findUnique({
       where: { athleteId },
-      select: { user: true },
+      select: {
+        user: {
+          include: { stravaAuthentication: true, mailAuthentication: true },
+        },
+      },
     });
 
     if (!result) {
@@ -139,7 +159,10 @@ const createUserFromMail = async (
   username: string
 ): Promise<
   Status<
-    User & { mailAuthentication: MailAuthentication | null },
+    User & {
+      mailAuthentication: MailAuthentication | null;
+      stravaAuthentication: StravaAuthentication | null;
+    },
     | 'MailAuthentication not included in data'
     | 'Could not create user from mail'
   >
@@ -158,6 +181,7 @@ const createUserFromMail = async (
       id: true,
       username: true,
       mailAuthentication: true,
+      stravaAuthentication: true,
     },
   });
 

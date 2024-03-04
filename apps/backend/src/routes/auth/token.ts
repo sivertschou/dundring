@@ -20,6 +20,8 @@ router.post<null, ApiResponseBody<LoginResponseBody>>(
       return;
     }
 
+    const athleteId = user.data.stravaAuthentication?.athleteId ?? null;
+
     res.send({
       status: ApiStatus.SUCCESS,
       data: {
@@ -27,6 +29,7 @@ router.post<null, ApiResponseBody<LoginResponseBody>>(
         token: token || '',
         username,
         userId,
+        stravaData: athleteId ? { athleteId } : null,
       },
     });
     return;

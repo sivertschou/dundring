@@ -43,6 +43,7 @@ export interface LoginResponseBody {
   userId: string;
   token: string;
   ftp: number;
+  stravaData: { athleteId: number } | null;
 }
 
 export interface UserUpdateRequestBody {

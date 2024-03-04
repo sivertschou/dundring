@@ -62,6 +62,8 @@ router.post<
           200
         );
 
+    const athleteId = user.data.stravaAuthentication?.athleteId ?? null;
+
     res.send({
       status: ApiStatus.SUCCESS,
       data: {
@@ -71,6 +73,7 @@ router.post<
           username,
           token,
           ftp,
+          stravaData: athleteId ? { athleteId } : null,
         },
       },
     });

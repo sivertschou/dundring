@@ -23,7 +23,14 @@ import { useProfileModal } from '../../context/ModalContext';
 import { useNavigate } from 'react-router-dom';
 import { LoggedInUser } from '../../types';
 import { addEditableError, editable, touched } from '../../utils/general';
-import { FormHelperText, ModalBody, ModalFooter } from '@chakra-ui/react';
+import {
+  FormHelperText,
+  ModalBody,
+  ModalFooter,
+  Link,
+  Icon,
+} from '@chakra-ui/react';
+import { BoxArrowRight, BoxArrowUpRight } from 'react-bootstrap-icons';
 
 export const ProfileModal = () => {
   const { isOpen } = useProfileModal();
@@ -217,7 +224,7 @@ export const ProfileModalContent = ({ user, onClose }: Props) => {
             </Stack>
           </Stack>
         </ModalBody>
-        <ModalFooter justifyContent="space-between">
+        <ModalFooter justifyContent="space-between" gap="3">
           {!settingUpProfile ? (
             <Button
               size="sm"
@@ -236,6 +243,18 @@ export const ProfileModalContent = ({ user, onClose }: Props) => {
             >
               Sign out
             </Button>
+          ) : null}
+          {user.stravaData ? (
+            <Link
+              href={`https://strava.com/athletes/${user.stravaData.athleteId}`}
+              alignItems="center"
+              isExternal
+              display="flex"
+              gap="5px"
+            >
+              View connected Strava profile
+              <BoxArrowUpRight />
+            </Link>
           ) : null}
           <Button
             type="submit"
