@@ -17,6 +17,8 @@
     "@svgr/webpack": "^8.1.0",
     "babel-plugin-named-asset-import": "^0.3.8",
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
+    "dexie": "^3.2.5",
+    "dexie-react-hooks": "^1.1.7",
     "dotenv": "^16.3.1",
     "dotenv-expand": "^10.0.0",
     "eslint": "^8.52.0",

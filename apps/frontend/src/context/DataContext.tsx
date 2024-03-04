@@ -8,6 +8,7 @@ import { useLogs } from './LogContext';
 import { useSmartTrainer } from './SmartTrainerContext';
 import { useWebsocket } from './WebsocketContext';
 import { Route, dWaypoints, routeNameToWaypoint, zapWaypoints } from '../gps';
+import { db } from '../db';
 
 const DataContext = React.createContext<{
   data: Lap[];
@@ -150,6 +151,14 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
                 }
               : undefined),
           };
+
+          console.log('laps:', laps);
+          db.workoutDataPoint.add({
+            ...dataPointWithPosition,
+            workoutNumber: 1,
+            lapNumber: laps.length,
+          });
+
           return {
             ...currentData,
             untrackedData: [
