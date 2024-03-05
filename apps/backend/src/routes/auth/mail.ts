@@ -52,6 +52,11 @@ router.post<
       ? await userService.createUserFromMail(mail)
       : existingUser;
 
+  if (isError(existingUser) && existingUser.type !== 'User not found') {
+    res.send({ status: ApiStatus.FAILURE, message: existingUser.type });
+    return;
+  }
+
   if (isSuccess(user)) {
     const username = user.data.username;
     const userId = user.data.id;
@@ -68,6 +73,8 @@ router.post<
           200
         );
 
+    const athleteId = user.data.stravaAuthentication?.athleteId ?? null;
+
     res.send({
       status: ApiStatus.SUCCESS,
       data: {
@@ -77,6 +84,7 @@ router.post<
           username,
           token,
           ftp,
+          stravaData: athleteId ? { athleteId } : null,
         },
       },
     });

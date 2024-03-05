@@ -38,6 +38,7 @@ export const UserContextProvider = ({
               username: ret.data.username,
               workouts: [],
               ftp: ret.data.ftp,
+              stravaData: ret.data.stravaData,
             });
             break;
           default:
