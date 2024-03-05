@@ -89,3 +89,8 @@ export interface StravaAuthentication {
     read: boolean;
   };
 }
+
+export interface FeedbackRequestBody {
+  message: string;
+  mail: string | null;
+}
