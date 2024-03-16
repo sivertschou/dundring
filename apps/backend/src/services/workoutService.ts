@@ -75,3 +75,10 @@ export const upsertWorkout = async (
     fromPrismaWorkout
   );
 };
+
+export const deleteWorkout = async (
+  userId: string,
+  workoutId: string
+): Promise<Status<{}, 'Something went wrong while deleting workout'>> => {
+  return await db.deleteWorkout(userId, workoutId);
+};

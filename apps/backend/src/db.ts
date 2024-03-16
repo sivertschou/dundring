@@ -347,6 +347,27 @@ export const getFitnessData = async (
   }
 };
 
+export const deleteWorkout = async (
+  userId: string,
+  workoutId: string
+): Promise<Status<{}, 'Something went wrong while deleting workout'>> => {
+  console.debug(`[db.deleteWorkout] user ${userId} tries to delete workout`);
+  try {
+    const result = await prisma.workout.delete({
+      where: { id: workoutId, userId },
+    });
+
+    if (!result) {
+      console.error('[db.deleteWorkout]');
+      return error('Something went wrong while deleting workout');
+    }
+    return success({});
+  } catch (e) {
+    console.error('[db.deleteWorkout]', e);
+    return error('Something went wrong while deleting workout');
+  }
+};
+
 export const upsertWorkout = async (
   userId: string,
   workout: WorkoutBase,

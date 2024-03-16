@@ -70,6 +70,24 @@ const authGet = async <T>(
   return response.json();
 };
 
+const authDelete = async <T, U>(
+  url: string,
+  token: string,
+  abortController?: AbortController
+): Promise<T> => {
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      authorization: `Bearer ${token}`,
+    },
+    signal: abortController?.signal,
+  });
+
+  return response.json();
+};
+
 const authPost = async <T, U>(
   url: string,
   token: string,
@@ -137,6 +155,13 @@ export const fetchMyWorkouts = async (token: string) => {
 export const getWorkout = async (workoutId: string) => {
   return get<ApiResponseBody<GetWorkoutResponseBody>>(
     `${httpUrl}/workouts/${workoutId}`
+  );
+};
+
+export const deleteWorkout = async (token: string, workoutId: string) => {
+  return authDelete<ApiResponseBody<string>, any>(
+    `${httpUrl}/workouts/${workoutId}`,
+    token
   );
 };
 
