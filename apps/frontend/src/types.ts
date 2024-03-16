@@ -20,6 +20,7 @@ export interface Workout {
   id: string;
   name: string;
   parts: WorkoutPart[];
+  visible: boolean;
 }
 
 export type WorkoutType = 'local' | 'remote' | 'new' | 'library';

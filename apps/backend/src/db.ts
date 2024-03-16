@@ -282,7 +282,7 @@ export const getWorkout = async (
   id: string
 ): Promise<
   Status<
-    Workout & { parts: SteadyWorkoutPart[] },
+    any,
     'Workout not found' | 'Something went wrong reading from database'
   >
 > => {
@@ -296,6 +296,7 @@ export const getWorkout = async (
       return error('Workout not found');
     }
 
+    console.log(result);
     return success(result);
   } catch (e) {
     console.error('[db.getWorkout]', e);
@@ -344,6 +345,35 @@ export const getFitnessData = async (
   } catch (e) {
     console.error('[db.getFitnessData]', e);
     return error('Something went wrong while reading from database');
+  }
+};
+
+export const toggleWorkoutVisibility = async (
+  userId: string,
+  workoutId: string,
+  visibility: boolean
+): Promise<Status<string, 'Something went wrong while upserting workout'>> => {
+  console.debug(
+    `[db.upsertWorkout] user ${userId} tries to toggle visibility workout`
+  );
+  try {
+    const workoutInDB = await prisma.workout.findFirstOrThrow({
+      where: { id: workoutId, userId },
+    });
+
+    const result = await prisma.workout.update({
+      data: { visible: visibility },
+      where: { id: workoutId },
+    });
+
+    if (!result) {
+      console.error('[db.upsertWorkout]');
+      return error('Something went wrong while upserting workout');
+    }
+    return success('s');
+  } catch (e) {
+    console.error('[db.upsertWorkout]', e);
+    return error('Something went wrong while upserting workout');
   }
 };
 

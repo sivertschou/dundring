@@ -62,6 +62,37 @@ router.post<WorkoutRequestBody, ApiResponseBody<UpdateWorkoutResponseBody>>(
   }
 );
 
+router.post<{ workoutId: string }, ApiResponseBody<string>>(
+  '/:workoutId/toggle',
+  async (req, res) => {
+    if (!validationService.authenticateToken(req, res)) return;
+    const workoutId = req.params['workoutId'];
+
+    const info = req.body;
+
+    const ret = await workoutService.toggleWorkoutVisibility(
+      req.userId,
+      workoutId,
+      info.visible
+    );
+
+    switch (ret.status) {
+      case 'SUCCESS':
+        res.send({
+          status: ApiStatus.SUCCESS,
+          data: 'res',
+        });
+        return;
+      default:
+        res.send({
+          status: ApiStatus.FAILURE,
+          message: ret.type,
+        });
+        return;
+    }
+  }
+);
+
 router.get<core.ParamsDictionary, ApiResponseBody<GetWorkoutResponseBody>>(
   '/:workoutId',
   async (req, res) => {

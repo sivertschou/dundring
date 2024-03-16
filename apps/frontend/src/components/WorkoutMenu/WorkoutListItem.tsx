@@ -2,18 +2,27 @@ import { Button, IconButton } from '@chakra-ui/button';
 import { Center, Grid, Heading, HStack, Stack, Text } from '@chakra-ui/layout';
 import { useClipboard, useToast, Icon } from '@chakra-ui/react';
 import { Tooltip } from '@chakra-ui/tooltip';
-import { Cloud, Gear, Hdd, Clipboard, Book } from 'react-bootstrap-icons';
+import {
+  Cloud,
+  Gear,
+  Hdd,
+  Clipboard,
+  Book,
+  Trash,
+} from 'react-bootstrap-icons';
 import { StoredWorkoutType, Workout, WorkoutType } from '../../types';
 import {
   getTotalWorkoutTime,
   secondsToHoursMinutesAndSecondsString,
 } from '@dundring/utils';
 import * as api from '../../api';
+import { useState } from 'react';
 
 interface Props {
   workout: Workout;
   setActiveWorkout: (workout: Workout) => void;
   onClickEdit: () => void;
+  sendToTrash?: (workoutId: string) => Promise<void>;
   type: StoredWorkoutType;
 }
 export const WorkoutListItem = ({
@@ -21,10 +30,13 @@ export const WorkoutListItem = ({
   setActiveWorkout,
   onClickEdit,
   type,
+  sendToTrash,
 }: Props) => {
   const workoutDuration = getTotalWorkoutTime(workout);
   const { onCopy } = useClipboard(`${api.domain}/workout/${workout.id}`);
   const toast = useToast();
+
+  const [trashClicked, setTrashClicked] = useState(false);
 
   return (
     <Grid templateColumns="1fr 10fr 3fr">
@@ -34,7 +46,10 @@ export const WorkoutListItem = ({
           {workout.name}
         </Heading>
         <Text>
-          Duration: {secondsToHoursMinutesAndSecondsString(workoutDuration)}
+          Duration:{' '}
+          {workout.visible
+            ? 'ye'
+            : secondsToHoursMinutesAndSecondsString(workoutDuration)}
         </Text>
       </Stack>
       <HStack>
@@ -67,6 +82,20 @@ export const WorkoutListItem = ({
             onClick={() => onClickEdit()}
           />
         </Tooltip>
+        {sendToTrash && (
+          <Tooltip label="Move workout to trash" placement="right">
+            <IconButton
+              aria-label="Move workout to trash"
+              icon={<Icon as={Trash} />}
+              color={trashClicked ? 'red' : undefined}
+              isRound
+              onClick={() => {
+                setTrashClicked(true);
+                sendToTrash(workout.id);
+              }}
+            />
+          </Tooltip>
+        )}
       </HStack>
     </Grid>
   );

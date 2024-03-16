@@ -3,6 +3,7 @@ import { Workout } from '@dundring/types';
 export const defaultWorkouts: Workout[] = [
   {
     name: '4x4min @ 110% FTP',
+    visible: true,
     parts: [
       {
         duration: 300,
@@ -84,6 +85,7 @@ export const defaultWorkouts: Workout[] = [
   },
   {
     name: '3x10 min @ 92% FTP - Threshold intervals',
+    visible: true,
     parts: [
       {
         duration: 300,
@@ -155,6 +157,7 @@ export const defaultWorkouts: Workout[] = [
   },
   {
     name: 'Easy Z1-Z2 (60-75% FTP) - 1 Hour',
+    visible: true,
     parts: [
       {
         duration: 300,
@@ -221,6 +224,7 @@ export const defaultWorkouts: Workout[] = [
   },
   {
     name: 'Ramp test (FTP should be set to 100 for this workout)',
+    visible: true,
     parts: [
       {
         duration: 60,
@@ -362,6 +366,7 @@ export const defaultWorkouts: Workout[] = [
   },
   {
     name: '10x1min - 117% - 140% FTP',
+    visible: true,
     parts: [
       {
         duration: 300,

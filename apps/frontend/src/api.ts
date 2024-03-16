@@ -140,6 +140,18 @@ export const getWorkout = async (workoutId: string) => {
   );
 };
 
+export const toggleWorkoutVisibility = async (
+  token: string,
+  workoutId: string,
+  visible: boolean
+) => {
+  return authPost<ApiResponseBody<string>, any>(
+    `${httpUrl}/workouts/${workoutId}/toggle`,
+    token,
+    { visible }
+  );
+};
+
 export const saveWorkout = async (
   token: string,
   workout: WorkoutRequestBody

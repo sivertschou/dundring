@@ -20,6 +20,7 @@ const fromPrismaWorkout = (
   parts: [...workout.parts]
     .sort((a, b) => a.index - b.index)
     .map(fromPrismaWorkoutPart),
+  visible: workout.visible,
 });
 
 const convertWorkoutPartPowerToInteger = (
@@ -74,4 +75,12 @@ export const upsertWorkout = async (
     await db.upsertWorkout(userId, workoutPowerToInteger(workout), workoutId),
     fromPrismaWorkout
   );
+};
+
+export const toggleWorkoutVisibility = async (
+  userId: string,
+  workoutId: string,
+  visible: boolean
+): Promise<Status<string, 'Something went wrong while upserting workout'>> => {
+  return await db.toggleWorkoutVisibility(userId, workoutId, visible);
 };

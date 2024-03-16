@@ -2,6 +2,7 @@ export interface Workout {
   name: string;
   id: string;
   parts: WorkoutPart[];
+  visible: boolean;
 }
 
 export interface WorkoutPart {

@@ -27,11 +27,12 @@ model FitnessData {
 }
 
 model Workout {
-  id     String              @id @default(uuid())
-  name   String
-  parts  SteadyWorkoutPart[]
-  user   User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
+  id      String              @id @default(uuid())
+  name    String
+  parts   SteadyWorkoutPart[]
+  user    User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  String
+  visible Boolean             @default(true)
 }
 
 model SteadyWorkoutPart {

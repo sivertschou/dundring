@@ -6,7 +6,7 @@ import {
 } from '@chakra-ui/form-control';
 import { Input, InputGroup, InputRightAddon } from '@chakra-ui/input';
 import { Divider, Stack } from '@chakra-ui/layout';
-import { Center, Text, Icon, Select } from '@chakra-ui/react';
+import { Center, Text, Icon, Select, useToast } from '@chakra-ui/react';
 import * as React from 'react';
 import { PencilSquare } from 'react-bootstrap-icons';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
@@ -15,10 +15,11 @@ import { StoredWorkoutType, Workout } from '../../types';
 import { parseInputAsInt } from '../../utils/general';
 import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
 import { defaultWorkouts } from './defaultWorkouts';
-import { ImportWorkout } from './ImportWorkout';
+import { ApiStatus, ImportWorkout } from './ImportWorkout';
 import { WorkoutListItem } from './WorkoutListItem';
 import { useData } from '../../context/DataContext';
 import { stringToRouteName } from '../../gps';
+import { toggleWorkoutVisibility } from '../../api';
 
 interface Props {
   setActiveWorkout: (workout: Workout, ftp: number) => void;
@@ -28,13 +29,15 @@ export const WorkoutOverview = ({
   setWorkoutToEdit,
   setActiveWorkout,
 }: Props) => {
-  const { workouts, localWorkouts } = useUser();
+  const { workouts, localWorkouts, user } = useUser();
   const { activeFtp, setActiveFtp } = useActiveWorkout();
   const [previewFtp, setPreviewFtp] = React.useState('' + activeFtp);
   const previewFtpAsNumber = parseInputAsInt(previewFtp);
   const { activeRoute, setActiveRoute } = useData();
+  const toast = useToast();
+  const token = (user.loggedIn && user.token) || null;
 
-  const allUserWorkouts = [
+  const allVisibleUserWorkouts = [
     ...workouts.map((workout) => ({
       workout,
       type: 'remote' as StoredWorkoutType,
@@ -43,7 +46,24 @@ export const WorkoutOverview = ({
       workout,
       type: 'local' as StoredWorkoutType,
     })),
-  ];
+  ].filter((userWorkout) => userWorkout.workout.visible);
+
+  // should this be defined in the WorkoutListItem instead, where it is used?
+  const sendTrash = async (workoutId: string) => {
+    if (token) {
+      const res = await toggleWorkoutVisibility(token, workoutId, false);
+      if (res.status === ApiStatus.FAILURE) {
+        toast({
+          title: `Deleting workout`,
+          isClosable: true,
+          duration: 5000,
+          status: 'error',
+        });
+        return;
+      }
+      // setIsWorkoutUnsaved(false);
+    }
+  };
 
   return (
     <Stack p="5">
@@ -64,6 +84,7 @@ export const WorkoutOverview = ({
             id: '',
             type: 'new',
             previewFtp: previewFtpAsNumber,
+            visible: true,
           })
         }
       >
@@ -96,8 +117,8 @@ export const WorkoutOverview = ({
         </Select>
       </FormControl>
 
-      {allUserWorkouts.length > 0 && <Divider />}
-      {allUserWorkouts.map(({ workout, type }, i) => (
+      {allVisibleUserWorkouts.length > 0 && <Divider />}
+      {allVisibleUserWorkouts.map(({ workout, type }, i) => (
         <WorkoutListItem
           key={i}
           type={type}
@@ -112,6 +133,7 @@ export const WorkoutOverview = ({
               previewFtp: previewFtpAsNumber,
             });
           }}
+          sendToTrash={sendTrash}
         />
       ))}
 
