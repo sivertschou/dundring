@@ -82,20 +82,6 @@ export const WorkoutListItem = ({
             onClick={() => onClickEdit()}
           />
         </Tooltip>
-        {sendToTrash && (
-          <Tooltip label="Move workout to trash" placement="right">
-            <IconButton
-              aria-label="Move workout to trash"
-              icon={<Icon as={Trash} />}
-              color={trashClicked ? 'red' : undefined}
-              isRound
-              onClick={() => {
-                setTrashClicked(true);
-                sendToTrash(workout.id);
-              }}
-            />
-          </Tooltip>
-        )}
       </HStack>
     </Grid>
   );

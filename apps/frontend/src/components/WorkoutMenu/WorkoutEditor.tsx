@@ -13,10 +13,16 @@ import { DropResult } from 'react-beautiful-dnd';
 import { DraggableList } from './DraggableList';
 import { DraggableItem } from './DraggableItem';
 import { useUser } from '../../context/UserContext';
-import { saveWorkout } from '../../api';
-import { CloudUpload, Hdd } from 'react-bootstrap-icons';
+import { saveWorkout, toggleWorkoutVisibility } from '../../api';
+import { CloudUpload, Hdd, Trash } from 'react-bootstrap-icons';
 import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Icon,
   Table,
   Tbody,
@@ -34,24 +40,6 @@ import { secondsToHoursMinutesAndSecondsString } from '@dundring/utils';
 import { getPowerToSpeedMap } from '../../utils/speed';
 import { ApiStatus } from '@dundring/types';
 import { parseInputAsInt } from '../../utils/general';
-
-const editableWorkoutIsEqualToLoaded = (
-  editable: EditableWorkout,
-  loaded: WorkoutToEdit
-) => {
-  if (editable.name !== loaded.name) return false;
-  if (editable.parts.length !== loaded.parts.length) return false;
-
-  for (let i = 0; i < editable.parts.length; i++) {
-    const editablePart = editable.parts[i];
-    const loadedPart = loaded.parts[i];
-
-    if (editablePart.duration !== loadedPart.duration) return false;
-    if (editablePart.targetPower !== loadedPart.targetPower) return false;
-  }
-
-  return true;
-};
 
 interface Props {
   workout: WorkoutToEdit;
@@ -77,12 +65,17 @@ export const WorkoutEditor = ({
   const { user, saveLocalWorkout } = useUser();
   const toast = useToast();
   const token = (user.loggedIn && user.token) || null;
+  const [showDeleted, setShowDeleted] = React.useState(false);
 
   const canSaveLocally =
     loadedWorkout.type === 'new' || loadedWorkout.type === 'local';
 
   const canSaveRemotely =
     token && (loadedWorkout.type === 'new' || loadedWorkout.type === 'remote');
+
+  const canBeDeleted = token && loadedWorkout.type === 'remote';
+
+  const cancelRef = React.useRef<HTMLButtonElement>(null);
 
   const saveRemotely = async () => {
     if (token) {
@@ -96,6 +89,29 @@ export const WorkoutEditor = ({
         });
         return;
       }
+      setIsWorkoutUnsaved(false);
+      closeEditor();
+    }
+  };
+
+  const sendTrash = async () => {
+    if (token) {
+      const res = await toggleWorkoutVisibility(token, workout.id, false);
+      if (res.status === ApiStatus.FAILURE) {
+        toast({
+          title: `Deleting workout failed`,
+          isClosable: true,
+          duration: 5000,
+          status: 'error',
+        });
+        return;
+      }
+      toast({
+        title: `The workout was sent to the trash`,
+        isClosable: true,
+        duration: 5000,
+        status: 'info',
+      });
       setIsWorkoutUnsaved(false);
       closeEditor();
     }
@@ -293,6 +309,16 @@ export const WorkoutEditor = ({
             Use without saving
           </Button>
 
+          {canBeDeleted && (
+            <Button
+              onClick={() => setShowDeleted(true)}
+              leftIcon={<Icon as={Trash} />}
+              color={'red'}
+            >
+              Send to trash
+            </Button>
+          )}
+
           <Button
             onClick={() => {
               setIsWorkoutUnsaved(false);
@@ -352,6 +378,59 @@ export const WorkoutEditor = ({
           </Tr>
         </Tfoot>
       </Table>
+      <AlertDialog
+        isOpen={showDeleted}
+        leastDestructiveRef={cancelRef}
+        onClose={() => setShowDeleted(false)}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Delete workout
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              This will delete the workout. Are you sure?
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <HStack>
+                <Button
+                  colorScheme="red"
+                  onClick={() => {
+                    setShowDeleted(false);
+                    sendTrash();
+                  }}
+                  ml={3}
+                >
+                  Yes, delete the workout
+                </Button>
+                <Button ref={cancelRef} onClick={() => setShowDeleted(false)}>
+                  Cancel
+                </Button>
+              </HStack>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Stack>
   );
+};
+
+const editableWorkoutIsEqualToLoaded = (
+  editable: EditableWorkout,
+  loaded: WorkoutToEdit
+) => {
+  if (editable.name !== loaded.name) return false;
+  if (editable.parts.length !== loaded.parts.length) return false;
+
+  for (let i = 0; i < editable.parts.length; i++) {
+    const editablePart = editable.parts[i];
+    const loadedPart = loaded.parts[i];
+
+    if (editablePart.duration !== loadedPart.duration) return false;
+    if (editablePart.targetPower !== loadedPart.targetPower) return false;
+  }
+
+  return true;
 };
