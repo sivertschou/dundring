@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { DataPoint, Lap, Waypoint } from '../types';
 import { distanceToCoordinates } from '../utils/gps';
-import { getPowerToSpeedMap } from '../utils/speed';
+import { getPowerToSpeedMap } from '@dundring/utils';
 import { useActiveWorkout } from './ActiveWorkoutContext';
 import { useHeartRateMonitor } from './HeartRateContext';
 import { useLogs } from './LogContext';
