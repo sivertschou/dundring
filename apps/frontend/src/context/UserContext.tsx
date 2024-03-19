@@ -12,6 +12,7 @@ const UserContext = React.createContext<{
   workouts: Workout[];
   localWorkouts: Workout[];
   saveLocalWorkout: (workout: Workout) => void;
+  deleteLocalWorkout: (workoutId: string) => void;
   setUser: (user: UserContextType) => void;
   refetchData: () => void;
 } | null>(null);
@@ -73,6 +74,16 @@ export const UserContextProvider = ({
     setUser(user);
   };
 
+  const deleteLocalWorkout = (workoutId: string) => {
+    setLocalWorkouts((localWorkouts) => {
+      const filteredWorkouts = localWorkouts.filter(
+        (workout) => workout.id !== workoutId
+      );
+      localStorage['workouts'] = JSON.stringify(filteredWorkouts);
+      return JSON.parse(localStorage['workouts']);
+    });
+  };
+
   const saveLocalWorkout = (workout: Workout) => {
     setLocalWorkouts((localWorkouts) => {
       if (workout.id) {
@@ -117,6 +128,7 @@ export const UserContextProvider = ({
         },
         localWorkouts,
         saveLocalWorkout,
+        deleteLocalWorkout,
       }}
     >
       {children}
