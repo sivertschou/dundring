@@ -62,7 +62,32 @@ router.post<WorkoutRequestBody, ApiResponseBody<UpdateWorkoutResponseBody>>(
   }
 );
 
-router.get<core.ParamsDictionary, ApiResponseBody<GetWorkoutResponseBody>>(
+router.delete<{ workoutId: string }, ApiResponseBody<{}>>(
+  '/:workoutId',
+  async (req, res) => {
+    if (!validationService.authenticateToken(req, res)) return;
+    const workoutId = req.params['workoutId'];
+
+    const ret = await workoutService.deleteWorkout(req.userId, workoutId);
+
+    switch (ret.status) {
+      case 'SUCCESS':
+        res.send({
+          status: ApiStatus.SUCCESS,
+          data: {},
+        });
+        return;
+      default:
+        res.send({
+          status: ApiStatus.FAILURE,
+          message: ret.type,
+        });
+        return;
+    }
+  }
+);
+
+router.get<{ workoutId: string }, ApiResponseBody<GetWorkoutResponseBody>>(
   '/:workoutId',
   async (req, res) => {
     const workoutId = req.params['workoutId'];
