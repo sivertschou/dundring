@@ -62,7 +62,7 @@ export const WorkoutEditor = ({
   setIsWorkoutUnsaved,
 }: Props) => {
   const { activeFtp, setActiveFtp, setActiveWorkout } = useActiveWorkout();
-  const { user, saveLocalWorkout } = useUser();
+  const { user, saveLocalWorkout, deleteLocalWorkout } = useUser();
   const toast = useToast();
   const token = (user.loggedIn && user.token) || null;
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
@@ -73,7 +73,9 @@ export const WorkoutEditor = ({
   const canSaveRemotely =
     token && (loadedWorkout.type === 'new' || loadedWorkout.type === 'remote');
 
-  const canBeDeleted = token && loadedWorkout.type === 'remote';
+  const canBeDeleted =
+    token &&
+    (loadedWorkout.type === 'remote' || loadedWorkout.type === 'local');
 
   const cancelRef = React.useRef<HTMLButtonElement>(null);
 
@@ -94,7 +96,7 @@ export const WorkoutEditor = ({
     }
   };
 
-  const deleteWorkout = async () => {
+  const deleteRemotely = async () => {
     if (token) {
       const res = await api.deleteWorkout(token, workout.id);
       if (res.status === ApiStatus.FAILURE) {
@@ -115,6 +117,18 @@ export const WorkoutEditor = ({
       setIsWorkoutUnsaved(false);
       closeEditor();
     }
+  };
+
+  const deleteLocally = (workoutId: string) => {
+    deleteLocalWorkout(workoutId);
+    toast({
+      title: `The workout was deleted (${workout.name})`,
+      isClosable: true,
+      duration: 5000,
+      status: 'success',
+    });
+    setIsWorkoutUnsaved(false);
+    closeEditor();
   };
 
   const [ftp, setFtp] = React.useState('' + activeFtp);
@@ -399,7 +413,11 @@ export const WorkoutEditor = ({
                   colorScheme="red"
                   onClick={() => {
                     setShowDeleteDialog(false);
-                    deleteWorkout();
+                    if (loadedWorkout.type === 'remote') {
+                      deleteRemotely();
+                    } else if (loadedWorkout.type === 'local') {
+                      deleteLocally(loadedWorkout.id);
+                    }
                   }}
                   ml={3}
                 >
