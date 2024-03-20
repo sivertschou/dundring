@@ -5,6 +5,7 @@ import { Tooltip } from '@chakra-ui/tooltip';
 import { Cloud, Gear, Hdd, Clipboard, Book } from 'react-bootstrap-icons';
 import { StoredWorkoutType, Workout, WorkoutType } from '../../types';
 import {
+  getTotalWorkoutDistance,
   getTotalWorkoutTime,
   secondsToHoursMinutesAndSecondsString,
 } from '@dundring/utils';
@@ -15,12 +16,14 @@ interface Props {
   setActiveWorkout: (workout: Workout) => void;
   onClickEdit: () => void;
   type: StoredWorkoutType;
+  ftp: number;
 }
 export const WorkoutListItem = ({
   workout,
   setActiveWorkout,
   onClickEdit,
   type,
+  ftp,
 }: Props) => {
   const workoutDuration = getTotalWorkoutTime(workout);
   const { onCopy } = useClipboard(`${api.domain}/workout/${workout.id}`);
@@ -34,7 +37,8 @@ export const WorkoutListItem = ({
           {workout.name}
         </Heading>
         <Text>
-          Duration: {secondsToHoursMinutesAndSecondsString(workoutDuration)}
+          Duration: {secondsToHoursMinutesAndSecondsString(workoutDuration)},
+          Distance: {getTotalWorkoutDistance(workout, ftp).toFixed(1)} km
         </Text>
       </Stack>
       <HStack>

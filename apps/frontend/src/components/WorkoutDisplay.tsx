@@ -4,7 +4,10 @@ import { useActiveWorkout } from '../context/ActiveWorkoutContext';
 import { useData } from '../context/DataContext';
 import { Workout } from '../types';
 import { wattFromFtpPercent } from '../utils/general';
-import { secondsToHoursMinutesAndSecondsString } from '@dundring/utils';
+import {
+  getTotalWorkoutTime,
+  secondsToHoursMinutesAndSecondsString,
+} from '@dundring/utils';
 
 export const WorkoutDisplay = () => {
   const { activeWorkout, activeFtp, changeActivePart } = useActiveWorkout();
@@ -50,10 +53,7 @@ const getTimeLeft = (
   partElapsedTime: number,
   activePart: number
 ): string => {
-  const totalWorkoutTime = workout.parts.reduce(
-    (acc, part) => acc + part.duration,
-    0
-  );
+  const totalWorkoutTime = getTotalWorkoutTime(workout);
 
   const timeElapsed =
     partElapsedTime +

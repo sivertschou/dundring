@@ -36,8 +36,11 @@ import {
 } from '@chakra-ui/react';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 import { createZoneTableInfo } from '../../utils/zones';
-import { secondsToHoursMinutesAndSecondsString } from '@dundring/utils';
-import { getPowerToSpeedMap } from '../../utils/speed';
+import {
+  getTotalWorkoutTime,
+  getTotalWorkoutDistance,
+  secondsToHoursMinutesAndSecondsString,
+} from '@dundring/utils';
 import { ApiStatus } from '@dundring/types';
 import { parseInputAsInt } from '../../utils/general';
 
@@ -140,18 +143,6 @@ export const WorkoutEditor = ({
     parts: loadedWorkout.parts.map((part, i) => ({ ...part, id: i })),
   });
 
-  const calculateDistance = () => {
-    const powerToSpeed = getPowerToSpeedMap(80);
-    return (
-      workout.parts
-        .map(
-          ({ duration, targetPower }) =>
-            duration * powerToSpeed[Math.round((targetPower * ftpValue) / 100)]
-        )
-        .reduce((prev, cur) => prev + cur) / 1000
-    );
-  };
-
   const workoutIsUnsaved =
     loadedWorkout.type === 'new' ||
     !editableWorkoutIsEqualToLoaded(workout, loadedWorkout);
@@ -160,10 +151,7 @@ export const WorkoutEditor = ({
     setIsWorkoutUnsaved(workoutIsUnsaved);
   }, [workoutIsUnsaved, setIsWorkoutUnsaved]);
 
-  const totalDuration = workout.parts.reduce(
-    (sum, part) => sum + part.duration,
-    0
-  );
+  const totalDuration = getTotalWorkoutTime(workout);
 
   function onDragEnd(result: DropResult) {
     const { destination, source } = result;
@@ -293,7 +281,10 @@ export const WorkoutEditor = ({
       <Text fontWeight="bold">
         Total duration {secondsToHoursMinutesAndSecondsString(totalDuration)}
       </Text>
-      <Text>Estimated distance {calculateDistance().toFixed(1)} km</Text>
+      <Text>
+        Estimated distance{' '}
+        {getTotalWorkoutDistance(workout, ftpValue).toFixed(1)} km
+      </Text>
       <FormControl>
         <HStack>
           {canSaveRemotely ? (

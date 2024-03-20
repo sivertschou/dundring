@@ -112,6 +112,7 @@ export const WorkoutOverview = ({
               previewFtp: previewFtpAsNumber,
             });
           }}
+          ftp={previewFtpAsNumber}
         />
       ))}
 
@@ -134,6 +135,7 @@ export const WorkoutOverview = ({
               previewFtp: previewFtpAsNumber,
             });
           }}
+          ftp={previewFtpAsNumber}
         />
       ))}
 
