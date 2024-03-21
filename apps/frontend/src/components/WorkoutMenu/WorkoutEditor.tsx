@@ -251,6 +251,7 @@ export const WorkoutEditor = ({
               }}
               workoutPart={part}
               ftp={ftpValue}
+              isLastWorkoutPart={workout.parts.length === 1}
             />
           </DraggableItem>
         ))}

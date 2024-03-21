@@ -69,20 +69,11 @@ interface Props {
   setWorkoutPart: (workoutPart: WorkoutPart) => void;
   removeWorkoutPart: () => void;
   duplicateWorkoutPart: () => void;
+  isLastWorkoutPart: boolean;
   ftp: number;
 }
+
 export const templateColumns = '1fr 4fr 4fr 1fr 5fr 5fr 1fr 1fr 1fr';
-
-const calculateNewDuration = (minutesInput: string, secondsInput: string) => {
-  const minutesAsSeconds = parseInputAsInt(minutesInput) * 60;
-  const secondsAsSeconds = parseInputAsInt(secondsInput);
-
-  const duration = Math.max(minutesAsSeconds + secondsAsSeconds, 0);
-
-  const minutes = Math.floor(duration / 60);
-  const seconds = Math.floor(duration % 60);
-  return { duration, seconds, minutes };
-};
 
 export const WorkoutIntervalInput = ({
   setWorkoutPart,
@@ -90,6 +81,7 @@ export const WorkoutIntervalInput = ({
   duplicateWorkoutPart,
   workoutPart,
   ftp,
+  isLastWorkoutPart,
 }: Props) => {
   const updateWorkout = (
     data: Data,
@@ -319,10 +311,22 @@ export const WorkoutIntervalInput = ({
             aria-label="Remove interval"
             variant="ghost"
             onClick={removeWorkoutPart}
+            isDisabled={isLastWorkoutPart}
             icon={<Icon as={X} />}
           />
         </Center>
       </Tooltip>
     </Grid>
   );
+};
+
+const calculateNewDuration = (minutesInput: string, secondsInput: string) => {
+  const minutesAsSeconds = parseInputAsInt(minutesInput) * 60;
+  const secondsAsSeconds = parseInputAsInt(secondsInput);
+
+  const duration = Math.max(minutesAsSeconds + secondsAsSeconds, 0);
+
+  const minutes = Math.floor(duration / 60);
+  const seconds = Math.floor(duration % 60);
+  return { duration, seconds, minutes };
 };
