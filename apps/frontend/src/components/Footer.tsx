@@ -1,5 +1,6 @@
 import { Center, Link, Stack, Text } from '@chakra-ui/react';
 import { githubRepo, slackInvite } from '../links';
+import { CompatibleWithStravaIcon } from './CompatibleWithStravaIcon';
 
 export const Footer = () => {
   return (
@@ -21,6 +22,9 @@ export const Footer = () => {
           </Link>
           !
         </Text>
+        <Center>
+          <CompatibleWithStravaIcon maxW="150px" />
+        </Center>
       </Stack>
     </Center>
   );
