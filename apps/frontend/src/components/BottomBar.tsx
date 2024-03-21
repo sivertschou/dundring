@@ -44,7 +44,7 @@ export const BottomBar = () => {
         <Grid
           backgroundColor={bgColor}
           width="100%"
-          templateColumns="1fr 4fr 1fr"
+          templateColumns="1fr 2fr 1fr"
           pointerEvents="auto"
         >
           <Flex p="1">
@@ -62,6 +62,10 @@ export const BottomBar = () => {
             </Text>
           </Button>
           <HStack justifyContent="flex-end" paddingX="2">
+            <Center></Center>
+            <Link as={ReachLink} to="/feedback">
+              <Text fontSize="xs">Need help or have feedback?</Text>
+            </Link>
             <Center>
               <Tooltip label={colorModeButtonText}>
                 <Link>
