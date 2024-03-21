@@ -16,6 +16,7 @@ import {
 } from '../context/ModalContext';
 import { Modals } from '../components/Modals/Modals';
 import { BottomBar } from '../components/BottomBar';
+import { Footer } from '../components/Footer';
 
 export const MainPage = () => {
   const { connect } = useWebsocket();
@@ -93,12 +94,13 @@ export const MainPage = () => {
     <>
       <Center>
         <Stack width="100%" pt={['30', '50', '100']}>
-          <Center width="100%">
+          <Center width="100%" minH="100vh">
             <Center width="90%">
               <WorkoutDisplay />
               <GraphContainer />
             </Center>
           </Center>
+          <Footer />
         </Stack>
       </Center>
       <TopBar />
