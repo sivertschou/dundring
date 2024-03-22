@@ -3,5 +3,13 @@
   "tabWidth": 2,
   "useTabs": false,
   "semi": true,
-  "singleQuote": true
+  "singleQuote": true,
+  "overrides": [
+    {
+      "files": "*.svg",
+      "options": {
+        "parser": "html"
+      }
+    }
+  ]
 }

@@ -15,6 +15,7 @@ import {
   ListItem,
   UnorderedList,
 } from '@chakra-ui/react';
+import { githubRepo, slackInvite } from '../../links';
 
 export const WelcomeMessageModal = () => {
   const { isOpen, onClose } = useWelcomeMessageModal();
@@ -129,10 +130,7 @@ export const WelcomeMessageModal = () => {
             training done. We'll continue to improve the project with features
             as we go, and we love feedback, feature suggestions and questions,
             so feel free to reach out to us in our{' '}
-            <Link
-              color={linkColor}
-              href="https://join.slack.com/t/dundring/shared_invite/zt-10g7cx905-6ugYR~UdMEFBAkwdSWOAew"
-            >
+            <Link color={linkColor} href={slackInvite}>
               Slack workspace
             </Link>
             !
@@ -142,10 +140,7 @@ export const WelcomeMessageModal = () => {
           </Heading>
           <Text>
             The source code can be found at{' '}
-            <Link
-              color={linkColor}
-              href="https://github.com/sivertschou/dundring"
-            >
+            <Link color={linkColor} href={githubRepo}>
               GitHub
             </Link>
           </Text>

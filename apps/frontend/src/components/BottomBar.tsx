@@ -18,6 +18,7 @@ import { useColorMode, useColorModeValue } from '@chakra-ui/color-mode';
 import { useLogModal } from '../context/ModalContext';
 import { useLogs } from '../context/LogContext';
 import { Icon } from '@chakra-ui/react';
+import { githubRepo, slackInvite } from '../links';
 
 export const BottomBar = () => {
   const { colorMode, setColorMode } = useColorMode();
@@ -73,15 +74,12 @@ export const BottomBar = () => {
               </Tooltip>
             </Center>
             <Tooltip label="Visit the workspace on Slack">
-              <Link
-                href="https://join.slack.com/t/dundring/shared_invite/zt-10g7cx905-6ugYR~UdMEFBAkwdSWOAew"
-                p="0"
-              >
+              <Link href={slackInvite} p="0">
                 <Icon as={Slack} p="0" />
               </Link>
             </Tooltip>
             <Tooltip label="Visit the repository on GitHub">
-              <Link href="https://github.com/sivertschou/dundring">
+              <Link href={githubRepo}>
                 <Icon as={Github} />
               </Link>
             </Tooltip>
