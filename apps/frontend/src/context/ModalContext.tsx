@@ -9,6 +9,7 @@ interface Modal {
 }
 
 const ModalContext = React.createContext<{
+  feedbackModal: Modal;
   groupSessionModal: Modal;
   logModal: Modal;
   loginModal: Modal;
@@ -28,10 +29,12 @@ export const ModalContextProvider = ({
   const groupSessionModal: Modal = useDisclosure();
   const welcomeMessageModal: Modal = useDisclosure();
   const workoutEditorModal: Modal = useDisclosure();
+  const feedbackModal: Modal = useDisclosure();
 
   return (
     <ModalContext.Provider
       value={{
+        feedbackModal,
         groupSessionModal,
         logModal,
         loginModal,
@@ -43,6 +46,16 @@ export const ModalContextProvider = ({
       {children}
     </ModalContext.Provider>
   );
+};
+
+export const useFeedbackModal = () => {
+  const context = React.useContext(ModalContext);
+  if (context === null) {
+    throw new Error(
+      'useFeedbackModal must be used within a ModalContextProvider'
+    );
+  }
+  return context.feedbackModal;
 };
 
 export const useLogModal = () => {

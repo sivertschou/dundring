@@ -4,10 +4,12 @@ import { LoginModal } from './LoginModal';
 import { ProfileModal } from './ProfileModal';
 import { GroupSessionModal } from './GroupSessionModal';
 import { WelcomeMessageModal } from './WelcomeMessageModal';
+import { FeedbackModal } from './FeedbackModal';
 
 export const Modals = () => {
   return (
     <>
+      <FeedbackModal />
       <GroupSessionModal />
       <LogModal />
       <LoginModal />

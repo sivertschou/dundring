@@ -7,6 +7,7 @@ import { ActionBar } from '../components/ActionBar';
 import { TopBar } from '../components/TopBar';
 import { useLocation, useParams } from 'react-router-dom';
 import {
+  useFeedbackModal,
   useGroupSessionModal,
   useLoginModal,
   useLogModal,
@@ -37,6 +38,7 @@ export const MainPage = () => {
     onOpen: onOpenWelcomeMessageModal,
     onClose: onCloseWelcomeMessageModal,
   } = useWelcomeMessageModal();
+  const feedbackModal = useFeedbackModal();
 
   React.useEffect(() => {
     const path = location.pathname.split('/')[1];
@@ -63,12 +65,17 @@ export const MainPage = () => {
         onOpenLogModal();
         return;
 
+      case 'feedback':
+        feedbackModal.onOpen();
+        return;
+
       default:
         onCloseGroupSessionModal();
         onCloseLogModal();
         onCloseLoginModal();
         onCloseProfileModal();
         onCloseWorkoutEditorModal();
+        feedbackModal.onClose();
 
         onOpenWelcomeMessageModal();
     }

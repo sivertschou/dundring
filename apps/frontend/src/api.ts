@@ -2,6 +2,7 @@ import {
   ApiResponseBody,
   AuthenticationRequestBody,
   AuthenticationResponseBody,
+  FeedbackRequestBody,
   GetWorkoutResponseBody,
   LoginResponseBody,
   MailLoginRequestBody,
@@ -185,3 +186,6 @@ export const updateUser = async (
     UserUpdateRequestBody
   >(`${httpUrl}/me`, token, data);
 };
+
+export const sendFeedback = async (data: FeedbackRequestBody) =>
+  post<ApiResponseBody<{}>, FeedbackRequestBody>(`${httpUrl}/feedback`, data);
