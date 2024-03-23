@@ -16,7 +16,7 @@ import { MainActionBar } from './MainActionBar';
 import { Link as ReachLink, useNavigate } from 'react-router-dom';
 import { useColorMode, useColorModeValue } from '@chakra-ui/color-mode';
 import { useLogs } from '../context/LogContext';
-import { Icon } from '@chakra-ui/react';
+import { Icon, useBreakpointValue } from '@chakra-ui/react';
 import { githubRepo, slackInvite } from '../links';
 
 export const BottomBar = () => {
@@ -29,6 +29,10 @@ export const BottomBar = () => {
     ? 'Toggle light mode'
     : 'Toggle dark mode';
 
+  const helpText = useBreakpointValue({
+    base: 'Support',
+    md: 'Support & feedback',
+  });
   const navigate = useNavigate();
 
   const now = new Date();
@@ -44,7 +48,7 @@ export const BottomBar = () => {
         <Grid
           backgroundColor={bgColor}
           width="100%"
-          templateColumns="1fr 2fr 1fr"
+          templateColumns="2fr 3fr 2fr"
           pointerEvents="auto"
         >
           <Flex p="1">
@@ -61,6 +65,7 @@ export const BottomBar = () => {
               textAlign="center"
               opacity={lastMessageShouldBeVisible ? 100 : 0}
               transition="opacity 0.5s ease"
+              fontSize="xs"
             >
               {loggedEvents[0] ? `${loggedEvents[0].msg}` : null}
             </Text>
@@ -68,7 +73,7 @@ export const BottomBar = () => {
           <HStack justifyContent="flex-end" paddingX="2">
             <Center></Center>
             <Link as={ReachLink} to="/feedback">
-              <Text fontSize="xs">Need help or have feedback?</Text>
+              <Text fontSize="xs">{helpText}</Text>
             </Link>
             <Center>
               <Tooltip label={colorModeButtonText}>
