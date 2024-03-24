@@ -4,7 +4,7 @@ import { CompatibleWithStravaIcon } from './CompatibleWithStravaIcon';
 
 export const Footer = () => {
   return (
-    <Center pb="20vh" px="2">
+    <Center pb="300px" px="2">
       <Stack maxW="600px" color="#999">
         <Text>
           dundring.com is an in-browser training application created to control
