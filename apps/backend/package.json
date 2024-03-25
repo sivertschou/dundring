@@ -17,7 +17,7 @@
     "@dundring/database": "*",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.17.1",
+    "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "node-fetch": "^2.6.6",
     "nodemailer": "^6.9.10",
