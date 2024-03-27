@@ -1,7 +1,7 @@
 import { padLeadingZero } from '@dundring/utils';
 import { Lap } from './types';
 
-export const toTCX = (
+export const downloadTCX = (
   laps: Lap[],
   distance: number,
   includeGPSData: boolean

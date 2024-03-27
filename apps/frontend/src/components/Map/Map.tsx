@@ -6,10 +6,9 @@ import { useColorModeValue } from '@chakra-ui/react';
 import { toWebMercatorCoordinates } from '../../gps';
 
 export const Map = () => {
-  const { data: laps, activeRoute } = useData();
+  const { data: rawData, activeRoute } = useData();
   const dotColor = useColorModeValue('black', 'white');
   const routeColor = useColorModeValue('#bdbdbd', '#424242');
-  const rawData = laps.flatMap((x) => x.dataPoints);
 
   const multiplier = 40;
 

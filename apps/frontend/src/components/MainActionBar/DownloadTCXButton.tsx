@@ -1,6 +1,6 @@
 import { Button } from '@chakra-ui/button';
 import { Download } from 'react-bootstrap-icons';
-import { toTCX } from '../../createTcxFile';
+import { downloadTCX } from '../../createTcxFile';
 import { useData } from '../../context/DataContext';
 import { Icon } from '@chakra-ui/react';
 
@@ -13,7 +13,7 @@ export const DownloadTCXButton = ({
   return (
     <Button
       width="100%"
-      onClick={() => toTCX(data, distance, includeGPSData)}
+      onClick={() => /* TODO: Fix this downloadTCX(data, distance, includeGPSData) */ {}}
       leftIcon={<Icon as={Download} />}
     >
       Save TCX

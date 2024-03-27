@@ -16,6 +16,7 @@ export const LogContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [loggedEvents, setLoggedEvents] = React.useState<LogMsg[]>([]);
+  React.useEffect(() => console.log('Mount LogContextProvider'), []);
 
   return (
     <LogContext.Provider

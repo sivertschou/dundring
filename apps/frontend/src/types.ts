@@ -8,6 +8,7 @@ export interface DataPoint {
   cadence?: number;
   timestamp: Date;
   position?: Waypoint;
+  tracking: boolean;
 }
 
 export interface Waypoint {
