@@ -308,6 +308,7 @@ export const WorkoutEditor = ({
           <Button
             onClick={() => {
               setActiveWorkout(workout);
+              setIsWorkoutUnsaved(false);
               closeEditor();
               closeModal();
             }}
