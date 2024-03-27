@@ -13,6 +13,7 @@ import { WorkoutControls } from './MainActionBar/WorkoutControls';
 import { SelectWorkoutButton } from './MainActionBar/SelectWorkoutButton';
 import { useLinkColor } from '../hooks/useLinkColor';
 import { Icon } from '@chakra-ui/react';
+import { startNewWorkout } from '../db';
 
 export const MainActionBar = () => {
   const [showPowerControls, setShowPowerControls] = React.useState(false);
@@ -35,6 +36,13 @@ export const MainActionBar = () => {
         {!smartTrainerIsConnected ? (
           <Center>
             <HStack>
+              <Button
+                variant="link"
+                color={linkColor}
+                onClick={() => startNewWorkout()}
+              >
+                Start new workout
+              </Button>
               <Button
                 variant="link"
                 color={linkColor}

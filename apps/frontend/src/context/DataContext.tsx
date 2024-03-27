@@ -75,13 +75,15 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
 
   const { workoutState } = useWorkoutState();
 
-  const dbData = useLiveQuery(() =>
-    db.workoutDataPoint
-      .where('workoutNumber')
-      .equals(workoutState.workoutNumber)
-      .reverse()
-      .limit(500)
-      .toArray()
+  const dbData = useLiveQuery(
+    () =>
+      db.workoutDataPoint
+        .where('workoutNumber')
+        .equals(workoutState.workoutNumber)
+        .reverse()
+        .limit(500)
+        .toArray(),
+    [workoutState.workoutNumber]
   )?.toReversed();
 
   const [state, dispatch] = React.useReducer(
