@@ -13,7 +13,7 @@ import { WorkoutControls } from './MainActionBar/WorkoutControls';
 import { SelectWorkoutButton } from './MainActionBar/SelectWorkoutButton';
 import { useLinkColor } from '../hooks/useLinkColor';
 import { Icon } from '@chakra-ui/react';
-import { startNewWorkout } from '../db';
+import { RecoverWorkout } from './MainActionBar/RecoverWorkout';
 
 export const MainActionBar = () => {
   const [showPowerControls, setShowPowerControls] = React.useState(false);
@@ -29,20 +29,20 @@ export const MainActionBar = () => {
   const bgColor = useColorModeValue('gray.200', 'gray.900');
   return (
     <Center mb="5" mx="2">
-      <Stack p="5" borderRadius="1em" bgColor={bgColor} pointerEvents="auto">
+      <Stack
+        p="5"
+        borderRadius="1em"
+        bgColor={bgColor}
+        pointerEvents="auto"
+        width="500px"
+      >
+        <RecoverWorkout />
         {showWorkoutControls ? <WorkoutControls /> : null}
         {showPowerControls ? <PowerControls /> : null}
 
         {!smartTrainerIsConnected ? (
           <Center>
             <HStack>
-              <Button
-                variant="link"
-                color={linkColor}
-                onClick={() => startNewWorkout()}
-              >
-                Start new workout
-              </Button>
               <Button
                 variant="link"
                 color={linkColor}
@@ -67,7 +67,7 @@ export const MainActionBar = () => {
               </Tooltip>
             </HStack>
           </Center>
-          <Center width="8em">
+          <Center>
             <StartButton />
           </Center>
           <Center height="100%">

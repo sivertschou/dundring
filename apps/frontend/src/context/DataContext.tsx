@@ -9,7 +9,6 @@ import { useSmartTrainer } from './SmartTrainerContext';
 import { useWebsocket } from './WebsocketContext';
 import { Route, dWaypoints, routeNameToWaypoint, zapWaypoints } from '../gps';
 import { db } from '../db';
-import { useLiveQuery } from 'dexie-react-hooks';
 import { useWorkoutState } from '../hooks/useWorkoutState';
 
 const DataContext = React.createContext<{
@@ -23,6 +22,7 @@ const DataContext = React.createContext<{
   stop: () => void;
   addLap: () => void;
   isRunning: boolean;
+  state: 'not_started' | 'running' | 'paused';
   activeRoute: { name: Route; waypoints: Waypoint[] };
   setActiveRoute: (route: Route) => void;
 } | null>(null);
@@ -73,18 +73,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
   const { sendData } = useWebsocket();
   const [route, setRoute] = React.useState<Route>('zap');
 
-  const { workoutState } = useWorkoutState();
-
-  const dbData = useLiveQuery(
-    () =>
-      db.workoutDataPoint
-        .where('workoutNumber')
-        .equals(workoutState.workoutNumber)
-        .reverse()
-        .limit(500)
-        .toArray(),
-    [workoutState.workoutNumber]
-  )?.toReversed();
+  const { state: workoutState, data } = useWorkoutState();
 
   const [state, dispatch] = React.useReducer(
     (currentData: Data, action: Action): Data => {
@@ -302,7 +291,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
   return (
     <DataContext.Provider
       value={{
-        data: dbData ?? [],
+        data,
         hasValidData,
         timeElapsed: state.timeElapsed,
         startingTime: state.startingTime,
@@ -317,6 +306,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
           });
         },
         isRunning: state.state === 'running',
+        state: state.state,
         activeRoute: { name: route, waypoints: routeNameToWaypoint(route) },
         setActiveRoute: setRoute,
       }}
