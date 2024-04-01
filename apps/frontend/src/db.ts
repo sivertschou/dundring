@@ -1,5 +1,6 @@
 import Dexie, { Table } from 'dexie';
 import { Waypoint } from './types';
+import { Route } from './gps';
 
 export type WorkoutDataPoint = {
   id?: number;
@@ -16,6 +17,7 @@ export type WorkoutDataPoint = {
 export type WorkoutState = {
   workoutNumber: number;
   lapNumber: number;
+  route: Route;
 };
 
 export class DundringDexie extends Dexie {
@@ -27,7 +29,7 @@ export class DundringDexie extends Dexie {
     this.version(1).stores({
       workoutDataPoint:
         '++id, workoutNumber, lapNumber, timestamp, tracking, heartRate, power, cadence, position',
-      workoutState: '++workoutNumber, lapNumber',
+      workoutState: '++workoutNumber, lapNumber, route',
     });
   }
 }
@@ -37,17 +39,29 @@ export const db = new DundringDexie();
 export const defaultWorkoutState: WorkoutState = {
   workoutNumber: 0,
   lapNumber: 0,
+  route: 'D',
 };
 
 export const startNewWorkout = async () => {
   db.transaction('rw', db.workoutState, async () => {
     const state =
-      (await db.workoutState.orderBy('workoutNumber').reverse().first()) ??
-      defaultWorkoutState;
+      (await db.workoutState.toCollection().last()) ?? defaultWorkoutState;
 
     await db.workoutState.add({
+      ...state,
       workoutNumber: state.workoutNumber + 1,
       lapNumber: 0,
+    });
+  });
+};
+
+export const setRoute = async (route: Route) => {
+  db.transaction('rw', db.workoutState, async () => {
+    const state =
+      (await db.workoutState.toCollection().last()) ?? defaultWorkoutState;
+
+    await db.workoutState.update(state.workoutNumber, {
+      route,
     });
   });
 };

@@ -4,9 +4,11 @@ import { Waypoint } from '../../types';
 import { powerColor } from '../../colors';
 import { useColorModeValue } from '@chakra-ui/react';
 import { toWebMercatorCoordinates } from '../../gps';
+import { useActiveRoute } from '../../hooks/useActiveRoute';
 
 export const Map = () => {
-  const { data: rawData, activeRoute } = useData();
+  const { data: rawData } = useData();
+  const { activeRoute } = useActiveRoute();
   const dotColor = useColorModeValue('black', 'white');
   const routeColor = useColorModeValue('#bdbdbd', '#424242');
 

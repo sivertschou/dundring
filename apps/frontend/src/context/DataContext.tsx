@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DataPoint, Lap, Waypoint } from '../types';
+import { DataPoint } from '../types';
 import { distanceToCoordinates } from '../utils/gps';
 import { getPowerToSpeedMap } from '@dundring/utils';
 import { useActiveWorkout } from './ActiveWorkoutContext';
@@ -7,7 +7,7 @@ import { useHeartRateMonitor } from './HeartRateContext';
 import { useLogs } from './LogContext';
 import { useSmartTrainer } from './SmartTrainerContext';
 import { useWebsocket } from './WebsocketContext';
-import { Route, dWaypoints, routeNameToWaypoint, zapWaypoints } from '../gps';
+import { Route, dWaypoints, zapWaypoints } from '../gps';
 import { db } from '../db';
 import { useWorkoutState } from '../hooks/useWorkoutState';
 
@@ -23,8 +23,6 @@ const DataContext = React.createContext<{
   addLap: () => void;
   isRunning: boolean;
   state: 'not_started' | 'running' | 'paused';
-  activeRoute: { name: Route; waypoints: Waypoint[] };
-  setActiveRoute: (route: Route) => void;
 } | null>(null);
 
 interface Props {
@@ -301,14 +299,13 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         stop,
         addLap: () => {
           db.workoutState.add({
+            ...workoutState,
             lapNumber: (workoutState?.lapNumber ?? 0) + 1,
             workoutNumber: workoutState?.workoutNumber ?? 0,
           });
         },
         isRunning: state.state === 'running',
         state: state.state,
-        activeRoute: { name: route, waypoints: routeNameToWaypoint(route) },
-        setActiveRoute: setRoute,
       }}
     >
       {children}
