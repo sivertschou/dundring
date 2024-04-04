@@ -23,7 +23,7 @@ export default () => {
             delta: Date.now() - lastDataTick,
           });
           lastDataTick = Date.now();
-        }, 2000);
+        }, 1000);
         break;
       }
       case 'stopDataTimer': {

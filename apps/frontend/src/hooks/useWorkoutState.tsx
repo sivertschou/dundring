@@ -1,5 +1,10 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, defaultWorkoutState, startNewWorkout } from '../db';
+import {
+  db,
+  defaultWorkoutState,
+  initWorkoutstate,
+  startNewWorkout,
+} from '../db';
 import { useEffect, useState } from 'react';
 import { millisToHoursMinutesAndSeconds } from '@dundring/utils';
 
@@ -11,7 +16,20 @@ export const useWorkoutState = () => {
   const state =
     useLiveQuery(() => db.workoutState.limit(1).last()) ?? defaultWorkoutState;
 
-  const data =
+  const trackedData =
+    useLiveQuery(
+      () =>
+        db.workoutDataPoint
+          .where('workoutNumber')
+          .equals(state.workoutNumber)
+          .reverse()
+          .toArray(),
+      [state.workoutNumber]
+    )
+      ?.toReversed()
+      ?.filter((dataPoint) => dataPoint.tracking) ?? [];
+
+  const graphData =
     useLiveQuery(
       () =>
         db.workoutDataPoint
@@ -59,9 +77,14 @@ export const useWorkoutState = () => {
     }
   }, [lastDatapoint]);
 
+  useEffect(() => {
+    initWorkoutstate();
+  }, []);
+
   return {
     state,
-    data,
+    graphData,
+    trackedData,
     firstDatapoint,
     lastDatapoint,
     showRecoverPrompt,

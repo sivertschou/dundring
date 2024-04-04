@@ -6,57 +6,34 @@ export const distanceToCoordinates = (
   totalDistance: number
 ) => {
   // TODO: Memoize this
-  const totalPathDistance = path.reduce(
+  const totalRouteDistance = path.reduce(
     (sum, waypoint) => sum + waypoint.distance,
     0
   );
-  const lapDistance = totalDistance % totalPathDistance;
+  const lapDistance = totalDistance % totalRouteDistance;
 
-  const { currentWaypoint, index, accDistance } = path.reduce(
-    (
-      {
-        accDistance,
-        currentWaypoint,
-        index,
-      }: {
-        accDistance: number;
-        currentWaypoint: Waypoint | null;
-        index: number | null;
-      },
-      waypoint: Waypoint,
-      i
-    ): {
-      accDistance: number;
-      currentWaypoint: Waypoint | null;
-      index: number | null;
-    } => {
-      if (currentWaypoint !== null)
-        return { accDistance, currentWaypoint, index };
+  let distance = 0;
+  let lastCheckpoint = path[0];
+  let nextCheckpoint = path[1 % path.length];
+  for (let i = 0; i < path.length; i++) {
+    if (distance + path[i].distance > lapDistance) {
+      lastCheckpoint = path[i];
+      nextCheckpoint = path[(i + 1) % path.length];
+      break;
+    }
 
-      if (accDistance + waypoint.distance > lapDistance) {
-        return { accDistance, currentWaypoint: waypoint, index: i };
-      }
+    distance += path[i].distance;
+  }
 
-      return {
-        accDistance: accDistance + waypoint.distance,
-        currentWaypoint,
-        index,
-      };
-    },
-    { accDistance: 0, currentWaypoint: null, index: null }
-  );
-
-  if (!currentWaypoint || index === null) return null;
-  const distanceThisSegment = lapDistance - accDistance;
   const lat = lerp(
-    currentWaypoint.lat,
-    path[(index + 1) % path.length].lat,
-    distanceThisSegment / currentWaypoint.distance
+    lastCheckpoint.lat,
+    nextCheckpoint.lat,
+    (lapDistance - distance) / lastCheckpoint.distance
   );
   const lon = lerp(
-    currentWaypoint.lon,
-    path[(index + 1) % path.length].lon,
-    distanceThisSegment / currentWaypoint.distance
+    lastCheckpoint.lon,
+    nextCheckpoint.lon,
+    (lapDistance - distance) / lastCheckpoint.distance
   );
   return { lat, lon };
 };

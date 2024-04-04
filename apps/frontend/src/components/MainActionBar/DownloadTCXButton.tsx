@@ -9,7 +9,7 @@ export const DownloadTCXButton = ({
 }: {
   includeGPSData: boolean;
 }) => {
-  const { data, distance } = useData();
+  const { trackedData, distance } = useData();
   return (
     <Button
       width="100%"

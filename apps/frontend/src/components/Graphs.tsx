@@ -32,7 +32,7 @@ export const Graphs = ({
   showOtherUsersData,
   activeGroupSession,
 }: Props) => {
-  const { data: rawData } = useData();
+  const { graphData: rawData } = useData();
   const numPoints = 500;
 
   const allMerged = React.useMemo(() => {

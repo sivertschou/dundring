@@ -7,7 +7,7 @@ import { toWebMercatorCoordinates } from '../../gps';
 import { useActiveRoute } from '../../hooks/useActiveRoute';
 
 export const Map = () => {
-  const { data: rawData } = useData();
+  const { trackedData: rawData } = useData();
   const { activeRoute } = useActiveRoute();
   const dotColor = useColorModeValue('black', 'white');
   const routeColor = useColorModeValue('#bdbdbd', '#424242');
