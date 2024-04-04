@@ -19,6 +19,7 @@ import { ImportWorkout } from './ImportWorkout';
 import { WorkoutListItem } from './WorkoutListItem';
 import { useData } from '../../context/DataContext';
 import { stringToRouteName } from '../../gps';
+import FileUploader from '../FileUpload';
 
 interface Props {
   setActiveWorkout: (workout: Workout, ftp: number) => void;
@@ -139,6 +140,12 @@ export const WorkoutOverview = ({
         />
       ))}
 
+      <Divider />
+      <FileUploader
+        setWorkoutToEdit={(workoutToEdit) =>
+          setWorkoutToEdit({ ...workoutToEdit, previewFtp: previewFtpAsNumber })
+        }
+      />
       <Divider />
       <ImportWorkout
         setWorkoutToEdit={setWorkoutToEdit}
