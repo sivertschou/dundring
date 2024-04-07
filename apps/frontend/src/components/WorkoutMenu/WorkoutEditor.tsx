@@ -76,15 +76,15 @@ export const WorkoutEditor = ({
   const canSaveRemotely =
     token && (loadedWorkout.type === 'new' || loadedWorkout.type === 'remote');
 
-  const canBeDeleted =
-    token &&
-    (loadedWorkout.type === 'remote' || loadedWorkout.type === 'local');
+  const isStored =
+    (token && loadedWorkout.type === 'remote') ||
+    loadedWorkout.type === 'local';
 
   const cancelRef = React.useRef<HTMLButtonElement>(null);
 
-  const saveRemotely = async () => {
+  const saveRemotely = async (workoutToSave: Workout) => {
     if (token) {
-      const res = await api.saveWorkout(token, { workout });
+      const res = await api.saveWorkout(token, { workout: workoutToSave });
       if (res.status === ApiStatus.FAILURE) {
         toast({
           title: `Save workout remotely failed`,
@@ -289,7 +289,10 @@ export const WorkoutEditor = ({
       <FormControl>
         <HStack>
           {canSaveRemotely ? (
-            <Button onClick={saveRemotely} leftIcon={<Icon as={CloudUpload} />}>
+            <Button
+              onClick={() => saveRemotely(workout)}
+              leftIcon={<Icon as={CloudUpload} />}
+            >
               Save
             </Button>
           ) : null}
@@ -305,6 +308,35 @@ export const WorkoutEditor = ({
               Save locally
             </Button>
           ) : null}
+          {isStored ? (
+            <Button
+              onClick={() => {
+                const nonDuplicatedName =
+                  workout.name === loadedWorkout.name
+                    ? `${workout.name}(2)`
+                    : workout.name;
+                const newWorkout = {
+                  ...workout,
+                  id: '',
+                  name: nonDuplicatedName,
+                };
+                const save =
+                  loadedWorkout.type === 'remote'
+                    ? saveRemotely
+                    : saveLocalWorkout;
+                save(newWorkout);
+                setIsWorkoutUnsaved(false);
+                closeEditor();
+              }}
+              leftIcon={
+                <Icon
+                  as={loadedWorkout.type === 'remote' ? CloudUpload : Hdd}
+                />
+              }
+            >
+              Save {loadedWorkout.type === 'remote' ? '' : 'locally'} as new
+            </Button>
+          ) : null}
           <Button
             onClick={() => {
               setActiveWorkout(workout);
@@ -316,7 +348,7 @@ export const WorkoutEditor = ({
             Use without saving
           </Button>
 
-          {canBeDeleted && (
+          {isStored ? (
             <Button
               onClick={() => setShowDeleteDialog(true)}
               leftIcon={<Icon as={Trash} />}
@@ -324,7 +356,7 @@ export const WorkoutEditor = ({
             >
               Delete workout
             </Button>
-          )}
+          ) : null}
 
           <Button
             onClick={() => {
