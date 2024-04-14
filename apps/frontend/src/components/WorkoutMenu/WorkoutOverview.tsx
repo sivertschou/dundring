@@ -17,8 +17,8 @@ import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
 import { defaultWorkouts } from './defaultWorkouts';
 import { ImportWorkout } from './ImportWorkout';
 import { WorkoutListItem } from './WorkoutListItem';
-import { useData } from '../../context/DataContext';
 import { stringToRouteName } from '../../gps';
+import { useActiveRoute } from '../../hooks/useActiveRoute';
 
 interface Props {
   setActiveWorkout: (workout: Workout, ftp: number) => void;
@@ -32,7 +32,7 @@ export const WorkoutOverview = ({
   const { activeFtp, setActiveFtp } = useActiveWorkout();
   const [previewFtp, setPreviewFtp] = React.useState('' + activeFtp);
   const previewFtpAsNumber = parseInputAsInt(previewFtp);
-  const { activeRoute, setActiveRoute } = useData();
+  const { activeRoute, setActiveRoute } = useActiveRoute();
 
   const allUserWorkouts = [
     ...workouts.map((workout) => ({
