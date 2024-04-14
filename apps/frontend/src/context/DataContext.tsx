@@ -11,56 +11,25 @@ import { addElapsedTime, db } from '../db';
 import { useWorkoutState } from '../hooks/useWorkoutState';
 import { useActiveRoute } from '../hooks/useActiveRoute';
 
+type TrainerState = 'not_started' | 'running' | 'paused';
 const DataContext = React.createContext<{
   graphData: DataPoint[];
   trackedData: DataPoint[];
   hasValidData: boolean;
   timeElapsed: number;
-  startingTime: Date | null;
   distance: number;
   speed: number;
   start: () => void;
   stop: () => void;
   addLap: () => void;
+  state: TrainerState;
   isRunning: boolean;
-  state: 'not_started' | 'running' | 'paused';
 } | null>(null);
 
 interface Props {
   clockWorker: Worker;
   children: React.ReactNode;
 }
-
-interface Data {
-  lap: number;
-  workoutNumber: number;
-  timeElapsed: number;
-  distance: number;
-  speed: number;
-  startingTime: Date | null;
-  state: 'not_started' | 'running' | 'paused';
-}
-
-interface AddData {
-  type: 'ADD_DATA';
-  dataPoint: DataPoint;
-  delta: number;
-}
-
-interface AddLap {
-  type: 'ADD_LAP';
-}
-interface IncreaseElapsedTime {
-  type: 'INCREASE_ELAPSED_TIME';
-  delta: number;
-}
-interface Pause {
-  type: 'PAUSE';
-}
-interface Start {
-  type: 'START';
-}
-type Action = AddData | AddLap | IncreaseElapsedTime | Start | Pause;
 
 export const DataContextProvider = ({ clockWorker, children }: Props) => {
   const {
@@ -78,91 +47,8 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
     lastDatapoint,
   } = useWorkoutState();
   const { activeRoute } = useActiveRoute();
-
-  const [state, dispatch] = React.useReducer(
-    (currentData: Data, action: Action): Data => {
-      switch (action.type) {
-        case 'START': {
-          if (currentData.state === 'not_started') {
-            return {
-              timeElapsed: 0,
-              distance: 0,
-              speed: 0,
-              startingTime: new Date(),
-              state: 'running',
-              lap: 0,
-              workoutNumber: 0,
-            };
-          }
-          return { ...currentData, state: 'running' };
-        }
-        case 'PAUSE': {
-          return { ...currentData, state: 'paused' };
-        }
-        case 'INCREASE_ELAPSED_TIME': {
-          return {
-            ...currentData,
-            timeElapsed: currentData.timeElapsed + action.delta,
-          };
-        }
-        case 'ADD_LAP': {
-          return {
-            ...currentData,
-          };
-        }
-        case 'ADD_DATA': {
-          const { dataPoint } = action;
-
-          const weight = 80;
-          const powerSpeed = getPowerToSpeedMap(weight);
-          const speed = dataPoint.power ? powerSpeed[dataPoint.power] : 0;
-
-          const deltaDistance = (speed * action.delta) / 1000;
-
-          const totalDistance = currentData.distance + deltaDistance;
-          const coordinates = distanceToCoordinates(
-            activeRoute.waypoints,
-            totalDistance
-          );
-
-          const dataPointWithPosition: DataPoint = {
-            ...dataPoint,
-            ...(coordinates
-              ? {
-                  position: {
-                    lat: coordinates.lat,
-                    lon: coordinates.lon,
-                    distance: totalDistance,
-                  },
-                }
-              : undefined),
-          };
-
-          // db.workoutDataPoint.add({
-          //   ...dataPointWithPosition,
-          //   workoutNumber: 1,
-          //   lapNumber: 1,
-          //   tracking: true,
-          // });
-
-          return {
-            ...currentData,
-            speed: speed,
-            distance: currentData.distance + deltaDistance,
-          };
-        }
-      }
-    },
-    {
-      lap: 0,
-      workoutNumber: 0,
-      timeElapsed: 0,
-      distance: 0,
-      speed: 0,
-      startingTime: null,
-      state: 'not_started',
-    }
-  );
+  const [state, setState] = React.useState<TrainerState>('not_started');
+  const isRunning = state === 'running';
 
   const [wakeLock, setWakeLock] = React.useState<WakeLockSentinel | null>(null);
   const { logEvent } = useLogs();
@@ -214,8 +100,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         power
       );
 
-      const deltaDistance =
-        state.state === 'running' ? (speed * delta) / 1000 : 0;
+      const deltaDistance = isRunning ? (speed * delta) / 1000 : 0;
 
       const accumulatedDistance = lastDatapoint?.accumulatedDistance ?? 0;
       const totalDistance = accumulatedDistance + deltaDistance;
@@ -224,17 +109,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         totalDistance
       );
 
-      // db.workoutDataPoint.add({
-      //   timestamp: new Date(),
-      //   workoutNumber: 1,
-      //   lapNumber: 1,
-      //   tracking: true,
-      // });
-      // dispatch({ type: 'ADD_DATA', dataPoint, delta });
-
       console.log(
-        'state:',
-        state.state,
         'dataTick.dataPoint:',
         dataPoint,
         'coordinates:',
@@ -248,7 +123,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         timestamp: new Date(),
         workoutNumber: workoutState.workoutNumber,
         lapNumber: workoutState.lapNumber,
-        tracking: state.state === 'running',
+        tracking: isRunning,
         accumulatedDistance: totalDistance,
         speed,
         position: {
@@ -259,15 +134,12 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
       });
       // sendData(dataPoint);
     },
-    [heartRate, power, cadence, state.state, workoutState]
+    [heartRate, power, cadence, isRunning, workoutState]
   );
   const clockTick = (delta: number) => {
-    dispatch({ type: 'INCREASE_ELAPSED_TIME', delta });
     addElapsedTime(delta);
 
-    increaseActiveWorkoutElapsedTime(delta, () =>
-      dispatch({ type: 'ADD_LAP' })
-    );
+    increaseActiveWorkoutElapsedTime(delta);
   };
 
   React.useEffect(() => {
@@ -294,7 +166,8 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
   }, [heartRate, power, cadence]);
 
   const start = React.useCallback(async () => {
-    if (!state.startingTime) {
+    console.log('start.trackedData');
+    if (trackedData.length > 0) {
       logEvent('workout started');
     } else {
       logEvent('workout resumed');
@@ -309,18 +182,18 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
     }
     startActiveWorkout();
     clockWorker.postMessage('startClockTimer');
-    dispatch({ type: 'START' });
+    setState('running');
   }, [
     clockWorker,
     logEvent,
     syncResistance,
     startActiveWorkout,
-    state.startingTime,
+    trackedData.length,
   ]);
 
   const stop = React.useCallback(async () => {
     logEvent('workout paused');
-    dispatch({ type: 'PAUSE' });
+    setState('paused');
     if (smartTrainerIsConnected) {
       setResistance(0);
     }
@@ -340,7 +213,6 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         trackedData,
         hasValidData,
         timeElapsed: workoutState.elapsedTime,
-        startingTime: state.startingTime,
         distance: lastDatapoint?.accumulatedDistance ?? 0,
         speed: lastDatapoint?.speed ?? 0,
         start,
@@ -352,8 +224,8 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
             workoutNumber: workoutState?.workoutNumber ?? 0,
           });
         },
-        isRunning: state.state === 'running',
-        state: state.state,
+        state,
+        isRunning,
       }}
     >
       {children}
