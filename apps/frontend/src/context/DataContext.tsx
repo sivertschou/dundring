@@ -132,7 +132,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
           distance: deltaDistance,
         },
       });
-      // sendData(dataPoint);
+      sendData(dataPoint);
     },
     [heartRate, power, cadence, isRunning, workoutState]
   );
