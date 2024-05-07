@@ -6,7 +6,7 @@ import {
 } from '@chakra-ui/form-control';
 import { Input, InputGroup, InputRightAddon } from '@chakra-ui/input';
 import { Divider, Stack } from '@chakra-ui/layout';
-import { Center, Text, Icon, Select } from '@chakra-ui/react';
+import { Center, Text, Icon, Select, useToast } from '@chakra-ui/react';
 import * as React from 'react';
 import { PencilSquare } from 'react-bootstrap-icons';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
@@ -15,11 +15,13 @@ import { StoredWorkoutType, Workout } from '../../types';
 import { parseInputAsInt } from '../../utils/general';
 import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
 import { defaultWorkouts } from './defaultWorkouts';
-import { ImportWorkout } from './ImportWorkout';
 import { WorkoutListItem } from './WorkoutListItem';
 import { useData } from '../../context/DataContext';
 import { stringToRouteName } from '../../gps';
 import FileUploader from '../FileUpload';
+import * as zwoparsing from '../../utils/zwoparsing';
+import FileUpload from '../FileUpload';
+import { ImportWorkout } from './ImportWorkout';
 
 interface Props {
   setActiveWorkout: (workout: Workout, ftp: number) => void;
@@ -34,6 +36,8 @@ export const WorkoutOverview = ({
   const [previewFtp, setPreviewFtp] = React.useState('' + activeFtp);
   const previewFtpAsNumber = parseInputAsInt(previewFtp);
   const { activeRoute, setActiveRoute } = useData();
+  const [file, setFile] = React.useState<string | null>(null);
+  const toast = useToast();
 
   const allUserWorkouts = [
     ...workouts.map((workout) => ({
@@ -45,6 +49,32 @@ export const WorkoutOverview = ({
       type: 'local' as StoredWorkoutType,
     })),
   ];
+
+  const ImportZwoWorkout = React.memo(() => {
+    if (!file) {
+      return null;
+    }
+    const parsed = zwoparsing.parse(file);
+    if (!parsed) {
+      toast({
+        title: `Importing workout failed. The file is either invalid or contains event types that are not supported`,
+        isClosable: true,
+        duration: 10000,
+        status: 'error',
+      });
+      return 'Failure';
+    }
+    const workoutToEdit: WorkoutToEdit = {
+      ...zwoparsing.zwoWorkoutToDundringWorkout(parsed),
+      type: 'new',
+      previewFtp: previewFtpAsNumber,
+    };
+    return (
+      <Button onClick={() => setWorkoutToEdit(workoutToEdit)}>
+        Import workout
+      </Button>
+    );
+  });
 
   return (
     <Stack p="5">
@@ -141,11 +171,8 @@ export const WorkoutOverview = ({
       ))}
 
       <Divider />
-      <FileUploader
-        setWorkoutToEdit={(workoutToEdit) =>
-          setWorkoutToEdit({ ...workoutToEdit, previewFtp: previewFtpAsNumber })
-        }
-      />
+      <FileUploader file={file} setFile={setFile} />
+      <ImportZwoWorkout />
       <Divider />
       <ImportWorkout
         setWorkoutToEdit={setWorkoutToEdit}

@@ -64,12 +64,6 @@ export const zwoWorkoutToDundringWorkout = (
           toPart(part.duration / 3, part.powerHigh),
         ];
 
-      // case 'cooldown':
-      //   return [
-      //     toPart(part.duration / 3, part.powerHigh),
-      //     toPart(part.duration / 3, part.powerHigh - (part.powerHigh - part.powerLow) / 2),
-      //     toPart(part.duration / 3, part.powerLow),
-      //   ];
       case 'intervals':
         return Array(part.repeat)
           .fill('')
@@ -87,16 +81,20 @@ export const zwoWorkoutToDundringWorkout = (
   };
 };
 
-export const parse = (str: string) => {
-  const document: XmlDocument = parseXml(str);
-  if (document.children.length != 1) {
+export const parse = (str: string): ZwoWorkout | null => {
+  try {
+    const document: XmlDocument = parseXml(str);
+    if (document.children.length != 1) {
+      return null;
+    }
+    const workoutFileElement = document.children[0];
+    if (workoutFileElement instanceof XmlElement === false) {
+      return null;
+    }
+    return parseWorkoutFile(workoutFileElement);
+  } catch (error) {
     return null;
   }
-  const workoutFileElement = document.children[0];
-  if (workoutFileElement instanceof XmlElement === false) {
-    return null;
-  }
-  return parseWorkoutFile(workoutFileElement);
 };
 
 const parseWorkoutFile = (
