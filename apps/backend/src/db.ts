@@ -6,32 +6,23 @@ import {
   retry,
   success,
 } from '@dundring/utils';
-import {
-  FitnessData,
-  MailAuthentication,
-  Prisma,
-  PrismaClient,
-  SteadyWorkoutPart,
-  StravaAuthentication,
-  User,
-  Workout,
-} from '@dundring/database';
-export const prisma = new PrismaClient();
+import * as Prisma from '@dundring/database';
+export const prismaClient = new Prisma.PrismaClient();
 
 export const getUser = async (
   query: { username: string } | { id: string }
 ): Promise<
   Status<
-    User & {
-      fitnessData: FitnessData | null;
-      stravaAuthentication: StravaAuthentication | null;
-      mailAuthentication: MailAuthentication | null;
+    Prisma.User & {
+      fitnessData: Prisma.FitnessData | null;
+      stravaAuthentication: Prisma.StravaAuthentication | null;
+      mailAuthentication: Prisma.MailAuthentication | null;
     },
     'User not found' | 'Something went wrong reading from database'
   >
 > => {
   try {
-    const result = await prisma.user.findUnique({
+    const result = await prismaClient.user.findUnique({
       where: query,
       include: {
         fitnessData: true,
@@ -56,14 +47,14 @@ export const updateUser = async (
   data: { username?: string; ftp?: number }
 ): Promise<
   Status<
-    User & { fitnessData: FitnessData | null },
+    Prisma.User & { fitnessData: Prisma.FitnessData | null },
     | 'User not found'
     | 'Username is already taken'
     | 'Something went wrong writing to database'
   >
 > => {
   try {
-    const result = await prisma.user.update({
+    const result = await prismaClient.user.update({
       where: { id: userId },
       data: {
         username: data.username,
@@ -81,11 +72,11 @@ export const updateUser = async (
     return success(result);
   } catch (e) {
     console.error('[db.updateUser]', e);
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === 'P2002') {
-        return error('Username is already taken');
-      }
-    }
+    // if (e instanceof PrismaClientKnownRequestError) {
+    //   if (e.code === 'P2002') {
+    //     return error('Username is already taken');
+    //   }
+    // }
     return error('Something went wrong writing to database');
   }
 };
@@ -94,15 +85,15 @@ export const getUserByMail = async (
   mail: string
 ): Promise<
   Status<
-    User & {
-      stravaAuthentication: StravaAuthentication | null;
-      mailAuthentication: MailAuthentication | null;
+    Prisma.User & {
+      stravaAuthentication: Prisma.StravaAuthentication | null;
+      mailAuthentication: Prisma.MailAuthentication | null;
     },
     'User not found' | 'Something went wrong reading from database'
   >
 > => {
   try {
-    const result = await prisma.mailAuthentication.findUnique({
+    const result = await prismaClient.mailAuthentication.findUnique({
       where: { mail },
       select: {
         user: {
@@ -126,15 +117,15 @@ export const getUserByStravaId = async (
   athleteId: number
 ): Promise<
   Status<
-    User & {
-      stravaAuthentication: StravaAuthentication | null;
-      mailAuthentication: MailAuthentication | null;
+    Prisma.User & {
+      stravaAuthentication: Prisma.StravaAuthentication | null;
+      mailAuthentication: Prisma.MailAuthentication | null;
     },
     'User not found' | 'Something went wrong reading from database'
   >
 > => {
   try {
-    const result = await prisma.stravaAuthentication.findUnique({
+    const result = await prismaClient.stravaAuthentication.findUnique({
       where: { athleteId },
       select: {
         user: {
@@ -159,15 +150,15 @@ const createUserFromMail = async (
   username: string
 ): Promise<
   Status<
-    User & {
-      mailAuthentication: MailAuthentication | null;
-      stravaAuthentication: StravaAuthentication | null;
+    Prisma.User & {
+      mailAuthentication: Prisma.MailAuthentication | null;
+      stravaAuthentication: Prisma.StravaAuthentication | null;
     },
     | 'MailAuthentication not included in data'
     | 'Could not create user from mail'
   >
 > => {
-  const result = await prisma.user.create({
+  const result = await prismaClient.user.create({
     data: {
       username: username,
       fitnessData: { create: { ftp: 200 } },
@@ -199,12 +190,12 @@ const createUserFromStrava = async (
   username: string
 ): Promise<
   Status<
-    User & { stravaAuthentication: StravaAuthentication | null },
+    Prisma.User & { stravaAuthentication: Prisma.StravaAuthentication | null },
     | 'StravaAuthentication not included in data'
     | 'Could not create user from Strava id'
   >
 > => {
-  const result = await prisma.user.create({
+  const result = await prismaClient.user.create({
     data: {
       username: username,
       fitnessData: { create: { ftp: 200 } },
@@ -261,12 +252,12 @@ export const getUserWorkouts = async (
   userId: string
 ): Promise<
   Status<
-    (Workout & { parts: SteadyWorkoutPart[] })[],
+    (Prisma.Workout & { parts: Prisma.SteadyWorkoutPart[] })[],
     'Something went wrong while reading workouts from database'
   >
 > => {
   try {
-    const result = await prisma.workout.findMany({
+    const result = await prismaClient.workout.findMany({
       where: { userId },
       include: { parts: true },
     });
@@ -282,12 +273,12 @@ export const getWorkout = async (
   id: string
 ): Promise<
   Status<
-    Workout & { parts: SteadyWorkoutPart[] },
+    Prisma.Workout & { parts: Prisma.SteadyWorkoutPart[] },
     'Workout not found' | 'Something went wrong reading from database'
   >
 > => {
   try {
-    const result = await prisma.workout.findUnique({
+    const result = await prismaClient.workout.findUnique({
       where: { id },
       include: { parts: true },
     });
@@ -307,10 +298,10 @@ export const upsertFitnessData = async (
   userId: string,
   fitnessData: { ftp: number }
 ): Promise<
-  Status<FitnessData, 'Something went wrong while writing to database'>
+  Status<Prisma.FitnessData, 'Something went wrong while writing to database'>
 > => {
   try {
-    const result = await prisma.fitnessData.upsert({
+    const result = await prismaClient.fitnessData.upsert({
       create: { userId, ftp: fitnessData.ftp },
       update: { ftp: fitnessData.ftp },
       where: { userId },
@@ -327,12 +318,12 @@ export const getFitnessData = async (
   userId: string
 ): Promise<
   Status<
-    FitnessData,
+    Prisma.FitnessData,
     'Something went wrong while reading from database' | 'No data found'
   >
 > => {
   try {
-    const result = await prisma.fitnessData.findUnique({
+    const result = await prismaClient.fitnessData.findUnique({
       where: { userId },
     });
 
@@ -353,7 +344,7 @@ export const deleteWorkout = async (
 ): Promise<Status<{}, 'Something went wrong while deleting workout'>> => {
   console.debug(`[db.deleteWorkout] user ${userId} tries to delete workout`);
   try {
-    const result = await prisma.workout.delete({
+    const result = await prismaClient.workout.delete({
       where: { id: workoutId, userId },
     });
 
@@ -374,14 +365,14 @@ export const upsertWorkout = async (
   workoutId?: string
 ): Promise<
   Status<
-    Workout & { parts: SteadyWorkoutPart[] },
+    Prisma.Workout & { parts: Prisma.SteadyWorkoutPart[] },
     'Something went wrong while upserting workout'
   >
 > => {
   console.debug(`[db.upsertWorkout] user ${userId} tries to upsert workout`);
   try {
     /* TODO: Fix this to first upsert the workout and its parts, and then delete the potentially unused workout parts. */
-    const workoutInDB = await prisma.workout.findFirst({
+    const workoutInDB = await prismaClient.workout.findFirst({
       where: { id: workoutId },
     });
     if (workoutInDB && workoutInDB.userId !== userId) {
@@ -392,21 +383,21 @@ export const upsertWorkout = async (
     }
 
     const result = await (workoutId
-      ? prisma.workout.update({
+      ? prismaClient.workout.update({
           data: { name: workout.name },
           where: { id: workoutId },
         })
-      : prisma.workout.create({ data: { name: workout.name, userId } }));
+      : prismaClient.workout.create({ data: { name: workout.name, userId } }));
 
     // Delete all parts
-    await prisma.steadyWorkoutPart.deleteMany({
+    await prismaClient.steadyWorkoutPart.deleteMany({
       where: { workoutId: result.id },
     });
 
     // Add all new parts
     await Promise.all(
       workout.parts.map(async (part, index) => {
-        return await prisma.steadyWorkoutPart.create({
+        return await prismaClient.steadyWorkoutPart.create({
           data: {
             workoutId: result.id,
             index,
@@ -417,7 +408,7 @@ export const upsertWorkout = async (
       })
     );
 
-    const workoutResult = await prisma.workout.findUnique({
+    const workoutResult = await prismaClient.workout.findUnique({
       where: { id: result.id },
       include: { parts: true },
     });
@@ -437,10 +428,13 @@ export const updateStravaRefreshToken = async (data: {
   athleteId: number;
   refreshToken: string;
 }): Promise<
-  Status<StravaAuthentication, 'Something went wrong while writing to database'>
+  Status<
+    Prisma.StravaAuthentication,
+    'Something went wrong while writing to database'
+  >
 > => {
   try {
-    const result = await prisma.stravaAuthentication.update({
+    const result = await prismaClient.stravaAuthentication.update({
       data: { refreshToken: data.refreshToken },
       where: { athleteId: data.athleteId },
     });
