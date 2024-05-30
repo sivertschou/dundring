@@ -35,44 +35,25 @@ export const defaultWorkouts: Workout[] = [
         type: 'steady',
       },
       {
+        onDuration: 3,
+        onTargetPower: 110,
+        offDuration: 2,
+        offTargetPower: 65,
+        repeats: 3,
+        type: 'interval',
+      },
+      {
         duration: 120,
         targetPower: 60,
         type: 'steady',
       },
       {
-        duration: 240,
-        targetPower: 110,
-        type: 'steady',
-      },
-      {
-        duration: 120,
-        targetPower: 65,
-        type: 'steady',
-      },
-      {
-        duration: 240,
-        targetPower: 110,
-        type: 'steady',
-      },
-      {
-        duration: 120,
-        targetPower: 65,
-        type: 'steady',
-      },
-      {
-        duration: 240,
-        targetPower: 110,
-        type: 'steady',
-      },
-      {
-        duration: 120,
-        targetPower: 65,
-        type: 'steady',
-      },
-      {
-        duration: 240,
-        targetPower: 110,
-        type: 'steady',
+        onDuration: 3,
+        onTargetPower: 110,
+        offDuration: 2,
+        offTargetPower: 65,
+        repeats: 4,
+        type: 'interval',
       },
       {
         duration: 360,

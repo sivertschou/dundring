@@ -1,3 +1,5 @@
+import * as types from '@dundring/types';
+
 export interface Lap {
   dataPoints: DataPoint[];
   distance: number;
@@ -26,14 +28,25 @@ export type WorkoutType = 'local' | 'remote' | 'new' | 'library';
 
 export type StoredWorkoutType = Exclude<WorkoutType, 'new'>;
 
-export interface WorkoutPart {
+export type WorkoutPart = types.WorkoutPart;
+
+export type WorkoutPartBase = {
   duration: number;
   targetPower: number;
-  type: 'steady';
-}
+  partIndex: number;
+  index: number;
+  part: types.SteadyWorkoutPart | ExtendedIntervalWorkoutPart;
+};
+
+export type ExtendedIntervalWorkoutPart = types.IntervalWorkoutPart & {
+  repeatNumber: number;
+  internalIndex: number;
+};
+
+export type WorkoutWithParts = Workout & { baseParts: WorkoutPartBase[] };
 
 export interface ActiveWorkout {
-  workout: Workout | null;
+  workout: WorkoutWithParts | null;
   partElapsedTime: number;
   activePart: number;
   status: 'not_started' | 'paused' | 'active' | 'finished';

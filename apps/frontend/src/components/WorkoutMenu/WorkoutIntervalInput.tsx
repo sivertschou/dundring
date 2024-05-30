@@ -14,6 +14,7 @@ import {
   wattFromFtpPercent,
 } from '../../utils/general';
 import { findZone } from '../../utils/zones';
+import { SteadyWorkoutPart } from '@dundring/types';
 
 interface Data {
   seconds: number;
@@ -65,7 +66,7 @@ type DataAction =
   | FtpUpdated;
 
 interface Props {
-  workoutPart: WorkoutPart;
+  workoutPart: SteadyWorkoutPart;
   setWorkoutPart: (workoutPart: WorkoutPart) => void;
   removeWorkoutPart: () => void;
   duplicateWorkoutPart: () => void;

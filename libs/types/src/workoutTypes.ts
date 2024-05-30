@@ -4,10 +4,23 @@ export interface Workout {
   parts: WorkoutPart[];
 }
 
-export interface WorkoutPart {
+export type WorkoutPartType = 'steady' | 'interval';
+
+export type WorkoutPart = SteadyWorkoutPart | IntervalWorkoutPart;
+
+export interface SteadyWorkoutPart {
   duration: number;
   targetPower: number;
   type: 'steady';
+}
+
+export interface IntervalWorkoutPart {
+  onDuration: number;
+  onTargetPower: number;
+  offDuration: number;
+  offTargetPower: number;
+  repeats: number;
+  type: 'interval';
 }
 
 export interface WorkoutBase {

@@ -1,4 +1,4 @@
-import { WorkoutPart } from '../types';
+import { WorkoutPart, WorkoutPartBase } from '../types';
 import { secondsToHoursMinutesAndSecondsString } from '@dundring/utils';
 
 export type Zone = 'Z1' | 'Z2' | 'Z3' | 'Z4' | 'Z5' | 'Z6' | 'Z7';
@@ -69,7 +69,7 @@ const scaleRangeToFtp = ({ lower, upper }: Range, ftp: number) => ({
 });
 
 export const createZoneTableInfo = (
-  workoutParts: WorkoutPart[],
+  workoutParts: WorkoutPartBase[],
   totalDuration: number,
   ftp: number
 ) => {
@@ -77,7 +77,7 @@ export const createZoneTableInfo = (
   workoutParts.forEach((p) => {
     const zone = findZone(p.targetPower);
     const curDuration = zoneMap.get(zone) || 0;
-    zoneMap.set(zone, curDuration + p.duration);
+    zoneMap.set(zone, curDuration + 0);
   });
 
   const sortedPairs = Array.from(zoneMap).sort((zoneSum1, zoneSum2) =>

@@ -1,8 +1,15 @@
 import * as React from 'react';
-import { ActiveWorkout, Workout } from '../types';
+import {
+  ActiveWorkout,
+  Workout,
+  WorkoutPart,
+  WorkoutPartBase,
+  WorkoutWithParts,
+} from '../types';
 import { wattFromFtpPercent } from '../utils/general';
 import { useSmartTrainer } from './SmartTrainerContext';
 import { useUser } from './UserContext';
+import { IntervalWorkoutPart, SteadyWorkoutPart } from '@dundring/types';
 
 export const ActiveWorkoutContext = React.createContext<{
   activeWorkout: ActiveWorkout;
@@ -78,7 +85,7 @@ export const ActiveWorkoutContextProvider = ({
     switch (action.type) {
       case 'SET_WORKOUT':
         return {
-          workout: action.workout,
+          workout: addBasePartsToWorkout(action.workout),
           activePart: 0,
           status: 'not_started',
           partElapsedTime: 0,
@@ -90,7 +97,7 @@ export const ActiveWorkoutContextProvider = ({
         const newElapsed = action.millis + activeWorkout.partElapsedTime;
         const elapsedSeconds = Math.floor(newElapsed / 1000);
         const prevActivePart = activeWorkout.activePart;
-        const prevWorkoutParts = activeWorkout.workout.parts;
+        const prevWorkoutParts = activeWorkout.workout.baseParts;
         const currentPartDuration = prevWorkoutParts[prevActivePart].duration;
         if (currentPartDuration < elapsedSeconds) {
           // Done with current part
@@ -129,7 +136,7 @@ export const ActiveWorkoutContextProvider = ({
 
         action.addLap();
 
-        if (action.partNumber >= activeWorkout.workout.parts.length) {
+        if (action.partNumber >= activeWorkout.workout.baseParts.length) {
           return { ...activeWorkout, partElapsedTime: 0, status: 'finished' };
         }
 
@@ -163,7 +170,7 @@ export const ActiveWorkoutContextProvider = ({
     if (status !== 'active' || !workout) {
       setResistance(0);
     } else {
-      const activeWorkoutPart = workout.parts[activeWorkout.activePart];
+      const activeWorkoutPart = workout.baseParts[activeWorkout.activePart];
       const targetPowerAsWatt = wattFromFtpPercent(
         activeWorkoutPart.targetPower,
         activeFtp
@@ -210,7 +217,7 @@ export const ActiveWorkoutContextProvider = ({
     const { workout } = activeWorkout;
     if (!isConnected || !workout) return;
 
-    const activeWorkoutPart = workout.parts[activeWorkout.activePart];
+    const activeWorkoutPart = workout.baseParts[activeWorkout.activePart];
     const targetPowerAsWatt = wattFromFtpPercent(
       activeWorkoutPart.targetPower,
       activeFtp
@@ -278,7 +285,7 @@ export const getRemainingTime = (activeWorkout: ActiveWorkout) => {
   const { workout, status, activePart, partElapsedTime } = activeWorkout;
   if (!workout || status === 'finished') return null;
 
-  return workout.parts[activePart].duration - partElapsedTime;
+  return workout.baseParts[activePart].duration - partElapsedTime;
 };
 
 export const getTargetPower = (
@@ -287,5 +294,42 @@ export const getTargetPower = (
 ) => {
   const { workout, status, activePart } = activeWorkout;
   if (!workout || status === 'finished') return null;
-  return Math.floor((workout.parts[activePart].targetPower * activeFtp) / 100);
+  return Math.floor(
+    (workout.baseParts[activePart].targetPower * activeFtp) / 100
+  );
+};
+
+export const addBasePartsToWorkout = (workout: Workout): WorkoutWithParts => {
+  return {
+    ...workout,
+    baseParts: workout.parts
+      .flatMap((part, i) => {
+        switch (part.type) {
+          case 'steady':
+            return [{ ...part, partIndex: i, part, index: 0 }];
+          case 'interval':
+            return Array(part.repeats)
+              .fill(null)
+              .flatMap((_, ri) => [
+                {
+                  duration: part.onDuration,
+                  targetPower: part.onTargetPower,
+                  partIndex: i,
+                  part: { ...part, repeatNumber: ri + 1, internalIndex: 0 },
+                  index: 0,
+                },
+                {
+                  duration: part.offDuration,
+                  targetPower: part.offTargetPower,
+                  partIndex: i,
+
+                  part: { ...part, repeatNumber: ri + 1, internalIndex: 1 },
+
+                  index: 0,
+                } as WorkoutPartBase,
+              ]);
+        }
+      })
+      .map((p, i) => ({ ...p, index: i })),
+  };
 };
