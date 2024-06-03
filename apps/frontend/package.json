@@ -53,7 +53,7 @@
     "@types/web-bluetooth": "^0.0.19",
     "@vitejs/plugin-react": "^4.2.1",
     "typescript": "5.3.3",
-    "vite": "^5.1.4",
+    "vite": "^5.2.12",
     "vite-plugin-checker": "^0.6.4"
   }
 }
