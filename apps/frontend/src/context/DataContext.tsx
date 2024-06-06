@@ -129,7 +129,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
 
           const weight = 80;
           const powerSpeed = getPowerToSpeedMap(weight);
-          const speed = dataPoint.power ? powerSpeed[dataPoint.power] : 0;
+          const speed = dataPoint.power ? powerSpeed(dataPoint.power) : 0;
 
           const deltaDistance = (speed * action.delta) / 1000;
 

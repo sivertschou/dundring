@@ -10,7 +10,7 @@ export const getTotalWorkoutDistance = (workout: Workout, ftp: number) => {
     workout.parts
       .map(
         ({ duration, targetPower }) =>
-          duration * powerToSpeed[Math.round((targetPower * ftp) / 100)]
+          duration * powerToSpeed(Math.round((targetPower * ftp) / 100))
       )
       .reduce((prev, cur) => prev + cur, 0) / 1000
   );
