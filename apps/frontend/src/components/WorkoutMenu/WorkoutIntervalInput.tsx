@@ -2,7 +2,7 @@ import { IconButton } from '@chakra-ui/button';
 import { Tooltip } from '@chakra-ui/tooltip';
 import { Input, InputGroup, InputRightAddon } from '@chakra-ui/input';
 import { Text, Grid, Center } from '@chakra-ui/layout';
-import { FormControl, Icon } from '@chakra-ui/react';
+import { FormControl, Icon, Stack } from '@chakra-ui/react';
 import * as React from 'react';
 import { Files, List, X } from 'react-bootstrap-icons';
 import { WorkoutPart } from '../../types';
@@ -66,7 +66,7 @@ type DataAction =
   | FtpUpdated;
 
 interface Props {
-  workoutPart: SteadyWorkoutPart;
+  workoutPart: WorkoutPart;
   setWorkoutPart: (workoutPart: WorkoutPart) => void;
   removeWorkoutPart: () => void;
   duplicateWorkoutPart: () => void;
@@ -171,154 +171,174 @@ export const WorkoutIntervalInput = ({
     }
   };
 
-  React.useEffect(() => {
-    dispatchDataUpdate({
-      type: 'FTP_UPDATED',
-      ftp,
+  // React.useEffect(() => {
+  //   dispatchDataUpdate({
+  //     type: 'FTP_UPDATED',
+  //     ftp,
+  //   });
+  // }, [ftp]);
+
+  const f = (party: { duration: number; targetPower: number }) => {
+    const secondsFromProps = Math.floor(party.duration % 60);
+    const minutesFromProps = Math.floor(party.duration / 60);
+    const { duration: durationFromProps } = calculateNewDuration(
+      '' + minutesFromProps,
+      '' + secondsFromProps
+    );
+    const ftpPercentFromProps = party.targetPower;
+    const wattFromProps = wattFromFtpPercent(ftpPercentFromProps, ftp);
+
+    const memoizedReducer = React.useCallback(reducer, [ftp]);
+    const [data, dispatchDataUpdate] = React.useReducer(memoizedReducer, {
+      seconds: durationFromProps,
+      secondsInput: '' + secondsFromProps,
+      minutesInput: '' + minutesFromProps,
+      power: ftpPercentFromProps,
+      powerPercentInput: '' + ftpPercentFromProps,
+      powerWattInput: '' + wattFromProps,
+      type: 'steady',
     });
-  }, [ftp]);
 
-  const secondsFromProps = Math.floor(workoutPart.duration % 60);
-  const minutesFromProps = Math.floor(workoutPart.duration / 60);
-  const { duration: durationFromProps } = calculateNewDuration(
-    '' + minutesFromProps,
-    '' + secondsFromProps
-  );
-  const ftpPercentFromProps = workoutPart.targetPower;
-  const wattFromProps = wattFromFtpPercent(ftpPercentFromProps, ftp);
+    const durationIsInvalid = false;
+    const powerIsInvalid = data.power <= 0;
 
-  const memoizedReducer = React.useCallback(reducer, [ftp]);
-  const [data, dispatchDataUpdate] = React.useReducer(memoizedReducer, {
-    seconds: durationFromProps,
-    secondsInput: '' + secondsFromProps,
-    minutesInput: '' + minutesFromProps,
-    power: ftpPercentFromProps,
-    powerPercentInput: '' + ftpPercentFromProps,
-    powerWattInput: '' + wattFromProps,
-    type: 'steady',
-  });
-
-  const durationIsInvalid = false;
-  const powerIsInvalid = data.power <= 0;
-
-  return (
-    <Grid templateColumns={templateColumns} gap="1" marginY="1">
-      <Center>
-        <Icon as={List} />
-      </Center>
-      <FormControl isInvalid={durationIsInvalid}>
-        <InputGroup>
-          <Input
-            placeholder="minutes"
-            type="number"
-            value={data.minutesInput}
-            onChange={(e) =>
-              dispatchDataUpdate({
-                type: 'UPDATE_TIME_MINUTES',
-                value: e.target.value,
-                setWorkoutPart,
-              })
-            }
-            onBlur={() =>
-              dispatchDataUpdate({
-                type: 'UPDATE_TIME',
-                setWorkoutPart,
-              })
-            }
-          />
-          <InputRightAddon children="m" />
-        </InputGroup>
-      </FormControl>
-      <FormControl isInvalid={durationIsInvalid}>
-        <InputGroup>
-          <Input
-            placeholder="seconds"
-            type="number"
-            value={data.secondsInput}
-            onChange={(e) => {
-              dispatchDataUpdate({
-                type: 'UPDATE_TIME_SECONDS',
-                value: e.target.value,
-                setWorkoutPart,
-              });
-            }}
-            onBlur={() =>
-              dispatchDataUpdate({
-                type: 'UPDATE_TIME',
-                setWorkoutPart,
-              })
-            }
-          />
-          <InputRightAddon children="s" />
-        </InputGroup>
-      </FormControl>
-      <Center>
-        <Text fontSize="xl" fontWeight="bold">
-          @
-        </Text>
-      </Center>
-      <FormControl isInvalid={powerIsInvalid}>
-        <InputGroup>
-          <Input
-            placeholder="power"
-            type="number"
-            value={data.powerWattInput}
-            onChange={(e) => {
-              dispatchDataUpdate({
-                type: 'UPDATE_POWER_WATT',
-                value: e.target.value,
-                ftp,
-                setWorkoutPart,
-              });
-            }}
-          />
-          <InputRightAddon children="W" />
-        </InputGroup>
-      </FormControl>
-      <FormControl isInvalid={powerIsInvalid}>
-        <InputGroup>
-          <Input
-            placeholder="%FTP"
-            type="number"
-            value={data.powerPercentInput}
-            onChange={(e) => {
-              dispatchDataUpdate({
-                type: 'UPDATE_POWER_PERCENT',
-                value: e.target.value,
-                ftp,
-                setWorkoutPart,
-              });
-            }}
-          />
-          <InputRightAddon children="%" />
-        </InputGroup>
-      </FormControl>
-      <Tooltip label="Zone">
-        <Center>{findZone(data.power)}</Center>
-      </Tooltip>
-      <Tooltip label="Duplicate" placement="left">
+    return (
+      <Grid templateColumns={templateColumns} gap="1" marginY="1">
         <Center>
-          <IconButton
-            aria-label="Duplicate interval"
-            variant="ghost"
-            onClick={duplicateWorkoutPart}
-            icon={<Icon as={Files} />}
-          />
+          <Icon as={List} />
         </Center>
-      </Tooltip>
-      <Tooltip label="Remove" placement="right">
+        <FormControl isInvalid={durationIsInvalid}>
+          <InputGroup>
+            <Input
+              placeholder="minutes"
+              type="number"
+              value={data.minutesInput}
+              onChange={(e) =>
+                dispatchDataUpdate({
+                  type: 'UPDATE_TIME_MINUTES',
+                  value: e.target.value,
+                  setWorkoutPart,
+                })
+              }
+              onBlur={() =>
+                dispatchDataUpdate({
+                  type: 'UPDATE_TIME',
+                  setWorkoutPart,
+                })
+              }
+            />
+            <InputRightAddon children="m" />
+          </InputGroup>
+        </FormControl>
+        <FormControl isInvalid={durationIsInvalid}>
+          <InputGroup>
+            <Input
+              placeholder="seconds"
+              type="number"
+              value={data.secondsInput}
+              onChange={(e) => {
+                dispatchDataUpdate({
+                  type: 'UPDATE_TIME_SECONDS',
+                  value: e.target.value,
+                  setWorkoutPart,
+                });
+              }}
+              onBlur={() =>
+                dispatchDataUpdate({
+                  type: 'UPDATE_TIME',
+                  setWorkoutPart,
+                })
+              }
+            />
+            <InputRightAddon children="s" />
+          </InputGroup>
+        </FormControl>
         <Center>
-          <IconButton
-            aria-label="Remove interval"
-            variant="ghost"
-            onClick={removeWorkoutPart}
-            isDisabled={isLastWorkoutPart}
-            icon={<Icon as={X} />}
-          />
+          <Text fontSize="xl" fontWeight="bold">
+            {workoutPart.type === 'interval' ? 'I' : '@'}
+          </Text>
         </Center>
-      </Tooltip>
-    </Grid>
-  );
+        <FormControl isInvalid={powerIsInvalid}>
+          <InputGroup>
+            <Input
+              placeholder="power"
+              type="number"
+              value={data.powerWattInput}
+              onChange={(e) => {
+                dispatchDataUpdate({
+                  type: 'UPDATE_POWER_WATT',
+                  value: e.target.value,
+                  ftp,
+                  setWorkoutPart,
+                });
+              }}
+            />
+            <InputRightAddon children="W" />
+          </InputGroup>
+        </FormControl>
+        <FormControl isInvalid={powerIsInvalid}>
+          <InputGroup>
+            <Input
+              placeholder="%FTP"
+              type="number"
+              value={data.powerPercentInput}
+              onChange={(e) => {
+                dispatchDataUpdate({
+                  type: 'UPDATE_POWER_PERCENT',
+                  value: e.target.value,
+                  ftp,
+                  setWorkoutPart,
+                });
+              }}
+            />
+            <InputRightAddon children="%" />
+          </InputGroup>
+        </FormControl>
+        <Tooltip label="Zone">
+          <Center>{findZone(data.power)}</Center>
+        </Tooltip>
+        <Tooltip label="Duplicate" placement="left">
+          <Center>
+            <IconButton
+              aria-label="Duplicate interval"
+              variant="ghost"
+              onClick={duplicateWorkoutPart}
+              icon={<Icon as={Files} />}
+            />
+          </Center>
+        </Tooltip>
+        <Tooltip label="Remove" placement="right">
+          <Center>
+            <IconButton
+              aria-label="Remove interval"
+              variant="ghost"
+              onClick={removeWorkoutPart}
+              isDisabled={isLastWorkoutPart}
+              icon={<Icon as={X} />}
+            />
+          </Center>
+        </Tooltip>
+      </Grid>
+    );
+  };
+  switch (workoutPart.type) {
+    case 'steady':
+      return f(workoutPart);
+    case 'interval':
+      return (
+        <Stack>
+          INTERVAL
+          {f({
+            duration: workoutPart.onDuration,
+            targetPower: workoutPart.onTargetPower,
+          })}
+          {f({
+            duration: workoutPart.offDuration,
+            targetPower: workoutPart.offTargetPower,
+          })}
+        </Stack>
+      );
+  }
 };
 
 const calculateNewDuration = (minutesInput: string, secondsInput: string) => {

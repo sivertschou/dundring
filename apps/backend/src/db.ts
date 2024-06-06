@@ -1,4 +1,9 @@
-import { Status, UserCreationStrava, WorkoutBase } from '@dundring/types';
+import {
+  Status,
+  SteadyWorkoutPart,
+  UserCreationStrava,
+  WorkoutBase,
+} from '@dundring/types';
 import {
   error,
   generateRandomString,
@@ -394,9 +399,13 @@ export const upsertWorkout = async (
       where: { workoutId: result.id },
     });
 
+    const steadyWorkoutParts = workout.parts.filter(
+      (part) => part.type === 'steady'
+    ) as SteadyWorkoutPart[];
+
     // Add all new parts
     await Promise.all(
-      workout.parts.map(async (part, index) => {
+      steadyWorkoutParts.map(async (part, index) => {
         return await prismaClient.steadyWorkoutPart.create({
           data: {
             workoutId: result.id,

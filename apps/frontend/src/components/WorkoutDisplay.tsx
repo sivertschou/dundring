@@ -1,6 +1,9 @@
 import { Text, Stack } from '@chakra-ui/layout';
 import * as React from 'react';
-import { useActiveWorkout } from '../context/ActiveWorkoutContext';
+import {
+  addBasePartsToWorkout,
+  useActiveWorkout,
+} from '../context/ActiveWorkoutContext';
 import { useData } from '../context/DataContext';
 import { Workout, WorkoutPartBase } from '../types';
 import { wattFromFtpPercent } from '../utils/general';
@@ -131,11 +134,15 @@ const getTimeLeft = (
   partElapsedTime: number,
   activePart: number
 ): string => {
-  const totalWorkoutTime = getTotalWorkoutTime(workout);
+  const workoutWithBaseParts = addBasePartsToWorkout(workout);
+  const totalWorkoutTime = workoutWithBaseParts.baseParts.reduce(
+    (sum, part) => sum + part.duration,
+    0
+  );
 
   const timeElapsed =
     partElapsedTime +
-    workout.parts.reduce(
+    workoutWithBaseParts.baseParts.reduce(
       (acc, part, ind) => (ind < activePart ? acc + part.duration : acc),
       0
     );

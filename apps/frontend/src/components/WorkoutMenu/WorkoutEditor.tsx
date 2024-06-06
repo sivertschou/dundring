@@ -184,6 +184,90 @@ export const WorkoutEditor = ({
     ftpValue
   );
 
+  const toWorkoutIntervalInputs = (
+    part: EditableWorkoutPart,
+    index: number
+  ) => {
+    switch (part.type) {
+      case 'steady':
+        return (
+          <WorkoutIntervalInput
+            key={part.id}
+            removeWorkoutPart={() =>
+              setWorkout((workout) => ({
+                ...workout,
+                parts: workout.parts.filter((_part, i) => index !== i),
+              }))
+            }
+            duplicateWorkoutPart={() =>
+              setWorkout((workout) => {
+                const newParts = [...workout.parts];
+                newParts.splice(index + 1, 0, {
+                  ...workout.parts[index],
+                  id: getNextWorkoutPartsId(workout.parts),
+                });
+                return {
+                  ...workout,
+                  parts: newParts,
+                };
+              })
+            }
+            setWorkoutPart={(workoutPart: WorkoutPart) => {
+              setWorkout((workout) => {
+                return {
+                  ...workout,
+                  parts: workout.parts.map((part, i) =>
+                    index === i ? { ...part, ...workoutPart } : part
+                  ),
+                };
+              });
+            }}
+            workoutPart={part}
+            ftp={ftpValue}
+            isLastWorkoutPart={workout.parts.length === 1}
+          />
+        );
+      case 'interval':
+        return (
+          <WorkoutIntervalInput
+            key={part.id}
+            removeWorkoutPart={() =>
+              setWorkout((workout) => ({
+                ...workout,
+                parts: workout.parts.filter((_part, i) => index !== i),
+              }))
+            }
+            duplicateWorkoutPart={() =>
+              setWorkout((workout) => {
+                const newParts = [...workout.parts];
+                newParts.splice(index + 1, 0, {
+                  ...workout.parts[index],
+                  id: getNextWorkoutPartsId(workout.parts),
+                });
+                return {
+                  ...workout,
+                  parts: newParts,
+                };
+              })
+            }
+            setWorkoutPart={(workoutPart: WorkoutPart) => {
+              setWorkout((workout) => {
+                return {
+                  ...workout,
+                  parts: workout.parts.map((part, i) =>
+                    index === i ? { ...part, ...workoutPart } : part
+                  ),
+                };
+              });
+            }}
+            workoutPart={part}
+            ftp={ftpValue}
+            isLastWorkoutPart={workout.parts.length === 1}
+          />
+        );
+    }
+  };
+
   return (
     <Stack p="5">
       <FormControl id="workoutName">
@@ -219,47 +303,11 @@ export const WorkoutEditor = ({
         </Grid>
       ) : null}
       <DraggableList onDragEnd={onDragEnd}>
-        {workout.parts.map((part, index) =>
-          part.type === 'steady' ? (
-            <DraggableItem id={part.id + ''} index={index} key={part.id}>
-              <WorkoutIntervalInput
-                key={part.id}
-                removeWorkoutPart={() =>
-                  setWorkout((workout) => ({
-                    ...workout,
-                    parts: workout.parts.filter((_part, i) => index !== i),
-                  }))
-                }
-                duplicateWorkoutPart={() =>
-                  setWorkout((workout) => {
-                    const newParts = [...workout.parts];
-                    newParts.splice(index + 1, 0, {
-                      ...workout.parts[index],
-                      id: getNextWorkoutPartsId(workout.parts),
-                    });
-                    return {
-                      ...workout,
-                      parts: newParts,
-                    };
-                  })
-                }
-                setWorkoutPart={(workoutPart: WorkoutPart) => {
-                  setWorkout((workout) => {
-                    return {
-                      ...workout,
-                      parts: workout.parts.map((part, i) =>
-                        index === i ? { ...part, ...workoutPart } : part
-                      ),
-                    };
-                  });
-                }}
-                workoutPart={part}
-                ftp={ftpValue}
-                isLastWorkoutPart={workout.parts.length === 1}
-              />
-            </DraggableItem>
-          ) : null
-        )}
+        {workout.parts.map((part, index) => (
+          <DraggableItem id={part.id + ''} index={index} key={part.id}>
+            {toWorkoutIntervalInputs(part, index)}
+          </DraggableItem>
+        ))}
       </DraggableList>
 
       <Button

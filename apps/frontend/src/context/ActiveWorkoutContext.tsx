@@ -315,7 +315,7 @@ export const addBasePartsToWorkout = (workout: Workout): WorkoutWithParts => {
                   duration: part.onDuration,
                   targetPower: part.onTargetPower,
                   partIndex: i,
-                  part: { ...part, repeatNumber: ri + 1, internalIndex: 0 },
+                  part: { ...part, repeatNumber: ri + 1, internalIndex: 1 },
                   index: 0,
                 },
                 {
