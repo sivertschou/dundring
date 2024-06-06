@@ -1,8 +1,13 @@
 const memoizedPowerSpeed: Record<number, Record<number, number>> = {};
 
-export const getPowerToSpeedMap = (weight: number): Record<number, number> => {
-  const powerSpeed = memoizedPowerSpeed[weight];
-  if (powerSpeed !== undefined) return powerSpeed;
+export const getPowerToSpeedMap = (
+  weight: number
+): ((power: number) => number) => {
+  let powerSpeed = memoizedPowerSpeed[weight];
+
+  if (powerSpeed !== undefined) {
+    return (power: number) => (power > 14000 ? 40.0 : powerSpeed[power]);
+  }
 
   const newPowerSpeed: Record<number, number> = {};
   for (let i = 0; i < 40000; i++) {
@@ -23,5 +28,6 @@ export const getPowerToSpeedMap = (weight: number): Record<number, number> => {
     newPowerSpeed[totalPower] = speedMs;
   }
   memoizedPowerSpeed[weight] = newPowerSpeed;
-  return newPowerSpeed;
+
+  return (power: number) => (power > 1400 ? 40.0 : newPowerSpeed[power]);
 };
