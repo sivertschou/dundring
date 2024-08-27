@@ -106,6 +106,8 @@ const authPost = async <T, U>(
     signal: abortController?.signal,
   });
 
+  console.log(response.status);
+
   return response.json();
 };
 

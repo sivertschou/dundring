@@ -32,6 +32,8 @@ export const ImportWorkout = ({ setWorkoutToEdit, previewFtp }: Props) => {
   const [workoutIdInput, setWorkoutIdInput] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
 
+  console.log(workoutIdParam);
+
   const navigate = useNavigate();
 
   const handleImportWorkout = React.useCallback(

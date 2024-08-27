@@ -29,7 +29,9 @@ export const UserContextProvider = ({
       abortController: AbortController
     ) => {
       try {
+        console.log('send');
         const ret = await validateToken(localToken, abortController);
+        console.log(ret.status);
 
         switch (ret.status) {
           case 'SUCCESS':
@@ -52,10 +54,12 @@ export const UserContextProvider = ({
 
     const locallyStoredToken = localStorage['usertoken'];
 
+    console.log(locallyStoredToken);
+
     if (locallyStoredToken) {
       authenticate(locallyStoredToken, abortController).catch(console.error);
     }
-
+    console.log('hmm');
     return () => abortController.abort();
   }, []);
 
