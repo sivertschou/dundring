@@ -11,7 +11,7 @@ import {
 import { getWorkout } from '../../api';
 import { Text } from '@chakra-ui/layout';
 import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import * as api from '../../api';
 
@@ -27,7 +27,8 @@ interface Props {
 }
 
 export const ImportWorkout = ({ setWorkoutToEdit, previewFtp }: Props) => {
-  const { workoutId: workoutIdParam } = useParams();
+  const location = useLocation();
+  const workoutIdParam = parseWorkoutIdFromPath(location.pathname);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [workoutIdInput, setWorkoutIdInput] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
@@ -114,4 +115,9 @@ export const ImportWorkout = ({ setWorkoutToEdit, previewFtp }: Props) => {
       </FormControl>
     </form>
   );
+};
+
+const parseWorkoutIdFromPath = (pathname: string) => {
+  const match = pathname.match(/\/workout\/([0-9a-fA-F-]{36})/);
+  return match ? match[1] : null;
 };
