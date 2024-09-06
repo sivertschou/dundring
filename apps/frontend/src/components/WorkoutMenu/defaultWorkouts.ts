@@ -6,11 +6,6 @@ export const defaultWorkouts: Workout[] = [
     parts: [
       {
         duration: 300,
-        targetPower: 50,
-        type: 'steady',
-      },
-      {
-        duration: 60,
         targetPower: 60,
         type: 'steady',
       },
@@ -32,6 +27,11 @@ export const defaultWorkouts: Workout[] = [
       {
         duration: 60,
         targetPower: 100,
+        type: 'steady',
+      },
+      {
+        duration: 60,
+        targetPower: 110,
         type: 'steady',
       },
       {
