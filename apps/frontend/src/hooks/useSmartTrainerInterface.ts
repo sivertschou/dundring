@@ -308,15 +308,12 @@ export const useSmartTrainerInterface = (): SmartTrainerInterface => {
             const fitnessMachineControlPointCharacteristic =
               smartTrainer.service.fitnessMachineControlPointCharacteristic;
             if (fitnessMachineControlPointCharacteristic) {
-              if (!resistance) {
+              if (!resistance || resistance === 0) {
                 // Reset
                 await fitnessMachineControlPointCharacteristic.writeValue(
                   new Uint8Array([0x01])
                 );
-                await fitnessMachineControlPointCharacteristic.writeValue(
-                  new Uint8Array([0x05, 0])
-                );
-                logEvent(`set resistance: 0W`);
+                logEvent(`set resistance: Free mode`);
                 setCurrentResistance(0);
               } else {
                 const resBuf = new Uint8Array(
