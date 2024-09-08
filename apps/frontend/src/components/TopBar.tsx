@@ -74,7 +74,9 @@ export const TopBar = () => {
               )}
             </Stack>
             <Stack spacing="0" color={powerColor}>
-              <Text fontSize={secondaryFontSize}>@{currentResistance}w</Text>
+              <Text fontSize={secondaryFontSize}>
+                {currentResistance > 0 ? `@${currentResistance}w` : 'Free mode'}
+              </Text>
               <Center>
                 <Text fontSize={mainFontSize}>{power || '0'}</Text>
                 <Text fontSize={unitFontSize}>w</Text>

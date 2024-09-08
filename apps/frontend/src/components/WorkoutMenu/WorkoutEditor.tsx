@@ -206,6 +206,8 @@ export const WorkoutEditor = ({
         </InputGroup>
       </FormControl>
 
+      <Text fontWeight={'light'}>Tip:Use 0 as watt target for Free Mode</Text>
+
       {workout.parts.length > 0 ? (
         <Grid templateColumns={templateColumns} gap="1" mb="2">
           <Text />

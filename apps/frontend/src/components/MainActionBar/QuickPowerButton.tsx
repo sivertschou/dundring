@@ -28,6 +28,9 @@ export const QuickPowerButton = () => {
     <Menu placement="top">
       <MenuList>
         <Box>
+          <MenuItem onClick={() => setSmartTrainerResistance(0)}>
+            Free mode
+          </MenuItem>
           {defaultResistancePercentages.map((percentage, i) => (
             <MenuItem
               key={i}
