@@ -178,7 +178,6 @@ const EditCurrentWorkoutButton = (props: EditCurrentWorkoutButtonProps) => {
 
   return (
     <Button
-      textColor={'orange'}
       fontSize="xl"
       mb="5"
       rightIcon={<Icon as={PencilSquare} />}
