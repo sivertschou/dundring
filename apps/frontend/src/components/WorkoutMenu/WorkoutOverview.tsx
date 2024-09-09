@@ -24,17 +24,23 @@ interface Props {
   setActiveWorkout: (workout: Workout, ftp: number) => void;
   setWorkoutToEdit: (workout: WorkoutToEdit) => void;
 }
+
+type WorkoutWithType = {
+  workout: Workout;
+  type: StoredWorkoutType;
+};
+
 export const WorkoutOverview = ({
   setWorkoutToEdit,
   setActiveWorkout,
 }: Props) => {
   const { workouts, localWorkouts } = useUser();
-  const { activeFtp, setActiveFtp } = useActiveWorkout();
+  const { activeWorkout, activeFtp, setActiveFtp } = useActiveWorkout();
   const [previewFtp, setPreviewFtp] = React.useState('' + activeFtp);
   const previewFtpAsNumber = parseInputAsInt(previewFtp);
   const { activeRoute, setActiveRoute } = useData();
 
-  const allUserWorkouts = [
+  const allUserWorkouts: WorkoutWithType[] = [
     ...workouts.map((workout) => ({
       workout,
       type: 'remote' as StoredWorkoutType,
@@ -69,6 +75,12 @@ export const WorkoutOverview = ({
       >
         Create new workout
       </Button>
+      <EditCurrentWorkoutButton
+        currentWorkout={activeWorkout.workout}
+        setWorkoutToEdit={setWorkoutToEdit}
+        allUserWorkouts={allUserWorkouts}
+        previewFtp={previewFtpAsNumber}
+      />
       <FormControl id="ftp">
         <FormLabel>Active FTP</FormLabel>
         <InputGroup>
@@ -84,7 +96,6 @@ export const WorkoutOverview = ({
           your actual FTP on your profile page
         </FormHelperText>
       </FormControl>
-
       <FormControl id="route">
         <FormLabel>Active route</FormLabel>
         <Select
@@ -95,7 +106,6 @@ export const WorkoutOverview = ({
           <option value="D">D (10 km)</option>
         </Select>
       </FormControl>
-
       {allUserWorkouts.length > 0 && <Divider />}
       {allUserWorkouts.map(({ workout, type }, i) => (
         <WorkoutListItem
@@ -115,7 +125,6 @@ export const WorkoutOverview = ({
           ftp={previewFtpAsNumber}
         />
       ))}
-
       <Divider />
       <Center>
         <Text size="5xl">Predefined workouts</Text>
@@ -138,12 +147,51 @@ export const WorkoutOverview = ({
           ftp={previewFtpAsNumber}
         />
       ))}
-
       <Divider />
       <ImportWorkout
         setWorkoutToEdit={setWorkoutToEdit}
         previewFtp={previewFtpAsNumber}
       />
     </Stack>
+  );
+};
+
+type EditCurrentWorkoutButtonProps = {
+  currentWorkout: Workout | null;
+  allUserWorkouts: WorkoutWithType[];
+  previewFtp: number;
+  setWorkoutToEdit: (workout: WorkoutToEdit) => void;
+};
+
+const EditCurrentWorkoutButton = (props: EditCurrentWorkoutButtonProps) => {
+  const { currentWorkout, allUserWorkouts, setWorkoutToEdit, previewFtp } =
+    props;
+
+  if (!currentWorkout) return null;
+  const currentWorkoutType =
+    currentWorkout?.id === ''
+      ? 'new'
+      : allUserWorkouts.find(
+          (userWorkout) => userWorkout.workout.id === currentWorkout?.id
+        )?.type;
+  if (!currentWorkoutType) return null;
+
+  return (
+    <Button
+      textColor={'orange'}
+      fontSize="xl"
+      mb="5"
+      rightIcon={<Icon as={PencilSquare} />}
+      onClick={() =>
+        setWorkoutToEdit({
+          ...currentWorkout,
+          previewFtp,
+          type: currentWorkoutType,
+        })
+      }
+    >
+      Edit current active workout{' '}
+      {currentWorkoutType === 'new' ? '' : `: ${currentWorkout.name}`}
+    </Button>
   );
 };
