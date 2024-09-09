@@ -279,6 +279,10 @@ export const WorkoutEditor = ({
         Add part
       </Button>
 
+      <Text fontSize="small">
+        Tip: Use 0 as power target for <em>Free mode</em>
+      </Text>
+
       <Text fontWeight="bold">
         Total duration {secondsToHoursMinutesAndSecondsString(totalDuration)}
       </Text>

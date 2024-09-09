@@ -25,6 +25,11 @@ export const WorkoutDisplay = () => {
       <Text>{secondsToHoursMinutesAndSecondsString(partElapsedTime)}</Text>
       {workout.parts.map((part, i) => {
         const isActive = status === 'active' && i === activePart;
+        const targetPowerText =
+          part.targetPower > 0
+            ? `${part.targetPower}% (${wattFromFtpPercent(part.targetPower, activeFtp)}W)`
+            : 'Free mode';
+
         return (
           <Text
             key={i}
@@ -33,9 +38,7 @@ export const WorkoutDisplay = () => {
             cursor="pointer"
             onClick={() => changeActivePart(i, addLap)}
           >
-            {`${secondsToHoursMinutesAndSecondsString(part.duration)}@${
-              part.targetPower
-            }% (${wattFromFtpPercent(part.targetPower, activeFtp)}W)`}
+            {`${secondsToHoursMinutesAndSecondsString(part.duration)}@${targetPowerText}`}
           </Text>
         );
       })}

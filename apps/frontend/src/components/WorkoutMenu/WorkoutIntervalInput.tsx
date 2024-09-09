@@ -198,7 +198,7 @@ export const WorkoutIntervalInput = ({
   });
 
   const durationIsInvalid = false;
-  const powerIsInvalid = data.power <= 0;
+  const powerIsInvalid = data.power < 0;
 
   return (
     <Grid templateColumns={templateColumns} gap="1" marginY="1">
