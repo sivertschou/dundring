@@ -11,7 +11,7 @@ const ConnectWithStravaGraphics = forwardRef<ImageProps, 'img'>(
 
 export const ConnectWithStravaButton = () => {
   const clientId = getEnv().stravaClientId;
-  const url = `https://www.strava.com/oauth/authorize?client_id=${clientId}&redirect_uri=${location.origin}/auth/strava&response_type=code&approval_prompt=auto&scope=read`;
+  const url = `https://www.strava.com/oauth/authorize?client_id=39382&redirect_uri=http://localhost:5173/auth/strava&response_type=code&approval_prompt=auto&scope=read,activity:write,activity:read_all`;
 
   return (
     <Link href={url}>
