@@ -5,11 +5,12 @@ import {
   StravaUpload,
   TcxFileUpload,
 } from '@dundring/types';
-import { error, success } from '@dundring/utils';
+import { error, isSuccess, success } from '@dundring/utils';
 import fetch from 'node-fetch';
 import * as db from '../db';
 import * as FormData from 'form-data';
 import { Readable } from 'stream';
+import { slackService } from '.';
 
 require('dotenv').config();
 
@@ -95,6 +96,11 @@ export const uploadFileToStrava = async (
           const stravaUploadResponse = await fetchStravaUpload();
 
           if (stravaUploadResponse) {
+            if (isSuccess(stravaUploadResponse)) {
+              slackService.logActivityUpload(
+                stravaUploadResponse.data.activity_id
+              );
+            }
             return stravaUploadResponse;
           }
         } catch (err) {
@@ -191,6 +197,7 @@ export const getStravaTokenFromRefreshToken = async (
   }
 };
 
+// Should probably me moved into user service?
 export const updateRefreshToken = async (data: {
   athleteId: number;
   refreshToken: string;
