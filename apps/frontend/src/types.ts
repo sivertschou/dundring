@@ -45,7 +45,10 @@ export interface LoggedInUser {
   username: string;
   workouts: Workout[];
   ftp: number;
-  stravaData: { athleteId: number } | null;
+  stravaData: {
+    athleteId: number;
+    scopes: { read: boolean; activityWrite: boolean };
+  } | null;
 }
 
 export interface LoggedOutUser {

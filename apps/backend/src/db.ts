@@ -122,6 +122,7 @@ export const getUserByMail = async (
   }
 };
 
+// This should probably return with StravaAuth only?
 export const getUserByStravaId = async (
   athleteId: number
 ): Promise<

@@ -40,9 +40,9 @@ export const SmartTrainerContextProvider = ({
 }) => {
   const usingMockData = import.meta.env.VITE_USE_MOCK_DATA ? true : false;
 
-  if (usingMockData)
-    return <SmartTrainerMockContextProvider children={children} />;
-  return <SmartTrainerRealContextProvider children={children} />;
+  // if (usingMockData)
+  return <SmartTrainerMockContextProvider children={children} />;
+  // return <SmartTrainerRealContextProvider children={children} />;
 };
 
 export const useSmartTrainer = () => {

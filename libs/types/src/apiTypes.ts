@@ -43,7 +43,10 @@ export interface LoginResponseBody {
   userId: string;
   token: string;
   ftp: number;
-  stravaData: { athleteId: number } | null;
+  stravaData: {
+    athleteId: number;
+    scopes: { read: boolean; activityWrite: boolean };
+  } | null;
 }
 
 export interface UserUpdateRequestBody {
@@ -76,21 +79,27 @@ export interface ProfileResponseBody {
   username: string;
   ftp: number;
   mailAuthentication: MailAuthentication | null;
-  stravaAuthentication: StravaAuthentication | null;
+  stravaAuthentication: StravaAuthenticationResp | null;
 }
 
 export interface MailAuthentication {
   mail: string;
 }
 
-export interface StravaAuthentication {
+export interface StravaAuthenticationResp {
   athleteId: number;
   scopes: {
     read: boolean;
+    activityWrite: boolean;
   };
 }
 
 export interface FeedbackRequestBody {
   message: string;
   mail: string | null;
+}
+
+export interface TcxFileUpload {
+  tcxFile: string;
+  name: string | null;
 }

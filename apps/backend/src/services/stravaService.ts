@@ -1,10 +1,15 @@
-import { ApiStatus, Status, StravaToken } from '@dundring/types';
+import {
+  Status,
+  StravaToken,
+  StravaTokenRefresh,
+  StravaUpload,
+  TcxFileUpload,
+} from '@dundring/types';
 import { error, success } from '@dundring/utils';
 import fetch from 'node-fetch';
 import * as db from '../db';
-// Import necessary Node modules
-import * as fs from 'fs';
 import * as FormData from 'form-data';
+import { Readable } from 'stream';
 
 require('dotenv').config();
 
@@ -21,71 +26,90 @@ export const checkStravaConfig = () => {
   }
 };
 
-// Define the types for the options
-interface UploadOptions {
-  file: string; // File path to the uploaded file
-  name: string; // The desired name of the resulting activity
-  description: string; // The desired description of the resulting activity
-  trainer: string; // Whether the activity is performed on a trainer
-  commute: string; // Whether the activity should be tagged as a commute
-  dataType: string; // Format of the uploaded file (e.g., 'gpx', 'fit', 'tcx')
-  externalId: string; // External identifier of the resulting activity
-}
-
-// Function to upload a file to Strava
-async function uploadToStrava(opts: UploadOptions, accessToken: string) {
-  const fileStream = fs.createReadStream(opts.file);
-
-  if (!fs.existsSync(opts.file)) {
-    throw new Error(`File not found: ${opts.file}`);
-  }
+export const uploadFileToStrava = async (
+  upload: TcxFileUpload,
+  accessToken: string
+): Promise<Status<StravaUpload, string>> => {
+  const fileStream = Readable.from(upload.tcxFile);
 
   const formData = new FormData.default();
-  formData.append('file', fileStream); // Append the file stream
-  formData.append('name', opts.name);
-  formData.append('description', opts.description);
-  formData.append('trainer', opts.trainer);
-  formData.append('commute', opts.commute);
-  formData.append('data_type', opts.dataType);
-  formData.append('external_id', opts.externalId);
+  formData.append('file', fileStream, {
+    filename: 'dundring.tcx',
+    contentType: 'application/xml',
+  });
+  formData.append('data_type', 'tcx');
 
-  console.log(formData);
+  const name = upload.name || 'Dundring.com workout';
+  formData.append('name', name); // prøv uten?
+  // formData.append('external_id', 'externalId');
 
   try {
     const response = await fetch('https://www.strava.com/api/v3/uploads', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        // Do NOT set 'Content-Type' explicitly; 'form-data' will set it automatically
       },
-      body: formData, // TypeScript may complain about this, so we cast it to `any`
+      body: formData,
     });
 
     if (!response.ok) {
       throw new Error(`Error: ${response.statusText}`);
     }
 
-    const data = await response.json();
-    console.log('API called successfully. Returned data:', data);
-  } catch (error) {
-    console.error('Upload failed:', error);
-  }
-}
+    const data = (await response.json()) as StravaUpload;
 
-// Example usage
-const opts: UploadOptions = {
-  file: '/Users/mortenkolstad/Downloads/dundring_2024-09-10T2107.tcx',
-  name: 'Sample Activity',
-  description: 'A test activity',
-  trainer: 'false',
-  commute: 'false',
-  dataType: 'tcx', // for example: gpx, fit, tcx
-  externalId: '12345',
+    const fetchStravaUpload = async () => {
+      const uploadResponse = await fetch(
+        `https://www.strava.com/api/v3/uploads/${data.id}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (!uploadResponse.ok) {
+        throw new Error(`Error: ${uploadResponse.statusText}`);
+      }
+
+      const uploadData = (await uploadResponse.json()) as StravaUpload;
+
+      if (uploadData.activity_id) {
+        console.log('API called successfully. Returned data:', uploadData);
+        return success(uploadData);
+      }
+
+      if (uploadData.error) {
+        console.error('Upload failed:', uploadData.error);
+        return error('Something went wrong while uploading');
+      }
+
+      return null;
+    };
+
+    const pollCheckUpload = async () => {
+      while (true) {
+        await pause(2000);
+        try {
+          const stravaUploadResponse = await fetchStravaUpload();
+
+          if (stravaUploadResponse) {
+            return stravaUploadResponse;
+          }
+        } catch (err) {
+          console.error('An error occurred:', err);
+          return error('Something went wrong while uploading');
+        }
+      }
+    };
+
+    return pollCheckUpload();
+  } catch (err) {
+    console.error('Upload failed:', err);
+    return error('Something went wrong while uploading');
+  }
 };
-// VirtualRide;
-// Call the function
-//uploadToStrava(opts, '2864f41ab8fd36b995ebb6b25c49318ae6ff8907').then(console.log).catch(console.log);
-// editActivity('12377793225', '2864f41ab8fd36b995ebb6b25c49318ae6ff8907');
 
 export const getStravaTokenFromAuthCode = async (
   code: string
@@ -97,10 +121,6 @@ export const getStravaTokenFromAuthCode = async (
   >
 > => {
   const url = `https://www.strava.com/api/v3/oauth/token`;
-
-  console.log(code);
-
-  // throw Error();
 
   const body = {
     client_id: process.env.STRAVA_CLIENT_ID,
@@ -130,7 +150,46 @@ export const getStravaTokenFromAuthCode = async (
   }
 };
 
-// getStravaTokenFromAuthCode('cf9354ae6aea0518f42b5fcd8a6c81fe05c99093').then(console.log).catch(console.log);
+export const getStravaTokenFromRefreshToken = async (
+  refreshToken: string
+): Promise<
+  Status<
+    StravaTokenRefresh,
+    | 'Invalid authorization code'
+    | 'Something went wrong while fetching Strava token'
+  >
+> => {
+  const url = `https://www.strava.com/api/v3/oauth/token`;
+
+  const body = {
+    client_id: process.env.STRAVA_CLIENT_ID,
+    client_secret: process.env.STRAVA_CLIENT_SECRET,
+    grant_type: 'refresh_token',
+    refresh_token: refreshToken,
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      console.log(response);
+      return error('Invalid authorization code');
+    }
+
+    const token: StravaToken = await response.json();
+
+    return success(token);
+  } catch (e) {
+    console.error('[sendSlackMessage]:', e);
+    return error('Something went wrong while fetching Strava token');
+  }
+};
 
 export const updateRefreshToken = async (data: {
   athleteId: number;
@@ -138,3 +197,7 @@ export const updateRefreshToken = async (data: {
 }) => {
   db.updateStravaRefreshToken(data);
 };
+
+//utils?
+const pause = (duration: number) =>
+  new Promise((resolve) => setTimeout(resolve, duration));

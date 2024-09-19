@@ -20,7 +20,15 @@ router.post<null, ApiResponseBody<LoginResponseBody>>(
       return;
     }
 
-    const athleteId = user.data.stravaAuthentication?.athleteId ?? null;
+    const stravaData = user.data.stravaAuthentication
+      ? {
+          athleteId: user.data.stravaAuthentication.athleteId,
+          scopes: {
+            read: user.data.stravaAuthentication.readScope,
+            activityWrite: user.data.stravaAuthentication.activityWriteScope,
+          },
+        }
+      : null;
 
     res.send({
       status: ApiStatus.SUCCESS,
@@ -29,7 +37,7 @@ router.post<null, ApiResponseBody<LoginResponseBody>>(
         token: token || '',
         username,
         userId,
-        stravaData: athleteId ? { athleteId } : null,
+        stravaData,
       },
     });
     return;

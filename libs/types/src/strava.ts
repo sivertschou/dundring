@@ -9,6 +9,22 @@ export interface StravaToken {
   athlete: StravaAthlete;
 }
 
+export interface StravaTokenRefresh {
+  expires_at: number;
+  expires_in: number;
+  refresh_token: string;
+  access_token: string;
+}
+
+export interface StravaUpload {
+  id: number;
+  id_str: string;
+  external_id: string;
+  error: string;
+  status: string;
+  activity_id: number;
+}
+
 export interface StravaAthlete {
   id: number;
   username: string;
