@@ -84,10 +84,16 @@ export const ActiveWorkoutContextProvider = ({
           partElapsedTime: 0,
         };
       case 'INCREASE_PART_ELAPSED_TIME':
-        if (!activeWorkout.workout || activeWorkout.status !== 'active')
+        if (activeWorkout.status !== 'active') {
           return activeWorkout;
+        }
 
         const newElapsed = action.millis + activeWorkout.partElapsedTime;
+
+        if (!activeWorkout.workout) {
+          return { ...activeWorkout, partElapsedTime: newElapsed };
+        }
+
         const elapsedSeconds = Math.floor(newElapsed / 1000);
         const prevActivePart = activeWorkout.activePart;
         const prevWorkoutParts = activeWorkout.workout.parts;
@@ -130,7 +136,11 @@ export const ActiveWorkoutContextProvider = ({
         action.addLap();
 
         if (action.partNumber >= activeWorkout.workout.parts.length) {
-          return { ...activeWorkout, partElapsedTime: 0, status: 'finished' };
+          return {
+            ...activeWorkout,
+            partElapsedTime: 0,
+            status: 'finished',
+          };
         }
 
         return {

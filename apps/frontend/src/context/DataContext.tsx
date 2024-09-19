@@ -78,7 +78,14 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         case 'START': {
           if (currentData.state === 'not_started') {
             return {
-              laps: [{ dataPoints: [], distance: 0 }],
+              laps: [
+                {
+                  dataPoints: [],
+                  distance: 0,
+                  sumWatt: 0,
+                  normalizedDuration: 0,
+                },
+              ],
               untrackedData: currentData.untrackedData,
               timeElapsed: 0,
               distance: 0,
@@ -101,13 +108,23 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         case 'ADD_LAP': {
           return {
             ...currentData,
-            laps: [...currentData.laps, { dataPoints: [], distance: 0 }],
+            laps: [
+              ...currentData.laps,
+              {
+                dataPoints: [],
+                distance: 0,
+                sumWatt: 0,
+                normalizedDuration: 0,
+              },
+            ],
           };
         }
         case 'ADD_DATA': {
+          const { dataPoint, delta } = action;
           const laps = currentData.laps;
-          const { dataPoint } = action;
           const currentLap = laps[laps.length - 1];
+
+          const pointAvgWatt = (dataPoint.power || 0) * delta;
 
           if (currentData.state !== 'running') {
             return {
@@ -117,11 +134,11 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
                 ? [
                     ...laps.filter((_, i) => i !== laps.length - 1),
                     {
+                      ...currentLap,
                       dataPoints: [
                         ...currentLap.dataPoints,
                         { timeStamp: dataPoint.timeStamp },
                       ],
-                      distance: currentLap.distance,
                     },
                   ]
                 : [],
@@ -132,7 +149,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
           const powerSpeed = getPowerToSpeedMap(weight);
           const speed = dataPoint.power ? powerSpeed(dataPoint.power) : 0;
 
-          const deltaDistance = (speed * action.delta) / 1000;
+          const deltaDistance = (speed * delta) / 1000;
 
           const totalDistance = currentData.distance + deltaDistance;
           const coordinates = distanceToCoordinates(
@@ -164,6 +181,10 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
               {
                 dataPoints: [...currentLap.dataPoints, dataPointWithPosition],
                 distance: currentLap.distance + deltaDistance,
+                sumWatt: currentLap.sumWatt + pointAvgWatt,
+                normalizedDuration: dataPoint.power
+                  ? currentLap.normalizedDuration + delta
+                  : currentLap.normalizedDuration,
               },
             ],
           };
