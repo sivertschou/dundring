@@ -30,7 +30,7 @@ router.post<
 
   const stravaId = tokenData.data.athlete.id;
 
-  await stravaService.updateRefreshToken({
+  await userService.updateRefreshToken({
     athleteId: stravaId,
     refreshToken: tokenData.data.refresh_token,
   });
