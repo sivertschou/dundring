@@ -1,7 +1,7 @@
 import {
   ApiResponseBody,
   ApiStatus,
-  AuthenticationRequestBody,
+  StravaAuthenticationRequestBody,
   AuthenticationResponseBody,
 } from '@dundring/types';
 import { isError, isSuccess } from '@dundring/utils';
@@ -18,9 +18,9 @@ const router = express.Router();
 router.post<
   null,
   ApiResponseBody<AuthenticationResponseBody>,
-  AuthenticationRequestBody
+  StravaAuthenticationRequestBody
 >('/authenticate', async (req, res) => {
-  const { code } = req.body;
+  const { code, scope } = req.body;
   const tokenData = await stravaService.getStravaTokenFromAuthCode(code);
 
   if (isError(tokenData)) {
@@ -34,7 +34,7 @@ router.post<
     athleteId: stravaId,
     refreshToken: tokenData.data.refresh_token,
   });
-
+  // scopes??
   const existingUser = await userService.getUserByStravaId(stravaId);
 
   const user =

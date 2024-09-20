@@ -29,8 +29,13 @@ export type RequestLoginLinkMailResponseBody =
   | 'Login link sent'
   | 'Register link sent';
 
-export interface AuthenticationRequestBody {
+export interface MailAuthenticationRequestBody {
   code: string;
+}
+
+export interface StravaAuthenticationRequestBody {
+  code: string;
+  scope: string;
 }
 
 export interface AuthenticationResponseBody {

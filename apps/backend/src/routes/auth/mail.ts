@@ -1,7 +1,7 @@
 import {
   ApiResponseBody,
   ApiStatus,
-  AuthenticationRequestBody,
+  MailAuthenticationRequestBody,
   AuthenticationResponseBody,
   MailLoginRequestBody,
 } from '@dundring/types';
@@ -35,7 +35,7 @@ router.post<null, ApiResponseBody<string>, MailLoginRequestBody>(
 router.post<
   null,
   ApiResponseBody<AuthenticationResponseBody>,
-  AuthenticationRequestBody
+  MailAuthenticationRequestBody
 >('/authenticate', async (req, res) => {
   const { code } = req.body;
   const ret = await validationService.getMailTokenData(code);

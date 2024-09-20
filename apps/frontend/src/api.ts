@@ -1,6 +1,7 @@
 import {
   ApiResponseBody,
-  AuthenticationRequestBody,
+  MailAuthenticationRequestBody,
+  StravaAuthenticationRequestBody,
   AuthenticationResponseBody,
   FeedbackRequestBody,
   GetWorkoutResponseBody,
@@ -111,13 +112,6 @@ const authPost = async <T, U>(
   return response.json();
 };
 
-export const uploadFileToStrava = async (data: MailLoginRequestBody) => {
-  return post<
-    ApiResponseBody<RequestLoginLinkMailResponseBody>,
-    MailLoginRequestBody
-  >(`${httpUrl}/auth/mail/login`, data);
-};
-
 export const requestLoginLinkMail = async (data: MailLoginRequestBody) => {
   return post<
     ApiResponseBody<RequestLoginLinkMailResponseBody>,
@@ -126,20 +120,20 @@ export const requestLoginLinkMail = async (data: MailLoginRequestBody) => {
 };
 
 export const authenticateMailLogin = async (
-  body: AuthenticationRequestBody
+  body: MailAuthenticationRequestBody
 ) => {
   return post<
     ApiResponseBody<AuthenticationResponseBody>,
-    AuthenticationRequestBody
+    MailAuthenticationRequestBody
   >(`${httpUrl}/auth/mail/authenticate`, body);
 };
 
 export const authenticateStravaLogin = async (
-  body: AuthenticationRequestBody
+  body: StravaAuthenticationRequestBody
 ) => {
   return post<
     ApiResponseBody<AuthenticationResponseBody>,
-    AuthenticationRequestBody
+    StravaAuthenticationRequestBody
   >(`${httpUrl}/auth/strava/authenticate`, body);
 };
 

@@ -274,8 +274,13 @@ export const LoginModal = () => {
         if (codesSent.get(code)) return;
         codesSent.set(code, true);
 
+        const authStrava = async () => {
+          const scope = useSearchParams()[0].get('scope') || '';
+          return api.authenticateStravaLogin({ code, scope });
+        };
+
         const ret = location.pathname.includes('/auth/strava')
-          ? await api.authenticateStravaLogin({ code })
+          ? await authStrava()
           : await api.authenticateMailLogin({ code });
 
         if (ret.status === ApiStatus.SUCCESS) {

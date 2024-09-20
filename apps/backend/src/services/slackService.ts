@@ -84,7 +84,7 @@ const sendSlackMessage = (service: SlackService, message: string) => {
 };
 
 export const logActivityUpload = (activityId: number) => {
-  const message = `New upload: *${username}* : www.strava.com/activities/${activityId}`;
+  const message = `New upload: www.strava.com/activities/${activityId}`;
   sendSlackMessage(SlackService.STRAVA_UPLOAD, message);
 };
 
