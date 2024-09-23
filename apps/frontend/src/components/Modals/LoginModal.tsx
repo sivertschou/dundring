@@ -263,24 +263,21 @@ export const LoginModal = () => {
   const toast = useToast();
 
   const code = useSearchParams()[0].get('code');
+  const scopes = useSearchParams()[0].get('scope');
 
   const onClose = React.useCallback(() => {
     navigate('/');
   }, [navigate]);
 
   React.useEffect(() => {
-    const authenticate = async (code: string) => {
+    const authenticate = async (code: string, scope: string) => {
       try {
+        console.log('try');
         if (codesSent.get(code)) return;
         codesSent.set(code, true);
 
-        const authStrava = async () => {
-          const scope = useSearchParams()[0].get('scope') || '';
-          return api.authenticateStravaLogin({ code, scope });
-        };
-
         const ret = location.pathname.includes('/auth/strava')
-          ? await authStrava()
+          ? await api.authenticateStravaLogin({ code, scope })
           : await api.authenticateMailLogin({ code });
 
         if (ret.status === ApiStatus.SUCCESS) {
@@ -301,13 +298,15 @@ export const LoginModal = () => {
             onClose();
           }
         }
-      } catch (error) {}
+      } catch (error) {
+        console.error(error);
+      }
     };
 
-    if (code) {
-      authenticate(code).catch(console.error);
+    if (code && scopes) {
+      authenticate(code, scopes).catch(console.error);
     }
-  }, [code]);
+  }, [code, scopes]);
 
   switch (state.type) {
     case 'mail-sent':
