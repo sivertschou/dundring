@@ -30,12 +30,15 @@ router.post<
 
   const stravaId = tokenData.data.athlete.id;
 
-  await stravaService.updateRefreshToken({
-    athleteId: stravaId,
-    refreshToken: tokenData.data.refresh_token,
-  });
-
   const existingUser = await userService.getUserByStravaId(stravaId);
+
+  const updateRefreshTokenAndGiveExistingUser = async () => {
+    await stravaService.updateRefreshToken({
+      athleteId: stravaId,
+      refreshToken: tokenData.data.refresh_token,
+    });
+    return existingUser;
+  };
 
   const user =
     isError(existingUser) && existingUser.type === 'User not found'
@@ -44,7 +47,7 @@ router.post<
           refreshToken: tokenData.data.refresh_token,
           scopes: [],
         })
-      : existingUser;
+      : await updateRefreshTokenAndGiveExistingUser();
 
   if (isSuccess(user)) {
     const username = user.data.username;
