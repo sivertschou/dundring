@@ -1,4 +1,5 @@
 import { Workout } from './workoutTypes';
+import { Scopes } from '@dundring/frontend/src/types';
 
 export enum ApiStatus {
   SUCCESS = 'SUCCESS',
@@ -29,8 +30,13 @@ export type RequestLoginLinkMailResponseBody =
   | 'Login link sent'
   | 'Register link sent';
 
-export interface AuthenticationRequestBody {
+export interface MailAuthenticationRequestBody {
   code: string;
+}
+
+export interface StravaAuthenticationRequestBody {
+  code: string;
+  scope: string;
 }
 
 export interface AuthenticationResponseBody {
@@ -43,7 +49,10 @@ export interface LoginResponseBody {
   userId: string;
   token: string;
   ftp: number;
-  stravaData: { athleteId: number } | null;
+  stravaData: {
+    athleteId: number;
+    scopes: Scopes;
+  } | null;
 }
 
 export interface UserUpdateRequestBody {
@@ -76,17 +85,18 @@ export interface ProfileResponseBody {
   username: string;
   ftp: number;
   mailAuthentication: MailAuthentication | null;
-  stravaAuthentication: StravaAuthentication | null;
+  stravaAuthentication: StravaAuthenticationResp | null;
 }
 
 export interface MailAuthentication {
   mail: string;
 }
 
-export interface StravaAuthentication {
+export interface StravaAuthenticationResp {
   athleteId: number;
   scopes: {
     read: boolean;
+    activityWrite: boolean;
   };
 }
 

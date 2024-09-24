@@ -1,6 +1,8 @@
-import { Status, StravaToken } from '@dundring/types';
+import { Status, StravaToken, StravaTokenRefresh } from '@dundring/types';
 import { error, success } from '@dundring/utils';
 import fetch from 'node-fetch';
+import * as db from '../db';
+import { Scopes } from '@dundring/frontend/src/types';
 
 require('dotenv').config();
 
@@ -55,3 +57,48 @@ export const getStravaTokenFromAuthCode = async (
     return error('Something went wrong while fetching Strava token');
   }
 };
+
+export const getStravaTokenFromRefreshToken = async (
+  refreshToken: string
+): Promise<
+  Status<
+    StravaTokenRefresh,
+    | 'Invalid authorization code'
+    | 'Something went wrong while fetching Strava token'
+  >
+> => {
+  const url = `https://www.strava.com/api/v3/oauth/token`;
+
+  const body = {
+    client_id: process.env.STRAVA_CLIENT_ID,
+    client_secret: process.env.STRAVA_CLIENT_SECRET,
+    grant_type: 'refresh_token',
+    refresh_token: refreshToken,
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      console.log(response);
+      return error('Invalid authorization code');
+    }
+
+    const token: StravaToken = await response.json();
+
+    return success(token);
+  } catch (e) {
+    console.error('[sendSlackMessage]:', e);
+    return error('Something went wrong while fetching Strava token');
+  }
+};
+
+//utils?
+const pause = (duration: number) =>
+  new Promise((resolve) => setTimeout(resolve, duration));

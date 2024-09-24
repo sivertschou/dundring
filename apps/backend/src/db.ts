@@ -212,7 +212,8 @@ const createUserFromStrava = async (
         create: {
           athleteId: body.athleteId,
           refreshToken: body.refreshToken,
-          readScope: true,
+          readScope: body.scopes.read,
+          activityWriteScope: body.scopes.activityWrite,
         },
       },
     },
