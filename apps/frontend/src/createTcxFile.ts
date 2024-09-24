@@ -1,13 +1,39 @@
 import { padLeadingZero } from '@dundring/utils';
 import { Lap } from './types';
 
-export const toTCX = (
+export const downloadTcx = (
   laps: Lap[],
   distance: number,
   includeGPSData: boolean
 ) => {
   const startTime = laps[0].dataPoints[0].timeStamp;
-  const output = [
+  const output = toTcxString(laps, distance, includeGPSData);
+
+  const url = window.URL.createObjectURL(new Blob([output]));
+  const link = document.createElement('a');
+
+  const filename = `dundring_${formatDateForFilename(startTime)}`;
+
+  link.href = url;
+  link.setAttribute('download', `${filename}.tcx`);
+
+  // Append to html link element page
+  document.body.appendChild(link);
+
+  // Start download
+  link.click();
+
+  // Clean up and remove the link
+  link.parentNode?.removeChild(link);
+};
+
+export const toTcxString = (
+  laps: Lap[],
+  distance: number,
+  includeGPSData: boolean
+): string => {
+  const startTime = laps[0].dataPoints[0].timeStamp;
+  return [
     `<?xml version="1.0" encoding="UTF-8"?>`,
     `<TrainingCenterDatabase`,
     `   xsi:schemaLocation="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd"`,
@@ -40,23 +66,6 @@ export const toTCX = (
     `  </Author>`,
     `</TrainingCenterDatabase>`,
   ].join('\n');
-
-  const url = window.URL.createObjectURL(new Blob([output]));
-  const link = document.createElement('a');
-
-  const filename = `dundring_${formatDateForFilename(startTime)}`;
-
-  link.href = url;
-  link.setAttribute('download', `${filename}.tcx`);
-
-  // Append to html link element page
-  document.body.appendChild(link);
-
-  // Start download
-  link.click();
-
-  // Clean up and remove the link
-  link.parentNode?.removeChild(link);
 };
 
 const lapToTCX = (lap: Lap, includeGPSData: boolean) => {
