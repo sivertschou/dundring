@@ -20,25 +20,29 @@ export const UploadToStravaButton = ({
   const { user } = useUser();
   const { activeWorkout } = useActiveWorkout();
 
-  const [activityId, setActivityId] = useState<number | null>(null);
+  const [state, setState] = useState<UploadState>({ type: 'NotAsked' });
 
   const linkColor = useLinkPowerColor();
 
   const toast = useToast();
-  console.log(user);
+
   if (!user.loggedIn) {
     return null;
   }
-  console.log(activityId);
-  if (activityId) {
-    console.log('her');
+  if (state.type === 'Loading') {
     return (
-      <Button variant="link">
-        heihei
-        <Link
-          color={linkColor}
-          href={`www.strava.com/activities/${activityId}`}
-        />
+      <Button as="a" color={linkColor} variant="link" isLoading={true}></Button>
+    );
+  }
+  if (state.type === 'Success') {
+    return (
+      <Button
+        as="a"
+        color={linkColor}
+        href={`https://www.strava.com/activities/${state.activityId}`}
+        variant="link"
+      >
+        Go to Strava-activity
       </Button>
     );
   }
@@ -46,6 +50,7 @@ export const UploadToStravaButton = ({
     <Button
       width="100%"
       onClick={async () => {
+        setState({ type: 'Loading' });
         api
           .uploadActivity(user.token, {
             tcxFile: toTcxString(data, distance, includeGPSData),
@@ -53,25 +58,31 @@ export const UploadToStravaButton = ({
           })
           .then((response) => {
             if (response.status === ApiStatus.FAILURE) {
-              return toast({
-                title: `FAILURE ${response.message}`,
+              setState({ type: 'Error', msg: response.message });
+              toast({
+                title: `Api Failure :  ${response.message}`,
                 isClosable: true,
                 duration: 10000,
                 status: 'error',
               });
+            } else {
+              setState({
+                type: 'Success',
+                activityId: response.data.activity_id,
+              });
+              toast({
+                title: `Activity upload to Strava!`,
+                isClosable: true,
+                duration: 5000,
+                status: 'success',
+              });
             }
-            setActivityId(response.data.activity_id);
-            toast({
-              title: `Strava upload success! ${response.data.activity_id}`,
-              isClosable: true,
-              duration: 10000,
-              status: 'success',
-            });
           })
           .catch((err) => {
             console.error(err);
+            setState({ type: 'Error', msg: err.toString });
             toast({
-              title: `FAILURE ${err}`,
+              title: `Upload failed : ${err}`,
               isClosable: true,
               duration: 10000,
               status: 'error',
@@ -85,4 +96,8 @@ export const UploadToStravaButton = ({
   );
 };
 
-// const uploadToStrava
+type UploadState =
+  | { type: 'NotAsked' }
+  | { type: 'Loading' }
+  | { type: 'Error'; msg: string }
+  | { type: 'Success'; activityId: number };

@@ -12,6 +12,7 @@ import {
   userService,
   validationService,
 } from '../../services';
+import { Scopes } from '@dundring/frontend/src/types';
 
 const router = express.Router();
 
@@ -30,11 +31,14 @@ router.post<
 
   const stravaId = tokenData.data.athlete.id;
 
-  await stravaService.updateRefreshToken({
+  const scopes = parseScopes(scope);
+
+  await stravaService.updateRefreshTokenAndScopes({
     athleteId: stravaId,
     refreshToken: tokenData.data.refresh_token,
+    scopes,
   });
-  // scopes??
+
   const existingUser = await userService.getUserByStravaId(stravaId);
 
   const user =
@@ -42,7 +46,7 @@ router.post<
       ? await userService.createUserFromStrava({
           athleteId: stravaId,
           refreshToken: tokenData.data.refresh_token,
-          scopes: [],
+          scopes,
         })
       : existingUser;
 
@@ -85,20 +89,26 @@ router.post<
         },
       },
     });
-    return;
-  }
-  // does this make sense?
-  await userService.createUserFromStrava({
-    athleteId: tokenData.data.athlete.id,
-    refreshToken: tokenData.data.refresh_token,
-    scopes: [],
-  });
+  } else {
+    await userService.createUserFromStrava({
+      athleteId: tokenData.data.athlete.id,
+      refreshToken: tokenData.data.refresh_token,
+      scopes,
+    });
 
-  res.send({
-    status: ApiStatus.FAILURE,
-    message:
-      'Something went wrong when authenticating user based on Strava session',
-  });
+    res.send({
+      status: ApiStatus.FAILURE,
+      message:
+        'Something went wrong when authenticating user based on Strava session',
+    });
+  }
 });
+
+const parseScopes = (scopeString: string): Scopes => {
+  const scopes = scopeString.split(',');
+  const read = scopes.some((s) => s === 'read');
+  const activityWrite = scopes.some((s) => s === 'activity:write');
+  return { read, activityWrite };
+};
 
 export default router;

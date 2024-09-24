@@ -11,6 +11,7 @@ import * as db from '../db';
 import * as FormData from 'form-data';
 import { Readable } from 'stream';
 import { slackService } from '.';
+import { Scopes } from '@dundring/frontend/src/types';
 
 require('dotenv').config();
 
@@ -198,11 +199,12 @@ export const getStravaTokenFromRefreshToken = async (
 };
 
 // Should probably me moved into user service?
-export const updateRefreshToken = async (data: {
+export const updateRefreshTokenAndScopes = async (data: {
   athleteId: number;
   refreshToken: string;
+  scopes: Scopes;
 }) => {
-  db.updateStravaRefreshToken(data);
+  return db.updateStravaRefreshToken(data);
 };
 
 //utils?

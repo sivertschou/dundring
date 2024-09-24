@@ -47,8 +47,13 @@ export interface LoggedInUser {
   ftp: number;
   stravaData: {
     athleteId: number;
-    scopes: { read: boolean; activityWrite: boolean };
+    scopes: Scopes;
   } | null;
+}
+
+export interface Scopes {
+  read: boolean;
+  activityWrite: boolean;
 }
 
 export interface LoggedOutUser {

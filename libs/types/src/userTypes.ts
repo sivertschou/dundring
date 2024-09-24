@@ -1,3 +1,5 @@
+import { Scopes } from '@dundring/frontend/src/types';
+
 export interface User {
   username: string;
   mail: string;
@@ -12,5 +14,5 @@ export interface UserBase {
 export interface UserCreationStrava {
   athleteId: number;
   refreshToken: string;
-  scopes: string[];
+  scopes: Scopes;
 }
