@@ -8,10 +8,12 @@ import {
   LoginResponseBody,
   MailLoginRequestBody,
   RequestLoginLinkMailResponseBody,
+  StravaUpload,
   UserUpdateRequestBody,
   UserUpdateResponseBody,
   WorkoutRequestBody,
   WorkoutsResponseBody,
+  TcxFileUpload,
 } from '@dundring/types';
 import { getEnv } from './utils/environment';
 
@@ -186,6 +188,14 @@ export const updateUser = async (
     ApiResponseBody<UserUpdateResponseBody>,
     UserUpdateRequestBody
   >(`${httpUrl}/me`, token, data);
+};
+
+export const uploadActivity = async (token: string, data: TcxFileUpload) => {
+  return authPost<ApiResponseBody<StravaUpload>, TcxFileUpload>(
+    `${httpUrl}/me/upload`,
+    token,
+    data
+  );
 };
 
 export const sendFeedback = async (data: FeedbackRequestBody) =>
