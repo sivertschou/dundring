@@ -1,5 +1,4 @@
 import { Workout } from './workoutTypes';
-import { Scopes } from '@dundring/frontend/src/types';
 
 export enum ApiStatus {
   SUCCESS = 'SUCCESS',
@@ -79,6 +78,11 @@ export interface GetWorkoutResponseBody {
 
 export interface WorkoutRequestBody {
   workout: Workout;
+}
+
+export interface Scopes {
+  read: boolean;
+  activityWrite: boolean;
 }
 
 export interface ProfileResponseBody {

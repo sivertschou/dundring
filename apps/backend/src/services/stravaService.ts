@@ -1,4 +1,5 @@
 import {
+  Scopes,
   Status,
   StravaToken,
   StravaTokenRefresh,
@@ -10,7 +11,6 @@ import fetch from 'node-fetch';
 import * as db from '../db';
 import * as FormData from 'form-data';
 import { Readable } from 'stream';
-import { Scopes } from '@dundring/frontend/src/types';
 import { slackService } from './index';
 
 require('dotenv').config();

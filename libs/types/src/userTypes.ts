@@ -1,4 +1,4 @@
-import { Scopes } from '@dundring/frontend/src/types';
+import { Scopes } from './apiTypes';
 
 export interface User {
   username: string;

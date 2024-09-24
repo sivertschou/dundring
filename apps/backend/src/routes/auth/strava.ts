@@ -3,6 +3,7 @@ import {
   ApiStatus,
   StravaAuthenticationRequestBody,
   AuthenticationResponseBody,
+  Scopes,
 } from '@dundring/types';
 import { isError, isSuccess } from '@dundring/utils';
 import * as express from 'express';
@@ -12,7 +13,6 @@ import {
   userService,
   validationService,
 } from '../../services';
-import { Scopes } from '@dundring/frontend/src/types';
 
 const router = express.Router();
 

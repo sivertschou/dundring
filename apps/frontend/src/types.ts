@@ -1,3 +1,5 @@
+import { Scopes } from '@dundring/types';
+
 export interface Lap {
   dataPoints: DataPoint[];
   distance: number;
@@ -51,11 +53,6 @@ export interface LoggedInUser {
     athleteId: number;
     scopes: Scopes;
   } | null;
-}
-
-export interface Scopes {
-  read: boolean;
-  activityWrite: boolean;
 }
 
 export interface LoggedOutUser {
