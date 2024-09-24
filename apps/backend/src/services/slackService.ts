@@ -23,6 +23,11 @@ export const checkSlackConfig = () => {
       '[.env]: No Slack service for feedback provided. Override this by setting the SLACK_FEEDBACK in the environment config.'
     );
   }
+  if (!process.env.SLACK_STRAVA_UPLOAD) {
+    console.log(
+      '[.env]: No Slack service for feedback provided. Override this by setting the SLACK_FEEDBACK in the environment config.'
+    );
+  }
 };
 
 enum SlackService {
@@ -30,6 +35,7 @@ enum SlackService {
   ERRORS,
   GROUP_SESSION,
   FEEDBACK,
+  STRAVA_UPLOAD,
 }
 
 const getServicePath = (service: SlackService): string | null => {
@@ -42,6 +48,8 @@ const getServicePath = (service: SlackService): string | null => {
       return process.env.SLACK_GROUP_SESSION || null;
     case SlackService.FEEDBACK:
       return process.env.SLACK_FEEDBACK || null;
+    case SlackService.STRAVA_UPLOAD:
+      return process.env.SLACK_STRAVA_UPLOAD || null;
   }
 };
 
@@ -73,6 +81,11 @@ const sendSlackMessage = (service: SlackService, message: string) => {
   } catch (e) {
     console.error('[sendSlackMessage]:', e);
   }
+};
+
+export const logActivityUpload = (activityId: number) => {
+  const message = `New upload: www.strava.com/activities/${activityId}`;
+  sendSlackMessage(SlackService.STRAVA_UPLOAD, message);
 };
 
 export const logUserCreation = (user: { username: string; mail: string }) => {

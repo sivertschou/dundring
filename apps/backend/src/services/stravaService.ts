@@ -5,12 +5,13 @@ import {
   StravaUpload,
   TcxFileUpload,
 } from '@dundring/types';
-import { error, success } from '@dundring/utils';
+import { error, isSuccess, success } from '@dundring/utils';
 import fetch from 'node-fetch';
 import * as db from '../db';
 import * as FormData from 'form-data';
 import { Readable } from 'stream';
 import { Scopes } from '@dundring/frontend/src/types';
+import { slackService } from './index';
 
 require('dotenv').config();
 
@@ -41,8 +42,7 @@ export const uploadFileToStrava = async (
   formData.append('data_type', 'tcx');
 
   const name = upload.name || 'Dundring.com workout';
-  formData.append('name', name); // prøv uten?
-  // formData.append('external_id', 'externalId');
+  formData.append('name', name);
 
   try {
     const response = await fetch('https://www.strava.com/api/v3/uploads', {
@@ -96,6 +96,11 @@ export const uploadFileToStrava = async (
           const stravaUploadResponse = await fetchStravaUpload();
 
           if (stravaUploadResponse) {
+            if (isSuccess(stravaUploadResponse)) {
+              slackService.logActivityUpload(
+                stravaUploadResponse.data.activity_id
+              );
+            }
             return stravaUploadResponse;
           }
         } catch (err) {
@@ -192,6 +197,13 @@ export const getStravaTokenFromRefreshToken = async (
   }
 };
 
-//utils?
+export const updateRefreshTokenAndScopes = async (data: {
+  athleteId: number;
+  refreshToken: string;
+  scopes: Scopes;
+}) => {
+  return db.updateStravaRefreshToken(data);
+};
+
 const pause = (duration: number) =>
   new Promise((resolve) => setTimeout(resolve, duration));
