@@ -23,6 +23,7 @@ const DataContext = React.createContext<{
   isRunning: boolean;
   activeRoute: { name: Route; waypoints: Waypoint[] };
   setActiveRoute: (route: Route) => void;
+  smoothedPower: number;
 } | null>(null);
 
 interface Props {
@@ -291,6 +292,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         isRunning: data.state === 'running',
         activeRoute: { name: route, waypoints: routeNameToWaypoint(route) },
         setActiveRoute: setRoute,
+        smoothedPower: getSmoothedPower(data.laps),
       }}
     >
       {children}
@@ -304,4 +306,21 @@ export const useData = () => {
     throw new Error('useData must be used within a DataContextProvider');
   }
   return context;
+};
+
+const getSmoothedPower = (laps: Lap[]) => {
+  const lap = laps.at(-1);
+  if (!lap) {
+    return 0;
+  }
+  const point1 = lap.dataPoints.at(-1)?.power || 0;
+  const point2 = lap.dataPoints.at(-2)?.power || 0;
+  const point3 = lap.dataPoints.at(-3)?.power || 0;
+
+  const sum = point1 + point2 + point3;
+  const len = Math.sign(point1) + Math.sign(point2) + Math.sign(point3);
+  if (len === 0) {
+    return 0;
+  }
+  return Math.round(sum / len);
 };
