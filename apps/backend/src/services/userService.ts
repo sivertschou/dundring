@@ -56,3 +56,10 @@ export const createUserFromMail = async (mail: string) => {
   }
   return ret;
 };
+
+export const updateRefreshToken = async (data: {
+  athleteId: number;
+  refreshToken: string;
+}) => {
+  db.updateStravaRefreshToken(data);
+};

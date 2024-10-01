@@ -1,7 +1,6 @@
-import { ApiStatus, Status, StravaToken } from '@dundring/types';
+import { Status, StravaToken } from '@dundring/types';
 import { error, success } from '@dundring/utils';
 import fetch from 'node-fetch';
-import * as db from '../db';
 
 require('dotenv').config();
 
@@ -55,11 +54,4 @@ export const getStravaTokenFromAuthCode = async (
     console.error('[sendSlackMessage]:', e);
     return error('Something went wrong while fetching Strava token');
   }
-};
-
-export const updateRefreshToken = async (data: {
-  athleteId: number;
-  refreshToken: string;
-}) => {
-  db.updateStravaRefreshToken(data);
 };
