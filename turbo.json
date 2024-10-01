@@ -12,18 +12,8 @@
       "dependsOn": ["^db:generate", "^build"],
       "outputs": ["build/**", "dist/**"]
     },
-    "build:mock": {
-      "dependsOn": ["^db:generate", "^build"],
-      "outputs": ["build/**", "dist/**"]
-    },
     "lint": {},
     "dev": {
-      "dependsOn": ["^db:generate", "^db:migrate", "^build"],
-      "cache": false,
-      "outputs": ["build/**", "dist/**"],
-      "persistent": true
-    },
-    "mock": {
       "dependsOn": ["^db:generate", "^db:migrate", "^build"],
       "cache": false,
       "outputs": ["build/**", "dist/**"],

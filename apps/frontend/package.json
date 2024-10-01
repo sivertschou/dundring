@@ -6,9 +6,7 @@
   "scripts": {
     "prepare": "bash prepare.sh",
     "dev": "vite",
-    "mock": "export VITE_USE_MOCK_DATA=true ; vite",
-    "build": "tsc && vite build",
-    "build:mock": "export VITE_USE_MOCK_DATA=true ; tsc && vite build"
+    "build": "tsc && vite build"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.8.1",
