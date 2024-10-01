@@ -12,10 +12,10 @@ import {
 import { secondsToHoursMinutesAndSecondsString } from '@dundring/utils';
 
 export const TopBar = () => {
-  const { power, cadence, currentResistance } = useSmartTrainer();
+  const { cadence, currentResistance } = useSmartTrainer();
   const { heartRate } = useHeartRateMonitor();
   const { activeWorkout } = useActiveWorkout();
-  const { timeElapsed, distance, speed } = useData();
+  const { timeElapsed, distance, speed, smoothedPower } = useData();
   const remainingTime = getRemainingTime(activeWorkout);
 
   const secondsElapsed = Math.floor(timeElapsed / 1000);
@@ -78,7 +78,7 @@ export const TopBar = () => {
                 {currentResistance > 0 ? `@${currentResistance}w` : 'Free mode'}
               </Text>
               <Center>
-                <Text fontSize={mainFontSize}>{power || '0'}</Text>
+                <Text fontSize={mainFontSize}>{smoothedPower || '0'}</Text>
                 <Text fontSize={unitFontSize}>w</Text>
               </Center>
               <Text fontSize={secondaryFontSize}>{cadence || '0'} rpm</Text>
