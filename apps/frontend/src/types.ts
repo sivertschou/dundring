@@ -1,6 +1,8 @@
 export interface Lap {
   dataPoints: DataPoint[];
   distance: number;
+  sumWatt: number;
+  normalizedDuration: number;
 }
 export interface DataPoint {
   heartRate?: number;
