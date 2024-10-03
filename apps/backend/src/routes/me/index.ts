@@ -77,20 +77,20 @@ router.post<TcxFileUpload, ApiResponseBody<StravaUpload>>(
         message: 'User not a strava user or missing refresh token',
       });
     }
-    const accesTokenResponse =
+    const accessTokenResponse =
       await stravaService.getStravaTokenFromRefreshToken(
         stravaAuth.refreshToken
       );
-    if (isError(accesTokenResponse)) {
+    if (isError(accessTokenResponse)) {
       return res.send({
         status: ApiStatus.FAILURE,
-        message: accesTokenResponse.status,
+        message: accessTokenResponse.status,
       });
     }
 
     const uploadResponse = await stravaService.uploadFileToStrava(
       req.body,
-      accesTokenResponse.data.access_token
+      accessTokenResponse.data.access_token
     );
     if (isError(uploadResponse)) {
       return res.send({
