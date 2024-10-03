@@ -7,7 +7,6 @@ import * as api from '../../api';
 import { useUser } from '../../context/UserContext';
 import { ApiStatus } from '@dundring/types';
 import { useState } from 'react';
-import { Link } from '@chakra-ui/layout';
 import { useLinkPowerColor } from '../../hooks/useLinkColor';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 
@@ -26,7 +25,7 @@ export const UploadToStravaButton = ({
 
   const toast = useToast();
 
-  if (!user.loggedIn) {
+  if (!user.loggedIn || !user.stravaData?.scopes.activityWrite) {
     return null;
   }
   if (state.type === 'Loading') {
@@ -91,7 +90,7 @@ export const UploadToStravaButton = ({
       }}
       leftIcon={<Icon as={Download} />}
     >
-      Upload to Stxrava
+      Upload to Strava
     </Button>
   );
 };
