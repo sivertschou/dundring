@@ -197,13 +197,5 @@ export const getStravaTokenFromRefreshToken = async (
   }
 };
 
-export const updateRefreshTokenAndScopes = async (data: {
-  athleteId: number;
-  refreshToken: string;
-  scopes: Scopes;
-}) => {
-  return db.updateStravaRefreshToken(data);
-};
-
 const pause = (duration: number) =>
   new Promise((resolve) => setTimeout(resolve, duration));
