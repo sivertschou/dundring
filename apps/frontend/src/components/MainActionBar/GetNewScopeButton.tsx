@@ -4,8 +4,7 @@ import { ConnectWithStravaButton } from '../ConnectWithStravaButton';
 
 export const GetNewScopeButton = () => {
   const { user } = useUser();
-  console.log(user);
-  // TODO ADD BACK
+
   if (
     !user.loggedIn ||
     !user.stravaData ||

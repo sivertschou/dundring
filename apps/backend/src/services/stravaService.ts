@@ -1,5 +1,4 @@
 import {
-  Scopes,
   Status,
   StravaToken,
   StravaTokenRefresh,
@@ -8,7 +7,6 @@ import {
 } from '@dundring/types';
 import { error, isSuccess, success } from '@dundring/utils';
 import fetch from 'node-fetch';
-import * as db from '../db';
 import * as FormData from 'form-data';
 import { Readable } from 'stream';
 import { slackService } from './index';

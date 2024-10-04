@@ -272,7 +272,6 @@ export const LoginModal = () => {
   React.useEffect(() => {
     const authenticate = async (code: string, scope: string) => {
       try {
-        console.log('try');
         if (codesSent.get(code)) return;
         codesSent.set(code, true);
 
