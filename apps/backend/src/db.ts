@@ -439,7 +439,7 @@ export const upsertWorkout = async (
   }
 };
 
-export const updateStravaRefreshToken = async (data: {
+export const updateStravaRefreshTokenAndScopes = async (data: {
   athleteId: number;
   refreshToken: string;
   scopes: Scopes;

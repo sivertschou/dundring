@@ -62,5 +62,5 @@ export const updateRefreshTokenAndScopes = async (data: {
   refreshToken: string;
   scopes: Scopes;
 }) => {
-  return db.updateStravaRefreshToken(data);
+  return db.updateStravaRefreshTokenAndScopes(data);
 };
