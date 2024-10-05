@@ -1,45 +1,9 @@
 import { padLeadingZero } from '@dundring/utils';
 import { Lap } from './types';
 
-export const toTCX = (
-  laps: Lap[],
-  distance: number,
-  includeGPSData: boolean
-) => {
+export const downloadTcx = (laps: Lap[], distance: number) => {
   const startTime = laps[0].dataPoints[0].timeStamp;
-  const output = [
-    `<?xml version="1.0" encoding="UTF-8"?>`,
-    `<TrainingCenterDatabase`,
-    `   xsi:schemaLocation="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd"`,
-    `   xmlns:ns5="http://www.garmin.com/xmlschemas/ActivityGoals/v1"`,
-    `   xmlns:ns3="http://www.garmin.com/xmlschemas/ActivityExtension/v2"`,
-    `   xmlns:ns2="http://www.garmin.com/xmlschemas/UserProfile/v2"`,
-    `   xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2"`,
-    `   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"`,
-    `   xmlns:ns4="http://www.garmin.com/xmlschemas/ProfileExtension/v1"> `,
-    `  <Activities>`,
-    `    <Activity Sport="Biking">`,
-    `      <Id>${startTime.toISOString()}</Id>`,
-
-    includeGPSData ? `      <DistanceMeters>${distance}</DistanceMeters>` : '',
-    laps.map((lap) => lapToTCX(lap, includeGPSData)).join('\n'),
-    `    </Activity>`,
-    `  </Activities>`,
-    `  <Author xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="Application_t">`,
-    `    <Name>dundring.com</Name>`,
-    `    <Build>`,
-    `      <Version>`,
-    `        <VersionMajor>1</VersionMajor>`,
-    `        <VersionMinor>1</VersionMinor>`,
-    `        <BuildMajor>1</BuildMajor>`,
-    `        <BuildMinor>1</BuildMinor>`,
-    `      </Version>`,
-    `    </Build>`,
-    `    <LangID>EN</LangID>`,
-    `    <PartNumber>XXX-XXXXX-XX</PartNumber>`,
-    `  </Author>`,
-    `</TrainingCenterDatabase>`,
-  ].join('\n');
+  const output = toTcxString(laps, distance);
 
   const url = window.URL.createObjectURL(new Blob([output]));
   const link = document.createElement('a');
@@ -59,7 +23,44 @@ export const toTCX = (
   link.parentNode?.removeChild(link);
 };
 
-const lapToTCX = (lap: Lap, includeGPSData: boolean) => {
+export const toTcxString = (laps: Lap[], distance: number): string => {
+  const startTime = laps[0].dataPoints[0].timeStamp;
+  return [
+    `<?xml version="1.0" encoding="UTF-8"?>`,
+    `<TrainingCenterDatabase`,
+    `   xsi:schemaLocation="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd"`,
+    `   xmlns:ns5="http://www.garmin.com/xmlschemas/ActivityGoals/v1"`,
+    `   xmlns:ns3="http://www.garmin.com/xmlschemas/ActivityExtension/v2"`,
+    `   xmlns:ns2="http://www.garmin.com/xmlschemas/UserProfile/v2"`,
+    `   xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2"`,
+    `   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"`,
+    `   xmlns:ns4="http://www.garmin.com/xmlschemas/ProfileExtension/v1"> `,
+    `  <Activities>`,
+    `    <Activity Sport="Biking">`,
+    `      <Id>${startTime.toISOString()}</Id>`,
+
+    `      <DistanceMeters>${distance}</DistanceMeters>`,
+    laps.map((lap) => lapToTCX(lap)).join('\n'),
+    `    </Activity>`,
+    `  </Activities>`,
+    `  <Author xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="Application_t">`,
+    `    <Name>dundring.com</Name>`,
+    `    <Build>`,
+    `      <Version>`,
+    `        <VersionMajor>1</VersionMajor>`,
+    `        <VersionMinor>1</VersionMinor>`,
+    `        <BuildMajor>1</BuildMajor>`,
+    `        <BuildMinor>1</BuildMinor>`,
+    `      </Version>`,
+    `    </Build>`,
+    `    <LangID>EN</LangID>`,
+    `    <PartNumber>XXX-XXXXX-XX</PartNumber>`,
+    `  </Author>`,
+    `</TrainingCenterDatabase>`,
+  ].join('\n');
+};
+
+const lapToTCX = (lap: Lap) => {
   const filtererdDataPoints = lap.dataPoints.filter(
     (data) => data.heartRate || data.power
   );
@@ -82,7 +83,7 @@ const lapToTCX = (lap: Lap, includeGPSData: boolean) => {
               ].join('\n')
             : '',
 
-          includeGPSData && data.position !== undefined
+          data.position !== undefined
             ? [
                 `            <Position>`,
                 `              <LatitudeDegrees>${data.position.lat}</LatitudeDegrees>`,

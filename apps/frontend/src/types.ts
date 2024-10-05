@@ -1,3 +1,5 @@
+import { Scopes } from '@dundring/types';
+
 export interface Lap {
   dataPoints: DataPoint[];
   distance: number;
@@ -47,7 +49,10 @@ export interface LoggedInUser {
   username: string;
   workouts: Workout[];
   ftp: number;
-  stravaData: { athleteId: number } | null;
+  stravaData: {
+    athleteId: number;
+    scopes: Scopes;
+  } | null;
 }
 
 export interface LoggedOutUser {

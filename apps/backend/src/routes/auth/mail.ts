@@ -1,7 +1,7 @@
 import {
   ApiResponseBody,
   ApiStatus,
-  AuthenticationRequestBody,
+  MailAuthenticationRequestBody,
   AuthenticationResponseBody,
   MailLoginRequestBody,
 } from '@dundring/types';
@@ -35,7 +35,7 @@ router.post<null, ApiResponseBody<string>, MailLoginRequestBody>(
 router.post<
   null,
   ApiResponseBody<AuthenticationResponseBody>,
-  AuthenticationRequestBody
+  MailAuthenticationRequestBody
 >('/authenticate', async (req, res) => {
   const { code } = req.body;
   const ret = await validationService.getMailTokenData(code);
@@ -73,7 +73,15 @@ router.post<
           200
         );
 
-    const athleteId = user.data.stravaAuthentication?.athleteId ?? null;
+    const stravaData = user.data.stravaAuthentication
+      ? {
+          athleteId: user.data.stravaAuthentication.athleteId,
+          scopes: {
+            read: user.data.stravaAuthentication.readScope,
+            activityWrite: user.data.stravaAuthentication.activityWriteScope,
+          },
+        }
+      : null;
 
     res.send({
       status: ApiStatus.SUCCESS,
@@ -84,7 +92,7 @@ router.post<
           username,
           token,
           ftp,
-          stravaData: athleteId ? { athleteId } : null,
+          stravaData,
         },
       },
     });

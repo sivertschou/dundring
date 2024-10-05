@@ -263,20 +263,28 @@ export const LoginModal = () => {
   const toast = useToast();
 
   const code = useSearchParams()[0].get('code');
+  const scopes = useSearchParams()[0].get('scope');
 
   const onClose = React.useCallback(() => {
     navigate('/');
   }, [navigate]);
 
   React.useEffect(() => {
-    const authenticate = async (code: string) => {
+    type AuthenticateData =
+      | { type: 'mail'; code: string }
+      | { type: 'strava'; code: string; scope: string };
+    const authenticate = async (data: AuthenticateData) => {
       try {
-        if (codesSent.get(code)) return;
-        codesSent.set(code, true);
+        if (codesSent.get(data.code)) return;
+        codesSent.set(data.code, true);
 
-        const ret = location.pathname.includes('/auth/strava')
-          ? await api.authenticateStravaLogin({ code })
-          : await api.authenticateMailLogin({ code });
+        const ret =
+          data.type === 'strava'
+            ? await api.authenticateStravaLogin({
+                code: data.code,
+                scope: data.scope,
+              })
+            : await api.authenticateMailLogin({ code: data.code });
 
         if (ret.status === ApiStatus.SUCCESS) {
           setUser({
@@ -296,13 +304,32 @@ export const LoginModal = () => {
             onClose();
           }
         }
-      } catch (error) {}
+      } catch (error) {
+        console.error(error);
+      }
     };
 
-    if (code) {
-      authenticate(code).catch(console.error);
+    const isStravaAuthentication = location.pathname.includes('/auth/strava');
+    const isMailAuthentication = location.pathname.includes('/auth/mail');
+
+    if (isStravaAuthentication) {
+      if (!code || !scopes) {
+        console.error('Is at /auth/strava without either code and/or scopes');
+        return;
+      }
+      authenticate({ type: 'strava', code, scope: scopes }).catch(
+        console.error
+      );
     }
-  }, [code]);
+
+    if (isMailAuthentication) {
+      if (!code) {
+        console.error('Is at /auth/mail without either code and/or scopes');
+        return;
+      }
+      authenticate({ type: 'mail', code }).catch(console.error);
+    }
+  }, [code, scopes]);
 
   switch (state.type) {
     case 'mail-sent':

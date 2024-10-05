@@ -1,4 +1,4 @@
-import { mailService, slackService, stravaService } from './services';
+import { mailService, stravaService } from './services';
 import * as express from 'express';
 import * as WebSocket from 'ws';
 import cors from 'cors';
@@ -41,7 +41,12 @@ const checkEnvConfig = () => {
     );
   }
 
-  slackService.checkSlackConfig();
+  if (!process.env.SLACK_TOKEN) {
+    console.log(
+      '[.env]: No Slack token provided. Override this by setting the SLACK_TOKEN in the environment config.'
+    );
+  }
+
   mailService.checkMailConfig();
   stravaService.checkStravaConfig();
 };

@@ -1,8 +1,9 @@
 import {
   ApiResponseBody,
   ApiStatus,
-  AuthenticationRequestBody,
+  StravaAuthenticationRequestBody,
   AuthenticationResponseBody,
+  Scopes,
 } from '@dundring/types';
 import { isError, isSuccess } from '@dundring/utils';
 import * as express from 'express';
@@ -18,9 +19,9 @@ const router = express.Router();
 router.post<
   null,
   ApiResponseBody<AuthenticationResponseBody>,
-  AuthenticationRequestBody
+  StravaAuthenticationRequestBody
 >('/authenticate', async (req, res) => {
-  const { code } = req.body;
+  const { code, scope } = req.body;
   const tokenData = await stravaService.getStravaTokenFromAuthCode(code);
 
   if (isError(tokenData)) {
@@ -30,9 +31,12 @@ router.post<
 
   const stravaId = tokenData.data.athlete.id;
 
-  await userService.updateRefreshToken({
+  const scopes = parseScopes(scope);
+
+  await userService.updateRefreshTokenAndScopes({
     athleteId: stravaId,
     refreshToken: tokenData.data.refresh_token,
+    scopes,
   });
 
   const existingUser = await userService.getUserByStravaId(stravaId);
@@ -42,7 +46,7 @@ router.post<
       ? await userService.createUserFromStrava({
           athleteId: stravaId,
           refreshToken: tokenData.data.refresh_token,
-          scopes: [],
+          scopes,
         })
       : existingUser;
 
@@ -62,7 +66,15 @@ router.post<
           200
         );
 
-    const athleteId = user.data.stravaAuthentication?.athleteId ?? null;
+    const stravaData = user.data.stravaAuthentication
+      ? {
+          athleteId: user.data.stravaAuthentication.athleteId,
+          scopes: {
+            read: user.data.stravaAuthentication.readScope,
+            activityWrite: user.data.stravaAuthentication.activityWriteScope,
+          },
+        }
+      : null;
 
     res.send({
       status: ApiStatus.SUCCESS,
@@ -73,24 +85,30 @@ router.post<
           username,
           token,
           ftp,
-          stravaData: athleteId ? { athleteId } : null,
+          stravaData,
         },
       },
     });
-    return;
+  } else {
+    await userService.createUserFromStrava({
+      athleteId: tokenData.data.athlete.id,
+      refreshToken: tokenData.data.refresh_token,
+      scopes,
+    });
+
+    res.send({
+      status: ApiStatus.FAILURE,
+      message:
+        'Something went wrong when authenticating user based on Strava session',
+    });
   }
-
-  await userService.createUserFromStrava({
-    athleteId: tokenData.data.athlete.id,
-    refreshToken: tokenData.data.refresh_token,
-    scopes: [],
-  });
-
-  res.send({
-    status: ApiStatus.FAILURE,
-    message:
-      'Something went wrong when authenticating user based on Strava session',
-  });
 });
+
+const parseScopes = (scopeString: string): Scopes => {
+  const scopes = scopeString.split(',');
+  const read = scopes.some((s) => s === 'read');
+  const activityWrite = scopes.some((s) => s === 'activity:write');
+  return { read, activityWrite };
+};
 
 export default router;

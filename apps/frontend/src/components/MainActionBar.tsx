@@ -29,6 +29,7 @@ export const MainActionBar = () => {
   return (
     <Center mb="5" mx="2">
       <Stack p="5" borderRadius="1em" bgColor={bgColor} pointerEvents="auto">
+        <PausedWorkoutButtons />
         {showWorkoutControls ? <WorkoutControls /> : null}
         {showPowerControls ? <PowerControls /> : null}
 
@@ -76,7 +77,6 @@ export const MainActionBar = () => {
             </HStack>
           </Center>
         </Grid>
-        <PausedWorkoutButtons />
       </Stack>
     </Center>
   );

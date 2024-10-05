@@ -1,4 +1,4 @@
-import { UserCreationStrava } from '@dundring/types';
+import { Scopes, UserCreationStrava } from '@dundring/types';
 
 require('dotenv').config();
 import * as db from '../db';
@@ -57,9 +57,10 @@ export const createUserFromMail = async (mail: string) => {
   return ret;
 };
 
-export const updateRefreshToken = async (data: {
+export const updateRefreshTokenAndScopes = async (data: {
   athleteId: number;
   refreshToken: string;
+  scopes: Scopes;
 }) => {
-  db.updateStravaRefreshToken(data);
+  return db.updateStravaRefreshTokenAndScopes(data);
 };

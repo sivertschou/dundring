@@ -1,4 +1,9 @@
-import { Status, UserCreationStrava, WorkoutBase } from '@dundring/types';
+import {
+  Scopes,
+  Status,
+  UserCreationStrava,
+  WorkoutBase,
+} from '@dundring/types';
 import {
   error,
   generateRandomString,
@@ -212,7 +217,8 @@ const createUserFromStrava = async (
         create: {
           athleteId: body.athleteId,
           refreshToken: body.refreshToken,
-          readScope: true,
+          readScope: body.scopes.read,
+          activityWriteScope: body.scopes.activityWrite,
         },
       },
     },
@@ -433,15 +439,20 @@ export const upsertWorkout = async (
   }
 };
 
-export const updateStravaRefreshToken = async (data: {
+export const updateStravaRefreshTokenAndScopes = async (data: {
   athleteId: number;
   refreshToken: string;
+  scopes: Scopes;
 }): Promise<
   Status<StravaAuthentication, 'Something went wrong while writing to database'>
 > => {
   try {
     const result = await prisma.stravaAuthentication.update({
-      data: { refreshToken: data.refreshToken },
+      data: {
+        refreshToken: data.refreshToken,
+        readScope: data.scopes.read,
+        activityWriteScope: data.scopes.activityWrite,
+      },
       where: { athleteId: data.athleteId },
     });
 
