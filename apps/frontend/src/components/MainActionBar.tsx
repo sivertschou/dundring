@@ -13,7 +13,6 @@ import { WorkoutControls } from './MainActionBar/WorkoutControls';
 import { SelectWorkoutButton } from './MainActionBar/SelectWorkoutButton';
 import { useLinkColor } from '../hooks/useLinkColor';
 import { Icon } from '@chakra-ui/react';
-import { GetNewScopeButton } from './MainActionBar/GetNewScopeButton';
 
 export const MainActionBar = () => {
   const [showPowerControls, setShowPowerControls] = React.useState(false);
@@ -78,7 +77,6 @@ export const MainActionBar = () => {
           </Center>
         </Grid>
         <PausedWorkoutButtons />
-        <GetNewScopeButton />
       </Stack>
     </Center>
   );
