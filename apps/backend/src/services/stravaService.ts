@@ -149,7 +149,7 @@ export const getStravaTokenFromAuthCode = async (
 
     return success(token);
   } catch (e) {
-    console.error('[sendSlackMessage]:', e);
+    console.error('[getStravaTokenFromAuthCode]:', e);
     return error('Something went wrong while fetching Strava token');
   }
 };
@@ -190,7 +190,7 @@ export const getStravaTokenFromRefreshToken = async (
 
     return success(token);
   } catch (e) {
-    console.error('[sendSlackMessage]:', e);
+    console.error('[getStravaTokenFromRefreshToken]:', e);
     return error('Something went wrong while fetching Strava token');
   }
 };
