@@ -2,7 +2,7 @@ import { Button } from '@chakra-ui/button';
 import { BoxArrowUpRight, Upload } from 'react-bootstrap-icons';
 import { toTcxString } from '../../createTcxFile';
 import { useData } from '../../context/DataContext';
-import { Icon, useToast } from '@chakra-ui/react';
+import { Icon, Tooltip, useToast } from '@chakra-ui/react';
 import * as api from '../../api';
 import { useUser } from '../../context/UserContext';
 import { ApiStatus } from '@dundring/types';
@@ -19,7 +19,13 @@ export const UploadToStravaButton = () => {
   const toast = useToast();
 
   if (!user.loggedIn || !user.stravaData?.scopes.activityWrite) {
-    return null;
+    return (
+      <Tooltip label="You need to be logged in and have granted permission to post activities to Strava">
+        <Button isDisabled leftIcon={<Icon as={Upload} />}>
+          Upload to Strava
+        </Button>
+      </Tooltip>
+    );
   }
 
   if (state.type === 'Loading') {
