@@ -3,12 +3,14 @@ import { chakra, ImageProps, forwardRef, Link } from '@chakra-ui/react';
 import logo from '../assets/connect-with-strava.svg';
 import { getEnv } from '../utils/environment';
 
-export const ConnectWithStravaButton = () => {
+export const getStravaAuthorizeUrl = (params = { forcePrompt: false }) => {
   const clientId = getEnv().stravaClientId;
-  const url = `https://www.strava.com/oauth/authorize?client_id=${clientId}&redirect_uri=${location.origin}/auth/strava&response_type=code&approval_prompt=auto&scope=read,activity:write`;
+  return `https://www.strava.com/oauth/authorize?client_id=${clientId}&redirect_uri=${location.origin}/auth/strava&response_type=code&approval_prompt=auto&scope=read,activity:write&approval_prompt=${params.forcePrompt ? 'force' : 'auto'}`;
+};
 
+export const ConnectWithStravaButton = () => {
   return (
-    <Link href={url}>
+    <Link href={getStravaAuthorizeUrl()}>
       <ConnectWithStravaGraphics />
     </Link>
   );

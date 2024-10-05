@@ -29,8 +29,20 @@ import {
   ModalFooter,
   Link,
   Icon,
+  Text,
+  UnorderedList,
+  ListItem,
+  ListIcon,
+  List,
+  Container,
+  HStack,
 } from '@chakra-ui/react';
-import { BoxArrowRight, BoxArrowUpRight } from 'react-bootstrap-icons';
+import {
+  BoxArrowUpRight,
+  CheckCircleFill,
+  Circle,
+} from 'react-bootstrap-icons';
+import { getStravaAuthorizeUrl } from '../ConnectWithStravaButton';
 
 export const ProfileModal = () => {
   const { isOpen } = useProfileModal();
@@ -221,6 +233,47 @@ export const ProfileModalContent = ({ user, onClose }: Props) => {
               <FormControl isInvalid={errorMessage !== ''}>
                 <FormErrorMessage>{errorMessage}</FormErrorMessage>
               </FormControl>
+              {user.stravaData ? (
+                <Stack>
+                  <Text fontWeight="medium">Strava</Text>
+                  <Link
+                    href={`https://strava.com/athletes/${user.stravaData.athleteId}`}
+                    fontSize="sm"
+                    alignItems="center"
+                    isExternal
+                    display="flex"
+                    gap="5px"
+                  >
+                    View connected Strava profile
+                    <BoxArrowUpRight />
+                  </Link>
+                  <Text>Granted permissions</Text>
+                  <List>
+                    <ListItem>
+                      <ListIcon as={scopeIcon(user.stravaData.scopes.read)} />
+                      Read basic profile data
+                    </ListItem>
+                    <ListItem>
+                      <ListIcon
+                        as={scopeIcon(user.stravaData.scopes.activityWrite)}
+                      />
+                      Post activities
+                    </ListItem>
+                  </List>
+                  <HStack>
+                    <Link
+                      href={getStravaAuthorizeUrl({ forcePrompt: true })}
+                      fontSize="sm"
+                      isExternal
+                      display="flex"
+                      alignItems="center"
+                      gap="5px"
+                    >
+                      Update permissions <BoxArrowUpRight />
+                    </Link>
+                  </HStack>
+                </Stack>
+              ) : null}
             </Stack>
           </Stack>
         </ModalBody>
@@ -244,18 +297,6 @@ export const ProfileModalContent = ({ user, onClose }: Props) => {
               Sign out
             </Button>
           ) : null}
-          {user.stravaData ? (
-            <Link
-              href={`https://strava.com/athletes/${user.stravaData.athleteId}`}
-              alignItems="center"
-              isExternal
-              display="flex"
-              gap="5px"
-            >
-              View connected Strava profile
-              <BoxArrowUpRight />
-            </Link>
-          ) : null}
           <Button
             type="submit"
             isDisabled={
@@ -272,3 +313,5 @@ export const ProfileModalContent = ({ user, onClose }: Props) => {
     </ModalContent>
   );
 };
+
+const scopeIcon = (enabled: boolean) => (enabled ? CheckCircleFill : Circle);
