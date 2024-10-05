@@ -12,7 +12,7 @@ export const DownloadTCXButton = ({}: {}) => {
       onClick={() => downloadTcx(data, distance)}
       leftIcon={<Icon as={Download} />}
     >
-      Save TCX
+      Download TCX
     </Button>
   );
 };

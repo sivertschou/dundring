@@ -1,5 +1,5 @@
 import { Button } from '@chakra-ui/button';
-import { Download } from 'react-bootstrap-icons';
+import { BoxArrowUpRight, Upload } from 'react-bootstrap-icons';
 import { toTcxString } from '../../createTcxFile';
 import { useData } from '../../context/DataContext';
 import { Icon, useToast } from '@chakra-ui/react';
@@ -7,7 +7,6 @@ import * as api from '../../api';
 import { useUser } from '../../context/UserContext';
 import { ApiStatus } from '@dundring/types';
 import { useState } from 'react';
-import { useLinkPowerColor } from '../../hooks/useLinkColor';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 
 export const UploadToStravaButton = () => {
@@ -17,27 +16,25 @@ export const UploadToStravaButton = () => {
 
   const [state, setState] = useState<UploadState>({ type: 'NotAsked' });
 
-  const linkColor = useLinkPowerColor();
-
   const toast = useToast();
 
   if (!user.loggedIn || !user.stravaData?.scopes.activityWrite) {
     return null;
   }
+
   if (state.type === 'Loading') {
-    return (
-      <Button as="a" color={linkColor} variant="link" isLoading={true}></Button>
-    );
+    return <Button as="a" variant="link" isLoading={true}></Button>;
   }
   if (state.type === 'Success') {
     return (
       <Button
         as="a"
-        color={linkColor}
         href={`https://www.strava.com/activities/${state.activityId}`}
         variant="link"
+        rightIcon={<Icon as={BoxArrowUpRight} />}
+        target="_blank"
       >
-        Go to Strava-activity
+        View Strava activity
       </Button>
     );
   }
@@ -55,7 +52,9 @@ export const UploadToStravaButton = () => {
             if (response.status === ApiStatus.FAILURE) {
               setState({ type: 'Error', msg: response.message });
               toast({
-                title: `Api Failure :  ${response.message}`,
+                title: 'Failed to upload activity to Strava',
+                description:
+                  'Try again, or download the workout as a TCX and upload it manually.',
                 isClosable: true,
                 duration: 10000,
                 status: 'error',
@@ -66,7 +65,7 @@ export const UploadToStravaButton = () => {
                 activityId: response.data.activity_id,
               });
               toast({
-                title: `Activity upload to Strava!`,
+                title: `Activity uploaded to Strava!`,
                 isClosable: true,
                 duration: 5000,
                 status: 'success',
@@ -84,7 +83,7 @@ export const UploadToStravaButton = () => {
             });
           });
       }}
-      leftIcon={<Icon as={Download} />}
+      leftIcon={<Icon as={Upload} />}
     >
       Upload to Strava
     </Button>
