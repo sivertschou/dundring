@@ -10,11 +10,7 @@ import { useState } from 'react';
 import { useLinkPowerColor } from '../../hooks/useLinkColor';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 
-export const UploadToStravaButton = ({
-  includeGPSData,
-}: {
-  includeGPSData: boolean;
-}) => {
+export const UploadToStravaButton = () => {
   const { data, distance } = useData();
   const { user } = useUser();
   const { activeWorkout } = useActiveWorkout();
@@ -52,7 +48,7 @@ export const UploadToStravaButton = ({
         setState({ type: 'Loading' });
         api
           .uploadActivity(user.token, {
-            tcxFile: toTcxString(data, distance, includeGPSData),
+            tcxFile: toTcxString(data, distance),
             name: activeWorkout.workout?.name ?? null,
           })
           .then((response) => {

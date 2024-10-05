@@ -1,13 +1,9 @@
 import { padLeadingZero } from '@dundring/utils';
 import { Lap } from './types';
 
-export const downloadTcx = (
-  laps: Lap[],
-  distance: number,
-  includeGPSData: boolean
-) => {
+export const downloadTcx = (laps: Lap[], distance: number) => {
   const startTime = laps[0].dataPoints[0].timeStamp;
-  const output = toTcxString(laps, distance, includeGPSData);
+  const output = toTcxString(laps, distance);
 
   const url = window.URL.createObjectURL(new Blob([output]));
   const link = document.createElement('a');
@@ -27,11 +23,7 @@ export const downloadTcx = (
   link.parentNode?.removeChild(link);
 };
 
-export const toTcxString = (
-  laps: Lap[],
-  distance: number,
-  includeGPSData: boolean
-): string => {
+export const toTcxString = (laps: Lap[], distance: number): string => {
   const startTime = laps[0].dataPoints[0].timeStamp;
   return [
     `<?xml version="1.0" encoding="UTF-8"?>`,
@@ -47,8 +39,8 @@ export const toTcxString = (
     `    <Activity Sport="Biking">`,
     `      <Id>${startTime.toISOString()}</Id>`,
 
-    includeGPSData ? `      <DistanceMeters>${distance}</DistanceMeters>` : '',
-    laps.map((lap) => lapToTCX(lap, includeGPSData)).join('\n'),
+    `      <DistanceMeters>${distance}</DistanceMeters>`,
+    laps.map((lap) => lapToTCX(lap)).join('\n'),
     `    </Activity>`,
     `  </Activities>`,
     `  <Author xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="Application_t">`,
@@ -68,7 +60,7 @@ export const toTcxString = (
   ].join('\n');
 };
 
-const lapToTCX = (lap: Lap, includeGPSData: boolean) => {
+const lapToTCX = (lap: Lap) => {
   const filtererdDataPoints = lap.dataPoints.filter(
     (data) => data.heartRate || data.power
   );
@@ -91,7 +83,7 @@ const lapToTCX = (lap: Lap, includeGPSData: boolean) => {
               ].join('\n')
             : '',
 
-          includeGPSData && data.position !== undefined
+          data.position !== undefined
             ? [
                 `            <Position>`,
                 `              <LatitudeDegrees>${data.position.lat}</LatitudeDegrees>`,
