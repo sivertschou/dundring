@@ -4,12 +4,12 @@ import {
   StravaUpload,
   UserUpdateRequestBody,
   UserUpdateResponseBody,
-  TcxFileUpload,
 } from '@dundring/types';
 import { isError } from '@dundring/utils';
 import * as express from 'express';
 import { userService, validationService, stravaService } from '../../services';
 import { getUser } from '../../services/userService';
+import multer from 'multer';
 
 const router = express.Router();
 
@@ -49,23 +49,28 @@ router.post<UserUpdateRequestBody, ApiResponseBody<UserUpdateResponseBody>>(
   }
 );
 
-router.post<TcxFileUpload, ApiResponseBody<StravaUpload>>(
+const fileUpload = multer().single('file');
+
+router.post<any, ApiResponseBody<StravaUpload>>(
   '/upload',
+  fileUpload,
   async (req, res) => {
+    if (!req.file) {
+      return res.status(400).send({
+        status: ApiStatus.FAILURE,
+        message: 'No file provided',
+      });
+    }
+    const fileContent = req.file.buffer.toString();
+    const activityName = (req.query.name || 'dundring.com workout') as string;
+
     if (!validationService.authenticateToken(req, res)) {
       return;
-    }
-    const tcxFile = req.body.tcxFile as string;
-    if (!tcxFile) {
-      return res.send({
-        status: ApiStatus.FAILURE,
-        message: 'BAD REQUEST : MISSING tcxFile',
-      });
     }
 
     const user = await getUser({ id: req.userId });
     if (isError(user)) {
-      return res.send({
+      return res.status(404).send({
         status: ApiStatus.FAILURE,
         message: 'User not found',
       });
@@ -82,18 +87,19 @@ router.post<TcxFileUpload, ApiResponseBody<StravaUpload>>(
         stravaAuth.refreshToken
       );
     if (isError(accessTokenResponse)) {
-      return res.send({
+      return res.status(500).send({
         status: ApiStatus.FAILURE,
         message: accessTokenResponse.status,
       });
     }
 
     const uploadResponse = await stravaService.uploadFileToStrava(
-      req.body,
+      fileContent,
+      activityName,
       accessTokenResponse.data.access_token
     );
     if (isError(uploadResponse)) {
-      return res.send({
+      return res.status(500).send({
         status: ApiStatus.FAILURE,
         message: uploadResponse.status,
       });
