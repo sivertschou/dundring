@@ -13,7 +13,6 @@ import {
   UserUpdateResponseBody,
   WorkoutRequestBody,
   WorkoutsResponseBody,
-  TcxFileUpload,
 } from '@dundring/types';
 import { getEnv } from './utils/environment';
 
@@ -190,12 +189,43 @@ export const updateUser = async (
   >(`${httpUrl}/me`, token, data);
 };
 
-export const uploadActivity = async (token: string, data: TcxFileUpload) => {
-  return authPost<ApiResponseBody<StravaUpload>, TcxFileUpload>(
-    `${httpUrl}/me/upload`,
-    token,
-    data
+export const uploadActivity = async (
+  token: string,
+  file: string,
+  name: string | null
+) => {
+  const formData = new FormData();
+  formData.append(
+    'file',
+    new Blob([file], { type: 'application/xml' }),
+    'dundring.tcx'
   );
+
+  const url = new URL(`${httpUrl}/me/upload`);
+  if (name) {
+    url.searchParams.append('name', name);
+  }
+
+  return authPostFormData<ApiResponseBody<StravaUpload>>(url, token, formData);
+};
+
+const authPostFormData = async <T>(
+  url: URL,
+  token: string,
+  body: FormData,
+  abortController?: AbortController
+): Promise<T> => {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      authorization: `Bearer ${token}`,
+    },
+    body,
+    signal: abortController?.signal,
+  });
+
+  return response.json();
 };
 
 export const sendFeedback = async (data: FeedbackRequestBody) =>

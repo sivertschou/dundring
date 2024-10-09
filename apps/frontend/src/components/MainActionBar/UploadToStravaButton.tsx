@@ -50,10 +50,11 @@ export const UploadToStravaButton = () => {
       onClick={async () => {
         setState({ type: 'Loading' });
         api
-          .uploadActivity(user.token, {
-            tcxFile: toTcxString(data, distance),
-            name: activeWorkout.workout?.name ?? null,
-          })
+          .uploadActivity(
+            user.token,
+            toTcxString(data, distance),
+            activeWorkout.workout?.name ?? null
+          )
           .then((response) => {
             if (response.status === ApiStatus.FAILURE) {
               setState({ type: 'Error', msg: response.message });
