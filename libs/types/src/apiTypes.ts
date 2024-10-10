@@ -108,8 +108,3 @@ export interface FeedbackRequestBody {
   message: string;
   mail: string | null;
 }
-
-export interface TcxFileUpload {
-  tcxFile: string;
-  name: string | null;
-}

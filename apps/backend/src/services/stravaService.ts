@@ -3,12 +3,10 @@ import {
   StravaToken,
   StravaTokenRefresh,
   StravaUpload,
-  TcxFileUpload,
 } from '@dundring/types';
 import { error, isSuccess, success } from '@dundring/utils';
 import fetch from 'node-fetch';
 import * as FormData from 'form-data';
-import { Readable } from 'stream';
 import { slackService } from './index';
 
 require('dotenv').config();
@@ -27,20 +25,18 @@ export const checkStravaConfig = () => {
 };
 
 export const uploadFileToStrava = async (
-  upload: TcxFileUpload,
+  fileContent: string,
+  activityName: string,
   accessToken: string
 ): Promise<Status<StravaUpload, string>> => {
-  const fileStream = Readable.from(upload.tcxFile);
-
   const formData = new FormData.default();
-  formData.append('file', fileStream, {
+  formData.append('file', fileContent, {
     filename: 'dundring.tcx',
     contentType: 'application/xml',
   });
   formData.append('data_type', 'tcx');
 
-  const name = upload.name || 'Dundring.com workout';
-  formData.append('name', name);
+  formData.append('name', activityName);
 
   try {
     const response = await fetch('https://www.strava.com/api/v3/uploads', {
