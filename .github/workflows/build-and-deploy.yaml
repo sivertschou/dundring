@@ -281,6 +281,7 @@ jobs:
             SLACK_TOKEN=${{ secrets.SLACK_TOKEN }} \
             STRAVA_CLIENT_ID='${{ secrets.STRAVA_CLIENT_ID }}' \
             STRAVA_CLIENT_SECRET='${{ secrets.STRAVA_CLIENT_SECRET }}' \
+            GITHUB_SHA='${{ github.sha }}'\
               docker compose up --detach
 
             echo "Give blue pod 10 seconds to (re)start before starting health checking"
