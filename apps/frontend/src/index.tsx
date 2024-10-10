@@ -14,6 +14,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ModalContextProvider } from './context/ModalContext';
 import { DataContextProvider } from './context/DataContext';
 import { ActiveWorkoutContextProvider } from './context/ActiveWorkoutContext';
+import { MockProvider } from './context/MockContext';
 
 const cw: Worker = new WorkerBuilder(clockWorker);
 cw.postMessage('startDataTimer');
@@ -26,20 +27,22 @@ root.render(
       <BrowserRouter>
         <LogContextProvider>
           <UserContextProvider>
-            <HeartRateContextProvider>
-              <SmartTrainerContextProvider>
-                <ActiveWorkoutContextProvider>
-                  <WebsocketContextProvider>
-                    <DataContextProvider clockWorker={cw}>
-                      <ModalContextProvider>
-                        <ColorModeScript />
-                        <App />
-                      </ModalContextProvider>
-                    </DataContextProvider>
-                  </WebsocketContextProvider>
-                </ActiveWorkoutContextProvider>
-              </SmartTrainerContextProvider>
-            </HeartRateContextProvider>
+            <MockProvider>
+              <HeartRateContextProvider>
+                <SmartTrainerContextProvider>
+                  <ActiveWorkoutContextProvider>
+                    <WebsocketContextProvider>
+                      <DataContextProvider clockWorker={cw}>
+                        <ModalContextProvider>
+                          <ColorModeScript />
+                          <App />
+                        </ModalContextProvider>
+                      </DataContextProvider>
+                    </WebsocketContextProvider>
+                  </ActiveWorkoutContextProvider>
+                </SmartTrainerContextProvider>
+              </HeartRateContextProvider>
+            </MockProvider>
           </UserContextProvider>
         </LogContextProvider>
       </BrowserRouter>

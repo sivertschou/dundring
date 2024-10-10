@@ -4,53 +4,32 @@ import {
   useHeartRateMonitorInterface,
 } from '../hooks/useHeartRateMonitorInterface';
 import { useHeartRateMonitorMock } from '../hooks/useHeartRateMonitorMock';
+import { useMockSettings } from './MockContext';
 
 const HeartRateContext = React.createContext<HeartRateMonitorInterface | null>(
   null
 );
-
-export const HeartRateRealContextProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
-  const heartRateMonitor = useHeartRateMonitorInterface();
-
-  return (
-    <HeartRateContext.Provider value={heartRateMonitor}>
-      {children}
-    </HeartRateContext.Provider>
-  );
-};
-
-export const HeartRateMockContextProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
-  const heartRateMonitor = useHeartRateMonitorMock();
-
-  return (
-    <HeartRateContext.Provider value={heartRateMonitor}>
-      {children}
-    </HeartRateContext.Provider>
-  );
-};
 
 export const HeartRateContextProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const usingMockData = import.meta.env.VITE_USE_MOCK_DATA ? true : false;
+  const { mocking } = useMockSettings();
+  const heartRateMonitor = useHeartRateMonitorInterface();
+  const mockHeartRateMonitor = useHeartRateMonitorMock();
 
-  if (usingMockData) {
+  if (mocking) {
     return (
-      <HeartRateMockContextProvider>{children}</HeartRateMockContextProvider>
+      <HeartRateContext.Provider value={mockHeartRateMonitor}>
+        {children}
+      </HeartRateContext.Provider>
     );
   } else {
     return (
-      <HeartRateRealContextProvider>{children}</HeartRateRealContextProvider>
+      <HeartRateContext.Provider value={heartRateMonitor}>
+        {children}
+      </HeartRateContext.Provider>
     );
   }
 };
