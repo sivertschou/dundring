@@ -4,45 +4,28 @@ import {
   useSmartTrainerInterface,
 } from '../hooks/useSmartTrainerInterface';
 import { useSmartTrainerMock } from '../hooks/useSmartTrainerMock';
+import { useMockSettings } from './MockContext';
 
 const SmartTrainerContext = React.createContext<SmartTrainerInterface | null>(
   null
 );
-
-export const SmartTrainerRealContextProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
-  const smartTrainer = useSmartTrainerInterface();
-
-  return (
-    <SmartTrainerContext.Provider value={smartTrainer} children={children} />
-  );
-};
-
-export const SmartTrainerMockContextProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
-  const smartTrainer = useSmartTrainerMock();
-
-  return (
-    <SmartTrainerContext.Provider value={smartTrainer} children={children} />
-  );
-};
 
 export const SmartTrainerContextProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const usingMockData = import.meta.env.VITE_USE_MOCK_DATA ? true : false;
-
-  if (usingMockData)
-    return <SmartTrainerMockContextProvider children={children} />;
-  return <SmartTrainerRealContextProvider children={children} />;
+  const { mocking } = useMockSettings();
+  const mockTrainer = useSmartTrainerMock();
+  const smartTrainer = useSmartTrainerInterface();
+  if (mocking) {
+    return (
+      <SmartTrainerContext.Provider value={mockTrainer} children={children} />
+    );
+  }
+  return (
+    <SmartTrainerContext.Provider value={smartTrainer} children={children} />
+  );
 };
 
 export const useSmartTrainer = () => {
