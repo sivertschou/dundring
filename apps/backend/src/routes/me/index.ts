@@ -62,7 +62,7 @@ router.post<any, ApiResponseBody<StravaUpload>>(
       });
     }
     const fileContent = req.file.buffer.toString();
-    const activityName = (req.query.name || 'dundring.com workout') as string;
+    const activityName = (req.query.name || 'dundring') as string;
 
     if (!validationService.authenticateToken(req, res)) {
       return;
