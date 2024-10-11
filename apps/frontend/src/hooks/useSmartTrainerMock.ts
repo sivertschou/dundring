@@ -19,7 +19,9 @@ export const useSmartTrainerMock = (): SmartTrainerInterface => {
           randomIntFromIntervalBasedOnPrev(80, 100, prev, 5)
         );
 
-        if (targetPower) {
+        if (typeof window.mockWatt === 'number') {
+          setPower(window.mockWatt);
+        } else if (targetPower) {
           setPower((prev) =>
             randomIntFromIntervalBasedOnPrev(
               targetPower,

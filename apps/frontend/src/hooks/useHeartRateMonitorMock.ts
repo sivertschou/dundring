@@ -11,9 +11,13 @@ export const useHeartRateMonitorMock = (): HeartRateMonitorInterface => {
   React.useEffect(() => {
     const interval = setInterval(() => {
       if (isConnected) {
-        setHeartRate((prev) =>
-          randomIntFromIntervalBasedOnPrev(130, 150, prev, 5)
-        );
+        if (typeof window.mockHr === 'number') {
+          setHeartRate(window.mockHr);
+        } else {
+          setHeartRate((prev) =>
+            randomIntFromIntervalBasedOnPrev(130, 150, prev, 5)
+          );
+        }
       }
     }, 1000);
     return () => clearInterval(interval);
