@@ -169,7 +169,9 @@ export const ActiveWorkoutContextProvider = ({
     const status = activeWorkout.status;
     const workout = activeWorkout.workout;
 
-    if (status !== 'active' || !workout) {
+    if (status === 'active' && !workout) {
+      return;
+    } else if (status !== 'active' || !workout) {
       setResistance(0);
     } else {
       const activeWorkoutPart = workout.parts[activeWorkout.activePart];
