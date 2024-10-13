@@ -9,6 +9,8 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
+    depends_on:
+      - postgres
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=${REDIS_URL}
@@ -51,6 +53,10 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
+    depends_on:
+      - postgres
+    ports:
+      - 8080:8080
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=${REDIS_URL}
@@ -84,8 +90,26 @@ services:
       caddy.reverse_proxy: '{{upstreams 80}}'
       caddy.tls.dns: 'cloudflare ${CLOUDFLARE_DNS_API_TOKEN}'
 
+  postgres:
+    image: postgres:16.1-alpine
+    container_name: postgres-dev
+    restart: always
+    environment:
+      POSTGRES_USER: dundring
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    networks:
+      - dundring-dev
+    volumes:
+      - ~/data/dev/postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis-dev
+    restart: always
+    networks:
+      - dundring-dev
+
 networks:
-  caddy:
-    external: true
   dundring-dev:
+  caddy:
     external: true
