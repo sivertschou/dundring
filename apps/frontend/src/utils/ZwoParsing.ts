@@ -10,7 +10,7 @@ export const parseZwoWorkout = (
     if (!isXmlElement(workoutFileElement)) {
       return {
         workout: null,
-        errors: new Set([`Invalid ZWO-file: Missing children-element`]),
+        errors: new Set([`Invalid .zwo file: Missing children element`]),
       };
     }
     const zwoWorkout = parseWorkoutFile(workoutFileElement);
@@ -24,7 +24,7 @@ export const parseZwoWorkout = (
     console.error(err);
     return {
       workout: null,
-      errors: new Set([`Invalid ZWO-file: ${err}`]),
+      errors: new Set([`Invalid .zwo file: ${err}`]),
     };
   }
 };
