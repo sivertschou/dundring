@@ -108,7 +108,7 @@ jobs:
             sleep 10
 
             # Wait until green is healty
-            url="http://$(docker inspect --format '{{index .NetworkSettings.Networks "dundring" "IPAddress"}}' backend-green):8080/api/health"
+            url="http://$(docker inspect --format '{{index .NetworkSettings.Networks "trainer_dundring" "IPAddress"}}' backend-green):8080/api/health"
             http_status=""
             counter=0
             max_retries=30
@@ -158,7 +158,7 @@ jobs:
             sleep 10
 
             # Wait until blue is healty
-            url="http://$(docker inspect --format '{{index .NetworkSettings.Networks "dundring" "IPAddress"}}' backend-blue):8080/api/health"
+            url="http://$(docker inspect --format '{{index .NetworkSettings.Networks "trainer_dundring" "IPAddress"}}' backend-blue):8080/api/health"
             http_status=""
             counter=0
             max_retries=30
