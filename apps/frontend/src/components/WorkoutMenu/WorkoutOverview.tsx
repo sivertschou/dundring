@@ -19,6 +19,7 @@ import { ImportWorkout } from './ImportWorkout';
 import { WorkoutListItem } from './WorkoutListItem';
 import { useData } from '../../context/DataContext';
 import { stringToRouteName } from '../../gps';
+import ZwoFileUpload from '../ZwoFileUpload';
 
 interface Props {
   setActiveWorkout: (workout: Workout, ftp: number) => void;
@@ -147,6 +148,11 @@ export const WorkoutOverview = ({
           ftp={previewFtpAsNumber}
         />
       ))}
+      <Divider />
+      <ZwoFileUpload
+        setWorkoutToEdit={setWorkoutToEdit}
+        previewFtp={previewFtpAsNumber}
+      />
       <Divider />
       <ImportWorkout
         setWorkoutToEdit={setWorkoutToEdit}
