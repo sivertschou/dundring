@@ -80,9 +80,9 @@ const parseWorkoutFile = (
   const workoutParts = new Array<ZwoWorkoutPart>();
 
   const workoutPartErrors = new Set<string>();
-  workoutElement.children.flatMap((workoutPartElement) => {
+  workoutElement.children.forEach((workoutPartElement) => {
     if (!isXmlElement(workoutPartElement)) {
-      return [];
+      return;
     }
     const parsedWorkoutPart = parseWorkoutPart(workoutPartElement);
 
