@@ -14,7 +14,7 @@ import { Workout, WorkoutType } from '../../types';
 import { WorkoutEditor } from '../WorkoutMenu/WorkoutEditor';
 import { useUser } from '../../context/UserContext';
 import { useWorkoutEditorModal } from '../../context/ModalContext';
-import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
+import { useActiveWorkoutSession } from '../../context/ActiveWorkoutSessionContext';
 import {
   AlertDialog,
   AlertDialogBody,
@@ -36,7 +36,7 @@ export const WorkoutEditorModal = () => {
   const { refetchData: refetchUserData } = useUser();
   const [workoutToEdit, setWorkoutToEdit] =
     React.useState<WorkoutToEdit | null>(null);
-  const { setActiveWorkout } = useActiveWorkout();
+  const { setActiveWorkout } = useActiveWorkoutSession();
   const [isWorkoutUnsaved, setIsWorkoutUnsaved] = React.useState(false);
   const [showDiscardDialog, setShowDiscardDialog] = React.useState(false);
   const cancelRef = React.useRef<HTMLButtonElement>(null);

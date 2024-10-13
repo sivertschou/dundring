@@ -14,7 +14,7 @@ import {
 } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import { hrColor, powerColor } from '../colors';
-import { useActiveWorkout } from '../context/ActiveWorkoutContext';
+import { useActiveWorkoutSession } from '../context/ActiveWorkoutSessionContext';
 import { useHeartRateMonitor } from '../context/HeartRateContext';
 import { useSmartTrainer } from '../context/SmartTrainerContext';
 import { useUser } from '../context/UserContext';
@@ -26,7 +26,7 @@ import { settingUpProfile } from '@dundring/utils';
 export const ActionBar = () => {
   const { user } = useUser();
   const { activeGroupSession } = useWebsocket();
-  const { activeWorkout } = useActiveWorkout();
+  const { activeWorkoutSession } = useActiveWorkoutSession();
   const linkColor = useLinkColor();
   const navigate = useNavigate();
 
@@ -119,7 +119,9 @@ export const ActionBar = () => {
       <ActionBarItem
         text="Open workout editor"
         icon={
-          <Icon as={activeWorkout.workout ? BarChartLineFill : BarChartLine} />
+          <Icon
+            as={activeWorkoutSession.workout ? BarChartLineFill : BarChartLine}
+          />
         }
         onClick={() => navigate('/workout')}
       />

@@ -7,12 +7,12 @@ import * as api from '../../api';
 import { useUser } from '../../context/UserContext';
 import { ApiStatus } from '@dundring/types';
 import { useState } from 'react';
-import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
+import { useActiveWorkoutSession } from '../../context/ActiveWorkoutSessionContext';
 
 export const UploadToStravaButton = () => {
   const { data, distance } = useData();
   const { user } = useUser();
-  const { activeWorkout } = useActiveWorkout();
+  const { activeWorkoutSession } = useActiveWorkoutSession();
 
   const [state, setState] = useState<UploadState>({ type: 'NotAsked' });
 
@@ -53,7 +53,7 @@ export const UploadToStravaButton = () => {
           .uploadActivity(
             user.token,
             toTcxString(data, distance),
-            activeWorkout.workout?.name ?? null
+            activeWorkoutSession.workout?.name ?? null
           )
           .then((response) => {
             if (response.status === ApiStatus.FAILURE) {

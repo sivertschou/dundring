@@ -19,16 +19,15 @@ import {
   SkipStartFill,
 } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
-import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
+import { useActiveWorkoutSession } from '../../context/ActiveWorkoutSessionContext';
 import { useData } from '../../context/DataContext';
-import { useWorkoutEditorModal } from '../../context/ModalContext';
 import { useLinkColor } from '../../hooks/useLinkColor';
-import { ActiveWorkout } from '../../types';
+import { ActiveWorkoutSession } from '../../types';
 
-const getPlayButtonText = (activeWorkout: ActiveWorkout) => {
-  if (!activeWorkout.workout) return 'No workout selected.';
+const getPlayButtonText = (activeWorkoutSession: ActiveWorkoutSession) => {
+  if (!activeWorkoutSession.workout) return 'No workout selected.';
 
-  switch (activeWorkout.status) {
+  switch (activeWorkoutSession.status) {
     case 'not_started':
       return 'Start workout';
     case 'paused':
@@ -40,15 +39,20 @@ const getPlayButtonText = (activeWorkout: ActiveWorkout) => {
   }
 };
 export const WorkoutControls = () => {
-  const { activeWorkout, syncResistance, changeActivePart, pause, start } =
-    useActiveWorkout();
+  const {
+    activeWorkoutSession,
+    syncResistance,
+    changeActivePart,
+    pause,
+    start,
+  } = useActiveWorkoutSession();
   const { addLap } = useData();
   const linkColor = useLinkColor();
   const navigate = useNavigate();
 
-  const isWorkoutSelected = activeWorkout.workout !== null;
-  const activeWorkoutPart = activeWorkout.activePart;
-  const playButtonText = getPlayButtonText(activeWorkout);
+  const isWorkoutSelected = activeWorkoutSession.workout !== null;
+  const activeWorkoutPart = activeWorkoutSession.activePart;
+  const playButtonText = getPlayButtonText(activeWorkoutSession);
 
   return (
     <Stack>
@@ -80,14 +84,14 @@ export const WorkoutControls = () => {
                 isDisabled={
                   !isWorkoutSelected ||
                   (activeWorkoutPart === 0 &&
-                    activeWorkout.status !== 'finished')
+                    activeWorkoutSession.status !== 'finished')
                 }
                 onClick={() => {
-                  if (!activeWorkout.workout) return;
+                  if (!activeWorkoutSession.workout) return;
 
-                  if (activeWorkout.status === 'finished') {
+                  if (activeWorkoutSession.status === 'finished') {
                     changeActivePart(
-                      activeWorkout.workout.parts.length - 1,
+                      activeWorkoutSession.workout.parts.length - 1,
                       addLap
                     );
                     return;
@@ -106,7 +110,7 @@ export const WorkoutControls = () => {
                 icon={<Icon as={SkipStartFill} />}
                 isDisabled={!isWorkoutSelected}
                 onClick={() => {
-                  if (!activeWorkout.workout) return;
+                  if (!activeWorkoutSession.workout) return;
 
                   changeActivePart(activeWorkoutPart, addLap);
                 }}
@@ -120,15 +124,17 @@ export const WorkoutControls = () => {
                 icon={
                   <Icon
                     as={
-                      activeWorkout.status === 'active' ? PauseFill : PlayFill
+                      activeWorkoutSession.status === 'active'
+                        ? PauseFill
+                        : PlayFill
                     }
                   />
                 }
                 isDisabled={!isWorkoutSelected}
                 onClick={() => {
-                  if (!activeWorkout.workout) return;
+                  if (!activeWorkoutSession.workout) return;
 
-                  switch (activeWorkout.status) {
+                  switch (activeWorkoutSession.status) {
                     case 'finished': {
                       changeActivePart(0, addLap);
                       return;
@@ -153,9 +159,9 @@ export const WorkoutControls = () => {
                 icon={<Icon as={SkipForwardFill} />}
                 isDisabled={!isWorkoutSelected}
                 onClick={() => {
-                  if (!activeWorkout.workout) return;
+                  if (!activeWorkoutSession.workout) return;
 
-                  if (activeWorkout.status === 'finished') {
+                  if (activeWorkoutSession.status === 'finished') {
                     changeActivePart(0, addLap);
                   } else {
                     changeActivePart(activeWorkoutPart + 1, addLap);

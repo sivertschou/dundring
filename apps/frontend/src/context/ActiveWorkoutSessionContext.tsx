@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { ActiveWorkout, Workout } from '../types';
+import { ActiveWorkoutSession, Workout } from '../types';
 import { wattFromFtpPercent } from '../utils/general';
 import { useSmartTrainer } from './SmartTrainerContext';
 import { useUser } from './UserContext';
 
-export const ActiveWorkoutContext = React.createContext<{
-  activeWorkout: ActiveWorkout;
+export const ActiveWorkoutSessionContext = React.createContext<{
+  activeWorkoutSession: ActiveWorkoutSession;
   setActiveWorkout: (workout: Workout) => void;
   increaseElapsedTime: (millis: number, addLap: () => void) => void;
   start: () => void;
@@ -55,7 +55,7 @@ type ActiveWorkoutAction =
   | StartAction
   | PauseAction
   | ChangeActivePartAction;
-export const ActiveWorkoutContextProvider = ({
+export const ActiveWorkoutSessionContextProvider = ({
   children,
 }: {
   children: React.ReactNode;
@@ -72,9 +72,9 @@ export const ActiveWorkoutContextProvider = ({
   }, [user]);
 
   const activeWorkoutReducer = (
-    activeWorkout: ActiveWorkout,
+    activeWorkoutSession: ActiveWorkoutSession,
     action: ActiveWorkoutAction
-  ): ActiveWorkout => {
+  ): ActiveWorkoutSession => {
     switch (action.type) {
       case 'SET_WORKOUT':
         return {
@@ -84,26 +84,26 @@ export const ActiveWorkoutContextProvider = ({
           partElapsedTime: 0,
         };
       case 'INCREASE_PART_ELAPSED_TIME':
-        if (activeWorkout.status !== 'active') {
-          return activeWorkout;
+        if (activeWorkoutSession.status !== 'active') {
+          return activeWorkoutSession;
         }
 
-        const newElapsed = action.millis + activeWorkout.partElapsedTime;
+        const newElapsed = action.millis + activeWorkoutSession.partElapsedTime;
 
-        if (!activeWorkout.workout) {
-          return { ...activeWorkout, partElapsedTime: newElapsed };
+        if (!activeWorkoutSession.workout) {
+          return { ...activeWorkoutSession, partElapsedTime: newElapsed };
         }
 
         const elapsedSeconds = Math.floor(newElapsed / 1000);
-        const prevActivePart = activeWorkout.activePart;
-        const prevWorkoutParts = activeWorkout.workout.parts;
+        const prevActivePart = activeWorkoutSession.activePart;
+        const prevWorkoutParts = activeWorkoutSession.workout.parts;
         const currentPartDuration = prevWorkoutParts[prevActivePart].duration;
         if (currentPartDuration < elapsedSeconds) {
           // Done with current part
           if (prevActivePart === prevWorkoutParts.length - 1) {
             // Done with every part
-            const nextState: ActiveWorkout = {
-              ...activeWorkout,
+            const nextState: ActiveWorkoutSession = {
+              ...activeWorkoutSession,
               partElapsedTime: 0,
               activePart: 0,
               status: 'finished',
@@ -112,49 +112,59 @@ export const ActiveWorkoutContextProvider = ({
             return nextState;
           }
           // Only done with current part, other parts unfinished
-          const nextState: ActiveWorkout = {
-            ...activeWorkout,
+          const nextState: ActiveWorkoutSession = {
+            ...activeWorkoutSession,
             partElapsedTime: newElapsed - currentPartDuration * 1000,
-            activePart: activeWorkout.activePart + 1,
+            activePart: activeWorkoutSession.activePart + 1,
           };
           action.addLap();
           return nextState;
         }
         // Current part is not finished
-        return { ...activeWorkout, partElapsedTime: newElapsed };
+        return { ...activeWorkoutSession, partElapsedTime: newElapsed };
       case 'START': {
-        const nextState: ActiveWorkout = { ...activeWorkout, status: 'active' };
+        const nextState: ActiveWorkoutSession = {
+          ...activeWorkoutSession,
+          status: 'active',
+        };
         return nextState;
       }
       case 'PAUSE': {
-        const nextState: ActiveWorkout = { ...activeWorkout, status: 'paused' };
+        const nextState: ActiveWorkoutSession = {
+          ...activeWorkoutSession,
+          status: 'paused',
+        };
         return nextState;
       }
       case 'CHANGE_ACTIVE_PART': {
-        if (!activeWorkout.workout) return activeWorkout;
+        if (!activeWorkoutSession.workout) return activeWorkoutSession;
 
         action.addLap();
 
-        if (action.partNumber >= activeWorkout.workout.parts.length) {
+        if (action.partNumber >= activeWorkoutSession.workout.parts.length) {
           return {
-            ...activeWorkout,
+            ...activeWorkoutSession,
             partElapsedTime: 0,
             status: 'finished',
           };
         }
 
+        setResistance(
+          activeWorkoutSession.workout.parts[action.partNumber].targetPower
+        );
         return {
-          ...activeWorkout,
+          ...activeWorkoutSession,
           partElapsedTime: 0,
           activePart: action.partNumber,
-          status: activeWorkout.status === 'paused' ? 'paused' : 'active',
+          status:
+            activeWorkoutSession.status === 'paused' ? 'paused' : 'active',
         };
       }
     }
   };
 
   const memoizedReducer = React.useCallback(activeWorkoutReducer, []);
-  const [activeWorkout, dispatchActiveWorkoutAction] = React.useReducer(
+  const [activeWorkoutSession, dispatchActiveWorkoutAction] = React.useReducer(
     memoizedReducer,
     {
       workout: null,
@@ -167,13 +177,13 @@ export const ActiveWorkoutContextProvider = ({
   const { setResistance, isConnected } = useSmartTrainer();
   React.useEffect(() => {
     if (!isConnected) return;
-    const status = activeWorkout.status;
-    const workout = activeWorkout.workout;
+    const status = activeWorkoutSession.status;
+    const workout = activeWorkoutSession.workout;
 
     if (status !== 'active' || !workout) {
       setResistance(0);
     } else {
-      const activeWorkoutPart = workout.parts[activeWorkout.activePart];
+      const activeWorkoutPart = workout.parts[activeWorkoutSession.activePart];
       const targetPowerAsWatt = wattFromFtpPercent(
         activeWorkoutPart.targetPower,
         activeFtp
@@ -183,11 +193,11 @@ export const ActiveWorkoutContextProvider = ({
   }, [
     /* NB: Only include the necessary attributes, since including the
      *     whole activeWorkout object would lead to a re-render every
-     *     time activeWorkout.partElapsedTime is updated.
+     *     time activeWorkoutSession.partElapsedTime is updated.
      * */
-    activeWorkout.status,
-    activeWorkout.activePart,
-    activeWorkout.workout,
+    activeWorkoutSession.status,
+    activeWorkoutSession.activePart,
+    activeWorkoutSession.workout,
     setResistance,
     isConnected,
     activeFtp,
@@ -217,10 +227,10 @@ export const ActiveWorkoutContextProvider = ({
   };
 
   const syncResistance = () => {
-    const { workout } = activeWorkout;
+    const { workout } = activeWorkoutSession;
     if (!isConnected || !workout) return;
 
-    const activeWorkoutPart = workout.parts[activeWorkout.activePart];
+    const activeWorkoutPart = workout.parts[activeWorkoutSession.activePart];
     const targetPowerAsWatt = wattFromFtpPercent(
       activeWorkoutPart.targetPower,
       activeFtp
@@ -248,14 +258,14 @@ export const ActiveWorkoutContextProvider = ({
     });
   };
 
-  const partElapsedTimeAsSeconds = activeWorkout
-    ? Math.floor(activeWorkout.partElapsedTime / 1000)
+  const partElapsedTimeAsSeconds = activeWorkoutSession
+    ? Math.floor(activeWorkoutSession.partElapsedTime / 1000)
     : 0;
   return (
-    <ActiveWorkoutContext.Provider
+    <ActiveWorkoutSessionContext.Provider
       value={{
-        activeWorkout: {
-          ...activeWorkout,
+        activeWorkoutSession: {
+          ...activeWorkoutSession,
           partElapsedTime: partElapsedTimeAsSeconds,
         },
         setActiveWorkout: setWorkout,
@@ -270,12 +280,12 @@ export const ActiveWorkoutContextProvider = ({
       }}
     >
       {children}
-    </ActiveWorkoutContext.Provider>
+    </ActiveWorkoutSessionContext.Provider>
   );
 };
 
-export const useActiveWorkout = () => {
-  const context = React.useContext(ActiveWorkoutContext);
+export const useActiveWorkoutSession = () => {
+  const context = React.useContext(ActiveWorkoutSessionContext);
   if (context === null) {
     throw new Error(
       'useActiveWorkout must be used within a WorkoutContextProvider'
@@ -284,8 +294,10 @@ export const useActiveWorkout = () => {
   return context;
 };
 
-export const getRemainingTime = (activeWorkout: ActiveWorkout) => {
-  const { workout, status, activePart, partElapsedTime } = activeWorkout;
+export const getRemainingTime = (
+  activeWorkoutSession: ActiveWorkoutSession
+) => {
+  const { workout, status, activePart, partElapsedTime } = activeWorkoutSession;
   if (!workout || status === 'finished') return null;
 
   return workout.parts[activePart].duration - partElapsedTime;

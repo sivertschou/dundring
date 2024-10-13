@@ -7,8 +7,8 @@ import theme from '../theme';
 import { useData } from '../context/DataContext';
 import {
   getRemainingTime,
-  useActiveWorkout,
-} from '../context/ActiveWorkoutContext';
+  useActiveWorkoutSession,
+} from '../context/ActiveWorkoutSessionContext';
 import { secondsToHoursMinutesAndSecondsString } from '@dundring/utils';
 import { Lap } from '../types';
 
@@ -19,9 +19,9 @@ const secondaryFontSize = ['m', 'xl', '2xl'];
 export const TopBar = () => {
   const { cadence, currentResistance } = useSmartTrainer();
   const { heartRate } = useHeartRateMonitor();
-  const { activeWorkout } = useActiveWorkout();
+  const { activeWorkoutSession } = useActiveWorkoutSession();
   const { data: laps, timeElapsed, distance, speed, smoothedPower } = useData();
-  const remainingTime = getRemainingTime(activeWorkout);
+  const remainingTime = getRemainingTime(activeWorkoutSession);
 
   const secondsElapsed = Math.floor(timeElapsed / 1000);
 
