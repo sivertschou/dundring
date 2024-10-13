@@ -92,6 +92,7 @@ jobs:
             TAG_BLUE=${TAG_BLUE:-${{ needs.build.outputs.version }}} \
             CLOUDFLARE_DNS_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }} \
             DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
             REDIS_URL=${{ secrets.REDIS_URL }} \
             MAIL_HOST=${{ secrets.MAIL_HOST }} \
             MAIL_PORT=${{ secrets.MAIL_PORT }} \
@@ -141,6 +142,7 @@ jobs:
             TAG_BLUE=${{ needs.build.outputs.version }} \
             CLOUDFLARE_DNS_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }} \
             DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
             REDIS_URL=${{ secrets.REDIS_URL }} \
             MAIL_HOST=${{ secrets.MAIL_HOST }} \
             MAIL_PORT=${{ secrets.MAIL_PORT }} \
