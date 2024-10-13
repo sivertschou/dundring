@@ -12,6 +12,7 @@
     "@chakra-ui/react": "^2.8.1",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.11.0",
+    "@rgrove/parse-xml": "^4.1.0",
     "@svgr/webpack": "^8.1.0",
     "babel-plugin-named-asset-import": "^0.3.8",
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
