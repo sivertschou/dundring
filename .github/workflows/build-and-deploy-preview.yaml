@@ -68,7 +68,7 @@ jobs:
             cd previews/${{ env.tag }}
 
             TAG=${{ env.tag }} \
-              docker-compose pull
+              docker compose pull
 
             TAG=${{ env.tag }} \
               DB_USERNAME=dundring \
@@ -80,4 +80,4 @@ jobs:
               MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
               STRAVA_CLIENT_ID='${{ secrets.STRAVA_CLIENT_ID }}' \
               STRAVA_CLIENT_SECRET='${{ secrets.STRAVA_CLIENT_SECRET }}' \
-              docker-compose up -d
+              docker compose up -d

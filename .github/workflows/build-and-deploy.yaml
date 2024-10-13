@@ -86,7 +86,7 @@ jobs:
             cd dev
 
             # Find currently running version
-            TAG_BLUE=$(docker inspect --format='{{ index .Config.Image }}' backend-dev-blue 2>/dev/null | cut -d ':' -f 2)
+            TAG_BLUE=$(docker inspect --format='{{ index .Config.Image }}' backend-blue 2>/dev/null | cut -d ':' -f 2)
 
             TAG_GREEN=${{ needs.build.outputs.version }} \
             TAG_BLUE=${TAG_BLUE:-${{ needs.build.outputs.version }}} \
@@ -100,13 +100,14 @@ jobs:
             TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
             STRAVA_CLIENT_ID='${{ secrets.STRAVA_CLIENT_ID }}' \
             STRAVA_CLIENT_SECRET='${{ secrets.STRAVA_CLIENT_SECRET }}' \
-              docker-compose up --detach
+            BASE_URL=dev.dundring.com \
+              docker compose up --project-name trainer --detach
 
             echo "Give green pod 10 seconds to (re)start before starting health checking"
             sleep 10
 
             # Wait until green is healty
-            url="http://$(docker inspect --format '{{index .NetworkSettings.Networks "dundring-dev" "IPAddress"}}' backend-dev-green):8080/api/health"
+            url="http://$(docker inspect --format '{{index .NetworkSettings.Networks "dundring" "IPAddress"}}' backend-green):8080/api/health"
             http_status=""
             counter=0
             max_retries=30
@@ -148,13 +149,14 @@ jobs:
             TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
             STRAVA_CLIENT_ID='${{ secrets.STRAVA_CLIENT_ID }}' \
             STRAVA_CLIENT_SECRET='${{ secrets.STRAVA_CLIENT_SECRET }}' \
-              docker-compose up --detach
+            BASE_URL=dev.dundring.com \
+              docker compose up --project-name trainer --detach
 
             echo "Give blue pod 10 seconds to (re)start before starting health checking"
             sleep 10
 
             # Wait until blue is healty
-            url="http://$(docker inspect --format '{{index .NetworkSettings.Networks "dundring-dev" "IPAddress"}}' backend-dev-blue):8080/api/health"
+            url="http://$(docker inspect --format '{{index .NetworkSettings.Networks "dundring" "IPAddress"}}' backend-blue):8080/api/health"
             http_status=""
             counter=0
             max_retries=30
@@ -228,7 +230,7 @@ jobs:
             SLACK_TOKEN=${{ secrets.SLACK_TOKEN }} \
             STRAVA_CLIENT_ID='${{ secrets.STRAVA_CLIENT_ID }}' \
             STRAVA_CLIENT_SECRET='${{ secrets.STRAVA_CLIENT_SECRET }}' \
-              docker-compose up --detach
+              docker compose up --detach
 
             echo "Give green pod 10 seconds to (re)start before starting health checking"
             sleep 10
@@ -277,7 +279,7 @@ jobs:
             SLACK_TOKEN=${{ secrets.SLACK_TOKEN }} \
             STRAVA_CLIENT_ID='${{ secrets.STRAVA_CLIENT_ID }}' \
             STRAVA_CLIENT_SECRET='${{ secrets.STRAVA_CLIENT_SECRET }}' \
-              docker-compose up --detach
+              docker compose up --detach
 
             echo "Give blue pod 10 seconds to (re)start before starting health checking"
             sleep 10
