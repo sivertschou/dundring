@@ -80,4 +80,5 @@ jobs:
               MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
               STRAVA_CLIENT_ID='${{ secrets.STRAVA_CLIENT_ID }}' \
               STRAVA_CLIENT_SECRET='${{ secrets.STRAVA_CLIENT_SECRET }}' \
+              GITHUB_SHA='${{ github.sha }}' \
               docker compose up -d

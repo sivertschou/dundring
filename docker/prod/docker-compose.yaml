@@ -36,6 +36,8 @@ services:
     image: sivertschou/dundring-frontend:${TAG_GREEN}
     container_name: frontend-prod-green
     restart: always
+    environment:
+      - GITHUB_SHA=${GITHUB_SHA}
     networks:
       - caddy
     labels:
@@ -79,6 +81,8 @@ services:
     image: sivertschou/dundring-frontend:${TAG_BLUE}
     container_name: frontend-prod-blue
     restart: always
+    environment:
+      - GITHUB_SHA=${GITHUB_SHA}
     networks:
       - caddy
     labels:

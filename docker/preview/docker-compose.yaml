@@ -60,6 +60,8 @@ services:
   frontend:
     image: sivertschou/dundring-frontend:${TAG}
     container_name: frontend-${TAG}
+    environment:
+      - GITHUB_SHA=${GITHUB_SHA}
     networks:
       - caddy
     labels:
