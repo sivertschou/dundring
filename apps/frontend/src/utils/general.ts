@@ -48,7 +48,7 @@ export const ftpPercentFromWatt = (watt: number, ftp: number) =>
   Math.floor(1000 * (watt / ftp)) / 10;
 
 export const wattFromFtpPercent = (ftpPercent: number, ftp: number) =>
-  Math.floor((ftpPercent * ftp) / 100);
+  Math.round((ftpPercent * ftp) / 100);
 
 export const editable = <T>(data: T): Editable<T> => ({ touched: false, data });
 export const touched = <T>(data: T): Editable<T> => ({ touched: true, data });
