@@ -27,28 +27,23 @@ interface Data {
 interface UpdateTimeSeconds {
   type: 'UPDATE_TIME_SECONDS';
   value: string;
-  setWorkoutPart: (workoutPart: WorkoutPart) => void;
 }
 interface UpdateTimeMinutes {
   type: 'UPDATE_TIME_MINUTES';
   value: string;
-  setWorkoutPart: (workoutPart: WorkoutPart) => void;
 }
 interface UpdateTime {
   type: 'UPDATE_TIME';
-  setWorkoutPart: (workoutPart: WorkoutPart) => void;
 }
 interface UpdatePowerWatt {
   type: 'UPDATE_POWER_WATT';
   value: string;
   ftp: number;
-  setWorkoutPart: (workoutPart: WorkoutPart) => void;
 }
 interface UpdatePowerPercent {
   type: 'UPDATE_POWER_PERCENT';
   value: string;
   ftp: number;
-  setWorkoutPart: (workoutPart: WorkoutPart) => void;
 }
 
 interface FtpUpdated {
@@ -217,13 +212,11 @@ export const WorkoutIntervalInput = ({
               dispatchDataUpdate({
                 type: 'UPDATE_TIME_MINUTES',
                 value: e.target.value,
-                setWorkoutPart,
               })
             }
             onBlur={() =>
               dispatchDataUpdate({
                 type: 'UPDATE_TIME',
-                setWorkoutPart,
               })
             }
           />
@@ -240,13 +233,11 @@ export const WorkoutIntervalInput = ({
               dispatchDataUpdate({
                 type: 'UPDATE_TIME_SECONDS',
                 value: e.target.value,
-                setWorkoutPart,
               });
             }}
             onBlur={() =>
               dispatchDataUpdate({
                 type: 'UPDATE_TIME',
-                setWorkoutPart,
               })
             }
           />
@@ -269,7 +260,6 @@ export const WorkoutIntervalInput = ({
                 type: 'UPDATE_POWER_WATT',
                 value: e.target.value,
                 ftp,
-                setWorkoutPart,
               });
             }}
           />
@@ -287,7 +277,6 @@ export const WorkoutIntervalInput = ({
                 type: 'UPDATE_POWER_PERCENT',
                 value: e.target.value,
                 ftp,
-                setWorkoutPart,
               });
             }}
           />
