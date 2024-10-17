@@ -2,7 +2,7 @@ import React from 'react';
 import { WorkoutToEdit } from './Modals/WorkoutEditorModal';
 import { Center, Input, Tooltip, useToast } from '@chakra-ui/react';
 import { parseZwoWorkout } from '../utils/ZwoParsing';
-import { Stack, Text } from '@chakra-ui/layout';
+import { Stack } from '@chakra-ui/layout';
 import { Button } from '@chakra-ui/button';
 
 interface Props {
@@ -20,7 +20,9 @@ const ZwoFileUpload = ({ setWorkoutToEdit, previewFtp }: Props) => {
       const fileInput = fileReaderEvent.target?.result;
       if (typeof fileInput !== 'string') {
         toast({
-          title: `Importing workout failed. The file is either invalid or contains event types that are not supported`,
+          title: 'Importing workout failed',
+          description:
+            'The file is either invalid or contains event types that are not supported',
           isClosable: true,
           duration: 10000,
           status: 'error',
@@ -34,7 +36,8 @@ const ZwoFileUpload = ({ setWorkoutToEdit, previewFtp }: Props) => {
       }
       if (parsedWorkout.errors.size > 0) {
         toast({
-          title: 'Errors:\n' + Array.from(parsedWorkout.errors).join('\n'),
+          title: 'Something went wrong when parsing .zwo file',
+          description: Array.from(parsedWorkout.errors).join('\n'),
           isClosable: true,
           duration: 10000,
           status: workout ? 'warning' : 'error',
@@ -55,7 +58,7 @@ const ZwoFileUpload = ({ setWorkoutToEdit, previewFtp }: Props) => {
             }
           >
             <Button as="span" cursor="pointer">
-              Use workout from ZWO-file (Beta)
+              Import workout from .zwo file (Beta)
             </Button>
           </Tooltip>
         </label>
