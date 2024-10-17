@@ -8,19 +8,17 @@ declare global {
   }
 }
 
-const mockingOnFromEnvironment =
-  import.meta.env.VITE_USE_MOCK_DATA === 'true' ||
-  import.meta.env.VITE_USE_MOCK_DATA === 'TRUE' ||
-  false;
-
 const MockContext = React.createContext<{
   mocking: boolean;
-} | null>({
-  mocking: mockingOnFromEnvironment,
-});
+} | null>(null);
 
 export const MockProvider = ({ children }: { children: React.ReactNode }) => {
-  const [mocking, setMocking] = React.useState(false);
+  const mockingOnFromEnvironment =
+    import.meta.env.VITE_USE_MOCK_DATA === 'true' ||
+    import.meta.env.VITE_USE_MOCK_DATA === 'TRUE' ||
+    false;
+
+  const [mocking, setMocking] = React.useState(mockingOnFromEnvironment);
   React.useEffect(() => {
     window.toggleMock = () => {
       setMocking((prev) => !prev);
