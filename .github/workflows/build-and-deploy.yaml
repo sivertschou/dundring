@@ -54,19 +54,19 @@ jobs:
           git push origin ${{ steps.gitversion.outputs.semVer }}
 
   deploy-dev:
+    name: Deploy dev
     needs: build
+    secrets: inherit
     uses: ./.github/workflows/deploy.yaml
     with:
       version: ${{ needs.build.outputs.version }}
       environment: dev
-    secrets: inherit
 
   deploy-prod:
     name: Deploy prod
-    runs-on: ubuntu-latest
     needs: build
-    environment: prod
-    steps:
-      - uses: ./.github/workflows/deploy.yaml
-        with:
-          version: ${{ needs.build.outputs.version }}
+    secrets: inherit
+    uses: ./.github/workflows/deploy.yaml
+    with:
+      version: ${{ needs.build.outputs.version }}
+      environment: prod
