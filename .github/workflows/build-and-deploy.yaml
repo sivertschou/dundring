@@ -59,6 +59,10 @@ jobs:
     needs: build
     environment: dev
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: ./.github/workflows/deploy.yaml
         with:
           version: ${{ needs.build.outputs.version }}
@@ -69,6 +73,10 @@ jobs:
     needs: build
     environment: prod
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: ./.github/workflows/deploy.yaml
         with:
           version: ${{ needs.build.outputs.version }}
