@@ -64,7 +64,7 @@ jobs:
 
   deploy-prod:
     name: Deploy prod
-    needs: build
+    needs: deploy-dev
     secrets: inherit
     uses: ./.github/workflows/deploy.yaml
     with:
