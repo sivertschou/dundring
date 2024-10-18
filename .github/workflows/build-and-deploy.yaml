@@ -4,9 +4,6 @@ on:
   push:
     branches: [main]
 
-env:
-  tag: dev
-
 jobs:
   build:
     name: Build, tag and push image
