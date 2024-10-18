@@ -34,7 +34,7 @@ import {
   Tr,
   useToast,
 } from '@chakra-ui/react';
-import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
+import { useActiveWorkoutSession } from '../../context/ActiveWorkoutSessionContext';
 import { createZoneTableInfo } from '../../utils/zones';
 import {
   getTotalWorkoutTime,
@@ -64,7 +64,8 @@ export const WorkoutEditor = ({
   closeModal,
   setIsWorkoutUnsaved,
 }: Props) => {
-  const { activeFtp, setActiveFtp, setActiveWorkout } = useActiveWorkout();
+  const { activeFtp, setActiveFtp, setActiveWorkout } =
+    useActiveWorkoutSession();
   const { user, saveLocalWorkout, deleteLocalWorkout } = useUser();
   const toast = useToast();
   const token = (user.loggedIn && user.token) || null;

@@ -9,7 +9,7 @@ import {
   InputRightAddon,
   Tooltip,
 } from '@chakra-ui/react';
-import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
+import { useActiveWorkoutSession } from '../../context/ActiveWorkoutSessionContext';
 import { useSmartTrainer } from '../../context/SmartTrainerContext';
 import {
   ftpPercentFromWatt,
@@ -25,7 +25,7 @@ interface PowerInputData {
 }
 
 export const PowerControlInput = () => {
-  const { activeFtp } = useActiveWorkout();
+  const { activeFtp } = useActiveWorkoutSession();
   const {
     isConnected: smartTrainerIsConnected,
     setResistance: setSmartTrainerResistance,

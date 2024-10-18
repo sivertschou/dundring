@@ -2,7 +2,7 @@ import * as React from 'react';
 import { DataPoint, Lap, Waypoint } from '../types';
 import { distanceToCoordinates } from '../utils/gps';
 import { getPowerToSpeedMap } from '@dundring/utils';
-import { useActiveWorkout } from './ActiveWorkoutContext';
+import { useActiveWorkoutSession } from './ActiveWorkoutSessionContext';
 import { useHeartRateMonitor } from './HeartRateContext';
 import { useLogs } from './LogContext';
 import { useSmartTrainer } from './SmartTrainerContext';
@@ -67,7 +67,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
     syncResistance,
     start: startActiveWorkout,
     increaseElapsedTime: increaseActiveWorkoutElapsedTime,
-  } = useActiveWorkout();
+  } = useActiveWorkoutSession();
 
   const { sendData } = useWebsocket();
   const [route, setRoute] = React.useState<Route>('zap');

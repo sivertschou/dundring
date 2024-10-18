@@ -9,7 +9,7 @@ import {
   Tooltip,
 } from '@chakra-ui/react';
 import { LightningChargeFill } from 'react-bootstrap-icons';
-import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
+import { useActiveWorkoutSession } from '../../context/ActiveWorkoutSessionContext';
 import { useSmartTrainer } from '../../context/SmartTrainerContext';
 import { wattFromFtpPercent } from '../../utils/general';
 
@@ -22,7 +22,7 @@ export const QuickPowerButton = () => {
     setResistance: setSmartTrainerResistance,
     isConnected: smartTrainerIsConnected,
   } = useSmartTrainer();
-  const { activeFtp } = useActiveWorkout();
+  const { activeFtp } = useActiveWorkoutSession();
 
   return (
     <Menu placement="top">
