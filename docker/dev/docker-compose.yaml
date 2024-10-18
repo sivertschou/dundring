@@ -24,6 +24,7 @@ services:
       - STRAVA_CLIENT_SECRET=${STRAVA_CLIENT_SECRET}
       - POD=green
       - TAG=${TAG_GREEN}
+      - NODE_ENV=production
     networks:
       - caddy
       - dundring
@@ -70,6 +71,7 @@ services:
       - STRAVA_CLIENT_SECRET=${STRAVA_CLIENT_SECRET}
       - POD=blue
       - TAG=${TAG_BLUE}
+      - NODE_ENV=production
     networks:
       - caddy
       - dundring
