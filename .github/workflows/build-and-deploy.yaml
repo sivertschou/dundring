@@ -55,6 +55,7 @@ jobs:
 
   deploy-dev:
     name: Deploy dev
+    runs-on: ubuntu-latest
     needs: build
     environment: dev
     steps:
@@ -68,6 +69,7 @@ jobs:
 
   deploy-prod:
     name: Deploy prod
+    runs-on: ubuntu-latest
     needs: build
     environment: prod
     steps:
