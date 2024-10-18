@@ -61,11 +61,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     environment: dev
-    uses: ./github/workflows/deploy.yaml
+    uses: ./.github/workflows/deploy.yaml
 
   deploy-prod:
     name: Deploy prod
     runs-on: ubuntu-latest
     needs: build
     environment: prod
-    uses: ./github/workflows/deploy.yaml
+    uses: ./.github/workflows/deploy.yaml
