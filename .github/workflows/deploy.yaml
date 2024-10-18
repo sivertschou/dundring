@@ -55,7 +55,7 @@ jobs:
             TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
             STRAVA_CLIENT_ID='${{ secrets.STRAVA_CLIENT_ID }}' \
             STRAVA_CLIENT_SECRET='${{ secrets.STRAVA_CLIENT_SECRET }}' \
-            BASE_URL=${{ secrets.BASE_URL }} \
+            BASE_URL=${{ vars.BASE_URL }} \
               docker compose --project-name trainer up --detach
 
             echo "Give green pod 10 seconds to (re)start before starting health checking"
@@ -105,7 +105,7 @@ jobs:
             TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
             STRAVA_CLIENT_ID='${{ secrets.STRAVA_CLIENT_ID }}' \
             STRAVA_CLIENT_SECRET='${{ secrets.STRAVA_CLIENT_SECRET }}' \
-            BASE_URL=${{ secrets.BASE_URL }} \
+            BASE_URL=${{ vars.BASE_URL }} \
               docker compose --project-name trainer up --detach
 
             echo "Give blue pod 10 seconds to (re)start before starting health checking"
