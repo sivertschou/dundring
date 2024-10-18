@@ -58,9 +58,13 @@ jobs:
     needs: build
     environment: dev
     uses: ./.github/workflows/deploy.yaml
+    with:
+      version: ${{ needs.build.outputs.version }}
 
   deploy-prod:
     name: Deploy prod
     needs: build
     environment: prod
     uses: ./.github/workflows/deploy.yaml
+    with:
+      version: ${{ needs.build.outputs.version }}
