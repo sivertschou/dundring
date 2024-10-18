@@ -55,7 +55,6 @@ jobs:
 
   deploy-dev:
     name: Deploy dev
-    environment: dev
     needs: build
     secrets: inherit
     uses: ./.github/workflows/deploy.yaml
@@ -65,7 +64,6 @@ jobs:
 
   deploy-prod:
     name: Deploy prod
-    environment: prod
     needs: build
     secrets: inherit
     uses: ./.github/workflows/deploy.yaml
