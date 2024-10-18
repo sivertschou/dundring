@@ -70,3 +70,4 @@ jobs:
     with:
       version: ${{ needs.build.outputs.version }}
       environment: prod
+    environment: prod
