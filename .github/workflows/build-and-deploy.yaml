@@ -59,6 +59,7 @@ jobs:
     with:
       version: ${{ needs.build.outputs.version }}
       environment: dev
+    secrets: inherit
 
   deploy-prod:
     name: Deploy prod
