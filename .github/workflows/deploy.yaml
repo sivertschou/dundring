@@ -6,11 +6,15 @@ on:
       version:
         required: true
         type: string
+      environment:
+        required: true
+        type: string
 
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
