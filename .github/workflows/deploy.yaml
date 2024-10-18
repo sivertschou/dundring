@@ -1,0 +1,135 @@
+name: Deploy
+
+on:
+  workflow_call:
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add docker compose file to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          source: docker/dev/docker-compose.yaml
+          target: trainer
+          strip_components: 2
+
+      - name: Start the containers with Docker Compose
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+
+          script: |
+            cd trainer
+
+            # Find currently running version
+            TAG_BLUE=$(docker inspect --format='{{ index .Config.Image }}' backend-blue 2>/dev/null | cut -d ':' -f 2)
+
+            TAG_GREEN=${{ needs.build.outputs.version }} \
+            TAG_BLUE=${TAG_BLUE:-${{ needs.build.outputs.version }}} \
+            CLOUDFLARE_DNS_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }} \
+            DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
+            REDIS_URL=${{ secrets.REDIS_URL }} \
+            MAIL_HOST=${{ secrets.MAIL_HOST }} \
+            MAIL_PORT=${{ secrets.MAIL_PORT }} \
+            MAIL_USER=${{ secrets.MAIL_USER }} \
+            MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
+            TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
+            STRAVA_CLIENT_ID='${{ secrets.STRAVA_CLIENT_ID }}' \
+            STRAVA_CLIENT_SECRET='${{ secrets.STRAVA_CLIENT_SECRET }}' \
+            BASE_URL=${{ secrets.BASE_URL }} \
+              docker compose --project-name trainer up --detach
+
+            echo "Give green pod 10 seconds to (re)start before starting health checking"
+            sleep 10
+
+            # Wait until green is healty
+            url="http://$(docker inspect --format '{{index .NetworkSettings.Networks "trainer_dundring" "IPAddress"}}' backend-green):8080/api/health"
+            http_status=""
+            counter=0
+            max_retries=30
+
+            echo "Check health at $url"
+
+            while [ "$http_status" != "200" ]; do
+                # Increment the counter
+                ((counter++))
+
+                # Make the HTTP request and capture the HTTP status code
+                http_status=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+
+                if [ "$http_status" == "200" ]; then
+                    echo "Health check successful! HTTP Status: $http_status"
+                else
+                    echo "Health check failed. HTTP Status: $http_status. Retry $counter of $max_retries. Retrying in 5 seconds..."
+
+                    # Check if the counter has reached the maximum retries
+                    if [ "$counter" -ge "$max_retries" ]; then
+                        echo "Maximum retries reached. Exiting..."
+                        exit 1
+                    fi
+
+                    sleep 5
+                fi
+            done
+
+            # Start blue with updated version
+            TAG_GREEN=${{ needs.build.outputs.version }} \
+            TAG_BLUE=${{ needs.build.outputs.version }} \
+            CLOUDFLARE_DNS_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }} \
+            DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
+            REDIS_URL=${{ secrets.REDIS_URL }} \
+            MAIL_HOST=${{ secrets.MAIL_HOST }} \
+            MAIL_PORT=${{ secrets.MAIL_PORT }} \
+            MAIL_USER=${{ secrets.MAIL_USER }} \
+            MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
+            TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} \
+            STRAVA_CLIENT_ID='${{ secrets.STRAVA_CLIENT_ID }}' \
+            STRAVA_CLIENT_SECRET='${{ secrets.STRAVA_CLIENT_SECRET }}' \
+            BASE_URL=${{ secrets.BASE_URL }} \
+              docker compose --project-name trainer up --detach
+
+            echo "Give blue pod 10 seconds to (re)start before starting health checking"
+            sleep 10
+
+            # Wait until blue is healty
+            url="http://$(docker inspect --format '{{index .NetworkSettings.Networks "trainer_dundring" "IPAddress"}}' backend-blue):8080/api/health"
+            http_status=""
+            counter=0
+            max_retries=30
+
+            echo "Check health at $url"
+
+            while [ "$http_status" != "200" ]; do
+                # Increment the counter
+                ((counter++))
+
+                # Make the HTTP request and capture the HTTP status code
+                http_status=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+
+                if [ "$http_status" == "200" ]; then
+                    echo "Health check successful! HTTP Status: $http_status"
+                else
+                    echo "Health check failed. HTTP Status: $http_status. Retry $counter of $max_retries. Retrying in 5 seconds..."
+
+                    # Check if the counter has reached the maximum retries
+                    if [ "$counter" -ge "$max_retries" ]; then
+                        echo "Maximum retries reached. Exiting..."
+                        exit 1
+                    fi
+
+                    sleep 5
+                fi
+            done
