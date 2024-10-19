@@ -1,0 +1,179 @@
+name: Deploy
+inputs:
+  version:
+    required: true
+    type: string
+  ssh_host:
+    required: true
+    type: string
+  ssh_username:
+    required: true
+    type: string
+  ssh_key:
+    required: true
+    type: string
+  cloudflare_api_key:
+    required: true
+    type: string
+  database_url:
+    required: true
+    type: string
+  database_password:
+    required: true
+    type: string
+  redis_url:
+    required: true
+    type: string
+  mail_host::
+    required: true
+    type: string
+  mail_port:
+    required: true
+    type: string
+  mail_user:
+    required: true
+    type: string
+  mail_password:
+    required: true
+    type: string
+  strava_client_id:
+    required: true
+    type: string
+  strava_client_secret:
+    required: true
+    type: string
+  base_url:
+    required: true
+    type: string
+  token_secret:
+    required: true
+    type: string
+
+runs:
+  using: 'composite'
+  name: Deploy
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Add docker compose file to server
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ inputs.SSH_HOST }}
+        username: ${{ inputs.SSH_USERNAME }}
+        key: ${{ inputs.SSH_KEY }}
+        source: docker/dev/docker-compose.yaml
+        target: trainer
+        strip_components: 2
+
+    - name: Start the containers with Docker Compose
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ inputs.SSH_HOST }}
+        username: ${{ inputs.SSH_USERNAME }}
+        key: ${{ inputs.SSH_KEY }}
+
+        script: |
+          cd trainer
+
+          # Find currently running version
+          TAG_BLUE=$(docker inspect --format='{{ index .Config.Image }}' backend-blue 2>/dev/null | cut -d ':' -f 2)
+
+          TAG_GREEN=${{ inputs.version }} \
+          TAG_BLUE=${TAG_BLUE:-${{ inputs.version }}} \
+          CLOUDFLARE_DNS_API_TOKEN=${{ inputs.cloudflare_api_key }} \
+          DATABASE_URL=${{ inputs.database_url }} \
+          DATABASE_PASSWORD=${{ inputs.database_password }} \
+          REDIS_URL=${{ inputs.redis_url }} \
+          MAIL_HOST=${{ inputs.mail_host }} \
+          MAIL_PORT=${{ inputs.mail_port }} \
+          MAIL_USER=${{ inputs.mail_user }} \
+          MAIL_PASSWORD='${{ inputs.mail_password }}' \
+          TOKEN_SECRET=${{ inputs.token_secret }} \
+          STRAVA_CLIENT_ID='${{ inputs.strava_client_id }}' \
+          STRAVA_CLIENT_SECRET='${{ inputs.strava_client_secret }}' \
+          BASE_URL='${{ vars.base_url }}' \
+            docker compose --project-name trainer up --detach
+
+          echo "Give green pod 10 seconds to (re)start before starting health checking"
+          sleep 10
+
+          # Wait until green is healty
+          url="http://$(docker inspect --format '{{index .NetworkSettings.Networks "trainer_dundring" "IPAddress"}}' backend-green):8080/api/health"
+          http_status=""
+          counter=0
+          max_retries=30
+
+          echo "Check health at $url"
+
+          while [ "$http_status" != "200" ]; do
+              # Increment the counter
+              ((counter++))
+
+              # Make the HTTP request and capture the HTTP status code
+              http_status=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+
+              if [ "$http_status" == "200" ]; then
+                  echo "Health check successful! HTTP Status: $http_status"
+              else
+                  echo "Health check failed. HTTP Status: $http_status. Retry $counter of $max_retries. Retrying in 5 seconds..."
+
+                  # Check if the counter has reached the maximum retries
+                  if [ "$counter" -ge "$max_retries" ]; then
+                      echo "Maximum retries reached. Exiting..."
+                      exit 1
+                  fi
+
+                  sleep 5
+              fi
+          done
+
+          # Start blue with updated version
+          TAG_GREEN=${{ inputs.version }} \
+          TAG_BLUE=${{ inputs.version }} \
+          CLOUDFLARE_DNS_API_TOKEN=${{ inputs.cloudflare_api_key }} \
+          DATABASE_URL=${{ inputs.database_url }} \
+          DATABASE_PASSWORD=${{ inputs.database_password }} \
+          REDIS_URL=${{ inputs.redis_url }} \
+          MAIL_HOST=${{ inputs.mail_host }} \
+          MAIL_PORT=${{ inputs.mail_port }} \
+          MAIL_USER=${{ inputs.mail_user }} \
+          MAIL_PASSWORD='${{ inputs.mail_password }}' \
+          TOKEN_SECRET=${{ inputs.token_secret }} \
+          STRAVA_CLIENT_ID='${{ inputs.strava_client_id }}' \
+          STRAVA_CLIENT_SECRET='${{ inputs.strava_client_secret }}' \
+          BASE_URL='${{ vars.base_url }}' \
+            docker compose --project-name trainer up --detach
+
+          echo "Give blue pod 10 seconds to (re)start before starting health checking"
+          sleep 10
+
+          # Wait until blue is healty
+          url="http://$(docker inspect --format '{{index .NetworkSettings.Networks "trainer_dundring" "IPAddress"}}' backend-blue):8080/api/health"
+          http_status=""
+          counter=0
+          max_retries=30
+
+          echo "Check health at $url"
+
+          while [ "$http_status" != "200" ]; do
+              # Increment the counter
+              ((counter++))
+
+              # Make the HTTP request and capture the HTTP status code
+              http_status=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+
+              if [ "$http_status" == "200" ]; then
+                  echo "Health check successful! HTTP Status: $http_status"
+              else
+                  echo "Health check failed. HTTP Status: $http_status. Retry $counter of $max_retries. Retrying in 5 seconds..."
+
+                  # Check if the counter has reached the maximum retries
+                  if [ "$counter" -ge "$max_retries" ]; then
+                      echo "Maximum retries reached. Exiting..."
+                      exit 1
+                  fi
+
+                  sleep 5
+              fi
+          done
