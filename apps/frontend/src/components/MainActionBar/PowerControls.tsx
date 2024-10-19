@@ -1,13 +1,13 @@
 import { Center, Grid, Stack, Text, Tooltip } from '@chakra-ui/react';
 import { useSmartTrainer } from '../../context/SmartTrainerContext';
-import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
+import { useActiveWorkoutSession } from '../../context/ActiveWorkoutSessionContext';
 import { PowerControlButton } from './PowerControlButton';
 import { PowerControlInput } from './PowerControlInput';
 
 export const PowerControls = () => {
   const { isConnected: smartTrainerIsConnected } = useSmartTrainer();
 
-  const { activeFtp } = useActiveWorkout();
+  const { activeFtp } = useActiveWorkoutSession();
 
   const controlValues = [1, 5, 10, -1, -5, -10];
   return (

@@ -13,7 +13,7 @@ import theme from './theme';
 import { BrowserRouter } from 'react-router-dom';
 import { ModalContextProvider } from './context/ModalContext';
 import { DataContextProvider } from './context/DataContext';
-import { ActiveWorkoutContextProvider } from './context/ActiveWorkoutContext';
+import { ActiveWorkoutSessionContextProvider } from './context/ActiveWorkoutSessionContext';
 import { MockProvider } from './context/MockContext';
 
 const cw: Worker = new WorkerBuilder(clockWorker);
@@ -30,7 +30,7 @@ root.render(
             <MockProvider>
               <HeartRateContextProvider>
                 <SmartTrainerContextProvider>
-                  <ActiveWorkoutContextProvider>
+                  <ActiveWorkoutSessionContextProvider>
                     <WebsocketContextProvider>
                       <DataContextProvider clockWorker={cw}>
                         <ModalContextProvider>
@@ -39,7 +39,7 @@ root.render(
                         </ModalContextProvider>
                       </DataContextProvider>
                     </WebsocketContextProvider>
-                  </ActiveWorkoutContextProvider>
+                  </ActiveWorkoutSessionContextProvider>
                 </SmartTrainerContextProvider>
               </HeartRateContextProvider>
             </MockProvider>

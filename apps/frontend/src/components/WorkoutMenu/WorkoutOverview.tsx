@@ -9,7 +9,7 @@ import { Divider, Stack } from '@chakra-ui/layout';
 import { Center, Text, Icon, Select } from '@chakra-ui/react';
 import * as React from 'react';
 import { PencilSquare } from 'react-bootstrap-icons';
-import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
+import { useActiveWorkoutSession } from '../../context/ActiveWorkoutSessionContext';
 import { useUser } from '../../context/UserContext';
 import { StoredWorkoutType, Workout } from '../../types';
 import { parseInputAsInt } from '../../utils/general';
@@ -35,7 +35,8 @@ export const WorkoutOverview = ({
   setActiveWorkout,
 }: Props) => {
   const { workouts, localWorkouts } = useUser();
-  const { activeWorkout, activeFtp, setActiveFtp } = useActiveWorkout();
+  const { activeWorkoutSession, activeFtp, setActiveFtp } =
+    useActiveWorkoutSession();
   const [previewFtp, setPreviewFtp] = React.useState('' + activeFtp);
   const previewFtpAsNumber = parseInputAsInt(previewFtp);
   const { activeRoute, setActiveRoute } = useData();
@@ -76,7 +77,7 @@ export const WorkoutOverview = ({
         Create new workout
       </Button>
       <EditCurrentWorkoutButton
-        currentWorkout={activeWorkout.workout}
+        currentWorkout={activeWorkoutSession.workout}
         setWorkoutToEdit={setWorkoutToEdit}
         allUserWorkouts={allUserWorkouts}
         previewFtp={previewFtpAsNumber}
