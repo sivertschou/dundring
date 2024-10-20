@@ -93,7 +93,7 @@ interface Props {
   showFill: boolean;
 }
 
-export const PowerChart = ({
+export const DataChart = ({
   allMerged,
   otherUsers,
   showOtherUsersData,
