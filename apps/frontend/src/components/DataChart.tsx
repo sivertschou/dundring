@@ -1,8 +1,16 @@
-import { AreaChart, YAxis, Tooltip, Area, ResponsiveContainer } from 'recharts';
+import {
+  Area,
+  AreaChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { CustomGraphTooltip } from './Graph/CustomGraphTooltip';
 import { hrColors, powerColors, untrackedColor } from '../colors';
 import { ShowData } from './Graph/GraphContainer';
 import React from 'react';
+import { secondsToHoursMinutesAndSecondsString } from '@dundring/utils';
 
 const fillAreaChart = (
   dataPrefix: string,
@@ -22,6 +30,7 @@ const fillAreaChart = (
   const powerGradientId = dataPrefix + 'colorPower';
   const showHr = type === 'hr' && checked.hr;
   const showPower = type === 'power' && checked.power;
+
   return (
     <React.Fragment key={index}>
       {showFill ? (
@@ -54,6 +63,7 @@ const fillAreaChart = (
           fill={`url(#${hrGradientId})`}
           animationDuration={0}
           width={20}
+          yAxisId={'hrYAxis'}
         />
       ) : null}
       {showPower ? (
@@ -63,6 +73,7 @@ const fillAreaChart = (
           fill={`url(#${powerGradientId})`}
           animationDuration={0}
           width={20}
+          yAxisId={'powerYAxis'}
         />
       ) : null}
     </React.Fragment>
@@ -82,7 +93,7 @@ interface Props {
   showFill: boolean;
 }
 
-export const PowerChart = ({
+export const DataChart = ({
   allMerged,
   otherUsers,
   showOtherUsersData,
@@ -128,7 +139,27 @@ export const PowerChart = ({
         {fillAreaChart('You', showUserData, 0, showFill, 'hr')}
         {fillAreaChart('You-Untracked', showUserData, 0, showFill, 'hr', true)}
 
-        <YAxis />
+        <YAxis
+          yAxisId="powerYAxis"
+          orientation="left"
+          label={{ value: 'Power', angle: -90, position: 'insideLeft' }}
+          stroke={powerColors[0]}
+        />
+
+        <YAxis
+          yAxisId="hrYAxis"
+          orientation="right"
+          domain={['dataMin - 20', 'dataMax+20']}
+          stroke={hrColors[0]}
+          label={{ value: 'HR', angle: -90, position: 'insideRight' }}
+        />
+        <XAxis
+          interval={0}
+          tickFormatter={(value: any) => {
+            return '-' + secondsToHoursMinutesAndSecondsString(500 - value);
+          }}
+          ticks={[140, 260, 380]} /* ticks to get -2 min, -4min, -6min */
+        />
         <Tooltip content={<CustomGraphTooltip />} />
       </AreaChart>
     </ResponsiveContainer>
