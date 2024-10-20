@@ -5,7 +5,7 @@ import { useData } from '../context/DataContext';
 import { LocalRoom } from '../context/WebsocketContext';
 import { ShowData } from './Graph/GraphContainer';
 import { PowerBar } from './PowerBar';
-import { DataPoint, PowerChart } from './PowerChart';
+import { DataPoint, DataChart } from './DataChart';
 import { Map } from './Map/Map';
 
 interface Props {
@@ -122,7 +122,7 @@ export const Graphs = ({
           </AspectRatio>
         )}
         <AspectRatio ratio={16 / 9} width="100%">
-          <PowerChart
+          <DataChart
             allMerged={allMerged}
             otherUsers={otherUsers}
             showOtherUsersData={showOtherUsersData}
