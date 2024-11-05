@@ -24,7 +24,7 @@ inputs:
   redis_url:
     required: true
     type: string
-  mail_host::
+  mail_host:
     required: true
     type: string
   mail_port:
