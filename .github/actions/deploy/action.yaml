@@ -51,7 +51,6 @@ inputs:
 
 runs:
   using: 'composite'
-  name: Deploy
   steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -92,7 +91,7 @@ runs:
           TOKEN_SECRET=${{ inputs.token_secret }} \
           STRAVA_CLIENT_ID='${{ inputs.strava_client_id }}' \
           STRAVA_CLIENT_SECRET='${{ inputs.strava_client_secret }}' \
-          BASE_URL='${{ vars.base_url }}' \
+          BASE_URL='${{ inputs.base_url }}' \
             docker compose --project-name trainer up --detach
 
           echo "Give green pod 10 seconds to (re)start before starting health checking"
@@ -142,7 +141,7 @@ runs:
           TOKEN_SECRET=${{ inputs.token_secret }} \
           STRAVA_CLIENT_ID='${{ inputs.strava_client_id }}' \
           STRAVA_CLIENT_SECRET='${{ inputs.strava_client_secret }}' \
-          BASE_URL='${{ vars.base_url }}' \
+          BASE_URL='${{ inputs.base_url }}' \
             docker compose --project-name trainer up --detach
 
           echo "Give blue pod 10 seconds to (re)start before starting health checking"
