@@ -9,7 +9,7 @@ RUN yarn config set prefix ~/.yarn
 RUN yarn global add turbo
 COPY . .
 
-RUN yarn run turbo prune --scope=@dundring/frontend --docker
+RUN ~/.yarn/turbo prune --scope=@dundring/frontend --docker
 
 # Add lockfile and package.json's of isolated subworkspace
 FROM base AS installer
