@@ -2,7 +2,7 @@ FROM node:20-alpine AS base
 
 FROM base AS builder
 RUN apk add --no-cache libc6-compat
-RUN apk update
+
 # Set working directory
 WORKDIR /app
 RUN yarn config set prefix ~/.yarn
@@ -14,7 +14,6 @@ RUN yarn run turbo prune --scope=@dundring/frontend --docker
 # Add lockfile and package.json's of isolated subworkspace
 FROM base AS installer
 RUN apk add --no-cache libc6-compat
-RUN apk update
 WORKDIR /app
 
 # First install dependencies (as they change less often)
