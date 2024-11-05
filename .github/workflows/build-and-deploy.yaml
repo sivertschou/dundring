@@ -55,8 +55,9 @@ jobs:
 
   deploy-dev:
     name: Deploy dev
-    needs: build
     environment: dev
+    needs: build
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -85,8 +86,9 @@ jobs:
 
   deploy-prod:
     name: Deploy prod
-    needs: build
     environment: prod
+    needs: build
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
