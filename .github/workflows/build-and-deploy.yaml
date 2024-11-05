@@ -55,19 +55,63 @@ jobs:
 
   deploy-dev:
     name: Deploy dev
+    environment: dev
     needs: build
-    secrets: inherit
-    uses: ./.github/workflows/deploy.yaml
-    with:
-      version: ${{ needs.build.outputs.version }}
-      environment: dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Deploy
+        uses: ./.github/actions/deploy
+        with:
+          version: ${{ needs.build.outputs.version }}
+          base_url: '${{ vars.BASE_URL }}'
+          cloudflare_api_key: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          database_password: ${{ secrets.DATABASE_PASSWORD }}
+          database_url: ${{ secrets.DATABASE_URL }}
+          mail_host: ${{ secrets.MAIL_HOST }}
+          mail_password: ${{ secrets.MAIL_PASSWORD }}
+          mail_port: ${{ secrets.MAIL_PORT }}
+          mail_user: ${{ secrets.MAIL_USER }}
+          redis_url: ${{ secrets.REDIS_URL }}
+          ssh_host: ${{ secrets.SSH_HOST }}
+          ssh_key: ${{ secrets.SSH_KEY }}
+          ssh_username: ${{ secrets.SSH_USERNAME }}
+          strava_client_id: ${{ secrets.STRAVA_CLIENT_ID }}
+          strava_client_secret: ${{ secrets.STRAVA_CLIENT_SECRET }}
+          token_secret: ${{ secrets.TOKEN_SECRET }}
 
   deploy-prod:
     name: Deploy prod
-    needs: build
-    secrets: inherit
-    uses: ./.github/workflows/deploy.yaml
-    with:
-      version: ${{ needs.build.outputs.version }}
-      environment: prod
     environment: prod
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Deploy
+        uses: ./.github/actions/deploy
+        with:
+          version: ${{ needs.build.outputs.version }}
+          base_url: '${{ vars.BASE_URL }}'
+          cloudflare_api_key: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          database_password: ${{ secrets.DATABASE_PASSWORD }}
+          database_url: ${{ secrets.DATABASE_URL }}
+          mail_host: ${{ secrets.MAIL_HOST }}
+          mail_password: ${{ secrets.MAIL_PASSWORD }}
+          mail_port: ${{ secrets.MAIL_PORT }}
+          mail_user: ${{ secrets.MAIL_USER }}
+          redis_url: ${{ secrets.REDIS_URL }}
+          ssh_host: ${{ secrets.SSH_HOST }}
+          ssh_key: ${{ secrets.SSH_KEY }}
+          ssh_username: ${{ secrets.SSH_USERNAME }}
+          slack_token: ${{ secrets.SLACK_TOKEN }}
+          strava_client_id: ${{ secrets.STRAVA_CLIENT_ID }}
+          strava_client_secret: ${{ secrets.STRAVA_CLIENT_SECRET }}
+          token_secret: ${{ secrets.TOKEN_SECRET }}
