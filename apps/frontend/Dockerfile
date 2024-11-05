@@ -5,9 +5,11 @@ RUN apk add --no-cache libc6-compat
 RUN apk update
 # Set working directory
 WORKDIR /app
+RUN yarn config set prefix ~/.yarn
 RUN yarn global add turbo
 COPY . .
-RUN turbo prune --scope=@dundring/frontend --docker
+
+RUN yarn run turbo prune --scope=@dundring/frontend --docker
 
 # Add lockfile and package.json's of isolated subworkspace
 FROM base AS installer
@@ -19,13 +21,15 @@ WORKDIR /app
 COPY .gitignore .gitignore
 COPY --from=builder /app/out/json/ .
 COPY --from=builder /app/out/yarn.lock ./yarn.lock
+COPY --from=builder root/.yarn/bin/turbo /usr/local/bin/turbo
+
 RUN yarn install --ignore-scripts --frozen-lockfile
 
 # Build the project and its dependencies
 COPY --from=builder /app/out/full/ .
 COPY turbo.json turbo.json
 
-RUN yarn turbo run build --filter=@dundring/frontend
+RUN turbo run build --filter=@dundring/frontend
 
 # Use a lightweight web server to serve the static files
 FROM nginx:1.25.2-alpine AS runner
