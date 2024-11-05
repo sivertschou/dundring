@@ -65,7 +65,7 @@ jobs:
           fetch-depth: 0
 
       - name: Deploy
-        uses: ./.github/actions/deploy.yaml
+        uses: ./.github/actions/deploy
         with:
           version: ${{ needs.build.outputs.version }}
           base_url: '${{ vars.BASE_URL }}'
@@ -96,7 +96,7 @@ jobs:
           fetch-depth: 0
 
       - name: Deploy
-        uses: ./.github/actions/deploy.yaml
+        uses: ./.github/actions/deploy
         with:
           version: ${{ needs.build.outputs.version }}
           base_url: '${{ vars.BASE_URL }}'
