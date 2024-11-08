@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build, tag and push image
@@ -52,6 +55,24 @@ jobs:
         run: |
           git tag ${{ steps.gitversion.outputs.semVer }}
           git push origin ${{ steps.gitversion.outputs.semVer }}
+
+      - name: Generate changelog
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ github.token }}
+          tag: ${{ steps.gitversion.outputs.semVer }}
+          excludeTypes: ''
+
+      - name: Create release
+        uses: ncipollo/release-action@v1.13.0
+        with:
+          tag: ${{ steps.gitversion.outputs.semVer }}
+          token: ${{ github.token }}
+          name: ${{ steps.gitversion.outputs.semVer }}
+          body: ${{ steps.changelog.outputs.changes }}
+          draft: false
+          prerelease: false
 
   deploy-dev:
     name: Deploy dev
