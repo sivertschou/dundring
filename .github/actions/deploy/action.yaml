@@ -63,7 +63,7 @@ runs:
         host: ${{ inputs.SSH_HOST }}
         username: ${{ inputs.SSH_USERNAME }}
         key: ${{ inputs.SSH_KEY }}
-        source: docker/dev/docker-compose.yaml
+        source: docker/deploy/docker-compose.yaml
         target: trainer
         strip_components: 2
 
