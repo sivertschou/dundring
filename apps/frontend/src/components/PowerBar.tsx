@@ -1,4 +1,11 @@
-import { ResponsiveContainer, BarChart, YAxis, Tooltip, Bar } from 'recharts';
+import {
+  ResponsiveContainer,
+  BarChart,
+  YAxis,
+  Tooltip,
+  Bar,
+  XAxis,
+} from 'recharts';
 import { CustomChartTooltip } from './Graph/CustomChartTooltip';
 import { powerColors } from '../colors';
 import React from 'react';
@@ -64,6 +71,7 @@ export const PowerBar = ({
         {fillBarChart('You', true, 0)}
         {otherUsers.map((username, i) => fillBarChart(username, true, i + 1))}
         <YAxis />
+        <XAxis tick={false} />
         <Tooltip content={<CustomChartTooltip />} cursor={false} />
       </BarChart>
     </ResponsiveContainer>
