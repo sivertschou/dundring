@@ -55,7 +55,9 @@ jobs:
 
   deploy-dev:
     name: Deploy dev
-    environment: dev
+    environment:
+      name: dev
+      url: https://dev.dundring.com
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -86,7 +88,9 @@ jobs:
 
   deploy-prod:
     name: Deploy prod
-    environment: prod
+    environment:
+      name: prod
+      url: https://dundring.com
     needs: build
     runs-on: ubuntu-latest
     steps:
