@@ -20,13 +20,13 @@ jobs:
           fetch-depth: 0
 
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0
+        uses: gittools/actions/gitversion/setup@v2
         with:
           versionSpec: '5.x'
 
       - name: Determine Version
         id: gitversion
-        uses: gittools/actions/gitversion/execute@v0
+        uses: gittools/actions/gitversion/execute@v2
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
