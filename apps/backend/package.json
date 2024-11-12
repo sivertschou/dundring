@@ -23,7 +23,7 @@
     "node-fetch": "^2.6.6",
     "nodemailer": "^6.9.10",
     "redis": "^4.6.12",
-    "ws": "^8.3.0"
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@dundring/types": "*",
@@ -34,7 +34,7 @@
     "@types/node": "^20.11.20",
     "@types/node-fetch": "^2.5.12",
     "@types/nodemailer": "^6.4.6",
-    "@types/ws": "^8.2.1",
+    "@types/ws": "^8.5.13",
     "nodemon": "^3.1.0",
     "ts-node": "^10.9.1",
     "typescript": "5.3.3"
