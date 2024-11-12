@@ -5,7 +5,7 @@ import { getEnv } from '../utils/environment';
 
 export const getStravaAuthorizeUrl = (params = { forcePrompt: false }) => {
   const clientId = getEnv().stravaClientId;
-  return `https://www.strava.com/oauth/authorize?client_id=${clientId}&redirect_uri=${location.origin}/auth/strava&response_type=code&approval_prompt=auto&scope=read,activity:write&approval_prompt=${params.forcePrompt ? 'force' : 'auto'}`;
+  return `https://www.strava.com/oauth/authorize?client_id=${clientId}&redirect_uri=${location.origin}/auth/strava&response_type=code&scope=read,activity:write&approval_prompt=${params.forcePrompt ? 'force' : 'auto'}`;
 };
 
 export const ConnectWithStravaButton = () => {
