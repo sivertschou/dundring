@@ -22,7 +22,7 @@
     "husky": "^7.0.0",
     "lint-staged": "^13.0.3",
     "prettier": "3.2.5",
-    "turbo": "^1.10.15"
+    "turbo": "^2.2.3"
   },
   "workspaces": [
     "libs/*",
