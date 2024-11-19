@@ -24,7 +24,7 @@
   "devDependencies": {
     "@dundring/tsconfig": "*",
     "@dundring/types": "*",
-    "@rollup/plugin-typescript": "^9.0.2",
+    "@rollup/plugin-typescript": "^12.1.1",
     "prisma": "^5.22.0",
     "rollup": "^4.12.0",
     "tslib": "^2.6.2",
