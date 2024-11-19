@@ -1,6 +1,3 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
 exit_with_warning_message() {
 	echo "\033[0;33m$1\033[m"
 	exit 1

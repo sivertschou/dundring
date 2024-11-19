@@ -1,5 +1,3 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
 echo "Formatting the code ⚡️"
 yarn lint-staged
 echo "Done formatting the code ⚡️"

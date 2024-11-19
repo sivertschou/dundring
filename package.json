@@ -6,7 +6,7 @@
   "private": true,
   "packageManager": "yarn@1.22.18",
   "scripts": {
-    "prepare": "husky install && bash scripts/print_dundring.sh",
+    "prepare": "husky && bash scripts/print_dundring.sh",
     "dev": "FORCE_COLOR=1 turbo run dev",
     "start": "FORCE_COLOR=1 turbo run dev",
     "mock": "export VITE_USE_MOCK_DATA=true ; FORCE_COLOR=1 turbo run dev",
@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@prettier/plugin-xml": "^2.2.0",
-    "husky": "^7.0.0",
+    "husky": "9.1.7",
     "lint-staged": "^13.0.3",
     "prettier": "3.2.5",
     "turbo": "^1.10.15"
