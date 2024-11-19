@@ -38,4 +38,4 @@ COPY --from=installer /app .
 
 # CMD  libs/database && node apps/backend/build/server.js
 ENTRYPOINT ["/app/apps/backend/docker-entrypoint.sh"]
-CMD node /app/apps/backend/build/server.js
+CMD ["node", "/app/apps/backend/build/server.js"]
