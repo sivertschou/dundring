@@ -36,7 +36,7 @@ export interface WorkoutPart {
   type: 'steady';
 }
 
-export interface ActiveWorkout {
+export interface ActiveWorkoutSession {
   workout: Workout | null;
   partElapsedTime: number;
   activePart: number;

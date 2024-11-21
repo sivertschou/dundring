@@ -1,6 +1,6 @@
 import { Text, Stack } from '@chakra-ui/layout';
 import * as React from 'react';
-import { useActiveWorkout } from '../context/ActiveWorkoutContext';
+import { useActiveWorkoutSession } from '../context/ActiveWorkoutSessionContext';
 import { useData } from '../context/DataContext';
 import { Workout } from '../types';
 import { wattFromFtpPercent } from '../utils/general';
@@ -10,13 +10,14 @@ import {
 } from '@dundring/utils';
 
 export const WorkoutDisplay = () => {
-  const { activeWorkout, activeFtp, changeActivePart } = useActiveWorkout();
+  const { activeWorkoutSession, activeFtp, changeActivePart } =
+    useActiveWorkoutSession();
   const { addLap } = useData();
-  if (!activeWorkout.workout) {
+  if (!activeWorkoutSession.workout) {
     return null;
   }
 
-  const { activePart, status, partElapsedTime, workout } = activeWorkout;
+  const { activePart, status, partElapsedTime, workout } = activeWorkoutSession;
 
   return (
     <Stack fontSize="sm">
