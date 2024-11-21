@@ -48,7 +48,24 @@ export const ftpPercentFromWatt = (watt: number, ftp: number) =>
   Math.floor(1000 * (watt / ftp)) / 10;
 
 export const wattFromFtpPercent = (ftpPercent: number, ftp: number) =>
-  Math.floor((ftpPercent * ftp) / 100);
+  Math.round((ftpPercent * ftp) / 100);
+
+let failures = [];
+for (let ftp = 1; ftp <= 500; ftp += 1) {
+  for (let watt = 0; watt <= 1000; watt += 1) {
+    const ftpPct = Math.floor(1000 * (watt / ftp)) / 10;
+    const wattFromFtpPct = Math.round((ftpPct * ftp) / 100);
+    if (wattFromFtpPct !== watt) {
+      failures.push({
+        watt,
+        exactWattFromFtpPct: (ftpPct * ftp) / 100,
+        ftpPct,
+        ftp,
+      });
+    }
+  }
+}
+console.log('watt', failures);
 
 export const editable = <T>(data: T): Editable<T> => ({ touched: false, data });
 export const touched = <T>(data: T): Editable<T> => ({ touched: true, data });
