@@ -5,7 +5,6 @@ import { Text, Grid, Center } from '@chakra-ui/layout';
 import { FormControl, Icon } from '@chakra-ui/react';
 import * as React from 'react';
 import { Files, List, X } from 'react-bootstrap-icons';
-import { WorkoutPart } from '../../types';
 import {
   ftpPercentFromWatt,
   parseFtpPercentInput,
@@ -14,6 +13,7 @@ import {
   wattFromFtpPercent,
 } from '../../utils/general';
 import { findZone } from '../../utils/zones';
+import { WorkoutPart } from '@dundring/types';
 
 interface Data {
   seconds: number;

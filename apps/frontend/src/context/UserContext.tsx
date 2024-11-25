@@ -1,7 +1,8 @@
 import * as React from 'react';
 import useSWR from 'swr';
 import { fetchMyWorkouts, validateToken } from '../api';
-import { UserContextType, Workout } from '../types';
+import { UserContextType } from '../types';
+import { Workout } from '@dundring/types';
 
 export const defaultUser: UserContextType = {
   loggedIn: false,
