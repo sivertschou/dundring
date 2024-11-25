@@ -11,7 +11,6 @@ import * as React from 'react';
 import { PencilSquare } from 'react-bootstrap-icons';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 import { useUser } from '../../context/UserContext';
-import { StoredWorkoutType, Workout } from '../../types';
 import { parseInputAsInt } from '../../utils/general';
 import { WorkoutToEdit } from '../Modals/WorkoutEditorModal';
 import { defaultWorkouts } from './defaultWorkouts';
@@ -19,6 +18,8 @@ import { ImportWorkout } from './ImportWorkout';
 import { WorkoutListItem } from './WorkoutListItem';
 import { useData } from '../../context/DataContext';
 import { stringToRouteName } from '../../gps';
+import { StoredWorkoutType } from '../../types';
+import { Workout } from '@dundring/types';
 
 interface Props {
   setActiveWorkout: (workout: Workout, ftp: number) => void;

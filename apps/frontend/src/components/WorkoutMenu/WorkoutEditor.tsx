@@ -7,7 +7,6 @@ import {
 import { Input, InputGroup, InputRightAddon } from '@chakra-ui/input';
 import { Grid, HStack, Stack, Text } from '@chakra-ui/layout';
 import * as React from 'react';
-import { Workout, WorkoutPart } from '../../types';
 import { templateColumns, WorkoutIntervalInput } from './WorkoutIntervalInput';
 import { DropResult } from 'react-beautiful-dnd';
 import { DraggableList } from './DraggableList';
@@ -41,7 +40,7 @@ import {
   getTotalWorkoutDistance,
   secondsToHoursMinutesAndSecondsString,
 } from '@dundring/utils';
-import { ApiStatus } from '@dundring/types';
+import { ApiStatus, Workout, WorkoutPart } from '@dundring/types';
 import { parseInputAsInt } from '../../utils/general';
 
 interface Props {
