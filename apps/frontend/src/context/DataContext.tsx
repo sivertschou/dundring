@@ -202,7 +202,6 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
     }
   );
 
-  const [wakeLock, setWakeLock] = React.useState<WakeLockSentinel | null>(null);
   const { logEvent } = useLogs();
   const {
     isConnected: smartTrainerIsConnected,
@@ -265,12 +264,6 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
       syncResistance();
     }
 
-    try {
-      const wl = await navigator.wakeLock.request('screen');
-      setWakeLock(wl);
-    } catch (e) {
-      console.warn('Could not acquire wakeLock');
-    }
     startActiveWorkout();
     clockWorker.postMessage('startClockTimer');
     dispatch({ type: 'START' });
@@ -289,13 +282,8 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
       setResistance(0);
     }
 
-    if (wakeLock) {
-      await wakeLock.release();
-      setWakeLock(null);
-    }
-
     clockWorker.postMessage('stopClockTimer');
-  }, [clockWorker, logEvent, smartTrainerIsConnected, setResistance, wakeLock]);
+  }, [clockWorker, logEvent, smartTrainerIsConnected, setResistance]);
 
   return (
     <DataContext.Provider
