@@ -61,15 +61,17 @@ export const toTcxString = (laps: Lap[], distance: number): string => {
 };
 
 const lapToTCX = (lap: Lap) => {
-  const filtererdDataPoints = lap.dataPoints.filter(
+  const filteredDataPoints = lap.dataPoints.filter(
     (data) => data.heartRate || data.power
   );
 
-  if (filtererdDataPoints.length === 0) return '';
+  if (filteredDataPoints.length === 0) return '';
   return [
-    `      <Lap StartTime="${filtererdDataPoints[0].timeStamp.toISOString()}">`,
+    `      <Lap StartTime="${filteredDataPoints[0].timeStamp.toISOString()}">`,
+    `        <DistanceMeters>${lap.distance}</DistanceMeters>`,
+    `        <TotalTimeSeconds>${Math.round(lap.duration / 1000)}</TotalTimeSeconds>`,
     `        <Track>`,
-    `${filtererdDataPoints.reduce(
+    `${filteredDataPoints.reduce(
       (output, data) =>
         (output ? output + '\n' : output) +
         [
