@@ -82,6 +82,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
                 {
                   dataPoints: [],
                   distance: 0,
+                  duration: 0,
                   sumWatt: 0,
                   normalizedDuration: 0,
                 },
@@ -113,6 +114,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
               {
                 dataPoints: [],
                 distance: 0,
+                duration: 0,
                 sumWatt: 0,
                 normalizedDuration: 0,
               },
@@ -181,6 +183,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
               {
                 dataPoints: [...currentLap.dataPoints, dataPointWithPosition],
                 distance: currentLap.distance + deltaDistance,
+                duration: currentLap.duration + delta,
                 sumWatt: currentLap.sumWatt + pointAvgWatt,
                 normalizedDuration: dataPoint.power
                   ? currentLap.normalizedDuration + delta

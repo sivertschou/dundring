@@ -3,8 +3,9 @@ import { Scopes } from '@dundring/types';
 export interface Lap {
   dataPoints: DataPoint[];
   distance: number;
+  duration: number;
   sumWatt: number;
-  normalizedDuration: number;
+  normalizedDuration: number; // duration where watt > 0
 }
 export interface DataPoint {
   heartRate?: number;
