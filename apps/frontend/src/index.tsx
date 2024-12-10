@@ -15,6 +15,7 @@ import { ModalContextProvider } from './context/ModalContext';
 import { DataContextProvider } from './context/DataContext';
 import { ActiveWorkoutContextProvider } from './context/ActiveWorkoutContext';
 import { MockProvider } from './context/MockContext';
+import { WakeLockContextProvider } from './context/WakeLockContext';
 
 const cw: Worker = new WorkerBuilder(clockWorker);
 cw.postMessage('startDataTimer');
@@ -33,10 +34,12 @@ root.render(
                   <ActiveWorkoutContextProvider>
                     <WebsocketContextProvider>
                       <DataContextProvider clockWorker={cw}>
-                        <ModalContextProvider>
-                          <ColorModeScript />
-                          <App />
-                        </ModalContextProvider>
+                        <WakeLockContextProvider>
+                          <ModalContextProvider>
+                            <ColorModeScript />
+                            <App />
+                          </ModalContextProvider>
+                        </WakeLockContextProvider>
                       </DataContextProvider>
                     </WebsocketContextProvider>
                   </ActiveWorkoutContextProvider>
