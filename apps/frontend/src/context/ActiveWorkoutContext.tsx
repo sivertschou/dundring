@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { ActiveWorkout, Workout } from '../types';
+import { ActiveWorkout } from '../types';
 import { wattFromFtpPercent } from '../utils/general';
 import { useSmartTrainer } from './SmartTrainerContext';
 import { useUser } from './UserContext';
+import { Workout } from '@dundring/types';
 
 export const ActiveWorkoutContext = React.createContext<{
   activeWorkout: ActiveWorkout;

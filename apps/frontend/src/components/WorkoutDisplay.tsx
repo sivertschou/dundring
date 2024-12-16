@@ -2,12 +2,12 @@ import { Text, Stack } from '@chakra-ui/layout';
 import * as React from 'react';
 import { useActiveWorkout } from '../context/ActiveWorkoutContext';
 import { useData } from '../context/DataContext';
-import { Workout } from '../types';
 import { wattFromFtpPercent } from '../utils/general';
 import {
   getTotalWorkoutTime,
   secondsToHoursMinutesAndSecondsString,
 } from '@dundring/utils';
+import { Workout } from '@dundring/types';
 
 export const WorkoutDisplay = () => {
   const { activeWorkout, activeFtp, changeActivePart } = useActiveWorkout();

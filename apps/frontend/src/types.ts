@@ -1,4 +1,4 @@
-import { Scopes } from '@dundring/types';
+import { Scopes, Workout } from '@dundring/types';
 
 export interface Lap {
   dataPoints: DataPoint[];
@@ -21,21 +21,9 @@ export interface Waypoint {
   distance: number;
 }
 
-export interface Workout {
-  id: string;
-  name: string;
-  parts: WorkoutPart[];
-}
-
 export type WorkoutType = 'local' | 'remote' | 'new' | 'library';
 
 export type StoredWorkoutType = Exclude<WorkoutType, 'new'>;
-
-export interface WorkoutPart {
-  duration: number;
-  targetPower: number;
-  type: 'steady';
-}
 
 export interface ActiveWorkout {
   workout: Workout | null;

@@ -10,7 +10,6 @@ import {
 import * as React from 'react';
 import { ArrowLeft } from 'react-bootstrap-icons';
 import { WorkoutOverview } from '../WorkoutMenu/WorkoutOverview';
-import { Workout, WorkoutType } from '../../types';
 import { WorkoutEditor } from '../WorkoutMenu/WorkoutEditor';
 import { useUser } from '../../context/UserContext';
 import { useWorkoutEditorModal } from '../../context/ModalContext';
@@ -26,6 +25,8 @@ import {
   HStack,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import { Workout } from '@dundring/types';
+import { WorkoutType } from '../../types';
 
 export interface WorkoutToEdit extends Workout {
   type: WorkoutType;

@@ -3,13 +3,14 @@ import { Center, Grid, Heading, HStack, Stack, Text } from '@chakra-ui/layout';
 import { useClipboard, useToast, Icon } from '@chakra-ui/react';
 import { Tooltip } from '@chakra-ui/tooltip';
 import { Cloud, Gear, Hdd, Clipboard, Book } from 'react-bootstrap-icons';
-import { StoredWorkoutType, Workout, WorkoutType } from '../../types';
+import { StoredWorkoutType } from '../../types';
 import {
   getTotalWorkoutDistance,
   getTotalWorkoutTime,
   secondsToHoursMinutesAndSecondsString,
 } from '@dundring/utils';
 import * as api from '../../api';
+import { Workout } from '@dundring/types';
 
 interface Props {
   workout: Workout;
