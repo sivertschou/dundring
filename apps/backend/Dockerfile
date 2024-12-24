@@ -1,4 +1,6 @@
-FROM node:20-alpine AS base
+# HACK: Pinned to 3.20 since 3.21 moves libfiles from /lib to /usr/lib.
+# Unpin when Prisma is upgraded
+FROM node:20-alpine3.20 AS base
 
 FROM base AS builder
 RUN apk add --no-cache libc6-compat
