@@ -2405,6 +2405,11 @@
   resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.15.1.tgz#221fd31a65186b9bc027b74573485fb3226dff7f"
   integrity sha512-zcU0gM3z+3iqj8UX45AmWY810l3oUmXM7uH4dt5xtzvMhRtYVhKGOmgOd1877dOPPepfCjUv57w+syamWIYe7w==
 
+"@rgrove/parse-xml@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@rgrove/parse-xml/-/parse-xml-4.1.0.tgz#ff489b59c4794569fa1b798515eef6826daeeb5e"
+  integrity sha512-pBiltENdy8SfI0AeR1e5TRpS9/9Gl0eiOEt6ful2jQfzsgvZYWqsKiBWaOCLdocQuk0wS7KOHI37n0C1pnKqTw==
+
 "@rollup/plugin-typescript@^12.1.1":
   version "12.1.1"
   resolved "https://registry.yarnpkg.com/@rollup/plugin-typescript/-/plugin-typescript-12.1.1.tgz#008d16b8283a422650c463f99ae0c610cf6c9727"
