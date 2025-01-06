@@ -20,7 +20,14 @@ export const TopBar = () => {
   const { cadence, currentResistance } = useSmartTrainer();
   const { heartRate } = useHeartRateMonitor();
   const { activeWorkout } = useActiveWorkout();
-  const { data: laps, timeElapsed, distance, speed, smoothedPower } = useData();
+  const {
+    data: laps,
+    timeElapsed,
+    distance,
+    speed,
+    smoothedPower,
+    maxHeartRate,
+  } = useData();
   const remainingTime = getRemainingTime(activeWorkout);
 
   const secondsElapsed = Math.floor(timeElapsed / 1000);
@@ -56,6 +63,11 @@ export const TopBar = () => {
                 </Text>
                 <Text fontSize={unitFontSize}>bpm</Text>
               </Center>
+              {maxHeartRate && (
+                <Text color={hrColor} fontSize={secondaryFontSize}>
+                  Max: {maxHeartRate} bpm
+                </Text>
+              )}
             </Stack>
             <Stack spacing="0">
               <Text fontSize={secondaryFontSize}>
