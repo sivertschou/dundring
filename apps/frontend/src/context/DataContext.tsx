@@ -16,6 +16,7 @@ const DataContext = React.createContext<{
   timeElapsed: number;
   startingTime: Date | null;
   distance: number;
+  maxHeartRate: number | null;
   speed: number;
   start: () => void;
   stop: () => void;
@@ -36,6 +37,7 @@ interface Data {
   untrackedData: DataPoint[];
   timeElapsed: number;
   distance: number;
+  maxHeartRate: number | null;
   speed: number;
   startingTime: Date | null;
   state: 'not_started' | 'running' | 'paused';
@@ -93,6 +95,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
               speed: 0,
               startingTime: new Date(),
               state: 'running',
+              maxHeartRate: null,
             };
           }
           return { ...currentData, state: 'running' };
@@ -170,6 +173,11 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
                 }
               : undefined),
           };
+
+          const newMaxHeartRate = dataPoint.heartRate
+            ? Math.max(dataPoint.heartRate, currentData.maxHeartRate || 0)
+            : currentData.maxHeartRate;
+
           return {
             ...currentData,
             untrackedData: [
@@ -178,6 +186,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
             ],
             speed: speed,
             distance: currentData.distance + deltaDistance,
+            maxHeartRate: newMaxHeartRate,
             laps: [
               ...laps.filter((_, i) => i !== laps.length - 1),
               {
@@ -201,6 +210,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
       distance: 0,
       speed: 0,
       startingTime: null,
+      maxHeartRate: null,
       state: 'not_started',
     }
   );
@@ -297,6 +307,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         timeElapsed: data.timeElapsed,
         startingTime: data.startingTime,
         distance: data.distance,
+        maxHeartRate: data.maxHeartRate,
         speed: data.speed,
         start,
         stop,
