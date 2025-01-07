@@ -30,7 +30,7 @@
     "@dundring/utils": "*",
     "@types/cors": "^2.8.9",
     "@types/express": "^4.17.11",
-    "@types/jsonwebtoken": "^9.0.5",
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^20.11.20",
     "@types/node-fetch": "^2.5.12",
     "@types/nodemailer": "^6.4.6",
