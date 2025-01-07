@@ -309,16 +309,17 @@ export const useSmartTrainerInterface = (): SmartTrainerInterface => {
               smartTrainer.service.fitnessMachineControlPointCharacteristic;
             if (fitnessMachineControlPointCharacteristic) {
               if (!resistance) {
-                // Reset
                 await fitnessMachineControlPointCharacteristic.writeValue(
-                  new Uint8Array([0x01])
+                  new Uint8Array([OP_CODES.RESET])
                 );
 
-                // wind speed sint16
-                // grade sint16
-                // rolling resistance uint8
-                // wind resistance uint8
-                const combinedArray = Uint8Array.of(0x11, 0, 0, 0, 0);
+                const combinedArray = Uint8Array.of(
+                  OP_CODES.SET_INDOOR_SIMULATION,
+                  0, // wind speed sint16
+                  0, // grade sint16
+                  0, // rolling resistance uint8
+                  0 // wind resistance uint8
+                );
                 await fitnessMachineControlPointCharacteristic.writeValue(
                   new Uint8Array(combinedArray)
                 );
@@ -328,7 +329,7 @@ export const useSmartTrainerInterface = (): SmartTrainerInterface => {
                 const resBuf = new Uint8Array(
                   new Uint16Array([resistance]).buffer
                 );
-                const cmdBuf = new Uint8Array([0x05]);
+                const cmdBuf = new Uint8Array([OP_CODES.SET_POWER_TARGET]);
                 const combined = new Uint8Array(cmdBuf.length + resBuf.length);
                 combined.set(cmdBuf);
                 combined.set(resBuf, cmdBuf.length);
@@ -350,4 +351,10 @@ export const useSmartTrainerInterface = (): SmartTrainerInterface => {
       [isConnected, logEvent, smartTrainer]
     ),
   };
+};
+
+const OP_CODES = {
+  RESET: 0x00,
+  SET_POWER_TARGET: 0x05,
+  SET_INDOOR_SIMULATION: 0x11,
 };
