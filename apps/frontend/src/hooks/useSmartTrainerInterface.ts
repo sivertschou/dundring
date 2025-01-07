@@ -313,15 +313,27 @@ export const useSmartTrainerInterface = (): SmartTrainerInterface => {
                   new Uint8Array([OP_CODES.RESET])
                 );
 
-                const combinedArray = Uint8Array.of(
-                  OP_CODES.SET_INDOOR_SIMULATION,
-                  0, // wind speed sint16
-                  0, // grade sint16
-                  0, // rolling resistance uint8
-                  0 // wind resistance uint8
-                );
+                const windSpeedAndGrade = Int16Array.of(1, 1);
+                const rollingAndWindResistance = Uint8Array.of(1, 1);
+
+                const totalLength =
+                  windSpeedAndGrade.byteLength +
+                  rollingAndWindResistance.byteLength;
+                const combinedBuffer = new ArrayBuffer(totalLength);
+                const combinedView = new DataView(combinedBuffer);
+
+                combinedView.setUint8(0, OP_CODES.SET_INDOOR_SIMULATION);
+                // wind speed
+                combinedView.setInt16(1, 0, true);
+                // grade
+                combinedView.setInt16(3, 0, true);
+                // rolling resistance, resolution 0.001
+                combinedView.setUint8(5, 100);
+                // wind resistance
+                combinedView.setUint8(6, 100);
+
                 await fitnessMachineControlPointCharacteristic.writeValue(
-                  new Uint8Array(combinedArray)
+                  new Uint8Array(combinedBuffer)
                 );
                 logEvent(`set resistance: Free mode`);
                 setCurrentResistance(0);
