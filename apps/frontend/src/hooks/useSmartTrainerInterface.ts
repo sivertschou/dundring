@@ -313,6 +313,15 @@ export const useSmartTrainerInterface = (): SmartTrainerInterface => {
                 await fitnessMachineControlPointCharacteristic.writeValue(
                   new Uint8Array([0x01])
                 );
+
+                // wind speed sint16
+                // grade sint16
+                // rolling resistance uint8
+                // wind resistance uint8
+                const combinedArray = Uint8Array.of(0x11, 0, 0, 0, 0);
+                await fitnessMachineControlPointCharacteristic.writeValue(
+                  new Uint8Array(combinedArray)
+                );
                 logEvent(`set resistance: Free mode`);
                 setCurrentResistance(0);
               } else {
