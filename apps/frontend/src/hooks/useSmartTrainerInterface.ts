@@ -318,7 +318,8 @@ export const useSmartTrainerInterface = (): SmartTrainerInterface => {
 
                 const totalLength =
                   windSpeedAndGrade.byteLength +
-                  rollingAndWindResistance.byteLength;
+                  rollingAndWindResistance.byteLength +
+                  1;
                 const combinedBuffer = new ArrayBuffer(totalLength);
                 const combinedView = new DataView(combinedBuffer);
 
@@ -328,9 +329,9 @@ export const useSmartTrainerInterface = (): SmartTrainerInterface => {
                 // grade
                 combinedView.setInt16(3, 0, true);
                 // rolling resistance, resolution 0.001
-                combinedView.setUint8(5, 100);
+                combinedView.setUint8(5, 255);
                 // wind resistance
-                combinedView.setUint8(6, 100);
+                combinedView.setUint8(6, 255);
 
                 await fitnessMachineControlPointCharacteristic.writeValue(
                   new Uint8Array(combinedBuffer)
