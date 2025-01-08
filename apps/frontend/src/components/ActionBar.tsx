@@ -22,6 +22,7 @@ import { useWebsocket } from '../context/WebsocketContext';
 import { useLinkColor } from '../hooks/useLinkColor';
 import { ActionBarItem } from './ActionBarItem';
 import { settingUpProfile } from '@dundring/utils';
+import { useHotkey } from '../hooks/useHotkey';
 
 export const ActionBar = () => {
   const { user } = useUser();
@@ -43,6 +44,13 @@ export const ActionBar = () => {
     disconnect: disconnectSmartTrainer,
     requestPermission: connectSmartTrainer,
   } = useSmartTrainer();
+
+  useHotkey('KeyH', () => {
+    if (!hrIsConnected) connectHR();
+  });
+  useHotkey('KeyT', () => {
+    if (!smartTrainerIsConnected) connectSmartTrainer();
+  });
 
   return (
     <Stack
