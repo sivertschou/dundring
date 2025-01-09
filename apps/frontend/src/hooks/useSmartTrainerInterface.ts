@@ -142,6 +142,26 @@ export const useSmartTrainerInterface = (): SmartTrainerInterface => {
   const requestPermission = async () => {
     dispatch({ type: 'set_connecting' });
 
+    // console.log(navigator.bluetooth);
+    const b = await navigator.bluetooth.getDevices(); // .then((devices) => {
+    console.log(b);
+    //   const device2 = devices.find((d) => d.id === '/iovXSGhR+oQfkQMLSKIfg==');
+    //   if (device2 !== undefined) {
+    //     return device2.gatt
+    //       ?.connect()
+    //       .then((server) => {
+    //         console.log('Reconnected to', device2.name);
+    //       })
+    //       .catch((error) => {
+    //         console.log('Failed to reconnect', error);
+    //       });
+    //   } else {
+    //     console.log(
+    //       'Previously saved device not found. Requesting a new device...'
+    //     );
+    //   }
+    // });
+
     const device = await navigator.bluetooth
       .requestDevice({
         filters: [{ services: ['cycling_power'] }],
@@ -153,6 +173,8 @@ export const useSmartTrainerInterface = (): SmartTrainerInterface => {
       });
 
     if (!device) return;
+
+    console.log(device.id); // /iovXSGhR+oQfkQMLSKIfg==
 
     const server = await device.gatt?.connect();
     try {
