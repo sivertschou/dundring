@@ -13,6 +13,7 @@
     "build": "turbo run build",
     "build:backend": "yarn --cwd apps/backend build",
     "build:frontend": "yarn --cwd apps/frontend build",
+    "test": "turbo run test",
     "frontend": "yarn --cwd apps/frontend start",
     "backend": "yarn --cwd apps/backend start",
     "clean": "rm -rf node_modules */**/node_modules */**/.turbo */**/dist */**/build"

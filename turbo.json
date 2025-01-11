@@ -18,6 +18,7 @@
       "cache": false,
       "outputs": ["build/**", "dist/**"],
       "persistent": true
-    }
+    },
+    "test": {}
   }
 }
