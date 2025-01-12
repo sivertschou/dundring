@@ -80,6 +80,11 @@ export const useSmartTrainerInterface = (): SmartTrainerInterface => {
   const [currentResistance, setCurrentResistance] = React.useState(0);
   const toast = useToast();
 
+  const hasAutomaticConnectionEnabled = 'getDevices' in navigator.bluetooth;
+
+  const prevConnectedTrainerId =
+    localStorage.getItem('prevConnectedTrainerId') || null;
+
   const [smartTrainer, dispatch] = React.useReducer(
     (_current: SmartTrainer, action: Action): SmartTrainer => {
       switch (action.type) {
@@ -104,6 +109,7 @@ export const useSmartTrainerInterface = (): SmartTrainerInterface => {
           };
         }
         case 'set_fitness_machine_characteristics': {
+          localStorage.setItem('prevConnectedTrainerId', action.device.id);
           return {
             status: 'connected',
             device: action.device,
@@ -139,28 +145,31 @@ export const useSmartTrainerInterface = (): SmartTrainerInterface => {
     setData({ power, cadence, speed });
   };
 
+  React.useEffect(() => {
+    if (!prevConnectedTrainerId || 1 < 2) return;
+    const autoconnect = async () => {
+      if (hasAutomaticConnectionEnabled) {
+        const devices = await navigator.bluetooth.getDevices();
+        const prevConnectedTrainerDevice = devices.find(
+          (d) => d.id === prevConnectedTrainerId
+        );
+        if (prevConnectedTrainerDevice !== undefined) {
+          prevConnectedTrainerDevice.gatt?.connect().then((server) => {
+            toast({
+              title: 'Automatic connected to previous trainer device',
+              isClosable: true,
+              duration: 20000,
+              status: 'success',
+            });
+          });
+        }
+      }
+    };
+    autoconnect().catch(() => console.error('autoconnect failed'));
+  }, [hasAutomaticConnectionEnabled, prevConnectedTrainerId]);
+
   const requestPermission = async () => {
     dispatch({ type: 'set_connecting' });
-
-    // console.log(navigator.bluetooth);
-    const b = await navigator.bluetooth.getDevices(); // .then((devices) => {
-    console.log(b);
-    //   const device2 = devices.find((d) => d.id === '/iovXSGhR+oQfkQMLSKIfg==');
-    //   if (device2 !== undefined) {
-    //     return device2.gatt
-    //       ?.connect()
-    //       .then((server) => {
-    //         console.log('Reconnected to', device2.name);
-    //       })
-    //       .catch((error) => {
-    //         console.log('Failed to reconnect', error);
-    //       });
-    //   } else {
-    //     console.log(
-    //       'Previously saved device not found. Requesting a new device...'
-    //     );
-    //   }
-    // });
 
     const device = await navigator.bluetooth
       .requestDevice({

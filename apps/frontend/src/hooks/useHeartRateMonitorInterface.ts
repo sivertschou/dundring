@@ -61,6 +61,13 @@ export const useHeartRateMonitorInterface = (): HeartRateMonitorInterface => {
   const { logEvent } = useLogs();
   const toast = useToast();
 
+  const hasAutomaticConnectionEnabled = 'getDevices' in navigator.bluetooth;
+
+  const prevConnectedTrainerId =
+    localStorage.getItem('prevConnectedHeartRateMonitorDevice') || null;
+
+  console.log(prevConnectedTrainerId);
+
   const [heartRateMonitor, dispatch] = React.useReducer(
     (_current: HeartRateMonitor, action: Action): HeartRateMonitor => {
       switch (action.type) {
@@ -74,6 +81,10 @@ export const useHeartRateMonitorInterface = (): HeartRateMonitorInterface => {
           return { status: 'error', errorMessage: action.errorMessage };
         }
         case 'set_heart_rate_measurement_characteristics': {
+          localStorage.setItem(
+            'prevConnectedHeartRateMonitorDevice',
+            action.device.id
+          );
           return {
             status: 'connected',
             device: action.device,
@@ -104,6 +115,56 @@ export const useHeartRateMonitorInterface = (): HeartRateMonitorInterface => {
       errorMessage: 'Disconnected',
     });
     logEvent('heart rate monitor auto-disconnected');
+  }, []);
+
+  React.useEffect(() => {
+    if (!prevConnectedTrainerId) return;
+    const autoconnect = async () => {
+      if (hasAutomaticConnectionEnabled) {
+        const devices = await navigator.bluetooth.getDevices();
+        const prevConnectedHeartRateMonitorDevice = devices.find(
+          (d) => d.id === prevConnectedTrainerId
+        );
+        if (prevConnectedHeartRateMonitorDevice !== undefined) {
+          dispatch({ type: 'set_connecting' });
+          console.log(prevConnectedHeartRateMonitorDevice);
+          const server =
+            await prevConnectedHeartRateMonitorDevice.gatt?.connect();
+          const service = await server?.getPrimaryService('heart_rate');
+
+          const heartRateMeasurementCharacteristic =
+            await service?.getCharacteristic('heart_rate_measurement');
+          if (!heartRateMeasurementCharacteristic) {
+            return dispatch({ type: 'reset' });
+          }
+
+          await heartRateMeasurementCharacteristic
+            ?.startNotifications()
+            .then((_) => {
+              console.log('> Notifications started');
+              heartRateMeasurementCharacteristic.addEventListener(
+                'characteristicvaluechanged',
+                handleHRUpdate
+              );
+            });
+          prevConnectedHeartRateMonitorDevice.removeEventListener(
+            'gattserverdisconnected',
+            onDisconnected
+          );
+          prevConnectedHeartRateMonitorDevice.addEventListener(
+            'gattserverdisconnected',
+            onDisconnected
+          );
+
+          dispatch({
+            type: 'set_heart_rate_measurement_characteristics',
+            device: prevConnectedHeartRateMonitorDevice,
+            heartRateMeasurementCharacteristic,
+          });
+        }
+      }
+    };
+    autoconnect().catch(() => console.error('autoconnect failed'));
   }, []);
 
   const requestPermission = async () => {
