@@ -118,13 +118,15 @@ export const useHeartRateMonitorInterface = (): HeartRateMonitorInterface => {
   }, []);
 
   React.useEffect(() => {
-    if (!prevConnectedTrainerId) return;
+    if (!prevConnectedTrainerId || heartRateMonitor.status !== 'not_connected')
+      return;
     const autoconnect = async () => {
       if (hasAutomaticConnectionEnabled) {
         const devices = await navigator.bluetooth.getDevices();
         const prevConnectedHeartRateMonitorDevice = devices.find(
           (d) => d.id === prevConnectedTrainerId
         );
+        console.log(devices, prevConnectedHeartRateMonitorDevice);
         if (prevConnectedHeartRateMonitorDevice !== undefined) {
           dispatch({ type: 'set_connecting' });
           console.log(prevConnectedHeartRateMonitorDevice);
@@ -221,6 +223,7 @@ export const useHeartRateMonitorInterface = (): HeartRateMonitorInterface => {
 
     logEvent('heart rate monitor connected');
   };
+
   const disconnect = async () => {
     if (heartRateMonitor.status === 'connected') {
       await heartRateMonitor.heartRateMeasurementCharacteristic.stopNotifications();
