@@ -139,6 +139,21 @@ export const useSmartTrainerInterface = (): SmartTrainerInterface => {
     setData({ power, cadence, speed });
   };
 
+  const onDisconnected = React.useCallback(() => {
+    toast({
+      title: 'Trainer Disconnected!',
+      isClosable: true,
+      duration: 2000,
+      status: 'warning',
+    });
+    setCurrentResistance(0);
+    dispatch({
+      type: 'set_error',
+      errorMessage: 'Disconnected',
+    });
+    logEvent('heart rate monitor auto-disconnected');
+  }, []);
+
   const requestPermission = async () => {
     dispatch({ type: 'set_connecting' });
 
@@ -204,6 +219,9 @@ export const useSmartTrainerInterface = (): SmartTrainerInterface => {
         indoorBikeDataCharacteristic,
         fitnessMachineControlPointCharacteristic,
       });
+
+      device.removeEventListener('gattserverdisconnected', onDisconnected);
+      device.addEventListener('gattserverdisconnected', onDisconnected);
     } catch (e) {
       logEvent(
         'Could not connect to device as Fitness Machine. Trying to connect to cycling power.'
