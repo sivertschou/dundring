@@ -126,7 +126,7 @@ export const useHeartRateMonitorInterface = (): HeartRateMonitorInterface => {
         const prevConnectedHeartRateMonitorDevice = devices.find(
           (d) => d.id === prevConnectedTrainerId
         );
-        console.log(devices, prevConnectedHeartRateMonitorDevice);
+        console.log(devices, prevConnectedHeartRateMonitorDevice, ':)');
         if (prevConnectedHeartRateMonitorDevice !== undefined) {
           dispatch({ type: 'set_connecting' });
           console.log(prevConnectedHeartRateMonitorDevice);
