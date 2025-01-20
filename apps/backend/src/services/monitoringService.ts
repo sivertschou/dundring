@@ -32,6 +32,37 @@ const sendSlackMessage = (message: string) => {
   }
 };
 
+const getDiscordUrl = (): string | null => {
+  const url = process.env.DISCORD_WEBHOOK_URL;
+
+  if (!url) return null;
+
+  return url;
+};
+
+const sendDiscordMessage = (message: string) => {
+  const url = getDiscordUrl();
+
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`[discord]: ${message}`);
+    return;
+  }
+
+  if (!url) return;
+
+  try {
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ content: message }),
+    });
+  } catch (e) {
+    console.error('[sendSlackMessage]:', e);
+  }
+};
+
 export const logActivityUpload = (activityId: number) => {
   const message = `New upload: www.strava.com/activities/${activityId}`;
   log(message);
@@ -69,4 +100,5 @@ export const logAndReturn = <T>(message: string, data: T) => {
 
 export const log = (message: string) => {
   sendSlackMessage(message);
+  sendDiscordMessage(message);
 };
