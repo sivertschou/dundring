@@ -9,7 +9,7 @@ import { isError, isSuccess } from '@dundring/utils';
 import * as express from 'express';
 import {
   mailService,
-  slackService,
+  monitoringService,
   userService,
   validationService,
 } from '../../services';
@@ -68,7 +68,7 @@ router.post<
     const fitnessData = await userService.getUserFitnessData(userId);
     const ftp = isSuccess(fitnessData)
       ? fitnessData.data.ftp
-      : slackService.logAndReturn(
+      : monitoringService.logAndReturn(
           `user [${userId}] does not have any fitnessData stored. Returning {ftp: 200}`,
           200
         );
