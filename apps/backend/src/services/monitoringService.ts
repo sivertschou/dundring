@@ -79,7 +79,7 @@ const sendDiscordMessage = (message: string) => {
       body: JSON.stringify({ content: message }),
     });
   } catch (e) {
-    console.error('[sendSlackMessage]:', e);
+    console.error('[sendDiscordMessage]:', e);
   }
 };
 
