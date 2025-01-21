@@ -13,6 +13,7 @@ services:
       - postgres
     environment:
       - DATABASE_URL=${DATABASE_URL}
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
       - REDIS_URL=${REDIS_URL}
       - MAIL_PORT=${MAIL_PORT}
       - MAIL_HOST=${MAIL_HOST}
@@ -61,6 +62,7 @@ services:
       - 8080:8080
     environment:
       - DATABASE_URL=${DATABASE_URL}
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
       - REDIS_URL=${REDIS_URL}
       - MAIL_PORT=${MAIL_PORT}
       - MAIL_HOST=${MAIL_HOST}
