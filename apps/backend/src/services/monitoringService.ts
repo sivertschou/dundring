@@ -23,7 +23,7 @@ export const checkMonitoringConfig = () => {
 };
 
 const getSlackUrl = (): string | null => {
-  const path = process.env.SLACK_TOKEN;
+  const path = monitoringConfigFromEnv().slackToken;
   if (!path) return null;
 
   return `https://hooks.slack.com/services/${path}`;
@@ -53,7 +53,7 @@ const sendSlackMessage = (message: string) => {
 };
 
 const getDiscordUrl = (): string | null => {
-  const url = process.env.DISCORD_WEBHOOK_URL;
+  const url = monitoringConfigFromEnv().discordWebhookUrl;
 
   if (!url) return null;
 
