@@ -2,6 +2,26 @@ import fetch from 'node-fetch';
 
 require('dotenv').config();
 
+const monitoringConfigFromEnv = () => ({
+  slackToken: process.env.SLACK_TOKEN,
+  discordWebhookUrl: process.env.DISCORD_WEBHOOK_URL,
+});
+
+export const checkMonitoringConfig = () => {
+  const config = monitoringConfigFromEnv();
+  if (!config.slackToken) {
+    console.log(
+      '[.env]: No Slack token provided. Override this by setting SLACK_TOKEN in the environment config.'
+    );
+  }
+
+  if (!config.discordWebhookUrl) {
+    console.log(
+      '[.env]: No Discord webhook URL provided. Override this by setting DISCORD_WEBHOOK_URL in the environment config.'
+    );
+  }
+};
+
 const getSlackUrl = (): string | null => {
   const path = process.env.SLACK_TOKEN;
   if (!path) return null;
