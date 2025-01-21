@@ -32,41 +32,73 @@ const sendSlackMessage = (message: string) => {
   }
 };
 
+const getDiscordUrl = (): string | null => {
+  const url = process.env.DISCORD_WEBHOOK_URL;
+
+  if (!url) return null;
+
+  return url;
+};
+
+const sendDiscordMessage = (message: string) => {
+  const url = getDiscordUrl();
+
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`[discord]: ${message}`);
+    return;
+  }
+
+  if (!url) return;
+
+  try {
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ content: message }),
+    });
+  } catch (e) {
+    console.error('[sendSlackMessage]:', e);
+  }
+};
+
 export const logActivityUpload = (activityId: number) => {
   const message = `New upload: www.strava.com/activities/${activityId}`;
-  sendSlackMessage(message);
+  log(message);
 };
 
 export const logUserCreation = (user: { username: string; mail: string }) => {
   const message = `New user: *${user.username}* (${user.mail})`;
-  sendSlackMessage(message);
+  log(message);
 };
 
 export const logRoomJoin = (username: string, roomId: string) => {
   const message = `*${username}* joined group session with id *#${roomId}*`;
-  sendSlackMessage(message);
+  log(message);
 };
 
 export const logRoomCreation = (username: string, roomId: string) => {
   const message = `*${username}* created group session with id *#${roomId}*`;
-  sendSlackMessage(message);
+  log(message);
 };
 
 export const logRoomLeave = (username: string, roomId: string) => {
   const message = `*${username}* left group session with id *#${roomId}*.`;
-  sendSlackMessage(message);
+  log(message);
 };
 
 export const logRoomDeletion = (username: string, roomId: string) => {
   const message = `*${username}* left group session with id *#${roomId}*. No more users in group session; deleting it.`;
-  sendSlackMessage(message);
+  log(message);
 };
 
 export const logAndReturn = <T>(message: string, data: T) => {
-  sendSlackMessage(message);
+  log(message);
   return data;
 };
 
 export const log = (message: string) => {
   sendSlackMessage(message);
+  sendDiscordMessage(message);
 };

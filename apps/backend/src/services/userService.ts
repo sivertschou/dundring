@@ -3,7 +3,7 @@ import { Scopes, UserCreationStrava } from '@dundring/types';
 require('dotenv').config();
 import * as db from '../db';
 import { isSuccess } from '@dundring/utils';
-import { slackService } from '.';
+import { monitoringService } from '.';
 
 export const getUser = async (query: { username: string } | { id: string }) =>
   db.getUser(query);
@@ -14,7 +14,7 @@ export const updateUser = async (
 ) => {
   const ret = await db.updateUser(userId, data);
   if (isSuccess(ret)) {
-    slackService.log(
+    monitoringService.log(
       `User *${ret.data.id}* updated profile ${
         data.username ? `username=*${data.username}* ` : ''
       }${data.ftp ? `ftp=*${data.ftp}*` : ''}`
@@ -40,7 +40,7 @@ export const createUserFromStrava = async (body: UserCreationStrava) => {
   const ret = await db.createStravaUserWithRandomUsername(body);
   if (isSuccess(ret)) {
     const athleteId = ret.data.stravaAuthentication?.athleteId;
-    slackService.log(
+    monitoringService.log(
       `New user: *${ret.data.id}* created with Strava: athlete id: https://strava.com/athletes/${athleteId}`
     );
   }
@@ -50,7 +50,7 @@ export const createUserFromStrava = async (body: UserCreationStrava) => {
 export const createUserFromMail = async (mail: string) => {
   const ret = await db.createMailUserWithRandomUsername(mail);
   if (isSuccess(ret)) {
-    slackService.log(
+    monitoringService.log(
       `New user: *${ret.data.id}* created with mail: ${ret.data.mailAuthentication?.mail}`
     );
   }

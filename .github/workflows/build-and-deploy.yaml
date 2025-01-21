@@ -128,6 +128,7 @@ jobs:
           cloudflare_api_key: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           database_password: ${{ secrets.DATABASE_PASSWORD }}
           database_url: ${{ secrets.DATABASE_URL }}
+          discord_webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           mail_host: ${{ secrets.MAIL_HOST }}
           mail_password: ${{ secrets.MAIL_PASSWORD }}
           mail_port: ${{ secrets.MAIL_PORT }}

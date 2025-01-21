@@ -9,7 +9,7 @@ import {
   WebSocketResponse,
 } from '@dundring/types';
 import { generateRandomString, isSuccess } from '@dundring/utils';
-import { slackService } from '.';
+import { monitoringService } from '.';
 import * as redis from '../redis';
 import * as websocket from '../websocket';
 
@@ -83,7 +83,7 @@ export const createRoom = async (
       id: roomId,
       members: [user.username],
     };
-    slackService.logRoomCreation(user.username, roomId);
+    monitoringService.logRoomCreation(user.username, roomId);
     redis.createRoom(roomId, user);
     return { type: 'created-group-session', room };
   }
@@ -102,7 +102,7 @@ export const joinRoom = async (roomId: string, member: Member) => {
       type: 'joined-group-session',
       room,
     };
-    slackService.logRoomJoin(member.username, roomId);
+    monitoringService.logRoomJoin(member.username, roomId);
 
     // TODO: This is not needed as a broadcast is done to everyone including the sender
     websocket.sendMessage(member.username, response);
@@ -132,9 +132,9 @@ export const leaveRoom = async (username: string, roomId: string) => {
     const usersLeftInRoom = leaveRoomStatus.data;
 
     if (usersLeftInRoom === 0) {
-      slackService.logRoomDeletion(username, roomId);
+      monitoringService.logRoomDeletion(username, roomId);
     } else {
-      slackService.logRoomLeave(username, roomId);
+      monitoringService.logRoomLeave(username, roomId);
 
       const membersInRoom = await redis.getRoomMembers(roomId);
 

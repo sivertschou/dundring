@@ -7,7 +7,7 @@ import {
 import { error, isSuccess, success } from '@dundring/utils';
 import fetch from 'node-fetch';
 import * as FormData from 'form-data';
-import { slackService } from './index';
+import { monitoringService } from './index';
 
 require('dotenv').config();
 
@@ -91,7 +91,7 @@ export const uploadFileToStrava = async (
 
           if (stravaUploadResponse) {
             if (isSuccess(stravaUploadResponse)) {
-              slackService.logActivityUpload(
+              monitoringService.logActivityUpload(
                 stravaUploadResponse.data.activity_id
               );
             }
