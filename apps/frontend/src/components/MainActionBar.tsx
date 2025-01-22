@@ -15,8 +15,7 @@ import { useLinkColor } from '../hooks/useLinkColor';
 import { Icon } from '@chakra-ui/react';
 
 export const MainActionBar = () => {
-  const [showPowerControls, setShowPowerControls] = React.useState(false);
-  const [showWorkoutControls, setShowWorkoutControls] = React.useState(false);
+  const [showControls, setShowControls] = React.useState(false);
 
   const linkColor = useLinkColor();
 
@@ -30,8 +29,8 @@ export const MainActionBar = () => {
     <Center mb="5" mx="2">
       <Stack p="5" borderRadius="1em" bgColor={bgColor} pointerEvents="auto">
         <PausedWorkoutButtons />
-        {showWorkoutControls ? <WorkoutControls /> : null}
-        {showPowerControls ? <PowerControls /> : null}
+        {showControls ? <WorkoutControls /> : null}
+        {showControls ? <PowerControls /> : null}
 
         {!smartTrainerIsConnected ? (
           <Center>
@@ -50,11 +49,11 @@ export const MainActionBar = () => {
           <Center height="100%">
             <HStack>
               <SelectWorkoutButton />
-              <Tooltip label="Show workout controls">
+              <Tooltip label="Show controls">
                 <IconButton
-                  aria-label="Show workout controls"
-                  variant={showWorkoutControls ? 'outline' : 'solid'}
-                  onClick={() => setShowWorkoutControls((current) => !current)}
+                  aria-label="Show controls"
+                  variant={showControls ? 'outline' : 'solid'}
+                  onClick={() => setShowControls((current) => !current)}
                   icon={<Icon as={Grid3x2GapFill} />}
                 />
               </Tooltip>
@@ -65,11 +64,11 @@ export const MainActionBar = () => {
           </Center>
           <Center height="100%">
             <HStack justifyContent="flex-end">
-              <Tooltip label="Show power controls">
+              <Tooltip label="Show controls">
                 <IconButton
-                  aria-label="Show power controls"
-                  variant={showPowerControls ? 'outline' : 'solid'}
-                  onClick={() => setShowPowerControls((current) => !current)}
+                  aria-label="Show controls"
+                  variant={showControls ? 'outline' : 'solid'}
+                  onClick={() => setShowControls((current) => !current)}
                   icon={<Icon as={Grid3x2GapFill} />}
                 />
               </Tooltip>
