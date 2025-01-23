@@ -48,12 +48,12 @@ export const stringToRouteName = (route: string): Route => {
 };
 
 export const zapWaypoints: Waypoint[] = [
-  { lon: 10.6590337, lat: 59.90347154, distance: 2400 },
-  { lon: 10.64085992, lat: 59.88396124, distance: 600 },
-  { lon: 10.65213867, lat: 59.88389387, distance: 2000 },
-  { lon: 10.64629091, lat: 59.86610453, distance: 2400 },
-  { lon: 10.6644647, lat: 59.88561483, distance: 600 },
-  { lon: 10.65318595, lat: 59.8856822, distance: 2000 },
+  { lon: 10.6590337, lat: 59.90347154, deltaDistance: 2400 },
+  { lon: 10.64085992, lat: 59.88396124, deltaDistance: 600 },
+  { lon: 10.65213867, lat: 59.88389387, deltaDistance: 2000 },
+  { lon: 10.64629091, lat: 59.86610453, deltaDistance: 2400 },
+  { lon: 10.6644647, lat: 59.88561483, deltaDistance: 600 },
+  { lon: 10.65318595, lat: 59.8856822, deltaDistance: 2000 },
 ];
 
 export const dStartPoint = {
@@ -76,7 +76,7 @@ export const dWaypoints: Waypoint[] =
     }))
     .map((point, index, arr) => ({
       ...point,
-      distance: haversine(point, arr[(index + 1) % arr.length]) * 1000,
+      deltaDistance: haversine(point, arr[(index + 1) % arr.length]) * 1000,
     }));
 
 export const toWebMercatorCoordinates = (waypoint: Waypoint) => {

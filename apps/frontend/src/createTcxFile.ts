@@ -1,9 +1,10 @@
 import { padLeadingZero } from '@dundring/utils';
-import { Lap } from './types';
+import { DataPoint, Lap } from './types';
 
-export const downloadTcx = (laps: Lap[], distance: number) => {
-  const startTime = laps[0].dataPoints[0].timeStamp;
-  const output = toTcxString(laps, distance);
+export const downloadTcx = (datapoints: DataPoint[]) => {
+  const startTime = datapoints[0].timestamp;
+
+  const output = toTcxString(datapoints);
 
   const url = window.URL.createObjectURL(new Blob([output]));
   const link = document.createElement('a');
@@ -23,8 +24,50 @@ export const downloadTcx = (laps: Lap[], distance: number) => {
   link.parentNode?.removeChild(link);
 };
 
-export const toTcxString = (laps: Lap[], distance: number): string => {
-  const startTime = laps[0].dataPoints[0].timeStamp;
+export const toTcxString = (datapoints: DataPoint[]): string => {
+  const lapMap = new Map<number, Lap>();
+
+  let lastDatapoint: DataPoint | null = null;
+  for (let i = 0; i < datapoints.length; i++) {
+    const datapoint = datapoints[i];
+    if (!datapoint.tracking) continue;
+
+    const deltaDistance = lastDatapoint
+      ? datapoint.accumulatedDistance - lastDatapoint.accumulatedDistance
+      : datapoint.accumulatedDistance;
+
+    const deltaDuration = lastDatapoint
+      ? datapoint.timestamp.getTime() - lastDatapoint.timestamp.getTime()
+      : 0;
+
+    const deltaSumWatt = datapoint.power ?? 0;
+    const deltaNormalizedDuration = datapoint.power === 0 ? 0 : deltaDuration;
+
+    const lap = lapMap.get(datapoint.lapNumber);
+    if (lap) {
+      lapMap.set(datapoint.lapNumber, {
+        dataPoints: [...lap.dataPoints, datapoint],
+        distance: lap.distance + deltaDistance,
+        duration: lap.duration + deltaDuration,
+        sumWatt: lap.sumWatt + deltaSumWatt,
+        normalizedDuration: lap.normalizedDuration + deltaNormalizedDuration,
+      });
+    } else {
+      lapMap.set(datapoint.lapNumber, {
+        dataPoints: [datapoint],
+        distance: deltaDistance,
+        duration: deltaDuration,
+        sumWatt: deltaSumWatt,
+        normalizedDuration: deltaNormalizedDuration,
+      });
+    }
+
+    lastDatapoint = datapoint;
+  }
+
+  const laps = Array.from(lapMap.values());
+
+  const startTime = datapoints[0].timestamp;
   return [
     `<?xml version="1.0" encoding="UTF-8"?>`,
     `<TrainingCenterDatabase`,
@@ -38,8 +81,6 @@ export const toTcxString = (laps: Lap[], distance: number): string => {
     `  <Activities>`,
     `    <Activity Sport="Biking">`,
     `      <Id>${startTime.toISOString()}</Id>`,
-
-    `      <DistanceMeters>${distance}</DistanceMeters>`,
     laps.map((lap) => lapToTCX(lap)).join('\n'),
     `    </Activity>`,
     `  </Activities>`,
@@ -67,7 +108,7 @@ const lapToTCX = (lap: Lap) => {
 
   if (filteredDataPoints.length === 0) return '';
   return [
-    `      <Lap StartTime="${filteredDataPoints[0].timeStamp.toISOString()}">`,
+    `      <Lap StartTime="${filteredDataPoints[0].timestamp.toISOString()}">`,
     `        <DistanceMeters>${lap.distance}</DistanceMeters>`,
     `        <TotalTimeSeconds>${Math.round(lap.duration / 1000)}</TotalTimeSeconds>`,
     `        <Track>`,
@@ -76,7 +117,7 @@ const lapToTCX = (lap: Lap) => {
         (output ? output + '\n' : output) +
         [
           `          <Trackpoint>`,
-          `            <Time>${data.timeStamp.toISOString()}</Time>`,
+          `            <Time>${data.timestamp.toISOString()}</Time>`,
           data.heartRate !== undefined
             ? [
                 `            <HeartRateBpm>`,
@@ -91,7 +132,7 @@ const lapToTCX = (lap: Lap) => {
                 `              <LatitudeDegrees>${data.position.lat}</LatitudeDegrees>`,
                 `              <LongitudeDegrees>${data.position.lon}</LongitudeDegrees>`,
                 `            </Position>`,
-                `            <DistanceMeters>${data.position.distance}</DistanceMeters>`,
+                `            <DistanceMeters>${data.accumulatedDistance}</DistanceMeters>`,
               ].join('\n')
             : '',
           data.cadence !== undefined

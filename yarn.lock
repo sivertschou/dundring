@@ -4107,6 +4107,16 @@ detect-node-es@^1.1.0:
   resolved "https://registry.yarnpkg.com/detect-node-es/-/detect-node-es-1.1.0.tgz#163acdf643330caa0b4cd7c21e7ee7755d6fa493"
   integrity sha512-ypdmJU/TbBby2Dxibuv7ZLW3Bs1QEmM7nHjEANfohJLvE0XVujisn1qPJcZxg+qDucsr+bP6fLD1rPS3AhJ7EQ==
 
+dexie-react-hooks@^1.1.7:
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/dexie-react-hooks/-/dexie-react-hooks-1.1.7.tgz#75bd92a609a7c3dc3643e2fd21e7db5df6df923b"
+  integrity sha512-Lwv5W0Hk+uOW3kGnsU9GZoR1er1B7WQ5DSdonoNG+focTNeJbHW6vi6nBoX534VKI3/uwHebYzSw1fwY6a7mTw==
+
+dexie@^4.0.10:
+  version "4.0.10"
+  resolved "https://registry.yarnpkg.com/dexie/-/dexie-4.0.10.tgz#979e3ee75993b44eea3852f97ceb198019d5b287"
+  integrity sha512-eM2RzuR3i+M046r2Q0Optl3pS31qTWf8aFuA7H9wnsHTwl8EPvroVLwvQene/6paAs39Tbk6fWZcn2aZaHkc/w==
+
 diff@^4.0.1:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/diff/-/diff-4.0.2.tgz#60f3aecb89d5fae520c11aa19efc2bb982aade7d"
