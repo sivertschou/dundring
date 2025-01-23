@@ -19,6 +19,12 @@ export interface HoursMinutesAndSeconds {
   minutes: number;
   seconds: number;
 }
+export const millisToHoursMinutesAndSeconds = (millis: number) => {
+  const hours = Math.floor(millis / HOUR);
+  const minutes = Math.floor((millis % HOUR) / MINUTE);
+  const seconds = Math.floor((millis % MINUTE) / SECOND);
+  return { hours, minutes, seconds };
+};
 
 export const secondsToMinutesAndSeconds = (totalSeconds: number) => {
   const minutes = Math.floor(totalSeconds / 60);
@@ -66,4 +72,22 @@ export const timestampToFormattedHHMMSS = (timestamp: Date) => {
   return `${hours < 10 ? '0' + hours : hours}:${
     minutes < 10 ? '0' + minutes : minutes
   }:${seconds < 10 ? '0' + seconds : seconds}`;
+};
+
+export const relativeHours = (deltaMillis: number) => {
+  const { hours } = millisToHoursMinutesAndSeconds(deltaMillis);
+
+  const addPrefixOrPostfix = (description: string) => {
+    if (deltaMillis < 0) return `in ${description}`;
+    return `${description} ago`;
+  };
+
+  switch (hours) {
+    case 0:
+      return addPrefixOrPostfix('less than an hour');
+    case 1:
+      return addPrefixOrPostfix('1 hour');
+    default:
+      return addPrefixOrPostfix(`${hours} hours`);
+  }
 };
