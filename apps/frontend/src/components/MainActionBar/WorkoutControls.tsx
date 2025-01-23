@@ -20,8 +20,6 @@ import {
 } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
-import { useData } from '../../context/DataContext';
-import { useWorkoutEditorModal } from '../../context/ModalContext';
 import { useLinkColor } from '../../hooks/useLinkColor';
 import { ActiveWorkout } from '../../types';
 
@@ -42,7 +40,6 @@ const getPlayButtonText = (activeWorkout: ActiveWorkout) => {
 export const WorkoutControls = () => {
   const { activeWorkout, syncResistance, changeActivePart, pause, start } =
     useActiveWorkout();
-  const { addLap } = useData();
   const linkColor = useLinkColor();
   const navigate = useNavigate();
 
@@ -86,15 +83,12 @@ export const WorkoutControls = () => {
                   if (!activeWorkout.workout) return;
 
                   if (activeWorkout.status === 'finished') {
-                    changeActivePart(
-                      activeWorkout.workout.parts.length - 1,
-                      addLap
-                    );
+                    changeActivePart(activeWorkout.workout.parts.length - 1);
                     return;
                   }
                   if (activeWorkoutPart <= 0) return;
 
-                  changeActivePart(activeWorkoutPart - 1, addLap);
+                  changeActivePart(activeWorkoutPart - 1);
                 }}
               />
             </Tooltip>
@@ -108,7 +102,7 @@ export const WorkoutControls = () => {
                 onClick={() => {
                   if (!activeWorkout.workout) return;
 
-                  changeActivePart(activeWorkoutPart, addLap);
+                  changeActivePart(activeWorkoutPart);
                 }}
               />
             </Tooltip>
@@ -130,7 +124,7 @@ export const WorkoutControls = () => {
 
                   switch (activeWorkout.status) {
                     case 'finished': {
-                      changeActivePart(0, addLap);
+                      changeActivePart(0);
                       return;
                     }
 
@@ -156,9 +150,9 @@ export const WorkoutControls = () => {
                   if (!activeWorkout.workout) return;
 
                   if (activeWorkout.status === 'finished') {
-                    changeActivePart(0, addLap);
+                    changeActivePart(0);
                   } else {
-                    changeActivePart(activeWorkoutPart + 1, addLap);
+                    changeActivePart(activeWorkoutPart + 1);
                   }
                 }}
               />
