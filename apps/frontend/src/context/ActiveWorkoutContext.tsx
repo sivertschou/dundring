@@ -98,7 +98,7 @@ export const ActiveWorkoutContextProvider = ({
         const prevActivePart = activeWorkout.activePart;
         const prevWorkoutParts = activeWorkout.workout.parts;
         const currentPartDuration = prevWorkoutParts[prevActivePart].duration;
-        if (currentPartDuration < elapsedSeconds) {
+        if (currentPartDuration <= elapsedSeconds) {
           // Done with current part
           if (prevActivePart === prevWorkoutParts.length - 1) {
             // Done with every part
