@@ -290,12 +290,3 @@ export const getRemainingTime = (activeWorkout: ActiveWorkout) => {
 
   return workout.parts[activePart].duration - partElapsedTime;
 };
-
-export const getTargetPower = (
-  activeWorkout: ActiveWorkout,
-  activeFtp: number
-) => {
-  const { workout, status, activePart } = activeWorkout;
-  if (!workout || status === 'finished') return null;
-  return Math.floor((workout.parts[activePart].targetPower * activeFtp) / 100);
-};
