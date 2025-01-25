@@ -11,6 +11,7 @@ import {
 } from '../context/ActiveWorkoutContext';
 import { secondsToHoursMinutesAndSecondsString } from '@dundring/utils';
 import { Lap } from '../types';
+import React from 'react';
 
 const mainFontSize = ['xl', '3xl', '7xl'];
 const unitFontSize = ['l', '2xl', '4xl'];
@@ -27,6 +28,7 @@ export const TopBar = () => {
     speed,
     smoothedPower,
     maxHeartRate,
+    isRunning,
   } = useData();
   const remainingTime = getRemainingTime(activeWorkout);
 
@@ -40,6 +42,12 @@ export const TopBar = () => {
   const isFreeMode = !currentResistance;
 
   const currentLap = laps.at(-1) || null;
+
+  const playBeep = useBeep();
+
+  if (isRunning && remainingTime !== null && remainingTime <= 5) {
+    playBeep(remainingTime == 0); // change to 1 when duration bug is fixed
+  }
 
   return (
     <Center
@@ -121,4 +129,38 @@ const AvgWattText = (props: { currentLap: Lap | null }) => {
       {(currentLap.sumWatt / currentLap.normalizedDuration).toFixed(0)}W
     </Text>
   );
+};
+
+const useBeep = () => {
+  const [lastBeep, setLastBeep] = React.useState(null as null | number);
+
+  return (isLast: boolean) => {
+    const curTime = Date.now();
+    if (lastBeep !== null && curTime - lastBeep < 900) {
+      return;
+    }
+    setLastBeep(curTime);
+
+    const audioContext = new (window.AudioContext ||
+      (window as any).webkitAudioContext)();
+
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.type = isLast ? 'square' : 'sine';
+    oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // 440 Hz is the frequency for an A4 note
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.001,
+      audioContext.currentTime + 0.3
+    ); // Fade out the sound
+
+    oscillator.start(audioContext.currentTime);
+    const soundDuration = 0.5;
+    oscillator.stop(audioContext.currentTime + soundDuration);
+  };
 };
