@@ -69,6 +69,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
     syncResistance,
     start: startActiveWorkout,
     increaseElapsedTime: increaseActiveWorkoutElapsedTime,
+    pause: pauseActiveWorkout,
   } = useActiveWorkout();
 
   const { sendData } = useWebsocket();
@@ -291,6 +292,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
   const stop = React.useCallback(async () => {
     logEvent('workout paused');
     dispatch({ type: 'PAUSE' });
+    pauseActiveWorkout();
     if (smartTrainerIsConnected) {
       setResistance(0);
     }
