@@ -42,6 +42,9 @@ const getPlayButtonText = (activeWorkout: ActiveWorkout) => {
 export const WorkoutControls = () => {
   const { activeWorkout, syncResistance, changeActivePart, pause, start } =
     useActiveWorkout();
+
+  const { isRunning } = useData();
+
   const { addLap } = useData();
   const linkColor = useLinkColor();
   const navigate = useNavigate();
@@ -124,7 +127,7 @@ export const WorkoutControls = () => {
                     }
                   />
                 }
-                isDisabled={!isWorkoutSelected}
+                isDisabled={!isWorkoutSelected || !isRunning}
                 onClick={() => {
                   if (!activeWorkout.workout) return;
 
