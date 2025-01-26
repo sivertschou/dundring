@@ -12,7 +12,7 @@ import {
 import { secondsToHoursMinutesAndSecondsString } from '@dundring/utils';
 import { Lap } from '../types';
 import React from 'react';
-import { useOptionsContext } from '../context/OptionsContext';
+import { useOptions } from '../context/OptionsContext';
 
 const mainFontSize = ['xl', '3xl', '7xl'];
 const unitFontSize = ['l', '2xl', '4xl'];
@@ -32,7 +32,7 @@ export const TopBar = () => {
     isRunning,
   } = useData();
 
-  const options = useOptionsContext();
+  const options = useOptions();
 
   const remainingTime = getRemainingTime(activeWorkout);
 
@@ -81,7 +81,7 @@ export const TopBar = () => {
                 </Text>
                 <Text fontSize={unitFontSize}>bpm</Text>
               </Center>
-              {maxHeartRate && (
+              {options.showHeartRateMax.value && maxHeartRate && (
                 <Text color={hrColor} fontSize={secondaryFontSize}>
                   Max: {maxHeartRate} bpm
                 </Text>
@@ -96,14 +96,19 @@ export const TopBar = () => {
               </Text>
               {remainingTime !== null ? (
                 <>
-                  <Text fontSize={secondaryFontSize}>
-                    {secondsToHoursMinutesAndSecondsString(secondsElapsed)}
-                  </Text>
-                  <Text fontSize={mainFontSize}>
-                    {secondsToHoursMinutesAndSecondsString(remainingTime)}
-                  </Text>
+                  {options.showTotalDurationTimer.value && (
+                    <Text fontSize={secondaryFontSize}>
+                      {secondsToHoursMinutesAndSecondsString(secondsElapsed)}
+                    </Text>
+                  )}
+                  {options.showIntervalTimer.value && (
+                    <Text fontSize={mainFontSize}>
+                      {secondsToHoursMinutesAndSecondsString(remainingTime)}
+                    </Text>
+                  )}
                 </>
               ) : (
+                // TODO fix
                 <Text fontSize={mainFontSize}>
                   {secondsToHoursMinutesAndSecondsString(secondsElapsed)}
                 </Text>

@@ -7,6 +7,7 @@ import { ShowData } from './Graph/GraphContainer';
 import { PowerBar } from './PowerBar';
 import { DataPoint, DataChart } from './DataChart';
 import { Map } from './Map/Map';
+import { useOptions } from '../context/OptionsContext';
 
 interface Props {
   otherUsers: string[];
@@ -113,24 +114,28 @@ export const Graphs = ({
 
   const showPowerBar = useBreakpointValue({ base: false, md: true });
 
+  const options = useOptions();
+
   return (
     <Stack width="100%">
       <Grid templateColumns={showPowerBar ? '1fr 5fr 1fr' : '1fr'}>
-        {showPowerBar && (
+        {showPowerBar && options.showMap.value && (
           <AspectRatio ratio={1}>
             <Map />
           </AspectRatio>
         )}
-        <AspectRatio ratio={16 / 9} width="100%">
-          <DataChart
-            allMerged={allMerged}
-            otherUsers={otherUsers}
-            showOtherUsersData={showOtherUsersData}
-            showUserData={showUserData}
-            showFill={showFill}
-          />
-        </AspectRatio>
-        {showPowerBar && (
+        {options.showGraph.value && (
+          <AspectRatio ratio={16 / 9} width="100%">
+            <DataChart
+              allMerged={allMerged}
+              otherUsers={otherUsers}
+              showOtherUsersData={showOtherUsersData}
+              showUserData={showUserData}
+              showFill={showFill}
+            />
+          </AspectRatio>
+        )}
+        {showPowerBar && options.showPowerBar.value && (
           <AspectRatio ratio={1}>
             <PowerBar
               showFill={showFill}
