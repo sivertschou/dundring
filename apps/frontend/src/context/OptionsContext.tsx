@@ -1,19 +1,19 @@
 import * as React from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
 
-type Options = {
-  intervalSounds: { value: boolean; set: (b: boolean) => void };
-  showIntervalTimer: { value: boolean; set: (b: boolean) => void };
-  showTotalDurationTimer: { value: boolean; set: (b: boolean) => void };
-  showHeartRateCurrent: { value: boolean; set: (b: boolean) => void };
-  showHeartRateMax: { value: boolean; set: (b: boolean) => void };
-  showCadence: { value: boolean; set: (b: boolean) => void };
-  showMap: { value: boolean; set: (b: boolean) => void };
-  showGraph: { value: boolean; set: (b: boolean) => void };
-  showPowerBar: { value: boolean; set: (b: boolean) => void };
+type ReadAndWriteOption = { value: boolean; set: (b: boolean) => void };
+
+type ReadOption = boolean;
+
+type Options<T> = {
+  playIntervalCountdownSounds: T;
+  showIntervalTimer: T;
+  showTotalDurationTimer: T;
 };
 
-const OptionsContext = React.createContext<Options | null>(null);
+const OptionsContext = React.createContext<Options<ReadAndWriteOption> | null>(
+  null
+);
 
 const useOptionSetting = (key: string, initialValue: boolean) => {
   const [value, setValue] = useLocalStorage<boolean>(key, initialValue);
@@ -26,7 +26,10 @@ export const OptionsContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const intervalSounds = useOptionSetting('intervalsSounds', false);
+  const playIntervalCountdownSounds = useOptionSetting(
+    'playIntervalCountdownSounds',
+    false
+  );
 
   const showIntervalTimer = useOptionSetting('showIntervalTimer', true);
   const showTotalDurationTimer = useOptionSetting(
@@ -34,27 +37,12 @@ export const OptionsContextProvider = ({
     true
   );
 
-  const showHeartRateCurrent = useOptionSetting('showHeartRateCurrent', true);
-  const showHeartRateMax = useOptionSetting('showHeartRateMax', true);
-
-  const showCadence = useOptionSetting('showCadence', true);
-
-  const showMap = useOptionSetting('showMap', true);
-  const showGraph = useOptionSetting('showGraph', true);
-  const showPowerBar = useOptionSetting('showPowerBar', true);
-
   return (
     <OptionsContext.Provider
       value={{
-        intervalSounds,
+        playIntervalCountdownSounds,
         showIntervalTimer,
         showTotalDurationTimer,
-        showHeartRateCurrent,
-        showHeartRateMax,
-        showCadence,
-        showMap,
-        showGraph,
-        showPowerBar,
       }}
     >
       {children}
@@ -62,11 +50,24 @@ export const OptionsContextProvider = ({
   );
 };
 
-// TODO
-export const useOptions = () => {
+export const useReadWriteOptions: () => Options<ReadAndWriteOption> = () => {
   const context = React.useContext(OptionsContext);
   if (context === null) {
     throw new Error('useLogs must be used within a LogContextProvider');
   }
   return context;
+};
+
+export const useReadOptions: () => Options<ReadOption> = () => {
+  const context = React.useContext(OptionsContext);
+  if (context === null) {
+    throw new Error('useLogs must be used within a LogContextProvider');
+  }
+  const result = {} as Options<ReadOption>;
+
+  Object.entries(context).forEach(
+    ([k, v]) => (result[k as keyof Options<ReadOption>] = v.value)
+  );
+
+  return result;
 };

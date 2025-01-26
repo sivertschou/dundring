@@ -43,8 +43,6 @@ export const MainPage = () => {
 
   const optionsModal = useOptionsModal();
 
-  console.log('46', optionsModal.isOpen);
-
   React.useEffect(() => {
     const path = location.pathname.split('/')[1];
     switch (path) {

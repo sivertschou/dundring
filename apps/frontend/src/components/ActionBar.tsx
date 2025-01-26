@@ -5,6 +5,7 @@ import {
   BarChartLine,
   BarChartLineFill,
   Cassette,
+  Gear,
   Heart,
   HeartFill,
   LightningCharge,
@@ -119,6 +120,11 @@ export const ActionBar = () => {
         />
       )}
       <ActionBarItem
+        text="Open options"
+        icon={<Icon as={Gear} />}
+        onClick={() => navigate('/options')}
+      />
+      <ActionBarItem
         text="Open group session overview"
         icon={<Icon as={activeGroupSession ? PeopleFill : People} />}
         onClick={() => {
@@ -131,11 +137,6 @@ export const ActionBar = () => {
           <Icon as={activeWorkout.workout ? BarChartLineFill : BarChartLine} />
         }
         onClick={() => navigate('/workout')}
-      />
-      <ActionBarItem
-        text="Open options"
-        icon={<Icon as={Cassette} />}
-        onClick={() => navigate('/options')}
       />
     </Stack>
   );

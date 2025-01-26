@@ -12,7 +12,7 @@ import {
 import { secondsToHoursMinutesAndSecondsString } from '@dundring/utils';
 import { Lap } from '../types';
 import React from 'react';
-import { useOptions } from '../context/OptionsContext';
+import { useReadOptions } from '../context/OptionsContext';
 
 const mainFontSize = ['xl', '3xl', '7xl'];
 const unitFontSize = ['l', '2xl', '4xl'];
@@ -32,7 +32,7 @@ export const TopBar = () => {
     isRunning,
   } = useData();
 
-  const options = useOptions();
+  const options = useReadOptions();
 
   const remainingTime = getRemainingTime(activeWorkout);
 
@@ -49,14 +49,15 @@ export const TopBar = () => {
 
   const playBeep = useBeep();
 
+  const hasRemainingTime = remainingTime !== null;
+
   if (
-    options.intervalSounds.value &&
+    options.playIntervalCountdownSounds &&
     isRunning &&
-    remainingTime !== null &&
+    hasRemainingTime &&
     remainingTime <= 5
   ) {
-    console.log('BEEEEEP');
-    // playBeep(remainingTime == 0); // change to 1 when duration bug is fixed
+    playBeep(remainingTime == 0); // change to 1 when duration bug is fixed
   }
 
   return (
@@ -81,7 +82,7 @@ export const TopBar = () => {
                 </Text>
                 <Text fontSize={unitFontSize}>bpm</Text>
               </Center>
-              {options.showHeartRateMax.value && maxHeartRate && (
+              {maxHeartRate && (
                 <Text color={hrColor} fontSize={secondaryFontSize}>
                   Max: {maxHeartRate} bpm
                 </Text>
@@ -94,25 +95,24 @@ export const TopBar = () => {
               <Text fontSize={secondaryFontSize}>
                 {flooredDistance.toFixed(1)} km
               </Text>
-              {remainingTime !== null ? (
-                <>
-                  {options.showTotalDurationTimer.value && (
-                    <Text fontSize={secondaryFontSize}>
-                      {secondsToHoursMinutesAndSecondsString(secondsElapsed)}
-                    </Text>
-                  )}
-                  {options.showIntervalTimer.value && (
-                    <Text fontSize={mainFontSize}>
-                      {secondsToHoursMinutesAndSecondsString(remainingTime)}
-                    </Text>
-                  )}
-                </>
-              ) : (
-                // TODO fix
-                <Text fontSize={mainFontSize}>
-                  {secondsToHoursMinutesAndSecondsString(secondsElapsed)}
+              ? (
+              <Text
+                visibility={
+                  options.showTotalDurationTimer ? 'visible' : 'hidden'
+                }
+                fontSize={hasRemainingTime ? secondaryFontSize : mainFontSize}
+              >
+                {secondsToHoursMinutesAndSecondsString(secondsElapsed)}
+              </Text>
+              {hasRemainingTime ? (
+                <Text
+                  visibility={options.showIntervalTimer ? 'visible' : 'hidden'}
+                  fontSize={mainFontSize}
+                >
+                  {secondsToHoursMinutesAndSecondsString(remainingTime)}
                 </Text>
-              )}
+              ) : null}
+              )
             </Stack>
             <Stack spacing="0" color={powerColor}>
               <Text fontSize={secondaryFontSize}>
