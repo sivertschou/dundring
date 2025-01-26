@@ -14,6 +14,7 @@ import {
   useProfileModal,
   useWelcomeMessageModal,
   useWorkoutEditorModal,
+  useOptionsModal,
 } from '../context/ModalContext';
 import { Modals } from '../components/Modals/Modals';
 import { BottomBar } from '../components/BottomBar';
@@ -39,6 +40,10 @@ export const MainPage = () => {
     onClose: onCloseWelcomeMessageModal,
   } = useWelcomeMessageModal();
   const feedbackModal = useFeedbackModal();
+
+  const optionsModal = useOptionsModal();
+
+  console.log('46', optionsModal.isOpen);
 
   React.useEffect(() => {
     const path = location.pathname.split('/')[1];
@@ -69,6 +74,11 @@ export const MainPage = () => {
         feedbackModal.onOpen();
         return;
 
+      case 'options':
+        optionsModal.onOpen();
+        console.log('hei', optionsModal.isOpen);
+        return;
+
       default:
         onCloseGroupSessionModal();
         onCloseLogModal();
@@ -76,8 +86,8 @@ export const MainPage = () => {
         onCloseProfileModal();
         onCloseWorkoutEditorModal();
         feedbackModal.onClose();
-
         onOpenWelcomeMessageModal();
+        optionsModal.onClose();
     }
   }, [
     location,
@@ -95,6 +105,7 @@ export const MainPage = () => {
     onCloseWorkoutEditorModal,
     onOpenWelcomeMessageModal,
     onCloseWelcomeMessageModal,
+    optionsModal.isOpen,
   ]);
 
   return (

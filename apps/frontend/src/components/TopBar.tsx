@@ -12,6 +12,7 @@ import {
 import { secondsToHoursMinutesAndSecondsString } from '@dundring/utils';
 import { Lap } from '../types';
 import React from 'react';
+import { useOptionsContext } from '../context/OptionsContext';
 
 const mainFontSize = ['xl', '3xl', '7xl'];
 const unitFontSize = ['l', '2xl', '4xl'];
@@ -30,6 +31,9 @@ export const TopBar = () => {
     maxHeartRate,
     isRunning,
   } = useData();
+
+  const options = useOptionsContext();
+
   const remainingTime = getRemainingTime(activeWorkout);
 
   const secondsElapsed = Math.floor(timeElapsed / 1000);
@@ -45,8 +49,14 @@ export const TopBar = () => {
 
   const playBeep = useBeep();
 
-  if (isRunning && remainingTime !== null && remainingTime <= 5) {
-    playBeep(remainingTime == 0); // change to 1 when duration bug is fixed
+  if (
+    options.intervalSounds.value &&
+    isRunning &&
+    remainingTime !== null &&
+    remainingTime <= 5
+  ) {
+    console.log('BEEEEEP');
+    // playBeep(remainingTime == 0); // change to 1 when duration bug is fixed
   }
 
   return (

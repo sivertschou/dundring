@@ -4,6 +4,7 @@ import { Icon } from '@chakra-ui/react';
 import {
   BarChartLine,
   BarChartLineFill,
+  Cassette,
   Heart,
   HeartFill,
   LightningCharge,
@@ -130,6 +131,11 @@ export const ActionBar = () => {
           <Icon as={activeWorkout.workout ? BarChartLineFill : BarChartLine} />
         }
         onClick={() => navigate('/workout')}
+      />
+      <ActionBarItem
+        text="Open options"
+        icon={<Icon as={Cassette} />}
+        onClick={() => navigate('/options')}
       />
     </Stack>
   );
