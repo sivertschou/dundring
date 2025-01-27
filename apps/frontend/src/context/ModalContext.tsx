@@ -15,6 +15,7 @@ const ModalContext = React.createContext<{
   profileModal: Modal;
   welcomeMessageModal: Modal;
   workoutEditorModal: Modal;
+  optionsModal: Modal;
 } | null>(null);
 
 export const ModalContextProvider = ({
@@ -29,6 +30,7 @@ export const ModalContextProvider = ({
   const welcomeMessageModal: Modal = useDisclosure();
   const workoutEditorModal: Modal = useDisclosure();
   const feedbackModal: Modal = useDisclosure();
+  const optionsModal: Modal = useDisclosure();
 
   return (
     <ModalContext.Provider
@@ -40,6 +42,7 @@ export const ModalContextProvider = ({
         profileModal,
         welcomeMessageModal,
         workoutEditorModal,
+        optionsModal,
       }}
     >
       {children}
@@ -122,4 +125,14 @@ export const useWorkoutEditorModal = () => {
     );
   }
   return context.workoutEditorModal;
+};
+
+export const useOptionsModal = () => {
+  const context = React.useContext(ModalContext);
+  if (context === null) {
+    throw new Error(
+      'useOptionsModal must be used within a ModalContextProvider'
+    );
+  }
+  return context.optionsModal;
 };
