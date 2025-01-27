@@ -11,6 +11,8 @@ import {
 } from '../context/ActiveWorkoutContext';
 import { secondsToHoursMinutesAndSecondsString } from '@dundring/utils';
 import { Lap } from '../types';
+import React from 'react';
+import { useReadOnlyOptions } from '../context/OptionsContext';
 
 const mainFontSize = ['xl', '3xl', '7xl'];
 const unitFontSize = ['l', '2xl', '4xl'];
@@ -28,6 +30,9 @@ export const TopBar = () => {
     smoothedPower,
     maxHeartRate,
   } = useData();
+
+  const options = useReadOnlyOptions();
+
   const remainingTime = getRemainingTime(activeWorkout);
 
   const secondsElapsed = Math.floor(timeElapsed / 1000);
@@ -40,6 +45,8 @@ export const TopBar = () => {
   const isFreeMode = !currentResistance;
 
   const currentLap = laps.at(-1) || null;
+
+  const hasRemainingTime = remainingTime !== null;
 
   return (
     <Center
@@ -76,20 +83,24 @@ export const TopBar = () => {
               <Text fontSize={secondaryFontSize}>
                 {flooredDistance.toFixed(1)} km
               </Text>
-              {remainingTime !== null ? (
-                <>
-                  <Text fontSize={secondaryFontSize}>
-                    {secondsToHoursMinutesAndSecondsString(secondsElapsed)}
-                  </Text>
-                  <Text fontSize={mainFontSize}>
-                    {secondsToHoursMinutesAndSecondsString(remainingTime)}
-                  </Text>
-                </>
-              ) : (
-                <Text fontSize={mainFontSize}>
-                  {secondsToHoursMinutesAndSecondsString(secondsElapsed)}
+              ? (
+              <Text
+                visibility={
+                  options.showTotalDurationTimer ? 'visible' : 'hidden'
+                }
+                fontSize={hasRemainingTime ? secondaryFontSize : mainFontSize}
+              >
+                {secondsToHoursMinutesAndSecondsString(secondsElapsed)}
+              </Text>
+              {hasRemainingTime ? (
+                <Text
+                  visibility={options.showIntervalTimer ? 'visible' : 'hidden'}
+                  fontSize={mainFontSize}
+                >
+                  {secondsToHoursMinutesAndSecondsString(remainingTime)}
                 </Text>
-              )}
+              ) : null}
+              )
             </Stack>
             <Stack spacing="0" color={powerColor}>
               <Text fontSize={secondaryFontSize}>
