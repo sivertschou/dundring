@@ -5,6 +5,7 @@ import { ProfileModal } from './ProfileModal';
 import { GroupSessionModal } from './GroupSessionModal';
 import { WelcomeMessageModal } from './WelcomeMessageModal';
 import { FeedbackModal } from './FeedbackModal';
+import { OptionsModal } from './OptionsModal';
 
 export const Modals = () => {
   return (
@@ -16,6 +17,7 @@ export const Modals = () => {
       <ProfileModal />
       <WorkoutEditorModal />
       <WelcomeMessageModal />
+      <OptionsModal />
     </>
   );
 };
