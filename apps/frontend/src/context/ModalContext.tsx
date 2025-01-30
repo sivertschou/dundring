@@ -104,12 +104,10 @@ export const useWelcomeMessageModal = () => {
     );
   }
   return {
+    shouldShowWelcomeMessageHint:
+      parseInt(localStorage.getItem(KEY) || '0') < CURRENT_VERSION,
     isOpen: context.welcomeMessageModal.isOpen,
-    onOpen: () => {
-      if (parseInt(localStorage.getItem(KEY) || '0') < CURRENT_VERSION) {
-        context.welcomeMessageModal.onOpen();
-      }
-    },
+    onOpen: context.welcomeMessageModal.onOpen,
     onClose: () => {
       localStorage.setItem(KEY, JSON.stringify(CURRENT_VERSION));
       context.welcomeMessageModal.onClose();

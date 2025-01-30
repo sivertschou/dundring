@@ -76,8 +76,6 @@ export const MainPage = () => {
         onCloseProfileModal();
         onCloseWorkoutEditorModal();
         feedbackModal.onClose();
-
-        onOpenWelcomeMessageModal();
     }
   }, [
     location,

@@ -1,12 +1,4 @@
-import {
-  Center,
-  Link,
-  Stack,
-  Text,
-  Grid,
-  HStack,
-  Flex,
-} from '@chakra-ui/layout';
+import { Center, Link, Stack, Text, Grid, HStack } from '@chakra-ui/layout';
 import { Button } from '@chakra-ui/button';
 import { Tooltip } from '@chakra-ui/tooltip';
 import { useAvailability } from '../hooks/useAvailability';
@@ -18,6 +10,9 @@ import { useColorMode, useColorModeValue } from '@chakra-ui/color-mode';
 import { useLogs } from '../context/LogContext';
 import { Icon, useBreakpointValue } from '@chakra-ui/react';
 import { githubRepo, slackInvite } from '../links';
+import { useWelcomeMessageModal } from '../context/ModalContext';
+import { useEffect, useState } from 'react';
+import { seconds } from '@dundring/utils';
 
 export const BottomBar = () => {
   const { colorMode, setColorMode } = useColorMode();
@@ -33,6 +28,8 @@ export const BottomBar = () => {
     base: 'Support',
     md: 'Support & feedback',
   });
+
+  const showLogsButton = useBreakpointValue({ base: false, lg: true });
   const navigate = useNavigate();
 
   const now = new Date();
@@ -41,6 +38,7 @@ export const BottomBar = () => {
     now.getTime() - loggedEvents[0].timestamp.getTime() < 10000
       ? true
       : false;
+
   return (
     <Center width="100%" position="fixed" bottom="0" pointerEvents="none">
       <Stack width="100%" spacing="0">
@@ -51,25 +49,31 @@ export const BottomBar = () => {
           templateColumns="2fr 3fr 2fr"
           pointerEvents="auto"
         >
-          <Flex p="1">
+          <HStack p="1">
             <Link as={ReachLink} to="/">
               <Logo height="20px" />
             </Link>
-          </Flex>
-          <Button
-            variant="link"
-            fontWeight="normal"
-            onClick={() => navigate('/logs')}
-          >
-            <Text
-              textAlign="center"
-              opacity={lastMessageShouldBeVisible ? 100 : 0}
-              transition="opacity 0.5s ease"
-              fontSize="xs"
+            {showLogsButton ? <InfoButton /> : null}
+          </HStack>
+
+          {showLogsButton ? (
+            <Button
+              variant="link"
+              fontWeight="normal"
+              onClick={() => navigate('/logs')}
             >
-              {loggedEvents[0] ? `${loggedEvents[0].msg}` : null}
-            </Text>
-          </Button>
+              <Text
+                textAlign="center"
+                opacity={lastMessageShouldBeVisible ? 100 : 0}
+                transition="opacity 0.5s ease"
+                fontSize="xs"
+              >
+                {loggedEvents[0] ? `${loggedEvents[0].msg}` : null}
+              </Text>
+            </Button>
+          ) : (
+            <InfoButton />
+          )}
           <HStack justifyContent="flex-end" paddingX="2">
             <Center></Center>
             <Link as={ReachLink} to="/feedback">
@@ -114,5 +118,45 @@ export const BottomBar = () => {
         ) : null}
       </Stack>
     </Center>
+  );
+};
+
+const InfoButton = () => {
+  const { shouldShowWelcomeMessageHint, onOpen: openWelcomMessage } =
+    useWelcomeMessageModal();
+  const [showWelcomeMessageTooltip, setShowWelcomeMessageTooltip] =
+    useState(false);
+
+  useEffect(() => {
+    const showTimeout = setTimeout(() => {
+      if (shouldShowWelcomeMessageHint) {
+        setShowWelcomeMessageTooltip(true);
+
+        const hideTimeout = setTimeout(
+          () => setShowWelcomeMessageTooltip(false),
+          seconds(20)
+        );
+
+        return () => clearTimeout(hideTimeout);
+      }
+    }, seconds(3));
+    return () => clearTimeout(showTimeout);
+  }, []);
+  return (
+    <Tooltip
+      label="New here? Click here for some info!"
+      isOpen={showWelcomeMessageTooltip}
+    >
+      <Button
+        variant="link"
+        fontWeight="normal"
+        onClick={() => {
+          setShowWelcomeMessageTooltip(false);
+          openWelcomMessage();
+        }}
+      >
+        <Text>What's dundring.com?</Text>
+      </Button>
+    </Tooltip>
   );
 };
