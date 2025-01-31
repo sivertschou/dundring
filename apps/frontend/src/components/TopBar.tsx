@@ -10,7 +10,6 @@ import {
   useActiveWorkout,
 } from '../context/ActiveWorkoutContext';
 import { secondsToHoursMinutesAndSecondsString } from '@dundring/utils';
-import { Lap } from '../types';
 
 const mainFontSize = ['xl', '3xl', '7xl'];
 const unitFontSize = ['l', '2xl', '4xl'];
@@ -20,14 +19,8 @@ export const TopBar = () => {
   const { cadence, currentResistance } = useSmartTrainer();
   const { heartRate } = useHeartRateMonitor();
   const { activeWorkout } = useActiveWorkout();
-  const {
-    data: laps,
-    timeElapsed,
-    distance,
-    speed,
-    smoothedPower,
-    maxHeartRate,
-  } = useData();
+  const { timeElapsed, distance, speed, smoothedPower, maxHeartRate } =
+    useData();
   const remainingTime = getRemainingTime(activeWorkout);
 
   const secondsElapsed = Math.floor(timeElapsed / 1000);
@@ -38,8 +31,6 @@ export const TopBar = () => {
   const flooredDistance = Math.floor(distance / 100) / 10;
 
   const isFreeMode = !currentResistance;
-
-  const currentLap = laps.at(-1) || null;
 
   return (
     <Center
@@ -99,7 +90,7 @@ export const TopBar = () => {
                 <Text fontSize={mainFontSize}>{smoothedPower || '0'}</Text>
                 <Text fontSize={unitFontSize}>w</Text>
               </Center>
-              {isFreeMode && <AvgWattText currentLap={currentLap} />}
+              {/* TODO: Fix this {isFreeMode && <AvgWattText />} */}
 
               <Text fontSize={secondaryFontSize}>{cadence || '0'} rpm</Text>
             </Stack>
@@ -107,18 +98,5 @@ export const TopBar = () => {
         </Center>
       </Stack>
     </Center>
-  );
-};
-
-const AvgWattText = (props: { currentLap: Lap | null }) => {
-  const { currentLap } = props;
-  if (!currentLap?.normalizedDuration) {
-    return null;
-  }
-  return (
-    <Text fontSize={secondaryFontSize}>
-      Lap avg:
-      {(currentLap.sumWatt / currentLap.normalizedDuration).toFixed(0)}W
-    </Text>
   );
 };

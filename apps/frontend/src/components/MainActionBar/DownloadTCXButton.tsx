@@ -5,11 +5,11 @@ import { Icon } from '@chakra-ui/react';
 import { downloadTcx } from '../../createTcxFile';
 
 export const DownloadTCXButton = ({}: {}) => {
-  const { data, distance } = useData();
+  const { trackedData, distance } = useData();
   return (
     <Button
       width="100%"
-      onClick={() => downloadTcx(data, distance)}
+      onClick={() => downloadTcx(trackedData, distance)}
       leftIcon={<Icon as={Download} />}
     >
       Download TCX
