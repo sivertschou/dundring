@@ -98,7 +98,7 @@ export const ActionBar = () => {
           isLoading={hrStatus === 'connecting'}
           icon={<Icon as={Heart} mt="1" />}
           onClick={connectHR}
-          iconColor={hrStatus === 'error' ? 'red.500' : undefined}
+          iconColor={hrStatus === 'error' ? hrColor : undefined}
         />
       )}
       {smartTrainerIsConnected ? (
@@ -114,7 +114,7 @@ export const ActionBar = () => {
           isLoading={smartTrainerStatus === 'connecting'}
           icon={<Icon as={LightningCharge} />}
           onClick={connectSmartTrainer}
-          iconColor={smartTrainerStatus === 'error' ? 'red.500' : undefined}
+          iconColor={smartTrainerStatus === 'error' ? powerColor : undefined}
         />
       )}
       <ActionBarItem
