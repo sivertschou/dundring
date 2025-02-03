@@ -98,7 +98,7 @@ export const ActionBar = () => {
           isLoading={hrStatus === 'connecting'}
           icon={<Icon as={Heart} mt="1" />}
           onClick={connectHR}
-          iconColor={hrStatus === 'error' ? 'red.500' : undefined}
+          iconColor={hrStatus === 'error' ? hrColor : undefined}
         />
       )}
       {smartTrainerIsConnected ? (
