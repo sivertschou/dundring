@@ -34,6 +34,7 @@ services:
       caddy: ${BASE_URL}
       caddy.reverse_proxy: '/api* {{upstreams 8080}}'
       caddy.reverse_proxy.lb_policy: 'cookie'
+      caddy.reverse_proxy.lb_try_duration: 5s
       caddy.tls.dns: 'cloudflare ${CLOUDFLARE_DNS_API_TOKEN}'
 
   frontend-green:
@@ -45,6 +46,7 @@ services:
     labels:
       caddy: ${BASE_URL}
       caddy.reverse_proxy: '{{upstreams 80}}'
+      caddy.reverse_proxy.lb_try_duration: 5s
       caddy.tls.dns: 'cloudflare ${CLOUDFLARE_DNS_API_TOKEN}'
 
   backend-blue:
@@ -83,6 +85,7 @@ services:
       caddy: ${BASE_URL}
       caddy.reverse_proxy: '/api* {{upstreams 8080}}'
       caddy.reverse_proxy.lb_policy: 'cookie'
+      caddy.reverse_proxy.lb_try_duration: 5s
       caddy.tls.dns: 'cloudflare ${CLOUDFLARE_DNS_API_TOKEN}'
 
   frontend-blue:
@@ -94,6 +97,7 @@ services:
     labels:
       caddy: ${BASE_URL}
       caddy.reverse_proxy: '{{upstreams 80}}'
+      caddy.reverse_proxy.lb_try_duration: 5s
       caddy.tls.dns: 'cloudflare ${CLOUDFLARE_DNS_API_TOKEN}'
 
   postgres:
