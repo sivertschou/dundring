@@ -170,6 +170,10 @@ export const ActiveWorkoutContextProvider = ({
     const status = activeWorkout.status;
     const workout = activeWorkout.workout;
 
+    if (status === 'active' && !workout) {
+      // Don't reset current resistance when starting non-workout session
+      return;
+    }
     if (status !== 'active' || !workout) {
       setResistance(0);
     } else {
