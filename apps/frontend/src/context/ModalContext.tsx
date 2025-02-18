@@ -5,7 +5,6 @@ interface Modal {
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
-  onToggle: () => void;
 }
 
 const ModalContext = React.createContext<{
@@ -112,7 +111,6 @@ export const useWelcomeMessageModal = () => {
       localStorage.setItem(KEY, JSON.stringify(CURRENT_VERSION));
       context.welcomeMessageModal.onClose();
     },
-    onToggle: context.welcomeMessageModal.onToggle,
   };
 };
 
