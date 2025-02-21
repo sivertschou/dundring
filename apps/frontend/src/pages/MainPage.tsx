@@ -83,7 +83,6 @@ export const MainPage = () => {
         onCloseProfileModal();
         onCloseWorkoutEditorModal();
         feedbackModal.onClose();
-        onOpenWelcomeMessageModal();
         optionsModal.onClose();
     }
   }, [
