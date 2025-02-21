@@ -93,6 +93,7 @@ export const MainPage = () => {
     onCloseWorkoutEditorModal,
     onOpenWelcomeMessageModal,
     onCloseWelcomeMessageModal,
+    feedbackModal,
   ]);
 
   return (
