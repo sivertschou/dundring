@@ -8,6 +8,8 @@ type ReadOnlyOptions = Options<boolean>;
 type Options<T> = {
   showIntervalTimer: T;
   showTotalDurationTimer: T;
+  showSpeed: T;
+  showDistance: T;
 };
 
 const OptionsContext = React.createContext<ReadWriteOptions | null>(null);
@@ -30,11 +32,17 @@ export const OptionsContextProvider = ({
     true
   );
 
+  const showSpeed = useOptionSetting('showSpeed', true);
+
+  const showDistance = useOptionSetting('showDistance', true);
+
   return (
     <OptionsContext.Provider
       value={{
         showIntervalTimer,
         showTotalDurationTimer,
+        showSpeed,
+        showDistance,
       }}
     >
       {children}
