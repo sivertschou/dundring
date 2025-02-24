@@ -55,14 +55,18 @@ export const TopBar = () => {
         <Center width="100%">
           <Grid width="90%" templateColumns="repeat(3, 1fr)">
             <Stack>
-              <Center color={hrColor}>
+              <Center hidden={!options.showHeartRateCurrent} color={hrColor}>
                 <Text fontSize={mainFontSize}>
                   {heartRate !== null ? heartRate : '0'}
                 </Text>
                 <Text fontSize={unitFontSize}>bpm</Text>
               </Center>
               {maxHeartRate && (
-                <Text color={hrColor} fontSize={secondaryFontSize}>
+                <Text
+                  hidden={!options.showHeartRateMax}
+                  color={hrColor}
+                  fontSize={secondaryFontSize}
+                >
                   Max: {maxHeartRate} bpm
                 </Text>
               )}
