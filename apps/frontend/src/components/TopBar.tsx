@@ -74,7 +74,6 @@ export const TopBar = () => {
               <Text fontSize={secondaryFontSize}>
                 {flooredDistance.toFixed(1)} km
               </Text>
-              ? (
               <Text
                 hidden={!options.showTotalDurationTimer}
                 fontSize={hasRemainingTime ? secondaryFontSize : mainFontSize}
