@@ -51,6 +51,18 @@ export const OptionsModal = () => {
               tooltip={'Check to have the distance displayed'}
               text={'Show distance'}
             />
+            <OptionsCheckbox
+              option={options.showHeartRateCurrent}
+              tooltip={'Check to have current heart rate displayed'}
+              text={'Show current heart rate'}
+            />
+            <OptionsCheckbox
+              option={options.showHeartRateMax}
+              tooltip={
+                'Check to have maximum heart rate reached in this session displayed'
+              }
+              text={'Show max heart rate reached'}
+            />
           </Stack>
         </Center>
       </ModalContent>

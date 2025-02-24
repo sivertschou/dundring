@@ -10,6 +10,8 @@ type Options<T> = {
   showTotalDurationTimer: T;
   showSpeed: T;
   showDistance: T;
+  showHeartRateCurrent: T;
+  showHeartRateMax: T;
 };
 
 const OptionsContext = React.createContext<ReadWriteOptions | null>(null);
@@ -36,6 +38,10 @@ export const OptionsContextProvider = ({
 
   const showDistance = useOptionSetting('showDistance', true);
 
+  const showHeartRateCurrent = useOptionSetting('showDistance', true);
+
+  const showHeartRateMax = useOptionSetting('showDistance', true);
+
   return (
     <OptionsContext.Provider
       value={{
@@ -43,6 +49,8 @@ export const OptionsContextProvider = ({
         showTotalDurationTimer,
         showSpeed,
         showDistance,
+        showHeartRateCurrent,
+        showHeartRateMax,
       }}
     >
       {children}
