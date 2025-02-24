@@ -85,16 +85,14 @@ export const TopBar = () => {
               </Text>
               ? (
               <Text
-                visibility={
-                  options.showTotalDurationTimer ? 'visible' : 'hidden'
-                }
+                hidden={!options.showTotalDurationTimer}
                 fontSize={hasRemainingTime ? secondaryFontSize : mainFontSize}
               >
                 {secondsToHoursMinutesAndSecondsString(secondsElapsed)}
               </Text>
               {hasRemainingTime ? (
                 <Text
-                  visibility={options.showIntervalTimer ? 'visible' : 'hidden'}
+                  hidden={!hasRemainingTime || !options.showIntervalTimer}
                   fontSize={mainFontSize}
                 >
                   {secondsToHoursMinutesAndSecondsString(remainingTime)}
