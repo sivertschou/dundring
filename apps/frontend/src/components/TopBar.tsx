@@ -68,10 +68,10 @@ export const TopBar = () => {
               )}
             </Stack>
             <Stack spacing="0">
-              <Text fontSize={secondaryFontSize}>
+              <Text hidden={!options.showSpeed} fontSize={secondaryFontSize}>
                 {((3600 * speed) / 1000).toFixed(1)} km/h
               </Text>
-              <Text fontSize={secondaryFontSize}>
+              <Text hidden={!options.showDistance} fontSize={secondaryFontSize}>
                 {flooredDistance.toFixed(1)} km
               </Text>
               <Text

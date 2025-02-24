@@ -41,6 +41,16 @@ export const OptionsModal = () => {
               }
               text={'Show total duration timer'}
             />
+            <OptionsCheckbox
+              option={options.showSpeed}
+              tooltip={'Check to have the current speed displayed'}
+              text={'Show current speed'}
+            />
+            <OptionsCheckbox
+              option={options.showDistance}
+              tooltip={'Check to have the distance displayed'}
+              text={'Show distance'}
+            />
           </Stack>
         </Center>
       </ModalContent>
