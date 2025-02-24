@@ -61,7 +61,7 @@ jobs:
           strip_components: 2
 
       - name: Start the containers with Docker Compose
-        uses: appleboy/ssh-action@v1.2.0
+        uses: appleboy/ssh-action@v1.2.1
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
