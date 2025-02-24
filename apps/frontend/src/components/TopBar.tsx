@@ -95,10 +95,13 @@ export const TopBar = () => {
               )
             </Stack>
             <Stack spacing="0" color={powerColor}>
-              <Text fontSize={secondaryFontSize}>
+              <Text
+                hidden={!options.showPowerTarget}
+                fontSize={secondaryFontSize}
+              >
                 {!isFreeMode ? `@${currentResistance}w` : 'Free mode'}
               </Text>
-              <Center>
+              <Center hidden={!options.showPowerCurrent}>
                 <Text fontSize={mainFontSize}>{smoothedPower || '0'}</Text>
                 <Text fontSize={unitFontSize}>w</Text>
               </Center>
