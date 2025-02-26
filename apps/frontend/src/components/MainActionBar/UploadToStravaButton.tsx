@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
 
 export const UploadToStravaButton = () => {
-  const { data, distance } = useData();
+  const { trackedData } = useData();
   const { user } = useUser();
   const { activeWorkout } = useActiveWorkout();
 
@@ -52,7 +52,7 @@ export const UploadToStravaButton = () => {
         api
           .uploadActivity(
             user.token,
-            toTcxString(data, distance),
+            toTcxString(trackedData),
             activeWorkout.workout?.name ?? null
           )
           .then((response) => {

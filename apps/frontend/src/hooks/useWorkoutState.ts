@@ -1,0 +1,105 @@
+import { useLiveQuery } from 'dexie-react-hooks';
+import {
+  db,
+  defaultWorkoutState,
+  initWorkoutstate,
+  startNewWorkout,
+} from '../db';
+import { useEffect, useState } from 'react';
+import { millisToHoursMinutesAndSeconds } from '@dundring/utils';
+
+let hasPreCalculated = false;
+export const numberOfGraphDataPoints = 500;
+export const useWorkoutState = () => {
+  const [showRecoverPrompt, setShowRecoverPrompt] = useState(true);
+
+  const state =
+    useLiveQuery(() => db.workoutState.limit(1).last()) ?? defaultWorkoutState;
+
+  const trackedData =
+    useLiveQuery(
+      () =>
+        db.workoutDataPoint
+          .where('workoutNumber')
+          .equals(state.workoutNumber)
+          .toArray(),
+      [state.workoutNumber]
+    )?.filter((dataPoint) => dataPoint.tracking) ?? [];
+
+  const lapData =
+    useLiveQuery(
+      () =>
+        db.workoutDataPoint
+          .where({
+            workoutNumber: state.workoutNumber,
+            lapNumber: state.lapNumber,
+          })
+          .toArray(),
+      [state.workoutNumber, state.lapNumber]
+    )?.filter((dataPoint) => dataPoint.tracking) ?? [];
+
+  const graphData =
+    useLiveQuery(
+      () =>
+        db.workoutDataPoint
+          .where('workoutNumber')
+          .equals(state.workoutNumber)
+          .reverse()
+          .limit(numberOfGraphDataPoints)
+          .toArray(),
+      [state.workoutNumber]
+    )?.toReversed() ?? [];
+
+  const firstDatapoint =
+    useLiveQuery(
+      () =>
+        db.workoutDataPoint
+          .where('workoutNumber')
+          .equals(state.workoutNumber)
+          .and((dataPoint) => dataPoint.tracking)
+          .first(),
+      [state.workoutNumber]
+    ) ?? null;
+
+  const lastDatapoint =
+    useLiveQuery(
+      () =>
+        db.workoutDataPoint
+          .where('workoutNumber')
+          .equals(state.workoutNumber)
+          .and((dataPoint) => dataPoint.tracking)
+          .last(),
+      [state.workoutNumber]
+    ) ?? null;
+
+  useEffect(() => {
+    if (lastDatapoint && !hasPreCalculated) {
+      const time = millisToHoursMinutesAndSeconds(
+        Date.now() - lastDatapoint.timestamp.getTime()
+      );
+      if (time.hours >= 12) {
+        startNewWorkout();
+      }
+      hasPreCalculated = true;
+    }
+
+    return () => {
+      hasPreCalculated = false;
+    };
+  }, [lastDatapoint]);
+
+  useEffect(() => {
+    initWorkoutstate();
+  }, []);
+
+  return {
+    state,
+    graphData,
+    trackedData,
+    lapData,
+    firstDatapoint,
+    lastDatapoint,
+    showRecoverPrompt,
+    setShowRecoverPrompt,
+  };
+};
