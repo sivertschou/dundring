@@ -7,18 +7,22 @@ export interface Lap {
   sumWatt: number;
   normalizedDuration: number; // duration where watt > 0
 }
+
 export interface DataPoint {
   heartRate?: number;
   power?: number;
   cadence?: number;
-  timeStamp: Date;
+  timestamp: Date;
   position?: Waypoint;
+  tracking: boolean;
+  lapNumber: number;
+  accumulatedDistance: number;
 }
 
 export interface Waypoint {
   lat: number;
   lon: number;
-  distance: number;
+  deltaDistance: number;
 }
 
 export interface Workout {
