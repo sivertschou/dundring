@@ -161,7 +161,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         },
         state,
         isRunning,
-        smoothedPower: getSmoothedPower(trackedData),
+        smoothedPower: getSmoothedPower(graphData),
         maxHeartRate: workoutState.maxHeartRate || null,
       }}
     >
