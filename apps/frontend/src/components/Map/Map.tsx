@@ -8,11 +8,13 @@ import { useActiveRoute } from '../../hooks/useActiveRoute';
 
 export const Map = () => {
   const { activeRoute } = useActiveRoute();
-  const { trackedData: rawData } = useData();
+  // const { trackedData: rawData } = useData();
   const dotColor = useColorModeValue('black', 'white');
   const routeColor = useColorModeValue('#bdbdbd', '#424242');
 
   const multiplier = 40;
+
+  const rawData = [] as any[]; // TODO FIX
 
   const dataPoints = rawData
     .map((dataPoint) => dataPoint.position)

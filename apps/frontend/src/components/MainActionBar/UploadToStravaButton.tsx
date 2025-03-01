@@ -1,16 +1,15 @@
 import { Button } from '@chakra-ui/button';
 import { BoxArrowUpRight, Upload } from 'react-bootstrap-icons';
 import { toTcxString } from '../../createTcxFile';
-import { useData } from '../../context/DataContext';
 import { Icon, Tooltip, useToast } from '@chakra-ui/react';
 import * as api from '../../api';
 import { useUser } from '../../context/UserContext';
 import { ApiStatus } from '@dundring/types';
 import { useState } from 'react';
 import { useActiveWorkout } from '../../context/ActiveWorkoutContext';
+import * as db from '../../db';
 
 export const UploadToStravaButton = () => {
-  const { trackedData } = useData();
   const { user } = useUser();
   const { activeWorkout } = useActiveWorkout();
 
@@ -49,6 +48,7 @@ export const UploadToStravaButton = () => {
       width="100%"
       onClick={async () => {
         setState({ type: 'Loading' });
+        const trackedData = await db.getTrackedData();
         api
           .uploadActivity(
             user.token,

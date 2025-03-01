@@ -1,4 +1,4 @@
-import Dexie, { Table } from 'dexie';
+import Dexie, { Table, UpdateSpec } from 'dexie';
 import { Waypoint } from './types';
 import { Route, routeNameToWaypoint } from './gps';
 import {
@@ -29,6 +29,7 @@ export type WorkoutState = {
   elapsedTime: number;
   maxHeartRate: number | null;
   route: Route;
+  hasValidData: boolean;
 };
 
 export class DundringDexie extends Dexie {
@@ -53,6 +54,7 @@ export const defaultWorkoutState: WorkoutState = {
   elapsedTime: 0,
   maxHeartRate: null,
   route: 'zap',
+  hasValidData: false,
 };
 
 export const startNewWorkout = async () => {
@@ -81,7 +83,7 @@ export const addLap = async () => {
   });
 };
 
-const getLastDatapoint = async () => {
+const getLastDatapoint: () => Promise<WorkoutDataPoint | null> = async () => {
   const state =
     (await db.workoutState.orderBy('workoutNumber').last()) ??
     defaultWorkoutState;
@@ -106,7 +108,8 @@ export const addDatapoint = async (
     power: number | null;
     cadence: number | null;
   },
-  isTracking: boolean
+  isTracking: boolean,
+  hasValidData: boolean
 ) => {
   const heartRateToInclude = data.heartRate
     ? { heartRate: data.heartRate }
@@ -125,7 +128,7 @@ export const addDatapoint = async (
   const speed = dataPoint.power ? powerSpeed(dataPoint.power) : 0;
   const deltaDistance = isTracking ? (speed * delta) / 1000 : 0;
 
-  return await db.transaction(
+  return db.transaction(
     'rw',
     db.workoutDataPoint,
     db.workoutState,
@@ -159,10 +162,16 @@ export const addDatapoint = async (
           : undefined,
       });
       const heartRate = dataPoint.heartRate ?? 0;
-      const maxHeartRate = workoutState.maxHeartRate ?? 0;
+      const currentMaxHeartRate = workoutState.maxHeartRate ?? 0;
 
-      if (maxHeartRate < heartRate) {
-        setMaxHeartRate(heartRate);
+      const newMax = heartRate > currentMaxHeartRate ? { heartRate } : {};
+      const newHasValidData =
+        isTracking && !hasValidData ? { hasValidData: true } : {};
+      if (newMax !== null || newHasValidData || null) {
+        await updateWorkoutState(workoutState.workoutNumber, {
+          ...newMax,
+          ...newHasValidData,
+        });
       }
     }
   );
@@ -189,14 +198,13 @@ export const initWorkoutstate = async () => {
   });
 };
 
-const setMaxHeartRate = async (heartRate: number) => {
-  const state =
-    (await db.workoutState.toCollection().last()) ?? defaultWorkoutState;
-
-  await db.workoutState.update(state.workoutNumber, {
-    maxHeartRate: heartRate,
-  });
+const updateWorkoutState = async (
+  workoutNumber: number,
+  changes: UpdateSpec<WorkoutState> // Basically a Partial WorkoutState
+) => {
+  await db.workoutState.update(workoutNumber, changes);
 };
+
 export const setRoute = async (route: Route) => {
   db.transaction('rw', db.workoutState, async () => {
     const state =
@@ -228,4 +236,14 @@ export const createNewWorkoutIfOldData = async () => {
       }
     }
   );
+};
+
+export const getTrackedData: () => Promise<WorkoutDataPoint[]> = async () => {
+  const state = await db.workoutState.toCollection().last();
+
+  return db.workoutDataPoint
+    .where('workoutNumber')
+    .equals(state?.workoutNumber ?? 0)
+    .filter((datapoint) => datapoint.tracking)
+    .toArray();
 };

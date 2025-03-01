@@ -12,17 +12,6 @@ export const useWorkoutState = () => {
   const state =
     useLiveQuery(() => db.workoutState.limit(1).last()) ?? defaultWorkoutState;
 
-  const trackedData =
-    useLiveQuery(
-      () =>
-        db.workoutDataPoint
-          .where('workoutNumber')
-          .equals(state.workoutNumber)
-          .filter((datapoint) => datapoint.tracking)
-          .toArray(),
-      [state.workoutNumber]
-    ) ?? [];
-
   const lapData =
     useLiveQuery(
       () =>
@@ -92,7 +81,6 @@ export const useWorkoutState = () => {
   return {
     state,
     graphData,
-    trackedData,
     lapData,
     firstDatapoint,
     lastDatapoint,
