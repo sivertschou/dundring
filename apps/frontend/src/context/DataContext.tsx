@@ -13,7 +13,6 @@ type TrainerState = 'not_started' | 'running' | 'paused';
 
 const DataContext = React.createContext<{
   graphData: DataPoint[];
-  trackedData: DataPoint[];
   hasValidData: boolean;
   timeElapsed: number;
   distance: number;
@@ -40,12 +39,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
   } = useActiveWorkout();
 
   const { sendData } = useWebsocket();
-  const {
-    state: workoutState,
-    trackedData,
-    graphData,
-    lastDatapoint,
-  } = useWorkoutState();
+  const { state: workoutState, graphData, lastDatapoint } = useWorkoutState();
   const [state, setState] = React.useState<TrainerState>('not_started');
   const isRunning = state === 'running';
 
@@ -59,7 +53,8 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
 
   const { heartRate } = useHeartRateMonitor();
 
-  const hasValidData = trackedData.length > 0;
+  const hasValidData = workoutState.hasValidData ?? false;
+  console.log(hasValidData, workoutState.hasValidData);
   const dataTick = React.useCallback(
     (
       delta: number,
@@ -81,7 +76,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         ...cadenceToInclude,
       };
 
-      db.addDatapoint(delta, data, isRunning);
+      db.addDatapoint(delta, data, isRunning, hasValidData);
       sendData(dataPoint);
     },
     [heartRate, power, cadence, isRunning]
@@ -117,7 +112,8 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
   }, [power, heartRate, cadence]);
 
   const start = React.useCallback(async () => {
-    if (trackedData.length > 0) {
+    if (!hasValidData) {
+      // was this wrong before?
       logEvent('workout started');
     } else {
       logEvent('workout resumed');
@@ -127,13 +123,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
     startActiveWorkout();
     clockWorker.postMessage('startClockTimer');
     setState('running');
-  }, [
-    clockWorker,
-    logEvent,
-    syncResistance,
-    startActiveWorkout,
-    trackedData.length,
-  ]);
+  }, [clockWorker, logEvent, syncResistance, startActiveWorkout, hasValidData]);
 
   const stop = React.useCallback(async () => {
     logEvent('workout paused');
@@ -149,7 +139,6 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
     <DataContext.Provider
       value={{
         graphData,
-        trackedData,
         hasValidData,
         timeElapsed: workoutState.elapsedTime,
         distance: lastDatapoint?.accumulatedDistance ?? 0,
