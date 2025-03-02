@@ -57,8 +57,7 @@ export const defaultWorkoutState: WorkoutState = {
 
 export const startNewWorkout = async () => {
   db.transaction('rw', db.workoutState, async () => {
-    const state =
-      (await db.workoutState.toCollection().last()) ?? defaultWorkoutState;
+    const state = await getWorkoutState();
 
     await db.workoutState.add({
       ...defaultWorkoutState,
@@ -70,9 +69,7 @@ export const startNewWorkout = async () => {
 
 export const addLap = async () => {
   db.transaction('rw', db.workoutState, async () => {
-    const state =
-      (await db.workoutState.orderBy('workoutNumber').last()) ??
-      defaultWorkoutState;
+    const state = await getWorkoutState();
 
     const lapNumber = state.lapNumber + 1;
     await db.workoutState.update(state.workoutNumber, {
@@ -82,9 +79,7 @@ export const addLap = async () => {
 };
 
 const getLastDatapoint = async () => {
-  const state =
-    (await db.workoutState.orderBy('workoutNumber').last()) ??
-    defaultWorkoutState;
+  const state = await getWorkoutState();
 
   return (
     (await db.workoutDataPoint
@@ -96,7 +91,9 @@ const getLastDatapoint = async () => {
 };
 
 const getWorkoutState = async () => {
-  return (await db.workoutState.toCollection().last()) ?? defaultWorkoutState;
+  const state = await db.workoutState.orderBy('workoutNumber').last();
+
+  return state ?? defaultWorkoutState;
 };
 
 export const addDatapoint = async (
@@ -170,8 +167,7 @@ export const addDatapoint = async (
 
 export const addElapsedTime = async (delta: number) => {
   db.transaction('rw', db.workoutState, async () => {
-    const state =
-      (await db.workoutState.toCollection().last()) ?? defaultWorkoutState;
+    const state = await getWorkoutState();
 
     await db.workoutState.update(state.workoutNumber, {
       elapsedTime: state.elapsedTime + delta,
@@ -180,8 +176,8 @@ export const addElapsedTime = async (delta: number) => {
 };
 
 export const initWorkoutstate = async () => {
-  db.transaction('rw', db.workoutState, async () => {
-    const state = await db.workoutState.toCollection().last();
+  await db.transaction('rw', db.workoutState, async () => {
+    const state = await db.workoutState.orderBy('workoutNumber').last();
 
     if (!state) {
       await db.workoutState.add(defaultWorkoutState);
@@ -190,8 +186,7 @@ export const initWorkoutstate = async () => {
 };
 
 const setMaxHeartRate = async (heartRate: number) => {
-  const state =
-    (await db.workoutState.toCollection().last()) ?? defaultWorkoutState;
+  const state = await getWorkoutState();
 
   await db.workoutState.update(state.workoutNumber, {
     maxHeartRate: heartRate,
@@ -199,8 +194,7 @@ const setMaxHeartRate = async (heartRate: number) => {
 };
 export const setRoute = async (route: Route) => {
   db.transaction('rw', db.workoutState, async () => {
-    const state =
-      (await db.workoutState.toCollection().last()) ?? defaultWorkoutState;
+    const state = await getWorkoutState();
 
     await db.workoutState.update(state.workoutNumber, {
       route,
