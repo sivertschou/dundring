@@ -12,6 +12,7 @@ import { generateRandomString, isSuccess } from '@dundring/utils';
 import { monitoringService } from '.';
 import * as redis from '../redis';
 import * as websocket from '../websocket';
+import { logger } from '../logger';
 
 export const sendWorkoutDataToRoom = (
   username: string,
@@ -69,13 +70,13 @@ export const createRoom = async (
   const roomId = await getAvailableRoomId();
   console.log('roomId:', roomId);
   if (roomId === null) {
-    console.log(`${user.username} failed to create room.`);
+    logger.error(`${user.username} failed to create room.`);
     return {
       type: 'failed-to-create-group-session',
       message: 'Failed to create room.',
     };
   } else {
-    console.log(
+    logger.info(
       `${user.username} created room #${roomId}. Add to connection pool`
     );
 
@@ -90,7 +91,7 @@ export const createRoom = async (
 };
 
 export const joinRoom = async (roomId: string, member: Member) => {
-  console.log(
+  logger.info(
     `${member.username} tries to join ${roomId}. Add to connection pool`
   );
   const joinRoomResponse = await redis.joinRoom(roomId, member);

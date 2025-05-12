@@ -17,6 +17,8 @@ inputs:
     type: string
   discord_webhook_url:
     type: string
+  logtail_token:
+    type: string
   mail_host:
     required: true
     type: string
@@ -88,6 +90,7 @@ runs:
           DATABASE_URL=${{ inputs.database_url }} \
           DATABASE_PASSWORD=${{ inputs.database_password }} \
           DISCORD_WEBHOOK_URL=${{ inputs.discord_webhook_url }} \
+          LOGTAIL_TOKEN=${{ inputs.logtail_token }} \
           REDIS_URL=${{ inputs.redis_url }} \
           MAIL_HOST=${{ inputs.mail_host }} \
           MAIL_PORT=${{ inputs.mail_port }} \
@@ -140,6 +143,7 @@ runs:
           DATABASE_URL=${{ inputs.database_url }} \
           DATABASE_PASSWORD=${{ inputs.database_password }} \
           DISCORD_WEBHOOK_URL=${{ inputs.discord_webhook_url }} \
+          LOGTAIL_TOKEN=${{ inputs.logtail_token }} \
           REDIS_URL=${{ inputs.redis_url }} \
           MAIL_HOST=${{ inputs.mail_host }} \
           MAIL_PORT=${{ inputs.mail_port }} \
