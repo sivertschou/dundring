@@ -81,8 +81,10 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         ...cadenceToInclude,
       };
 
-      db.addDatapoint(delta, data, isRunning);
-      sendData(dataPoint);
+      if (dataPoint.cadence || dataPoint.power || dataPoint.heartRate) {
+        db.addDatapoint(delta, data, isRunning);
+        sendData(dataPoint);
+      }
     },
     [heartRate, power, cadence, isRunning]
   );
