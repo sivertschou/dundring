@@ -6,6 +6,7 @@ import http from 'http';
 import { initRedis } from './redis';
 import { initWebsockets } from './websocket';
 import router from './routes';
+import { logger } from './logger';
 
 require('dotenv').config();
 
@@ -56,4 +57,5 @@ initRedis();
 
 httpServer.listen(httpPort, () => {
   console.log(`App is listening on port ${httpPort}!:)`);
+  logger.info(`App is listening on port ${httpPort}!:)`);
 });

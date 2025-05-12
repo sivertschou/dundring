@@ -27,6 +27,7 @@ services:
       - POD=green
       - TAG=${TAG_GREEN}
       - NODE_ENV=production
+      - LOGTAIL_TOKEN=${LOGTAIL_TOKEN}
     networks:
       - caddy
       - dundring
@@ -80,6 +81,7 @@ services:
       - POD=blue
       - TAG=${TAG_BLUE}
       - NODE_ENV=production
+      - LOGTAIL_TOKEN=${LOGTAIL_TOKEN}
     networks:
       - caddy
       - dundring
