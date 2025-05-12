@@ -2,6 +2,7 @@ import { Member, Room, Status, WebSocketResponse } from '@dundring/types';
 import { error, hours, isSuccess, success } from '@dundring/utils';
 import { createClient } from 'redis';
 import * as websocket from './websocket';
+import { logger } from './logger';
 
 require('dotenv').config();
 
@@ -13,10 +14,10 @@ const redisClient = createClient({
 });
 const redisPublisher = redisClient.duplicate();
 const redisSubscriber = redisClient.duplicate();
-redisClient.on('error', (err) => console.log('Redis Client Error', err));
+redisClient.on('error', (err) => logger.error('Redis Client Error', err));
 
 export const initRedis = async () => {
-  console.log('Connect redis client');
+  logger.info('Connect redis client');
   await Promise.all([
     redisClient.connect(),
     redisPublisher.connect(),
@@ -34,7 +35,7 @@ const handleRoomMessage = (rawMessage: string, channelName: string) => {
 };
 
 export const createRoom = async (roomId: string, user: Member) => {
-  console.log(
+  logger.info(
     `[redis]: Create room with id=${roomId} for user=${user.username}`
   );
   await Promise.all([
@@ -47,7 +48,7 @@ export const joinRoom = async (
   roomId: string,
   user: Member
 ): Promise<Status<Room, 'Room not found'>> => {
-  console.log(`[redis]: Add user=${user.username} to room with id=${roomId}`);
+  logger.info(`[redis]: Add user=${user.username} to room with id=${roomId}`);
   const roomKey = toRoomKey(roomId);
   // TODO: Make atomic/transaction
   const usersInRoom = await redisClient.lLen(roomKey);
@@ -71,7 +72,7 @@ export const leaveRoom = async (
   roomId: string
 ): Promise<Status<number, 'Room not found'>> => {
   const roomKey = toRoomKey(roomId);
-  console.log(`[redis]: Remove user=${username} from room with id=${roomId}`);
+  logger.info(`[redis]: Remove user=${username} from room with id=${roomId}`);
 
   await Promise.all([
     redisClient.lRem(roomKey, 0, username),

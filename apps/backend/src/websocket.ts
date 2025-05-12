@@ -3,6 +3,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 import { groupSessionService } from './services';
 import * as redis from './redis';
 import { error, isSuccess, success } from '@dundring/utils';
+import { logger } from './logger';
 
 const connections: { [username: string]: WebSocket } = {};
 
@@ -44,7 +45,7 @@ export const initWebsockets = (webSocketServer: WebSocketServer) => {
         }
         case 'send-data': {
           if (!username) {
-            console.log('unknown tried to share workoutdata');
+            logger.warn('unknown tried to share workoutdata');
             return;
           }
           groupSessionService.sendWorkoutDataToRoom(username, req.data);
@@ -53,7 +54,7 @@ export const initWebsockets = (webSocketServer: WebSocketServer) => {
       }
     });
     ws.on('close', () => {
-      console.log('connection closed', username);
+      logger.info('connection closed', username);
       if (username && roomId) {
         groupSessionService.leaveRoom(username, roomId);
         username = '';
@@ -82,7 +83,7 @@ export const sendMessageToRoom = async (
       .filter((socket) => socket)
       .map((socket) => socket.send(JSON.stringify(message)));
   } else {
-    console.log(`[websocket]: Could not send message to room ${roomId}`);
+    logger.error(`[websocket]: Could not send message to room ${roomId}`);
   }
 };
 
@@ -95,7 +96,7 @@ export const sendMessage = (
     socket.send(JSON.stringify(message));
     return success({});
   } else {
-    console.log(
+    logger.error(
       `[websocket]: Socket not found for username ${recipientUsername}`
     );
     return error('Socket not found for username');
