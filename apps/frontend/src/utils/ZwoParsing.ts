@@ -2,10 +2,13 @@ import { parseXml, XmlDocument, XmlElement, XmlText } from '@rgrove/parse-xml';
 import { Workout, WorkoutPart } from '../types';
 
 export const parseZwoWorkout = (
-  str: string
+  xmlString: string
 ): { workout: Workout | null; errors: Set<string> } => {
   try {
-    const xmlDocument: XmlDocument = parseXml(str);
+    const trimmedXmlString = xmlString.trim(); // to allow more non-strict parsing
+    const xmlDocument: XmlDocument = parseXml(trimmedXmlString, {
+      preserveXmlDeclaration: false,
+    });
     const workoutFileElement = xmlDocument.children[0];
     if (!isXmlElement(workoutFileElement)) {
       return {
