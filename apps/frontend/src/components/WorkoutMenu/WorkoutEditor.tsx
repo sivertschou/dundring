@@ -23,6 +23,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
+  EditableTextarea,
+  Editable,
+  EditablePreview,
   Icon,
   Table,
   Tbody,
@@ -205,7 +208,10 @@ export const WorkoutEditor = ({
           <InputRightAddon children="W" />
         </InputGroup>
       </FormControl>
-
+      <Editable value={toText(workout.parts)}>
+        <EditablePreview whiteSpace="pre-wrap" />
+        <EditableTextarea />
+      </Editable>
       {workout.parts.length > 0 ? (
         <Grid templateColumns={templateColumns} gap="1" mb="2">
           <Text />
@@ -483,4 +489,12 @@ const editableWorkoutIsEqualToLoaded = (
   }
 
   return true;
+};
+
+const toText = (parts: EditableWorkoutPart[]) => {
+  const lines = parts.map(
+    (p) =>
+      `${secondsToHoursMinutesAndSecondsString(p.duration)}@${p.targetPower}%`
+  );
+  return lines.join('\n');
 };
