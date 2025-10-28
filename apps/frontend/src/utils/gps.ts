@@ -7,7 +7,7 @@ export const distanceToCoordinates = (
 ) => {
   // TODO: Memoize this
   const totalPathDistance = path.reduce(
-    (sum, waypoint) => sum + waypoint.deltaDistance,
+    (sum, waypoint) => sum + waypoint.distance,
     0
   );
   const lapDistance = totalDistance % totalPathDistance;
@@ -33,12 +33,12 @@ export const distanceToCoordinates = (
       if (currentWaypoint !== null)
         return { accDistance, currentWaypoint, index };
 
-      if (accDistance + waypoint.deltaDistance > lapDistance) {
+      if (accDistance + waypoint.distance > lapDistance) {
         return { accDistance, currentWaypoint: waypoint, index: i };
       }
 
       return {
-        accDistance: accDistance + waypoint.deltaDistance,
+        accDistance: accDistance + waypoint.distance,
         currentWaypoint,
         index,
       };
@@ -51,12 +51,12 @@ export const distanceToCoordinates = (
   const lat = lerp(
     currentWaypoint.lat,
     path[(index + 1) % path.length].lat,
-    distanceThisSegment / currentWaypoint.deltaDistance
+    distanceThisSegment / currentWaypoint.distance
   );
   const lon = lerp(
     currentWaypoint.lon,
     path[(index + 1) % path.length].lon,
-    distanceThisSegment / currentWaypoint.deltaDistance
+    distanceThisSegment / currentWaypoint.distance
   );
   return { lat, lon };
 };

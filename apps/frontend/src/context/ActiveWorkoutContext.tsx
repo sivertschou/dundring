@@ -3,17 +3,16 @@ import { ActiveWorkout, Workout } from '../types';
 import { wattFromFtpPercent } from '../utils/general';
 import { useSmartTrainer } from './SmartTrainerContext';
 import { useUser } from './UserContext';
-import { addLap } from '../db';
 
 export const ActiveWorkoutContext = React.createContext<{
   activeWorkout: ActiveWorkout;
   setActiveWorkout: (workout: Workout) => void;
-  increaseElapsedTime: (millis: number) => void;
+  increaseElapsedTime: (millis: number, addLap: () => void) => void;
   start: () => void;
   pause: () => void;
   activeFtp: number;
   setActiveFtp: (ftp: number) => void;
-  changeActivePart: (partNumber: number) => void;
+  changeActivePart: (partNumber: number, addLap: () => void) => void;
   syncResistance: () => void;
   syncResistanceIfActive: () => void;
 } | null>(null);
@@ -23,6 +22,7 @@ interface IncreasePartElapsedTimeAction {
   millis: number;
   setResistance: (resistance: number) => void;
   activeFtp: number;
+  addLap: () => void;
 }
 
 interface SetWorkoutAction {
@@ -45,6 +45,7 @@ interface ChangeActivePartAction {
   type: 'CHANGE_ACTIVE_PART';
   setResistance: (resistance: number) => void;
   activeFtp: number;
+  addLap: () => void;
   partNumber: number;
 }
 
@@ -107,8 +108,7 @@ export const ActiveWorkoutContextProvider = ({
               activePart: 0,
               status: 'finished',
             };
-
-            addLap();
+            action.addLap();
             return nextState;
           }
           // Only done with current part, other parts unfinished
@@ -117,7 +117,7 @@ export const ActiveWorkoutContextProvider = ({
             partElapsedTime: newElapsed - currentPartDuration * 1000,
             activePart: activeWorkout.activePart + 1,
           };
-          addLap();
+          action.addLap();
           return nextState;
         }
         // Current part is not finished
@@ -133,7 +133,7 @@ export const ActiveWorkoutContextProvider = ({
       case 'CHANGE_ACTIVE_PART': {
         if (!activeWorkout.workout) return activeWorkout;
 
-        addLap();
+        action.addLap();
 
         if (action.partNumber >= activeWorkout.workout.parts.length) {
           return {
@@ -232,21 +232,23 @@ export const ActiveWorkoutContextProvider = ({
     setResistance(targetPowerAsWatt);
   };
 
-  const changeActivePart = (partNumber: number) => {
+  const changeActivePart = (partNumber: number, addLap: () => void) => {
     dispatchActiveWorkoutAction({
       type: 'CHANGE_ACTIVE_PART',
       setResistance,
       activeFtp,
+      addLap,
       partNumber,
     });
   };
 
-  const increaseElapsedTime = (millis: number) => {
+  const increaseElapsedTime = (millis: number, addLap: () => void) => {
     dispatchActiveWorkoutAction({
       type: 'INCREASE_PART_ELAPSED_TIME',
       millis,
       setResistance,
       activeFtp,
+      addLap,
     });
   };
 
