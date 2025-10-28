@@ -61,7 +61,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
 
   const hasValidData = trackedData.length > 0;
   const dataTick = React.useCallback(
-    (
+    async (
       delta: number,
       data: {
         heartRate: number | null;
@@ -69,54 +69,65 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         cadence: number | null;
       }
     ) => {
-      const heartRateToInclude = data.heartRate
-        ? { heartRate: data.heartRate }
-        : {};
-      const powerToInclude = data.power ? { power: data.power } : {};
-      const cadenceToInclude = data.cadence ? { cadence: data.cadence } : {};
-      const dataPoint = {
-        timestamp: new Date(),
-        ...heartRateToInclude,
-        ...powerToInclude,
-        ...cadenceToInclude,
-      };
+      try {
+        const heartRateToInclude = data.heartRate
+          ? { heartRate: data.heartRate }
+          : {};
+        const powerToInclude = data.power ? { power: data.power } : {};
+        const cadenceToInclude = data.cadence ? { cadence: data.cadence } : {};
+        const dataPoint = {
+          timestamp: new Date(),
+          ...heartRateToInclude,
+          ...powerToInclude,
+          ...cadenceToInclude,
+        };
 
-      if (dataPoint.cadence || dataPoint.power || dataPoint.heartRate) {
-        db.addDatapoint(delta, data, isRunning);
-        sendData(dataPoint);
+        if (dataPoint.cadence || dataPoint.power || dataPoint.heartRate) {
+          await db.addDatapoint(delta, data, isRunning);
+          sendData(dataPoint);
+        }
+      } catch (error) {
+        console.error('Failed to add datapoint:', error);
       }
     },
-    [heartRate, power, cadence, isRunning]
+    [heartRate, power, cadence, isRunning, sendData]
   );
-  const clockTick = (delta: number) => {
-    db.addElapsedTime(delta);
-
-    increaseActiveWorkoutElapsedTime(delta);
+  const clockTick = async (delta: number) => {
+    try {
+      await db.addElapsedTime(delta);
+      increaseActiveWorkoutElapsedTime(delta);
+    } catch (error) {
+      console.error('Failed to update elapsed time:', error);
+    }
   };
   React.useEffect(() => {
     if (clockWorker === null) return;
 
-    clockWorker.onmessage = ({
+    clockWorker.onmessage = async ({
       data,
     }: MessageEvent<{ type: string; delta: number }>) => {
       if (!data) return;
-      switch (data.type) {
-        case 'clockTick': {
-          clockTick(data.delta);
-          break;
+      try {
+        switch (data.type) {
+          case 'clockTick': {
+            await clockTick(data.delta);
+            break;
+          }
+          case 'dataTick': {
+            await dataTick(data.delta, { heartRate, power, cadence });
+          }
         }
-        case 'dataTick': {
-          dataTick(data.delta, { heartRate, power, cadence });
-        }
+      } catch (error) {
+        console.error('Clock worker message handler error:', error);
       }
     };
-    clockWorker.onerror = (e) => console.log('message recevied:', e);
+    clockWorker.onerror = (e) => console.error('Clock worker error:', e);
 
     return () => {
       clockWorker.onerror = null;
       clockWorker.onmessage = null;
     };
-  }, [power, heartRate, cadence]);
+  }, [power, heartRate, cadence, clockTick, dataTick]);
 
   const start = React.useCallback(async () => {
     if (trackedData.length > 0) {
@@ -158,8 +169,8 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         speed: lastDatapoint?.speed ?? 0,
         start,
         stop,
-        addLap: () => {
-          db.addLap();
+        addLap: async () => {
+          await db.addLap();
         },
         state,
         isRunning,
