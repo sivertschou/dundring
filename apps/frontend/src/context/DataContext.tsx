@@ -60,6 +60,9 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
   const { heartRate } = useHeartRateMonitor();
 
   const hasValidData = trackedData.length > 0;
+
+  const accumulatedTimeRef = React.useRef(0);
+
   const dataTick = React.useCallback(
     async (
       delta: number,
@@ -70,6 +73,11 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
       }
     ) => {
       try {
+        if (accumulatedTimeRef.current > 0) {
+          await db.addElapsedTime(accumulatedTimeRef.current);
+          accumulatedTimeRef.current = 0;
+        }
+
         const heartRateToInclude = data.heartRate
           ? { heartRate: data.heartRate }
           : {};
@@ -87,19 +95,20 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
           sendData(dataPoint);
         }
       } catch (error) {
-        console.error('Failed to add datapoint:', error);
+        console.error('Failed to process dataTick:', error);
       }
     },
-    [heartRate, power, cadence, isRunning, sendData]
+    [isRunning, sendData]
   );
-  const clockTick = async (delta: number) => {
-    try {
-      await db.addElapsedTime(delta);
+
+  const clockTick = React.useCallback(
+    (delta: number) => {
+      accumulatedTimeRef.current += delta;
       increaseActiveWorkoutElapsedTime(delta);
-    } catch (error) {
-      console.error('Failed to update elapsed time:', error);
-    }
-  };
+    },
+    [increaseActiveWorkoutElapsedTime]
+  );
+
   React.useEffect(() => {
     if (clockWorker === null) return;
 
@@ -107,18 +116,14 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
       data,
     }: MessageEvent<{ type: string; delta: number }>) => {
       if (!data) return;
-      try {
-        switch (data.type) {
-          case 'clockTick': {
-            await clockTick(data.delta);
-            break;
-          }
-          case 'dataTick': {
-            await dataTick(data.delta, { heartRate, power, cadence });
-          }
+      switch (data.type) {
+        case 'clockTick': {
+          clockTick(data.delta);
+          break;
         }
-      } catch (error) {
-        console.error('Clock worker message handler error:', error);
+        case 'dataTick': {
+          await dataTick(data.delta, { heartRate, power, cadence });
+        }
       }
     };
     clockWorker.onerror = (e) => console.error('Clock worker error:', e);
@@ -156,7 +161,16 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
     }
 
     clockWorker.postMessage('stopClockTimer');
-  }, [clockWorker, smartTrainerIsConnected, setResistance]);
+
+    if (accumulatedTimeRef.current > 0) {
+      try {
+        await db.addElapsedTime(accumulatedTimeRef.current);
+        accumulatedTimeRef.current = 0;
+      } catch (error) {
+        console.error('Failed to flush elapsed time on stop:', error);
+      }
+    }
+  }, [clockWorker, smartTrainerIsConnected, setResistance, logEvent]);
 
   return (
     <DataContext.Provider
