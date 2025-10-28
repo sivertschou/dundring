@@ -18,7 +18,7 @@ export const useWorkoutState = () => {
         db.workoutDataPoint
           .where('workoutNumber')
           .equals(state.workoutNumber)
-          .and((datapoint) => datapoint.tracking)
+          .filter((datapoint) => datapoint.tracking)
           .toArray(),
       [state.workoutNumber]
     ) ?? [];
@@ -27,26 +27,26 @@ export const useWorkoutState = () => {
     useLiveQuery(
       () =>
         db.workoutDataPoint
-          .where(['workoutNumber', 'lapNumber'])
-          .equals([state.workoutNumber, state.lapNumber])
-          .and((datapoint) => datapoint.tracking)
+          .where({
+            workoutNumber: state.workoutNumber,
+            lapNumber: state.lapNumber,
+          })
+          .filter((datapoint) => datapoint.tracking)
           .toArray(),
       [state.workoutNumber, state.lapNumber]
     ) ?? [];
 
   const graphData =
     useLiveQuery(
-      async () =>
-        (
-          await db.workoutDataPoint
-            .where('workoutNumber')
-            .equals(state.workoutNumber)
-            .reverse()
-            .limit(numberOfGraphDataPoints)
-            .toArray()
-        ).toReversed(),
+      () =>
+        db.workoutDataPoint
+          .where('workoutNumber')
+          .equals(state.workoutNumber)
+          .reverse()
+          .limit(numberOfGraphDataPoints)
+          .toArray(),
       [state.workoutNumber]
-    ) ?? [];
+    )?.toReversed() ?? [];
 
   const firstDatapoint =
     useLiveQuery(
@@ -66,6 +66,17 @@ export const useWorkoutState = () => {
           .where('workoutNumber')
           .equals(state.workoutNumber)
           .and((dataPoint) => dataPoint.tracking)
+          .last(),
+      [state.workoutNumber]
+    ) ?? null;
+
+  const lastUntrackedDatapoint =
+    useLiveQuery(
+      () =>
+        db.workoutDataPoint
+          .where('workoutNumber')
+          .equals(state.workoutNumber)
+          .and((dataPoint) => !dataPoint.tracking)
           .last(),
       [state.workoutNumber]
     ) ?? null;
