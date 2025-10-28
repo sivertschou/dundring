@@ -36,7 +36,9 @@ export const RecoverWorkout = () => {
           <Button onClick={() => setShowRecoverPrompt(false)}>
             Continue workout
           </Button>
-          <Button onClick={() => startNewWorkout()}>Start new workout</Button>
+          <Button onClick={async () => await startNewWorkout()}>
+            Start new workout
+          </Button>
         </Stack>
       </Center>
     </Grid>

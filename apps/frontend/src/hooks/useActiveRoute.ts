@@ -10,6 +10,6 @@ export const useActiveRoute = () => {
       name: state.route,
       waypoints: routeNameToWaypoint(state.route),
     },
-    setActiveRoute: (route: Route) => setRoute(route),
+    setActiveRoute: async (route: Route) => await setRoute(route),
   };
 };
