@@ -32,29 +32,20 @@ export const Graphs = ({
   showOtherUsersData,
   activeGroupSession,
 }: Props) => {
-  const { graphData: rawData } = useData();
+  const { data: laps, untrackedData: rawUntrackedData } = useData();
+  const rawData = laps.flatMap((x) => x.dataPoints);
   const numPoints = 500;
 
   const allMerged = React.useMemo(() => {
-    const data = rawData.map((dataPoint) => {
-      if (dataPoint.tracking) {
-        return {
-          'You HR': dataPoint.heartRate,
-          'You Power': dataPoint.power,
-        };
-      }
-      return {};
-    });
+    const data = rawData.map((dataPoint) => ({
+      'You HR': dataPoint.heartRate,
+      'You Power': dataPoint.power,
+    }));
 
-    const untrackedData = rawData.map((dataPoint) => {
-      if (!dataPoint.tracking) {
-        return {
-          'You-Untracked HR': dataPoint.heartRate,
-          'You-Untracked Power': dataPoint.power,
-        };
-      }
-      return {};
-    });
+    const untrackedData = rawUntrackedData.map((dataPoint) => ({
+      'You-Untracked HR': dataPoint.heartRate,
+      'You-Untracked Power': dataPoint.power,
+    }));
 
     const otherPeoplesDataMerged = otherUsers
       .map((username) => {
@@ -102,7 +93,7 @@ export const Graphs = ({
       mergeArrays(filledData, otherPeoplesDataMerged),
       filledUntrackedData
     );
-  }, [rawData, otherUsers, activeGroupSession]);
+  }, [rawData, rawUntrackedData, otherUsers, activeGroupSession]);
 
   const myAvgPower = Math.floor(
     [...rawData].splice(-3).reduce((sum, data) => sum + (data.power || 0), 0) /
