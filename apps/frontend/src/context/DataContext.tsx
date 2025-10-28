@@ -60,8 +60,11 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
   const { heartRate } = useHeartRateMonitor();
 
   const hasValidData = trackedData.length > 0;
+
+  const accumulatedTimeRef = React.useRef(0);
+
   const dataTick = React.useCallback(
-    (
+    async (
       delta: number,
       data: {
         heartRate: number | null;
@@ -69,34 +72,47 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         cadence: number | null;
       }
     ) => {
-      const heartRateToInclude = data.heartRate
-        ? { heartRate: data.heartRate }
-        : {};
-      const powerToInclude = data.power ? { power: data.power } : {};
-      const cadenceToInclude = data.cadence ? { cadence: data.cadence } : {};
-      const dataPoint = {
-        timestamp: new Date(),
-        ...heartRateToInclude,
-        ...powerToInclude,
-        ...cadenceToInclude,
-      };
+      try {
+        if (accumulatedTimeRef.current > 0) {
+          await db.addElapsedTime(accumulatedTimeRef.current);
+          accumulatedTimeRef.current = 0;
+        }
 
-      if (dataPoint.cadence || dataPoint.power || dataPoint.heartRate) {
-        db.addDatapoint(delta, data, isRunning);
-        sendData(dataPoint);
+        const heartRateToInclude = data.heartRate
+          ? { heartRate: data.heartRate }
+          : {};
+        const powerToInclude = data.power ? { power: data.power } : {};
+        const cadenceToInclude = data.cadence ? { cadence: data.cadence } : {};
+        const dataPoint = {
+          timestamp: new Date(),
+          ...heartRateToInclude,
+          ...powerToInclude,
+          ...cadenceToInclude,
+        };
+
+        if (dataPoint.cadence || dataPoint.power || dataPoint.heartRate) {
+          await db.addDatapoint(delta, data, isRunning);
+          sendData(dataPoint);
+        }
+      } catch (error) {
+        console.error('Failed to process dataTick:', error);
       }
     },
-    [heartRate, power, cadence, isRunning]
+    [isRunning, sendData]
   );
-  const clockTick = (delta: number) => {
-    db.addElapsedTime(delta);
 
-    increaseActiveWorkoutElapsedTime(delta);
-  };
+  const clockTick = React.useCallback(
+    (delta: number) => {
+      accumulatedTimeRef.current += delta;
+      increaseActiveWorkoutElapsedTime(delta);
+    },
+    [increaseActiveWorkoutElapsedTime]
+  );
+
   React.useEffect(() => {
     if (clockWorker === null) return;
 
-    clockWorker.onmessage = ({
+    clockWorker.onmessage = async ({
       data,
     }: MessageEvent<{ type: string; delta: number }>) => {
       if (!data) return;
@@ -106,17 +122,17 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
           break;
         }
         case 'dataTick': {
-          dataTick(data.delta, { heartRate, power, cadence });
+          await dataTick(data.delta, { heartRate, power, cadence });
         }
       }
     };
-    clockWorker.onerror = (e) => console.log('message recevied:', e);
+    clockWorker.onerror = (e) => console.error('Clock worker error:', e);
 
     return () => {
       clockWorker.onerror = null;
       clockWorker.onmessage = null;
     };
-  }, [power, heartRate, cadence]);
+  }, [power, heartRate, cadence, clockTick, dataTick]);
 
   const start = React.useCallback(async () => {
     if (trackedData.length > 0) {
@@ -145,7 +161,16 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
     }
 
     clockWorker.postMessage('stopClockTimer');
-  }, [clockWorker, smartTrainerIsConnected, setResistance]);
+
+    if (accumulatedTimeRef.current > 0) {
+      try {
+        await db.addElapsedTime(accumulatedTimeRef.current);
+        accumulatedTimeRef.current = 0;
+      } catch (error) {
+        console.error('Failed to flush elapsed time on stop:', error);
+      }
+    }
+  }, [clockWorker, smartTrainerIsConnected, setResistance, logEvent]);
 
   return (
     <DataContext.Provider
@@ -158,8 +183,8 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         speed: lastDatapoint?.speed ?? 0,
         start,
         stop,
-        addLap: () => {
-          db.addLap();
+        addLap: async () => {
+          await db.addLap();
         },
         state,
         isRunning,
