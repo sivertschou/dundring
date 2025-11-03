@@ -205,7 +205,7 @@ export const setRoute = async (route: Route) => {
 };
 
 const hoursToRecoverWorkout = 12;
-export const createNewWorkoutIfOldData = async () => {
+export const clearWorkoutDataIfOldDataExists = async () => {
   return await db.transaction(
     'rw',
     db.workoutDataPoint,
