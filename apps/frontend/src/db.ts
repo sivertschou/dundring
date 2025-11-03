@@ -56,6 +56,10 @@ export const defaultWorkoutState: WorkoutState = {
 };
 
 export const startNewWorkout = async () => {
+  // clear old data
+  await db.workoutState.clear();
+  await db.workoutDataPoint.clear();
+
   await db.transaction('rw', db.workoutState, async () => {
     const state = await getWorkoutState();
 
