@@ -2,7 +2,7 @@ import { Button, Center, Grid, Stack, Text } from '@chakra-ui/react';
 import { useWorkoutState } from '../../hooks/useWorkoutState';
 import { useData } from '../../context/DataContext';
 import { relativeHours } from '@dundring/utils';
-import { startNewWorkout } from '../../db';
+import { clearWorkoutData } from '../../db';
 import { useState } from 'react';
 
 export const RecoverWorkout = () => {
@@ -36,7 +36,7 @@ export const RecoverWorkout = () => {
           <Button onClick={() => setShowRecoverPrompt(false)}>
             Continue workout
           </Button>
-          <Button onClick={async () => await startNewWorkout()}>
+          <Button onClick={async () => await clearWorkoutData()}>
             Start new workout
           </Button>
         </Stack>
