@@ -55,13 +55,14 @@ export const defaultWorkoutState: WorkoutState = {
   route: 'zap',
 };
 
-export const startNewWorkout = async () => {
-  await db.transaction('rw', db.workoutState, async () => {
+export const clearWorkoutData = async () => {
+  await db.transaction('rw', db.workoutState, db.workoutDataPoint, async () => {
     const state = await getWorkoutState();
+    await db.workoutDataPoint.clear();
+    await db.workoutState.clear();
 
     return db.workoutState.add({
       ...defaultWorkoutState,
-      workoutNumber: state.workoutNumber + 1,
       route: state.route,
     });
   });
@@ -204,7 +205,7 @@ export const setRoute = async (route: Route) => {
 };
 
 const hoursToRecoverWorkout = 12;
-export const createNewWorkoutIfOldData = async () => {
+export const clearWorkoutDataIfOldDataExists = async () => {
   return await db.transaction(
     'rw',
     db.workoutDataPoint,
@@ -218,7 +219,7 @@ export const createNewWorkoutIfOldData = async () => {
         );
 
         if (time.hours >= hoursToRecoverWorkout) {
-          return startNewWorkout();
+          return clearWorkoutData();
         }
       }
     }

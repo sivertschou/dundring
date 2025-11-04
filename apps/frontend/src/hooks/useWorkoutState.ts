@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import {
-  createNewWorkoutIfOldData,
+  clearWorkoutDataIfOldDataExists,
   db,
   defaultWorkoutState,
   initWorkoutstate,
@@ -71,7 +71,7 @@ export const useWorkoutState = () => {
     ) ?? null;
 
   useEffect(() => {
-    createNewWorkoutIfOldData();
+    clearWorkoutDataIfOldDataExists();
   }, []);
 
   useEffect(() => {
