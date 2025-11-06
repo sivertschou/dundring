@@ -8,6 +8,7 @@ import { useWebsocket } from './WebsocketContext';
 import * as db from '../db';
 import { WorkoutDataPoint } from '../db';
 import { useWorkoutState } from '../hooks/useWorkoutState';
+import { useLiveRef } from '../hooks/useLiveRef';
 
 type TrainerState = 'not_started' | 'running' | 'paused';
 
@@ -61,28 +62,30 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
 
   const hasValidData = trackedData.length > 0;
 
-  const accumulatedTimeRef = React.useRef(0);
+  const accumulatedTimeRef = useLiveRef(0);
+  const powerRef = useLiveRef(power);
+  const heartRateRef = useLiveRef(heartRate);
+  const cadenceRef = useLiveRef(cadence);
 
   const dataTick = React.useCallback(
-    async (
-      delta: number,
-      data: {
-        heartRate: number | null;
-        power: number | null;
-        cadence: number | null;
-      }
-    ) => {
+    async (delta: number) => {
       try {
         if (accumulatedTimeRef.current > 0) {
           await db.addElapsedTime(accumulatedTimeRef.current);
           accumulatedTimeRef.current = 0;
         }
 
-        const heartRateToInclude = data.heartRate
-          ? { heartRate: data.heartRate }
+        const currentHeartRate = heartRateRef.current;
+        const currentPower = powerRef.current;
+        const currentCadence = cadenceRef.current;
+
+        const heartRateToInclude = currentHeartRate
+          ? { heartRate: currentHeartRate }
           : {};
-        const powerToInclude = data.power ? { power: data.power } : {};
-        const cadenceToInclude = data.cadence ? { cadence: data.cadence } : {};
+        const powerToInclude = currentPower ? { power: currentPower } : {};
+        const cadenceToInclude = currentCadence
+          ? { cadence: currentCadence }
+          : {};
         const dataPoint = {
           timestamp: new Date(),
           ...heartRateToInclude,
@@ -91,6 +94,11 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         };
 
         if (dataPoint.cadence || dataPoint.power || dataPoint.heartRate) {
+          const data = {
+            heartRate: currentHeartRate,
+            power: currentPower,
+            cadence: currentCadence,
+          };
           await db.addDatapoint(delta, data, isRunning);
           sendData(dataPoint);
         }
@@ -122,7 +130,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
           break;
         }
         case 'dataTick': {
-          await dataTick(data.delta, { heartRate, power, cadence });
+          await dataTick(data.delta);
         }
       }
     };
@@ -132,7 +140,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
       clockWorker.onerror = null;
       clockWorker.onmessage = null;
     };
-  }, [power, heartRate, cadence, clockTick, dataTick]);
+  }, [clockTick, dataTick]);
 
   const start = React.useCallback(async () => {
     if (trackedData.length > 0) {
