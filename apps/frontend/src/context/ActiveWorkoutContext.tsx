@@ -21,8 +21,6 @@ export const ActiveWorkoutContext = React.createContext<{
 interface IncreasePartElapsedTimeAction {
   type: 'INCREASE_PART_ELAPSED_TIME';
   millis: number;
-  setResistance: (resistance: number) => void;
-  activeFtp: number;
 }
 
 interface SetWorkoutAction {
@@ -241,14 +239,12 @@ export const ActiveWorkoutContextProvider = ({
     });
   };
 
-  const increaseElapsedTime = (millis: number) => {
+  const increaseElapsedTime = React.useCallback((millis: number) => {
     dispatchActiveWorkoutAction({
       type: 'INCREASE_PART_ELAPSED_TIME',
       millis,
-      setResistance,
-      activeFtp,
     });
-  };
+  }, []);
 
   const partElapsedTimeAsSeconds = activeWorkout
     ? Math.floor(activeWorkout.partElapsedTime / 1000)
