@@ -62,6 +62,11 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
 
   const hasValidData = trackedData.length > 0;
 
+  // Timestamp-based time tracking instead of delta accumulation
+  const startTimestampRef = React.useRef<number | null>(null);
+  const totalElapsedBeforePauseRef = React.useRef<number>(0);
+  const lastDbUpdateRef = React.useRef<number>(0);
+
   const accumulatedTimeRef = useLiveRef(0);
   const powerRef = useLiveRef(power);
   const heartRateRef = useLiveRef(heartRate);
@@ -70,9 +75,18 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
   const dataTick = React.useCallback(
     async (delta: number) => {
       try {
-        if (accumulatedTimeRef.current > 0) {
-          await db.addElapsedTime(accumulatedTimeRef.current);
-          accumulatedTimeRef.current = 0;
+        // Flush elapsed time to DB using timestamp-based calculation
+        if (startTimestampRef.current !== null) {
+          const now = Date.now();
+          const currentElapsedTotal =
+            totalElapsedBeforePauseRef.current +
+            (now - startTimestampRef.current);
+          const deltaToFlush = currentElapsedTotal - lastDbUpdateRef.current;
+
+          if (deltaToFlush > 0) {
+            await db.addElapsedTime(deltaToFlush);
+            lastDbUpdateRef.current = currentElapsedTotal;
+          }
         }
 
         const currentHeartRate = heartRateRef.current;
@@ -109,13 +123,20 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
     [isRunning, sendData]
   );
 
-  const clockTick = React.useCallback(
-    (delta: number) => {
-      accumulatedTimeRef.current += delta;
-      increaseActiveWorkoutElapsedTime(delta);
-    },
-    [increaseActiveWorkoutElapsedTime]
-  );
+  const clockTick = React.useCallback(() => {
+    // Calculate elapsed time from timestamp instead of accumulating deltas
+    if (startTimestampRef.current === null) return;
+
+    const now = Date.now();
+    const currentElapsedTotal =
+      totalElapsedBeforePauseRef.current + (now - startTimestampRef.current);
+    const deltaToAdd = currentElapsedTotal - accumulatedTimeRef.current;
+
+    if (deltaToAdd > 0) {
+      accumulatedTimeRef.current = currentElapsedTotal;
+      increaseActiveWorkoutElapsedTime(deltaToAdd);
+    }
+  }, [increaseActiveWorkoutElapsedTime]);
 
   React.useEffect(() => {
     if (clockWorker === null) return;
@@ -126,7 +147,7 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
       if (!data) return;
       switch (data.type) {
         case 'clockTick': {
-          clockTick(data.delta);
+          clockTick(); // No longer using delta from worker
           break;
         }
         case 'dataTick': {
@@ -150,6 +171,11 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
       syncResistance();
     }
 
+    // Initialize timestamp-based tracking
+    startTimestampRef.current = Date.now();
+    // If resuming, keep the accumulated time; if starting fresh, it should be 0
+    totalElapsedBeforePauseRef.current = accumulatedTimeRef.current;
+
     startActiveWorkout();
     clockWorker.postMessage('startClockTimer');
     setState('running');
@@ -170,13 +196,25 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
 
     clockWorker.postMessage('stopClockTimer');
 
-    if (accumulatedTimeRef.current > 0) {
-      try {
-        await db.addElapsedTime(accumulatedTimeRef.current);
-        accumulatedTimeRef.current = 0;
-      } catch (error) {
-        console.error('Failed to flush elapsed time on stop:', error);
+    // Calculate final elapsed time before pausing
+    if (startTimestampRef.current !== null) {
+      const now = Date.now();
+      const currentElapsedTotal =
+        totalElapsedBeforePauseRef.current + (now - startTimestampRef.current);
+      const deltaToFlush = currentElapsedTotal - lastDbUpdateRef.current;
+
+      if (deltaToFlush > 0) {
+        try {
+          await db.addElapsedTime(deltaToFlush);
+          lastDbUpdateRef.current = currentElapsedTotal;
+          accumulatedTimeRef.current = currentElapsedTotal;
+        } catch (error) {
+          console.error('Failed to flush elapsed time on stop:', error);
+        }
       }
+
+      // Reset timestamp for next resume
+      startTimestampRef.current = null;
     }
   }, [clockWorker, smartTrainerIsConnected, setResistance, logEvent]);
 
