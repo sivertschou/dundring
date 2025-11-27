@@ -63,6 +63,8 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
   const hasValidData = trackedData.length > 0;
 
   const accumulatedTimeRef = useLiveRef(0);
+  const pausedTimeRef = useLiveRef(0);
+  const lastElapsedRef = useLiveRef(0);
   const powerRef = useLiveRef(power);
   const heartRateRef = useLiveRef(heartRate);
   const cadenceRef = useLiveRef(cadence);
@@ -110,9 +112,19 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
   );
 
   const clockTick = React.useCallback(
-    (delta: number) => {
-      accumulatedTimeRef.current += delta;
-      increaseActiveWorkoutElapsedTime(delta);
+    (elapsed: number) => {
+      // Calculate total elapsed time: paused time + current session elapsed
+      const totalElapsed = pausedTimeRef.current + elapsed;
+
+      // Calculate delta from last update
+      const delta = totalElapsed - lastElapsedRef.current;
+      lastElapsedRef.current = totalElapsed;
+
+      // Only accumulate and update if there's a meaningful delta
+      if (delta > 0) {
+        accumulatedTimeRef.current += delta;
+        increaseActiveWorkoutElapsedTime(delta);
+      }
     },
     [increaseActiveWorkoutElapsedTime]
   );
@@ -122,15 +134,19 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
 
     clockWorker.onmessage = async ({
       data,
-    }: MessageEvent<{ type: string; delta: number }>) => {
+    }: MessageEvent<{ type: string; delta?: number; elapsed?: number }>) => {
       if (!data) return;
       switch (data.type) {
         case 'clockTick': {
-          clockTick(data.delta);
+          if (data.elapsed !== undefined) {
+            clockTick(data.elapsed);
+          }
           break;
         }
         case 'dataTick': {
-          await dataTick(data.delta);
+          if (data.delta !== undefined) {
+            await dataTick(data.delta);
+          }
         }
       }
     };
@@ -178,7 +194,25 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
         console.error('Failed to flush elapsed time on stop:', error);
       }
     }
-  }, [clockWorker, smartTrainerIsConnected, setResistance, logEvent]);
+
+    // Store the current elapsed time as paused time for when we resume
+    pausedTimeRef.current = workoutState.elapsedTime;
+    lastElapsedRef.current = workoutState.elapsedTime;
+  }, [
+    clockWorker,
+    smartTrainerIsConnected,
+    setResistance,
+    logEvent,
+    workoutState.elapsedTime,
+  ]);
+
+  // Initialize paused time when workout state loads with existing elapsed time
+  React.useEffect(() => {
+    if (state === 'not_started' && workoutState.elapsedTime > 0) {
+      pausedTimeRef.current = workoutState.elapsedTime;
+      lastElapsedRef.current = workoutState.elapsedTime;
+    }
+  }, [workoutState.elapsedTime, state]);
 
   return (
     <DataContext.Provider

@@ -6,7 +6,7 @@ export default () => {
   let clockInterval = null;
 
   let lastDataTick = Date.now();
-  let lastClockTick = Date.now();
+  let clockStartTime = null;
 
   // eslint-disable-next-line no-restricted-globals
   self.onmessage = (msg) => {
@@ -34,21 +34,23 @@ export default () => {
 
       case 'startClockTimer': {
         if (clockInterval) clearInterval(clockInterval);
-        lastClockTick = Date.now();
+        clockStartTime = Date.now();
 
         clockInterval = setInterval(() => {
+          // Calculate elapsed time based on wall-clock time
+          const elapsed = Date.now() - clockStartTime;
           // eslint-disable-next-line no-restricted-globals
           self.postMessage({
             type: 'clockTick',
-            delta: Date.now() - lastClockTick,
+            elapsed: elapsed,
           });
-          lastClockTick = Date.now();
         }, 200);
         break;
       }
       case 'stopClockTimer': {
         clearInterval(clockInterval);
         clockInterval = null;
+        clockStartTime = null;
         break;
       }
       default:
