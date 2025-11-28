@@ -207,10 +207,19 @@ export const DataContextProvider = ({ clockWorker, children }: Props) => {
   ]);
 
   // Initialize paused time when workout state loads with existing elapsed time
+  const hasInitializedRefs = React.useRef(false);
   React.useEffect(() => {
-    if (state === 'not_started' && workoutState.elapsedTime > 0) {
+    if (
+      state === 'not_started' &&
+      workoutState.elapsedTime > 0 &&
+      !hasInitializedRefs.current
+    ) {
       pausedTimeRef.current = workoutState.elapsedTime;
       lastElapsedRef.current = workoutState.elapsedTime;
+      hasInitializedRefs.current = true;
+    }
+    if (state === 'running') {
+      hasInitializedRefs.current = false;
     }
   }, [workoutState.elapsedTime, state]);
 
